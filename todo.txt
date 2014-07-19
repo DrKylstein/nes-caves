@@ -1,0 +1,8 @@
+load scrolling left
+fix right and bottom bounds
+combine PPU_CTRL and rom/ram step in vram loader
+combine nmi and main vram loaders?
+
+gravity and collision
+sound
+entering levels
