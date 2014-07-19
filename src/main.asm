@@ -97,31 +97,32 @@ reset subroutine
     cpy #$88
     bne .load_hud_attr
 
-    lda #10
-    sta main_arg
-    bit PPU_STATUS
-    lda #$21
-    sta PPU_ADDR
-    lda #$40
-    sta PPU_ADDR
-    lda #<prgdata_mainMap
-    sta main_src
-    lda #>prgdata_mainMap
-    sta main_src+1
-    jsr main_LoadNametable
+    ; lda #10
+    ; sta main_arg
+    ; bit PPU_STATUS
+    ; lda #$21
+    ; sta PPU_ADDR
+    ; lda #$40
+    ; sta PPU_ADDR
+    ; lda #<prgdata_mainMap
+    ; sta main_src
+    ; lda #>prgdata_mainMap
+    ; sta main_src+1
+    
+    jsr main_InitialLevelLoad
 
-    lda #15
-    sta main_arg
-    bit PPU_STATUS
-    lda #$28
-    sta PPU_ADDR
-    lda #$00
-    sta PPU_ADDR
-    lda #<[prgdata_mainMap+40*10]
-    sta main_src
-    lda #>[prgdata_mainMap+40*10]
-    sta main_src+1
-    jsr main_LoadNametable
+    ; lda #15
+    ; sta main_arg
+    ; bit PPU_STATUS
+    ; lda #$28
+    ; sta PPU_ADDR
+    ; lda #$00
+    ; sta PPU_ADDR
+    ; lda #<[prgdata_mainMap+40*10]
+    ; sta main_src
+    ; lda #>[prgdata_mainMap+40*10]
+    ; sta main_src+1
+    ; jsr main_LoadNametable
 
     ;set sprite 0 for status bar
     lda #22
@@ -131,7 +132,11 @@ reset subroutine
     lda #$FE
     sta shr_spriteIndex
 
+
+
     ;load attribute tables
+    lda #%00000000
+    sta PPU_CTRL
     lda #6
     sta main_arg
     bit PPU_STATUS
@@ -163,18 +168,20 @@ load_rest subroutine
     sta shr_ppuCtrl
     sta PPU_CTRL
     
-    lda #33
+    lda #32
     sta shr_vramBuffer_length
     lda #$3F
     sta shr_vramBuffer_ppuHigh
     lda #$01
     sta shr_vramBuffer_ppuLow
-    lda #1
-    sta shr_vramBuffer_doRom
+    lda #%00000000 ;use rom, +1 increment
+    sta shr_vramBuffer_flags
     lda #<prgdata_palettes
     sta shr_vramBuffer_romAddr
     lda #>prgdata_palettes
     sta shr_vramBuffer_romAddr+1
+    lda #0
+    sta shr_vramBuffer_romAddr+2
     inc shr_doVramCopy
     
     ldy #4 ;oam index
@@ -194,6 +201,11 @@ load_rest subroutine
 
 	lda #80
 	sta shr_cameraYMod
+    lda #<384
+    sta main_camMetaTileX
+    lda #>384
+    sta main_camMetaTileX+1
+
 
     lda #%00011000
     sta shr_ppuMask
@@ -244,17 +256,54 @@ main_loop subroutine
 .noLeftScroll:
     lda main_src
     cmp #[240-64]
-    bcc .noRightScroll
+    BCC_L noRightScroll
     CMPI_D shr_cameraX, [640-240]
-    bcs .noRightScroll
+    BCS_L noRightScroll
     INC_D shr_cameraX
     dec main_src
     lda shr_cameraX
-    and #$0F
-    bne .noRightScroll
-    jsr main_PrepColumn
+    and #7 ; 8-pixel boundaries
+    BNE_L noRightScroll
+    
+    ;get tile column on screen
+    lda shr_cameraX
+    sta main_tmp
+    lda shr_cameraX+1
+    sta main_tmp+1
+    REPEAT 3
+    lsr main_tmp+1
+    ror main_tmp
+    REPEND
+    lda main_tmp
+    and #31
+    clc
+    adc #31
+    and #31
+    sta main_arg+2
+        
+    lda #<prgdata_mainMap
+    sta main_arg
+    lda #>prgdata_mainMap
+    sta main_arg+1
+    
+    lda shr_cameraX
+    and #15
+    beq .noMTAdvance
+    ADDI_D main_camMetaTileX, main_camMetaTileX, 24
+.noMTAdvance:
+    
+    ADD_D main_arg, main_arg, main_camMetaTileX
+    
+    lda shr_cameraX
+    and #%00001000
+    beq .rightOdd
+    jsr main_EvenColumn
+    jmp .rightDone
+.rightOdd:
+    jsr main_OddColumn
+.rightDone:
     inc shr_doVramCopy
-.noRightScroll
+noRightScroll
     lda main_src
     sec
     sbc #8

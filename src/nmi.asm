@@ -26,16 +26,25 @@ nmi subroutine
 .while_requests:
     lda shr_vramBuffer,y
     beq .reg_update
-    iny
+    ;length
     sta nmi_len
+    ;ppu increment
+    iny
+    lda shr_vramBuffer,y
+    sta nmi_scratch
+    and #%00000100
+    ora shr_ppuCtrl
+    sta PPU_CTRL
+    ;ppu address
     bit PPU_STATUS
-    lda shr_vramBuffer,y
-    sta PPU_ADDR
-    iny
-    sta PPU_ADDR
+    REPEAT 2
     iny
     lda shr_vramBuffer,y
-    beq .from_ram
+    sta PPU_ADDR
+    REPEND
+    ;flags
+    lda nmi_scratch
+    bmi .from_ram
 .from_rom:
     iny
     lda shr_vramBuffer,y

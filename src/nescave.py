@@ -36,17 +36,8 @@ class NesCave(Plugin):
                 return False
             
         with open(f, 'wb') as out:
-            for y in range(layers['Names'].height()):
-                for x in range(layers['Names'].width()):
+            for x in range(layers['Names'].width()):
+                for y in range(layers['Names'].height()):
                     cell = layers['Names'].cellAt(x, y)
                     out.write(chr(cell.tile.id()))
-            #~ for y in range(layers['Attributes'].height()/2):
-                #~ for x in range(layers['Attributes'].width()/2):
-                    #~ data = 0
-                    #~ for offsets in ((0,0),(1,0),(0,1),(1,1)):
-                        #~ cell = layers['Attributes'].cellAt(x*2 + offsets[0], y*2 + offsets[1])
-                        #~ if cell is not None and cell.tile is not None:
-                            #~ data |= cell.tile.id()
-                        #~ data << 2
-                    #~ out.write(chr(data))
         return True

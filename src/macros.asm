@@ -3,18 +3,6 @@
     adc #1
     ENDM
 
-    MAC TEST_TONE
-    ;make a tone
-    lda #$01  ; square 1
-    sta $4015
-    lda #$08  ; period low
-    sta $4002
-    lda #$02  ; period high
-    sta $4003
-    lda #$bf  ; volume
-    sta $4000
-    ENDM
-
     MAC INC_D
     inc {1}
     bne .no_overflow
@@ -67,6 +55,13 @@
     sta {1}+1
     ENDM
 
+    MAC MOV_D
+    lda {1}
+    sta {0}
+    lda {1}+1
+    sta {0}+1
+    ENDM
+
     MAC CMP_D
     lda {1}
     cmp {2}
@@ -84,6 +79,30 @@
 	MAC LRB ;long reverse branch, doeas a long branch with inverted logic
 	{1} .not
 	jmp {2}
+.not:
+	ENDM
+    
+	MAC BNE_L
+	beq .not
+	jmp {1}
+.not:
+	ENDM
+        
+	MAC BEQ_L
+	bne .not
+	jmp {1}
+.not:
+	ENDM
+
+	MAC BCC_L
+	bcs .not
+	jmp {1}
+.not:
+	ENDM
+    
+	MAC BCS_L
+	bcc .not
+	jmp {1}
 .not:
 	ENDM
 

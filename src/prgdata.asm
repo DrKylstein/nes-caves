@@ -4,7 +4,6 @@
 
 prgdata_palettes:
 ;global
-    dc.b $1D
     incbin pal.bin
 
 	.align 256
