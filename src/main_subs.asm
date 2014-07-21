@@ -1,4 +1,13 @@
 ;------------------------------------------------------------------------------
+main_MultiplyBy24: ;arg0..arg1 is factor, ret0..ret1 is result
+    MOV_D main_ret, main_arg ; 1
+    ASL_D main_ret
+    ADD_D main_ret, main_ret, main_arg ;1
+    ASL_D main_ret ;0
+    ASL_D main_ret ;0
+    ASL_D main_ret ;0
+    rts
+;------------------------------------------------------------------------------
 synchronize subroutine
     lda #1
     sta shr_sleeping

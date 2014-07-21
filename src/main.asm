@@ -177,25 +177,18 @@ main_loop subroutine
     REPEND
     INC_D main_tmp; get tile at feet
     
-    ;t2 = x in tiles
-    MOV_D main_tmp+2, main_playerX
+    ;a0 = x in tiles
+    ADDI_D main_arg, main_playerX, 8
     REPEAT 4
-    LSR_D main_tmp+2
+    LSR_D main_arg
     REPEND
     
-    ;t4 = x in tiles * 24
-    ;24 = %11000
-    MOV_D main_tmp+4, main_tmp+2 ; 1
-    ASL_D main_tmp+4
-    ADD_D main_tmp+4, main_tmp+4, main_tmp+2 ;1
-    ASL_D main_tmp+4 ;0
-    ASL_D main_tmp+4 ;0
-    ASL_D main_tmp+4 ;0
+    jsr main_MultiplyBy24
 
-    MOV_D shr_debugReg, main_tmp+4
+    MOV_D shr_debugReg, main_ret
 
     ;t0 = y + x*24
-    ADD_D main_tmp, main_tmp, main_tmp+4 
+    ADD_D main_tmp, main_tmp, main_ret
     
     ;lookup tile, get behavior
     ADDI_D main_tmp, main_tmp, prgdata_mainMap
@@ -206,7 +199,10 @@ main_loop subroutine
     REPEAT 2
     lsr
     REPEND
-    bne up
+    cmp #TB_SOLID
+    beq up
+    cmp #TB_PLATFORM
+    beq up
 
     INC_D main_playerY
     inc main_playerMoved
@@ -264,6 +260,7 @@ up:
     dec main_sav
     lda shr_cameraX
     and #7 ; 8-pixel boundaries
+    cmp #1
     bne .noRightScroll
     jsr main_LoadTilesOnMoveRight
 .noRightScroll
@@ -311,7 +308,7 @@ up:
     dec main_sav
 .noDownScroll
     lda main_sav
-    adc #30
+    adc #31
     ldy #4
     jsr main_SetSpritePos
 
@@ -337,13 +334,9 @@ no_move
 ;------------------------------------------------------------------------------
 main_LoadTilesOnMoveRight subroutine
     ;get tile column on screen
-    lda shr_cameraX
-    sta main_tmp
-    lda shr_cameraX+1
-    sta main_tmp+1
+    MOV_D main_tmp, shr_cameraX
     REPEAT 3
-    lsr main_tmp+1
-    ror main_tmp
+    LSR_D main_tmp
     REPEND
     lda main_tmp
     and #31
@@ -351,18 +344,19 @@ main_LoadTilesOnMoveRight subroutine
     adc #31
     and #31
     sta main_arg+2
+    ADDI_D main_tmp, main_tmp, 1
+    LSR_D main_tmp
+    ADDI_D main_tmp, main_tmp, 15
+    MOV_D main_arg, main_tmp
+    jsr main_MultiplyBy24 ;uses only arg 0..1
+    ;keeping ret value for later
         
     lda #<prgdata_mainMap
     sta main_arg
     lda #>prgdata_mainMap
     sta main_arg+1
     
-    lda shr_cameraX
-    and #[PX_MT_WIDTH-1]
-    beq .noMTAdvance
-    ADDI_D main_camMetaTileX, main_camMetaTileX, MT_MAP_HEIGHT
-.noMTAdvance:
-    ADD_D main_arg, main_arg, main_camMetaTileX
+    ADD_D main_arg, main_arg, main_ret
     
     lda shr_cameraX
     and #%00001000
@@ -377,13 +371,9 @@ main_LoadTilesOnMoveRight subroutine
 ;------------------------------------------------------------------------------
 main_LoadTilesOnMoveLeft subroutine
     ;get tile column on screen
-    lda shr_cameraX
-    sta main_tmp
-    lda shr_cameraX+1
-    sta main_tmp+1
+    MOV_D main_tmp, shr_cameraX
     REPEAT 3
-    lsr main_tmp+1
-    ror main_tmp
+    LSR_D main_tmp
     REPEND
     lda main_tmp
     and #31
@@ -391,20 +381,19 @@ main_LoadTilesOnMoveLeft subroutine
     adc #31
     and #31
     sta main_arg+2
+    ADDI_D main_tmp, main_tmp, 1
+    LSR_D main_tmp
+    SUBI_D main_tmp, main_tmp, 1
+    MOV_D main_arg, main_tmp
+    jsr main_MultiplyBy24 ;uses only arg 0..1
+    ;keeping ret value for later
         
     lda #<prgdata_mainMap
     sta main_arg
     lda #>prgdata_mainMap
     sta main_arg+1
     
-    lda shr_cameraX
-    and #[PX_MT_WIDTH-1]
-    ;cmp #8
-    beq .noMTAdvance
-    SUBI_D main_camMetaTileX, main_camMetaTileX, MT_MAP_HEIGHT
-.noMTAdvance:
-    SUBI_D main_tmp, main_camMetaTileX, [MT_NAMETABLE_WIDTH*MT_MAP_HEIGHT] ;var tracks right edge, get left
-    ADD_D main_arg, main_arg, main_tmp
+    ADD_D main_arg, main_arg, main_ret
     
     lda shr_cameraX
     and #%00001000
