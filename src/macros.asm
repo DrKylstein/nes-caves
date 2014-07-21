@@ -54,6 +54,18 @@
     sbc {3}+1
     sta {1}+1
     ENDM
+    
+    MAC SUBI_D
+    ; SUB_D dest a b
+    ; dest = a - b
+    sec
+    lda {2}
+    sbc #<{3}
+    sta {1}
+    lda {2}+1
+    sbc #>{3}
+    sta {1}+1
+    ENDM
 
     MAC MOV_D
     lda {1}

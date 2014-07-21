@@ -96,33 +96,8 @@ reset subroutine
     iny
     cpy #$88
     bne .load_hud_attr
-
-    ; lda #10
-    ; sta main_arg
-    ; bit PPU_STATUS
-    ; lda #$21
-    ; sta PPU_ADDR
-    ; lda #$40
-    ; sta PPU_ADDR
-    ; lda #<prgdata_mainMap
-    ; sta main_src
-    ; lda #>prgdata_mainMap
-    ; sta main_src+1
     
     jsr main_InitialLevelLoad
-
-    ; lda #15
-    ; sta main_arg
-    ; bit PPU_STATUS
-    ; lda #$28
-    ; sta PPU_ADDR
-    ; lda #$00
-    ; sta PPU_ADDR
-    ; lda #<[prgdata_mainMap+40*10]
-    ; sta main_src
-    ; lda #>[prgdata_mainMap+40*10]
-    ; sta main_src+1
-    ; jsr main_LoadNametable
 
     ;set sprite 0 for status bar
     lda #22
@@ -131,37 +106,6 @@ reset subroutine
     sta shr_spriteX
     lda #$FE
     sta shr_spriteIndex
-
-
-
-    ;load attribute tables
-    lda #%00000000
-    sta PPU_CTRL
-    lda #6
-    sta main_arg
-    bit PPU_STATUS
-    lda #$23
-    sta PPU_ADDR
-    lda #$D0
-    sta PPU_ADDR 
-    lda #<[prgdata_mainMap-40]
-    sta main_src
-    lda #>[prgdata_mainMap-40]
-    sta main_src+1
-    jsr main_LoadAttributeTable
-    
-    lda #8
-    sta main_arg
-    bit PPU_STATUS
-    lda #$2B
-    sta PPU_ADDR
-    lda #$C0
-    sta PPU_ADDR
-    lda #<[prgdata_mainMap+40*10]
-    sta main_src
-    lda #>[prgdata_mainMap+40*10]
-    sta main_src+1
-    jsr main_LoadAttributeTable
     
 load_rest subroutine
     lda #%10110000 ;enable nmi
@@ -199,11 +143,11 @@ load_rest subroutine
 
     inc shr_doDma
 
-	lda #80
+	lda #96
 	sta shr_cameraYMod
-    lda #<384
+    lda #<[PX_MT_HEIGHT*MT_MAP_HEIGHT]
     sta main_camMetaTileX
-    lda #>384
+    lda #>[PX_MT_HEIGHT*MT_MAP_HEIGHT]
     sta main_camMetaTileX+1
 
 
@@ -242,76 +186,42 @@ main_loop subroutine
     
 .checkMoved:
     lda main_playerMoved
-    LRB bne, no_move
+    BEQ_L no_move
 
-    SUB_D main_src, main_playerX, shr_cameraX
-    lda main_src
-    cmp #64
+    SUB_D main_sav, main_playerX, shr_cameraX
+    lda main_sav
+    cmp #[MT_HSCROLL_MARGIN*PX_MT_WIDTH]
     bcs .noLeftScroll
     lda shr_cameraX
     ora shr_cameraX+1
     beq .noLeftScroll
     DEC_D shr_cameraX
-    inc main_src
+    inc main_sav
+    lda shr_cameraX
+    and #7
+    bne .noLeftScroll
+    jsr main_LoadTilesOnMoveLeft
 .noLeftScroll:
-    lda main_src
-    cmp #[240-64]
-    BCC_L noRightScroll
-    CMPI_D shr_cameraX, [640-240]
-    BCS_L noRightScroll
+    lda main_sav
+    cmp #[[MT_VIEWPORT_WIDTH - MT_HSCROLL_MARGIN]*PX_MT_WIDTH]
+    bcc .noRightScroll
+    CMPI_D shr_cameraX, [[MT_MAP_WIDTH - MT_VIEWPORT_WIDTH - 1]*PX_MT_WIDTH]
+    bcs .noRightScroll
     INC_D shr_cameraX
-    dec main_src
+    dec main_sav
     lda shr_cameraX
     and #7 ; 8-pixel boundaries
-    BNE_L noRightScroll
-    
-    ;get tile column on screen
-    lda shr_cameraX
-    sta main_tmp
-    lda shr_cameraX+1
-    sta main_tmp+1
-    REPEAT 3
-    lsr main_tmp+1
-    ror main_tmp
-    REPEND
-    lda main_tmp
-    and #31
-    clc
-    adc #31
-    and #31
-    sta main_arg+2
-        
-    lda #<prgdata_mainMap
-    sta main_arg
-    lda #>prgdata_mainMap
-    sta main_arg+1
-    
-    lda shr_cameraX
-    and #15
-    beq .noMTAdvance
-    ADDI_D main_camMetaTileX, main_camMetaTileX, 24
-.noMTAdvance:
-    
-    ADD_D main_arg, main_arg, main_camMetaTileX
-    
-    lda shr_cameraX
-    and #%00001000
-    beq .rightOdd
-    jsr main_EvenColumn
-    jmp .rightDone
-.rightOdd:
-    jsr main_OddColumn
-.rightDone:
-    inc shr_doVramCopy
-noRightScroll
-    lda main_src
+    bne .noRightScroll
+    jsr main_LoadTilesOnMoveRight
+.noRightScroll
+    lda main_sav
     sec
     sbc #8
     tax
 
-    SUB_D main_src, main_playerY, shr_cameraY
-    lda main_src
-    cmp #48
+    SUB_D main_sav, main_playerY, shr_cameraY
+    lda main_sav
+    cmp #[MT_VSCROLL_MARGIN*PX_MT_HEIGHT]
     bcs .noUpScroll
     lda shr_cameraY
     ora shr_cameraY+1
@@ -327,12 +237,12 @@ noRightScroll
 	eor shr_nameTable
 	sta shr_nameTable
 .noModUp
-    inc main_src
+    inc main_sav
 .noUpScroll:
-    lda main_src
-    cmp #[[240-32]-48]
+    lda main_sav
+    cmp #[[MT_VIEWPORT_HEIGHT - MT_VSCROLL_MARGIN]*PX_MT_HEIGHT]
     bcc .noDownScroll
-    CMPI_D shr_cameraY, [400-[240-32]]
+    CMPI_D shr_cameraY, [[MT_MAP_HEIGHT - MT_VIEWPORT_HEIGHT]*PX_MT_HEIGHT]
     bcs .noDownScroll
     INC_D shr_cameraY
     inc shr_cameraYMod
@@ -345,9 +255,9 @@ noRightScroll
 	eor shr_nameTable
 	sta shr_nameTable
 .noModDown:
-    dec main_src
+    dec main_sav
 .noDownScroll
-    lda main_src
+    lda main_sav
     adc #32
     ldy #4
 
@@ -372,5 +282,90 @@ noRightScroll
     jsr synchronize
 no_move
     jmp main_loop
+
+;------------------------------------------------------------------------------
+main_LoadTilesOnMoveRight subroutine
+    ;get tile column on screen
+    lda shr_cameraX
+    sta main_tmp
+    lda shr_cameraX+1
+    sta main_tmp+1
+    REPEAT 3
+    lsr main_tmp+1
+    ror main_tmp
+    REPEND
+    lda main_tmp
+    and #31
+    clc
+    adc #31
+    and #31
+    sta main_arg+2
+        
+    lda #<prgdata_mainMap
+    sta main_arg
+    lda #>prgdata_mainMap
+    sta main_arg+1
+    
+    lda shr_cameraX
+    and #[PX_MT_WIDTH-1]
+    beq .noMTAdvance
+    ADDI_D main_camMetaTileX, main_camMetaTileX, MT_MAP_HEIGHT
+.noMTAdvance:
+    ADD_D main_arg, main_arg, main_camMetaTileX
+    
+    lda shr_cameraX
+    and #%00001000
+    beq .odd
+    jsr main_EvenColumn
+    jmp .return
+.odd:
+    jsr main_OddColumn
+.return:
+    inc shr_doVramCopy
+    rts
+;------------------------------------------------------------------------------
+main_LoadTilesOnMoveLeft subroutine
+    ;get tile column on screen
+    lda shr_cameraX
+    sta main_tmp
+    lda shr_cameraX+1
+    sta main_tmp+1
+    REPEAT 3
+    lsr main_tmp+1
+    ror main_tmp
+    REPEND
+    lda main_tmp
+    and #31
+    clc
+    adc #31
+    and #31
+    sta main_arg+2
+        
+    lda #<prgdata_mainMap
+    sta main_arg
+    lda #>prgdata_mainMap
+    sta main_arg+1
+    
+    lda shr_cameraX
+    and #[PX_MT_WIDTH-1]
+    ;cmp #8
+    beq .noMTAdvance
+    SUBI_D main_camMetaTileX, main_camMetaTileX, MT_MAP_HEIGHT
+.noMTAdvance:
+    SUBI_D main_tmp, main_camMetaTileX, [MT_NAMETABLE_WIDTH*MT_MAP_HEIGHT] ;var tracks right edge, get left
+    ADD_D main_arg, main_arg, main_tmp
+    
+    lda shr_cameraX
+    and #%00001000
+    beq .odd
+    jsr main_EvenColumn
+    jmp .return
+.odd:
+    jsr main_OddColumn
+.return:
+    inc shr_doVramCopy
+    rts
+;------------------------------------------------------------------------------
+
 
     include main_subs.asm

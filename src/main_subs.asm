@@ -39,191 +39,6 @@ main_FlipSprite subroutine ;Y = oam index*4,
     sta shr_spriteFlags+4,y
     rts
 ;------------------------------------------------------------------------------
-; main_src contains address of row in level, 
-; PPUADDR already set to destination,
-; main_arg is number of rows
-; modifies A, Y, main_scratchBuffer, main_scratch
-main_LoadAttributeTable subroutine
-    ldy #0
-.outer_loop:
-    tya
-    pha
-    
-    ldx #0 ; indexes attribute bytes
-.buffer_loop:
-    ;x = 0..8 (attribute bytes across) -> y = 0..16 (metatiles across)
-    ;we store 2 metatiles across of info each loop
-    txa
-    asl
-    tay
-
-    ;save metatile index
-    pha
-    
-    ;do top left
-    lda (main_src),y
-    tay
-    lda prgdata_metatiles+1024,y
-    and #%00000011 ;upper bits reserved for flags
-    sta main_scratch
-    
-    ;recover metatile index, move right 1, save again
-    pla
-    tay
-    iny
-    tya
-    pha
-    
-    ;do top right
-    lda (main_src),y
-    tay
-    lda prgdata_metatiles+1024,y
-    and #%00000011
-    REPEAT 2
-    asl
-    REPEND
-    ora main_scratch
-    sta main_scratch
-    
-    ;recover metatile index move down 1 and left 1, save again
-    pla
-    clc
-    adc #MAP_WIDTH-1
-    tay
-    pha
-    
-    ;do bottom left
-    lda (main_src),y
-    tay
-    lda prgdata_metatiles+1024,y
-    and #%00000011
-    REPEAT 4
-    asl
-    REPEND
-    ora main_scratch
-    sta main_scratch
-    
-    ;recover metatile index, move right 1 (last item, don't need to save)
-    pla
-    tay
-    iny
-    
-    ;do bottom right
-    lda (main_src),y
-    tay
-    lda prgdata_metatiles+1024,y
-    and #%00000011
-    REPEAT 6
-    asl
-    REPEND
-    ora main_scratch
-    ;store final result
-    sta main_scratchBuffer,x
-    
-    ;last attribute byte?
-    inx
-    cpx #8
-    bne .buffer_loop
-;end .buffer_loop    
-    ;move cached data to ppu
-    ldy #0
-.copy_loop:
-    lda main_scratchBuffer,y
-    sta PPU_DATA
-    iny
-    cpy #8
-    bne .copy_loop
-;end .copy_loop
-
-    pla
-    tay
-    lda main_src
-    clc
-    adc #MAP_WIDTH*2
-    sta main_src
-    lda main_src+1
-    adc #0
-    sta main_src+1
-    
-    iny
-    cpy main_arg
-    bne .outer_loop
-;end .outer_loop
-    rts
-;------------------------------------------------------------------------------
-; main_src contains address of row in level, 
-; PPUADDR already set to destination,
-; main_arg is number of rows
-; modifies A, Y, main_scratchBuffer, main_scratch
-; main_LoadNametable subroutine
-    ; ldy #0
-; .outer_loop:
-    ; tya
-    ; pha
-    ; jsr main_loadNametableColumn
-    ; pla
-    ; tay
-    
-    ; lda main_src
-    ; clc
-    ; adc #MAP_WIDTH
-    ; sta main_src
-    ; lda main_src+1
-    ; adc #0
-    ; sta main_src+1
-    
-    ; iny
-    ; cpy main_arg
-    ; bne .outer_loop
-
-    ; rts
-
-; main_loadNametableColumn subroutine
-    ; ldy #$00
-; .buffer_loop
-    ; tya
-    ; asl
-    ; tax
-    
-    ;;save y
-    ; tya
-    ; sta main_scratch
-    
-    ;;get metatile index from level map
-    ; lda (main_src),y
-    ; tay
-    
-    ;;get each corner of the metatile
-    ; lda prgdata_metatiles,y
-    ; sta main_scratchBuffer,x
-    
-    ; lda prgdata_metatiles+256,y
-    ; sta main_scratchBuffer+1,x
-    
-    ; lda prgdata_metatiles+512,y
-    ; sta main_scratchBuffer+32,x
-    
-    ; lda prgdata_metatiles+768,y
-    ; sta main_scratchBuffer+33,x  
-    
-    ;;estore y
-    ; lda main_scratch
-    ; tay
-    
-    ; iny
-    ; cpy #16
-    ; bne .buffer_loop
-;;end .buffer_loop
-    ; ldy #0
-; .load_loop
-    ; lda main_scratchBuffer,y
-    ; sta PPU_DATA
-    ; iny
-    ; cpy #16*2*2
-    ; bne .load_loop
-;;end .load_loop
-    ; rts
-;------------------------------------------------------------------------------
 main_InitialLevelLoad subroutine
     lda #<prgdata_mainMap
     sta main_sav
@@ -288,29 +103,31 @@ main_InitialLevelLoad subroutine
 ;------------------------------------------------------------------------------
 ;arg 0..1 -> rom address
 ;arg 2 -> nametable column
-; 20 top 30 bottom, x2 right and left
+TOP_HEIGHT = 18
+BOTTOM_HEIGHT = 30
+TOP_OFFSET = $180
 main_EvenColumn subroutine
     lda #%10000100 ;use ram, use +32 increment
     sta shr_vramBuffer_flags    
-    sta shr_vramBuffer_flags+24  
+    sta shr_vramBuffer_flags+TOP_HEIGHT+4  
     lda #0 
-    sta shr_vramBuffer+24+34
+    sta shr_vramBuffer+TOP_HEIGHT+4+BOTTOM_HEIGHT+4
     
-    lda #20
+    lda #TOP_HEIGHT
     sta shr_vramBuffer_length
-    lda #$21
+    lda #>[$2000+TOP_OFFSET]
     sta shr_vramBuffer_ppuHigh    
     lda main_arg+2
     clc
-    adc #$40
+    adc #<[$2000+TOP_OFFSET]
     sta shr_vramBuffer_ppuLow
     
-    lda #30
-    sta shr_vramBuffer_length+24
+    lda #BOTTOM_HEIGHT
+    sta shr_vramBuffer_length+TOP_HEIGHT+4
     lda #$28
-    sta shr_vramBuffer_ppuHigh+24
+    sta shr_vramBuffer_ppuHigh+TOP_HEIGHT+4
     lda main_arg+2
-    sta shr_vramBuffer_ppuLow+24
+    sta shr_vramBuffer_ppuLow+TOP_HEIGHT+4
     
     ldy #0
     ldx #0
@@ -326,10 +143,10 @@ main_EvenColumn subroutine
     inx
     ldy main_tmp
     iny
-    cpx #20
+    cpx #TOP_HEIGHT
     bne .first_loop
     
-    ADDI_D main_arg, main_arg, 10
+    ADDI_D main_arg, main_arg, TOP_HEIGHT/2
     
     ldy #0
     ldx #0
@@ -338,14 +155,14 @@ main_EvenColumn subroutine
     lda (main_arg),y
     tay
     lda prgdata_metatiles,y
-    sta shr_vramBuffer_data+24,x
+    sta shr_vramBuffer_data+TOP_HEIGHT+4,x
     inx
     lda prgdata_metatiles+512,y
-    sta shr_vramBuffer_data+24,x
+    sta shr_vramBuffer_data+TOP_HEIGHT+4,x
     inx
     ldy main_tmp
     iny
-    cpx #30
+    cpx #BOTTOM_HEIGHT
     bne .third_loop
     rts
 ;------------------------------------------------------------------------------
@@ -355,25 +172,25 @@ main_EvenColumn subroutine
 main_OddColumn subroutine
     lda #%10000100 ;use ram, use +32 increment
     sta shr_vramBuffer_flags    
-    sta shr_vramBuffer_flags+24  
+    sta shr_vramBuffer_flags+TOP_HEIGHT+4  
     lda #0 
-    sta shr_vramBuffer+24+34
+    sta shr_vramBuffer+TOP_HEIGHT+4+BOTTOM_HEIGHT+4
     
-    lda #20
+    lda #TOP_HEIGHT
     sta shr_vramBuffer_length
-    lda #$21
+    lda #>[$2000+TOP_OFFSET]
     sta shr_vramBuffer_ppuHigh    
     lda main_arg+2
     clc
-    adc #$40
+    adc #<[$2000+TOP_OFFSET]
     sta shr_vramBuffer_ppuLow
     
-    lda #30
-    sta shr_vramBuffer_length+24
+    lda #BOTTOM_HEIGHT
+    sta shr_vramBuffer_length+TOP_HEIGHT+4
     lda #$28
-    sta shr_vramBuffer_ppuHigh+24
+    sta shr_vramBuffer_ppuHigh+TOP_HEIGHT+4
     lda main_arg+2
-    sta shr_vramBuffer_ppuLow+24
+    sta shr_vramBuffer_ppuLow+TOP_HEIGHT+4
     
     ldy #0
     ldx #0
@@ -389,10 +206,10 @@ main_OddColumn subroutine
     inx
     ldy main_tmp
     iny
-    cpx #20
+    cpx #TOP_HEIGHT
     bne .second_loop  
     
-    ADDI_D main_arg, main_arg, 10
+    ADDI_D main_arg, main_arg, TOP_HEIGHT/2
     
     ldy #0
     ldx #0
@@ -401,14 +218,14 @@ main_OddColumn subroutine
     lda (main_arg),y
     tay
     lda prgdata_metatiles+256,y
-    sta shr_vramBuffer_data+24,x
+    sta shr_vramBuffer_data+TOP_HEIGHT+4,x
     inx
     lda prgdata_metatiles+768,y
-    sta shr_vramBuffer_data+24,x
+    sta shr_vramBuffer_data+TOP_HEIGHT+4,x
     inx
     ldy main_tmp
     iny
-    cpx #30
+    cpx #BOTTOM_HEIGHT
     bne .fourth_loop 
     rts
 ;------------------------------------------------------------------------------
