@@ -1,3 +1,28 @@
+    MAC MOV_D
+    lda {2}
+    sta {1}
+    lda {2}+1
+    sta {1}+1
+    ENDM
+
+    MAC MOVI_D
+    lda #<{2}
+    sta {1}
+    lda #>{2}
+    sta {1}+1
+    ENDM
+
+
+    MAC ASL_D
+    asl {1}
+    rol {1}+1
+    ENDM
+    
+    MAC LSR_D
+    lsr {1}+1
+    ror {1}
+    ENDM
+
     MAC INC_A
     clc
     adc #1
@@ -68,10 +93,10 @@
     ENDM
 
     MAC MOV_D
-    lda {1}
-    sta {0}
-    lda {1}+1
-    sta {0}+1
+    lda {2}
+    sta {1}
+    lda {2}+1
+    sta {1}+1
     ENDM
 
     MAC CMP_D

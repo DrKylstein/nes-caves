@@ -23,7 +23,7 @@ class Metatiles(Plugin):
     @classmethod
     def write(cls, m, f):
         
-        layers = {'Names':None, "Attributes":None}
+        layers = {'Names':None, "Attributes":None, "Behavior":None}
         
         for layer in [m.layerAt(i) for i in range(m.layerCount())]:
             for key in layers:
@@ -43,9 +43,12 @@ class Metatiles(Plugin):
                         out.write(chr(cell.tile.id()))
             for y in range(layers['Attributes'].height()/2):
                 for x in range(layers['Attributes'].width()/2):
+                    val = 0;
                     cell = layers['Attributes'].cellAt(x*2, y*2)
                     if cell is not None and cell.tile is not None:
-                        out.write(chr(cell.tile.id()))
-                    else:
-                        out.write(chr(0x00))
+                        val = cell.tile.id()
+                    cell = layers['Behavior'].cellAt(x*2, (y*2)+1)
+                    if cell is not None and cell.tile is not None:
+                        val |= cell.tile.id() << 2
+                    out.write(chr(val))
         return True

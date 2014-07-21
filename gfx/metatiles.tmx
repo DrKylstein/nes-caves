@@ -9,6 +9,9 @@
  <tileset firstgid="257" name="pal" tilewidth="4" tileheight="1">
   <image source="pal.png" width="4" height="8"/>
  </tileset>
+ <tileset firstgid="265" name="behaviours" tilewidth="16" tileheight="16">
+  <image source="behaviours.png" width="128" height="128"/>
+ </tileset>
  <layer name="Names" width="32" height="32">
   <data encoding="base64" compression="zlib">
    eJztz0kKAkEMQNEqZ9v5CM6ztt5APYl6EvXi/kUCTRBEF73pLB6BKsiviiGEiDIqGGKEqiiJmqijgTkWWMpsIkFL9vWNjpy3zVRjTDL9qdD+TNi+zih93bfCGhuk2JqevuGEs3FBFz0MhP7D7shKvtx/csXNuGOHPQ44yh/SHPu/7vlX0fsPPI1Xjn3nnHPOOedccbwBol0XVA==
@@ -17,6 +20,11 @@
  <layer name="Attributes" width="32" height="32">
   <data encoding="base64" compression="zlib">
    eJztzzEKACAMQ1FTe/8zC47FUpwU+t+SoRQSaWwq0kJWdw+Z/b02dU4PPb3oa5/suZXt76L7fgAAAAB9LIq2AF8=
+  </data>
+ </layer>
+ <layer name="Behavior" width="32" height="32">
+  <data encoding="base64" compression="zlib">
+   eJztzzEOACAIwEBYlf+/18mFxBAWItpbOlfkDkNzna5dnf42a/4Xif5f9/s/AAAAgDoLZwMAyw==
   </data>
  </layer>
 </map>

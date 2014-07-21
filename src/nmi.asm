@@ -9,6 +9,40 @@ nmi subroutine
     tya
     pha
 
+    lda shr_ppuCtrl
+    and %11111011
+    sta PPU_CTRL
+    bit PPU_STATUS
+    lda #$20
+    sta PPU_ADDR
+    lda #$01
+    sta PPU_ADDR
+    lda shr_debugReg+1
+    REPEAT 4
+    lsr
+    REPEND
+    clc
+    adc #HEXFONT_BASE
+    sta PPU_DATA
+    lda shr_debugReg+1
+    and #$0F
+    clc
+    adc #HEXFONT_BASE
+    sta PPU_DATA
+    lda shr_debugReg
+    REPEAT 4
+    lsr
+    REPEND
+    clc
+    adc #HEXFONT_BASE
+    sta PPU_DATA
+    lda shr_debugReg
+    and #$0F
+    clc
+    adc #HEXFONT_BASE
+    sta PPU_DATA
+    
+
 .sprite_dma:
     lda shr_doDma
     beq .vram_copy

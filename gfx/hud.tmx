@@ -11,7 +11,7 @@
  </tileset>
  <layer name="Names" width="32" height="4">
   <data encoding="base64" compression="zlib">
-   eJxjZGBgYBzFgwa/AeInQPwYiJ8B8VMgfgHEr4D4IZrat1D6KRZzXiNhXHaBCAAYBww4
+   eJxjZGBgYBzFgwZ/AuInQPwYiJ8B8VMgfgHEr4D4IZraz1D6KRZzPiJhXHaBCAAexwxW
   </data>
  </layer>
  <layer name="Attributes" width="32" height="4">

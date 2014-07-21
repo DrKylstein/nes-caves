@@ -54,6 +54,10 @@ reset subroutine
  
     ;; Other things you can do between vblank waits are set up audio
     ;; or set up other mapper registers.
+    lda #$DE
+    sta shr_debugReg+1
+    lda #$AD
+    sta shr_debugReg
     
 .vblankwait2:
     bit PPU_STATUS
@@ -158,28 +162,77 @@ load_rest subroutine
 
 main_loop subroutine
     jsr read_joy
-    sta main_scratch
+    sta main_sav
     
 .down:
-    and #%00100000
-    beq .up
+    and #JOY_A_MASK
+    BNE_L up
+    CMPI_D main_playerY, [[MT_MAP_HEIGHT-2]*PX_MT_HEIGHT]
+    BEQ_L up
+    
+    ;t0 = y in tiles
+    MOV_D main_tmp, main_playerY
+    REPEAT 4
+    LSR_D main_tmp
+    REPEND
+    INC_D main_tmp; get tile at feet
+    
+    ;t2 = x in tiles
+    MOV_D main_tmp+2, main_playerX
+    REPEAT 4
+    LSR_D main_tmp+2
+    REPEND
+    
+    ;t4 = x in tiles * 24
+    ;24 = %11000
+    MOV_D main_tmp+4, main_tmp+2 ; 1
+    ASL_D main_tmp+4
+    ADD_D main_tmp+4, main_tmp+4, main_tmp+2 ;1
+    ASL_D main_tmp+4 ;0
+    ASL_D main_tmp+4 ;0
+    ASL_D main_tmp+4 ;0
+
+    MOV_D shr_debugReg, main_tmp+4
+
+    ;t0 = y + x*24
+    ADD_D main_tmp, main_tmp, main_tmp+4 
+    
+    ;lookup tile, get behavior
+    ADDI_D main_tmp, main_tmp, prgdata_mainMap
+    ldy #0
+    lda (main_tmp),y
+    tay
+    lda prgdata_metatiles+256*4,y
+    REPEAT 2
+    lsr
+    REPEND
+    bne up
+
     INC_D main_playerY
     inc main_playerMoved
-.up:
-    lda main_scratch
-    and #%00010000
+up:
+    lda main_sav
+    and #JOY_A_MASK
+    beq .left
+    lda main_playerY
+    ora main_playerY+1
     beq .left
     DEC_D main_playerY
     inc main_playerMoved
 .left:
-    lda main_scratch
+    lda main_sav
     and #%01000000
+    beq .right
+    lda main_playerX
+    ora main_playerX+1
     beq .right
     DEC_D main_playerX
     inc main_playerMoved
 .right:
-    lda main_scratch
+    lda main_sav
     and #%10000000
+    beq .checkMoved
+    CMPI_D main_playerX, [[MT_MAP_WIDTH-1]*PX_MT_WIDTH]
     beq .checkMoved
     INC_D main_playerX
     inc main_playerMoved
@@ -205,7 +258,7 @@ main_loop subroutine
     lda main_sav
     cmp #[[MT_VIEWPORT_WIDTH - MT_HSCROLL_MARGIN]*PX_MT_WIDTH]
     bcc .noRightScroll
-    CMPI_D shr_cameraX, [[MT_MAP_WIDTH - MT_VIEWPORT_WIDTH - 1]*PX_MT_WIDTH]
+    CMPI_D shr_cameraX, [[MT_MAP_WIDTH - MT_VIEWPORT_WIDTH]*PX_MT_WIDTH]
     bcs .noRightScroll
     INC_D shr_cameraX
     dec main_sav
@@ -215,8 +268,8 @@ main_loop subroutine
     jsr main_LoadTilesOnMoveRight
 .noRightScroll
     lda main_sav
-    sec
-    sbc #8
+    clc
+    adc #8 ;saving this for call to SetSpritePos
     tax
 
     SUB_D main_sav, main_playerY, shr_cameraY
@@ -258,11 +311,9 @@ main_loop subroutine
     dec main_sav
 .noDownScroll
     lda main_sav
-    adc #32
+    adc #30
     ldy #4
-
     jsr main_SetSpritePos
-
 
     lda main_playerFrame
     clc
