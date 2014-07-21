@@ -1,3 +1,17 @@
+    MAC PUSH_D
+    lda {1}
+    pha
+    lda {1}+1
+    pha
+    ENDM
+    
+    MAC POP_D
+    pla
+    sta {1}+1
+    pla
+    sta {1}
+    ENDM
+
     MAC MOV_D
     lda {2}
     sta {1}

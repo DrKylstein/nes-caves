@@ -1,4 +1,22 @@
 ;------------------------------------------------------------------------------
+main_GetTileBehavior ;arg0..1 = mt_x arg2..3 = mt_y ret0 = value
+    jsr main_MultiplyBy24 ;takes arg0, which we no longer care about after this
+                          ;returns
+    ;t0 = y+ x*24
+    ADD_D main_tmp, main_arg+2, main_ret
+    
+    ;lookup tile, get behavior
+    ADDI_D main_tmp, main_tmp, prgdata_mainMap
+    ldy #0
+    lda (main_tmp),y
+    tay
+    lda prgdata_metatiles+256*4,y
+    REPEAT 2
+    lsr
+    REPEND
+    sta main_ret
+    rts
+;------------------------------------------------------------------------------
 main_MultiplyBy24: ;arg0..arg1 is factor, ret0..ret1 is result
     MOV_D main_ret, main_arg ; 1
     ASL_D main_ret
@@ -35,10 +53,10 @@ main_SetSpritePos subroutine ;Y = oam index*4, X = xpos, A = ypos
 ;------------------------------------------------------------------------------
 main_FlipSprite subroutine ;Y = oam index*4,
     lda shr_spriteIndex,y
-    sta main_scratch
+    sta main_tmp
     lda shr_spriteIndex+4,y
     sta shr_spriteIndex,y
-    lda main_scratch
+    lda main_tmp
     sta shr_spriteIndex+4,y
     lda shr_spriteFlags,y
     eor #%01000000

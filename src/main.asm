@@ -54,10 +54,8 @@ reset subroutine
  
     ;; Other things you can do between vblank waits are set up audio
     ;; or set up other mapper registers.
-    lda #$DE
-    sta shr_debugReg+1
-    lda #$AD
-    sta shr_debugReg
+    
+    MOVI_D shr_debugReg, $DEAD
     
 .vblankwait2:
     bit PPU_STATUS
@@ -149,11 +147,6 @@ load_rest subroutine
 
 	lda #96
 	sta shr_cameraYMod
-    lda #<[PX_MT_HEIGHT*MT_MAP_HEIGHT]
-    sta main_camMetaTileX
-    lda #>[PX_MT_HEIGHT*MT_MAP_HEIGHT]
-    sta main_camMetaTileX+1
-
 
     lda #%00011000
     sta shr_ppuMask
@@ -170,35 +163,20 @@ main_loop subroutine
     CMPI_D main_playerY, [[MT_MAP_HEIGHT-2]*PX_MT_HEIGHT]
     BEQ_L up
     
-    ;t0 = y in tiles
-    MOV_D main_tmp, main_playerY
-    REPEAT 4
-    LSR_D main_tmp
-    REPEND
-    INC_D main_tmp; get tile at feet
-    
+    ;check for ground
     ;a0 = x in tiles
     ADDI_D main_arg, main_playerX, 8
     REPEAT 4
     LSR_D main_arg
     REPEND
-    
-    jsr main_MultiplyBy24
-
-    MOV_D shr_debugReg, main_ret
-
-    ;t0 = y + x*24
-    ADD_D main_tmp, main_tmp, main_ret
-    
-    ;lookup tile, get behavior
-    ADDI_D main_tmp, main_tmp, prgdata_mainMap
-    ldy #0
-    lda (main_tmp),y
-    tay
-    lda prgdata_metatiles+256*4,y
-    REPEAT 2
-    lsr
+    ;t0 = y in tiles
+    MOV_D main_arg+2, main_playerY
+    REPEAT 4
+    LSR_D main_arg+2
     REPEND
+    INC_D main_arg+2; get tile at feet
+    jsr main_GetTileBehavior
+    lda main_ret
     cmp #TB_SOLID
     beq up
     cmp #TB_PLATFORM
@@ -213,6 +191,23 @@ up:
     lda main_playerY
     ora main_playerY+1
     beq .left
+    
+    ;check for cieling
+    ;a0 = x in tiles
+    ADDI_D main_arg, main_playerX, 8
+    REPEAT 4
+    LSR_D main_arg
+    REPEND
+    ;t0 = y in tiles
+    MOV_D main_arg+2, main_playerY
+    REPEAT 4
+    LSR_D main_arg+2
+    REPEND
+    jsr main_GetTileBehavior
+    lda main_ret
+    cmp #TB_SOLID
+    beq .left
+    
     DEC_D main_playerY
     inc main_playerMoved
 .left:
@@ -222,6 +217,23 @@ up:
     lda main_playerX
     ora main_playerX+1
     beq .right
+    
+    ;check for wall
+    ;a0 = x in tiles
+    MOV_D main_arg, main_playerX
+    REPEAT 4
+    LSR_D main_arg
+    REPEND
+    ;t0 = y in tiles
+    ADDI_D main_arg+2, main_playerY, 8
+    REPEAT 4
+    LSR_D main_arg+2
+    REPEND
+    jsr main_GetTileBehavior
+    lda main_ret
+    cmp #TB_SOLID
+    beq .right
+
     DEC_D main_playerX
     inc main_playerMoved
 .right:
@@ -230,6 +242,24 @@ up:
     beq .checkMoved
     CMPI_D main_playerX, [[MT_MAP_WIDTH-1]*PX_MT_WIDTH]
     beq .checkMoved
+    
+    ;check for wall
+    ;a0 = x in tiles
+    MOV_D main_arg, main_playerX
+    REPEAT 4
+    LSR_D main_arg
+    REPEND
+    INC_D main_arg ;get tile to right
+    ;t0 = y in tiles
+    ADDI_D main_arg+2, main_playerY, 8
+    REPEAT 4
+    LSR_D main_arg+2
+    REPEND
+    jsr main_GetTileBehavior
+    lda main_ret
+    cmp #TB_SOLID
+    beq .checkMoved
+    
     INC_D main_playerX
     inc main_playerMoved
     

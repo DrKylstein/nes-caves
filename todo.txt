@@ -1,10 +1,9 @@
-load scrolling left, fix 8/16 alginment
 combine PPU_CTRL and rom/ram step in vram loader
 combine nmi and main vram loaders?
 load attributes
 load level from ram?
 
-gravity and collision - started, need to debug ground check
+proper physics
 sound
 entering levels
 

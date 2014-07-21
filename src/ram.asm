@@ -3,7 +3,6 @@
 ;------------------------------------------------------------------------------
     SEG.U RAM
     ORG $0000
-main_scratch:
 main_tmp            ds 8 ;MIPS-style $t#
 
 main_arg            ds 4 ;MIPS-style $a#
@@ -43,14 +42,12 @@ shr_spriteFlags     ds 1
 shr_spriteX         ds 1
                     ds 252
     ORG $0300
-main_scratchBuffer  ds 64
 main_playerY        ds 2
 main_playerX        ds 2
 shr_cameraX         ds 2
 shr_cameraY         ds 2
 shr_cameraYMod      ds 1
 shr_nameTable       ds 1
-main_camMetaTileX   ds 2
 main_playerMoved    ds 1
 main_playerFrame    ds 1
 shr_debugReg        ds 2
