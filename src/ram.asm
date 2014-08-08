@@ -25,6 +25,27 @@ shr_doRegCopy       ds 1
 shr_ppuMask         ds 1
 shr_ppuCtrl         ds 1
 
+    ORG $0200
+shr_oamShadow:
+shr_spriteY         ds 1
+shr_spriteIndex     ds 1
+shr_spriteFlags     ds 1
+shr_spriteX         ds 1
+
+    ORG $0300
+main_playerXVel     ds 1
+main_playerYFrac    ds 1
+main_playerY        ds 2
+main_playerYVel     ds 2
+main_playerX        ds 2
+shr_cameraX         ds 2
+shr_cameraY         ds 2
+shr_debugReg        ds 2
+shr_cameraYMod      ds 1
+shr_nameTable       ds 1
+main_playerFlags    ds 1
+main_playerFrame    ds 1
+
     ORG $0400
 shr_vramBuffer:
 shr_vramBuffer_length  ds 1
@@ -34,20 +55,3 @@ shr_vramBuffer_ppuLow  ds 1
 shr_vramBuffer_romAddr:
 shr_vramBuffer_data ds 160
 
-    ORG $0200
-shr_oamShadow:
-shr_spriteY         ds 1
-shr_spriteIndex     ds 1
-shr_spriteFlags     ds 1
-shr_spriteX         ds 1
-                    ds 252
-    ORG $0300
-main_playerY        ds 2
-main_playerX        ds 2
-shr_cameraX         ds 2
-shr_cameraY         ds 2
-shr_cameraYMod      ds 1
-shr_nameTable       ds 1
-main_playerMoved    ds 1
-main_playerFrame    ds 1
-shr_debugReg        ds 2

@@ -151,19 +151,109 @@ load_rest subroutine
     lda #%00011000
     sta shr_ppuMask
 
-    inc main_playerMoved
-
-main_loop subroutine
+main_loop:
+main_CheckInput subroutine
     jsr read_joy
     sta main_sav
-    
-.down:
+    MOVI main_playerXVel, 0
+.left:
+    lda main_sav
+    and #JOY_LEFT_MASK
+    beq .left_end
+    MOVI main_playerXVel, $FF
+    lda main_playerFlags
+    ora #%01000000
+    sta main_playerFlags
+.left_end:
+.right:
+    lda main_sav
+    and #JOY_RIGHT_MASK
+    beq .right_end
+    MOVI main_playerXVel, 1
+    lda main_playerFlags
+    and #%10111111
+    sta main_playerFlags
+.right_end:
+.jump:
+    lda main_sav
     and #JOY_A_MASK
-    BNE_L up
-    CMPI_D main_playerY, [[MT_MAP_HEIGHT-2]*PX_MT_HEIGHT]
-    BEQ_L up
+    beq .jump_end
+    bit main_playerFlags
+    bmi .jump_end
+    MOVI_D main_playerYVel, -$0270
+    lda main_playerFlags
+    ora #$80
+    sta main_playerFlags
+.jump_end:
+main_CheckInput_end:
+
+main_ApplyGravity subroutine
+    CMPI_D main_playerYVel, $0400
+    bpl main_ApplyGravity_end
+    ADDI_D main_playerYVel, main_playerYVel, 16
+main_ApplyGravity_end:
+
+main_CheckLeft subroutine
+    ;skip if not moving left (>= 0)
+    lda main_playerXVel
+    cmp #0
+    bpl main_CheckLeft_end
+
+    ;skip if not hit a wall
+    ;a0 = x in tiles
+    MOV_D main_arg, main_playerX
+    REPEAT 4
+    LSR_D main_arg
+    REPEND
+    ;t0 = y in tiles
+    ADDI_D main_arg+2, main_playerY, 7
+    REPEAT 4
+    LSR_D main_arg+2
+    REPEND
     
-    ;check for ground
+    jsr main_GetTileBehavior
+    lda main_ret
+    cmp #TB_SOLID
+    bne main_CheckLeft_end
+    
+    ;stop
+    MOVI main_playerXVel, 0
+main_CheckLeft_end:
+
+main_CheckRight subroutine
+    ;skip if not moving right (<= 0)
+    lda main_playerXVel
+    cmp #0
+    bmi main_CheckRight_end
+    beq main_CheckRight_end
+
+    ;skip if not hit a wall
+    ;a0 = x in tiles
+    MOV_D main_arg, main_playerX
+    REPEAT 4
+    LSR_D main_arg
+    REPEND
+    INC_D main_arg
+    ;t0 = y in tiles
+    ADDI_D main_arg+2, main_playerY, 7
+    REPEAT 4
+    LSR_D main_arg+2
+    REPEND
+    
+    jsr main_GetTileBehavior
+    lda main_ret
+    cmp #TB_SOLID
+    bne main_CheckRight_end
+    
+    ;stop
+    MOVI main_playerXVel, 0
+main_CheckRight_end:
+
+main_CheckGround subroutine
+    ;skip if not moving down (< 0)
+    CMPI_D main_playerYVel, 0
+    bmi main_CheckGround_end
+    
     ;a0 = x in tiles
     ADDI_D main_arg, main_playerX, 8
     REPEAT 4
@@ -175,139 +265,154 @@ main_loop subroutine
     LSR_D main_arg+2
     REPEND
     INC_D main_arg+2; get tile at feet
+    
     jsr main_GetTileBehavior
     lda main_ret
     cmp #TB_SOLID
-    beq up
+    beq .hit_ground
     cmp #TB_PLATFORM
-    beq up
-
-    INC_D main_playerY
-    inc main_playerMoved
-up:
-    lda main_sav
-    and #JOY_A_MASK
-    beq .left
-    lda main_playerY
-    ora main_playerY+1
-    beq .left
+    beq .hit_ground
+    jmp main_CheckGround_end
     
-    ;check for cieling
+.hit_ground: ;stop if moving down
+    MOVI_D main_playerYVel, 0
+    lda #$F0
+    and main_playerY
+    sta main_playerY
+    lda #0
+    sta main_playerYFrac
+    lda main_playerFlags
+    and #$7F
+    sta main_playerFlags
+main_CheckGround_end:
+
+main_CheckCieling subroutine
+
+    ;skip if not moving up (>= 0)
+    CMPI_D main_playerYVel, 0
+    bpl main_CheckCieling_end
+
+    ;hit head on top of screen
+    CMPI_D main_playerY, 8
+    bcc .hit_cieling
+    
     ;a0 = x in tiles
     ADDI_D main_arg, main_playerX, 8
     REPEAT 4
     LSR_D main_arg
     REPEND
     ;t0 = y in tiles
-    MOV_D main_arg+2, main_playerY
+    SUBI_D main_arg+2, main_playerY, 1
     REPEAT 4
     LSR_D main_arg+2
     REPEND
+    
     jsr main_GetTileBehavior
+    MOV shr_debugReg, main_ret
     lda main_ret
     cmp #TB_SOLID
-    beq .left
+    bne  main_CheckCieling_end
     
-    DEC_D main_playerY
-    inc main_playerMoved
-.left:
-    lda main_sav
-    and #%01000000
-    beq .right
-    lda main_playerX
-    ora main_playerX+1
-    beq .right
-    
-    ;check for wall
-    ;a0 = x in tiles
-    MOV_D main_arg, main_playerX
-    REPEAT 4
-    LSR_D main_arg
-    REPEND
-    ;t0 = y in tiles
-    ADDI_D main_arg+2, main_playerY, 8
-    REPEAT 4
-    LSR_D main_arg+2
-    REPEND
-    jsr main_GetTileBehavior
-    lda main_ret
-    cmp #TB_SOLID
-    beq .right
+.hit_cieling:
+    MOVI_D main_playerYVel, 0
 
-    DEC_D main_playerX
-    inc main_playerMoved
-.right:
-    lda main_sav
-    and #%10000000
-    beq .checkMoved
-    CMPI_D main_playerX, [[MT_MAP_WIDTH-1]*PX_MT_WIDTH]
-    beq .checkMoved
+main_CheckCieling_end:
     
-    ;check for wall
-    ;a0 = x in tiles
-    MOV_D main_arg, main_playerX
-    REPEAT 4
-    LSR_D main_arg
-    REPEND
-    INC_D main_arg ;get tile to right
-    ;t0 = y in tiles
-    ADDI_D main_arg+2, main_playerY, 8
-    REPEAT 4
-    LSR_D main_arg+2
-    REPEND
-    jsr main_GetTileBehavior
-    lda main_ret
-    cmp #TB_SOLID
-    beq .checkMoved
+main_ApplyVelocity subroutine
+    ;ADD_16_24 main_playerYFrac, main_playerYVel, main_playerYFrac
+    MOV_D main_tmp, main_playerYVel
+    lda main_playerYVel+1
+    bmi .negativeY
+    lda #0
+    jmp .continueY
+.negativeY:
+    lda #$FF
+.continueY:
+    sta main_tmp+2
     
-    INC_D main_playerX
-    inc main_playerMoved
+    ADD_24 main_playerYFrac, main_tmp, main_playerYFrac
     
-.checkMoved:
-    lda main_playerMoved
-    BEQ_L no_move
+    
+    lda main_playerXVel
+    sta main_tmp
+    bmi .negativeX
+    lda #0
+    jmp .continueX
+.negativeX:
+    lda #$FF
+.continueX:
+    sta main_tmp+1
+    
+    ADD_D main_playerX, main_tmp, main_playerX
+main_ApplyVelocity_end:
 
+main_UpdateCameraX subroutine
+.Scroll_Left:
+    ;no scrolling because player is not close to screen edge
     SUB_D main_sav, main_playerX, shr_cameraX
-    lda main_sav
+    lda main_sav ;player's on-screen x
     cmp #[MT_HSCROLL_MARGIN*PX_MT_WIDTH]
-    bcs .noLeftScroll
+    bcs .Scroll_Left_end
+    
+    ;no scrolling because screen is at map edge
     lda shr_cameraX
     ora shr_cameraX+1
-    beq .noLeftScroll
+    beq .Scroll_Left_end
+    
+    ;scroll left one pixel
     DEC_D shr_cameraX
     inc main_sav
+    
+    ;no loading tiles if not at tile boundary
     lda shr_cameraX
     and #7
-    bne .noLeftScroll
+    bne .Scroll_Left_end
+    
     jsr main_LoadTilesOnMoveLeft
-.noLeftScroll:
-    lda main_sav
+.Scroll_Left_end:
+
+.Scroll_Right:
+    ;no scrolling right because player not near screen edge
+    lda main_sav ;player's on-screen x
     cmp #[[MT_VIEWPORT_WIDTH - MT_HSCROLL_MARGIN]*PX_MT_WIDTH]
-    bcc .noRightScroll
+    bcc .Scroll_Right_end
+    
+    ;no scrolling becuse screen is at map edge
     CMPI_D shr_cameraX, [[MT_MAP_WIDTH - MT_VIEWPORT_WIDTH]*PX_MT_WIDTH]
-    bcs .noRightScroll
+    bcs .Scroll_Right_end
+    
+    ;scroll right 1 pixel
     INC_D shr_cameraX
     dec main_sav
+    
+    ;no loading tiles if not at tile boundary
     lda shr_cameraX
     and #7 ; 8-pixel boundaries
     cmp #1
-    bne .noRightScroll
+    bne .Scroll_Right_end
+    
     jsr main_LoadTilesOnMoveRight
-.noRightScroll
-    lda main_sav
-    clc
-    adc #8 ;saving this for call to SetSpritePos
-    tax
+.Scroll_Right_end:
+main_UpdateCameraX_end:
 
+main_UpdateCameraY subroutine
+.Scroll_Up:
+    ;no scrolling because player not near screen edge
     SUB_D main_sav, main_playerY, shr_cameraY
-    lda main_sav
+    lda main_sav ;player's on-screen y
+    sta shr_debugReg
     cmp #[MT_VSCROLL_MARGIN*PX_MT_HEIGHT]
-    bcs .noUpScroll
+    bcs .Scroll_Up_end
+    
+    ;no scrolling becuse screen is at map edge
     lda shr_cameraY
     ora shr_cameraY+1
-    beq .noUpScroll
+    beq .Scroll_Up_end
+    
+    ;scroll up one pixel
     DEC_D shr_cameraY
 	dec shr_cameraYMod
+    ;handle nametable boundary
 	lda shr_cameraYMod
 	cmp #$FF
 	bne .noModUp
@@ -316,16 +421,24 @@ up:
 	lda #2
 	eor shr_nameTable
 	sta shr_nameTable
-.noModUp
+.noModUp:
     inc main_sav
-.noUpScroll:
-    lda main_sav
+.Scroll_Up_end:
+    
+.Scroll_Down:
+    ;no scrolling because player not near screen edge
+    lda main_sav ;player's on-screen y
     cmp #[[MT_VIEWPORT_HEIGHT - MT_VSCROLL_MARGIN]*PX_MT_HEIGHT]
-    bcc .noDownScroll
+    bcc .Scroll_Down_end
+    
+    ;no scrolling becuse screen is at map edge
     CMPI_D shr_cameraY, [[MT_MAP_HEIGHT - MT_VIEWPORT_HEIGHT]*PX_MT_HEIGHT]
-    bcs .noDownScroll
+    bcs .Scroll_Down_end
+    
+    ;scroll down one pixel
     INC_D shr_cameraY
     inc shr_cameraYMod
+    ;handle nametable boundary
     lda shr_cameraYMod
     cmp #240
     bne .noModDown
@@ -336,29 +449,43 @@ up:
 	sta shr_nameTable
 .noModDown:
     dec main_sav
-.noDownScroll
+.Scroll_Down_end:
+main_UpdateCameraY_end:
+
+main_UpdatePlayerSprite subroutine
+    ;update position
+    SUB_D main_sav, main_playerX, shr_cameraX
     lda main_sav
-    adc #31
+    clc
+    adc #8
+    tax
+    SUB_D main_sav, main_playerY, shr_cameraY
+    lda main_sav
+    adc #30
     ldy #4
     jsr main_SetSpritePos
 
+
+    ;update tiles
     lda main_playerFrame
     clc
-    adc #1
-    cmp #3*4
-    bne .notLooped
-    lda #0
-.notLooped
+    adc main_playerXVel
+    and #%00011111
     sta main_playerFrame
+    lda #0
+    cmp main_playerXVel
+    bne .walk_anim
+    sta main_playerFrame
+.walk_anim:
+    lda main_playerFrame
     and #%11111100
     jsr main_SetSpriteTiles
-    ;jsr main_FlipSprite
-    lda #0
-    sta main_playerMoved
+    
+main_UpdatePlayerSprite_end:
+
     inc shr_doDma
     inc shr_doRegCopy
     jsr synchronize
-no_move
     jmp main_loop
 
 ;------------------------------------------------------------------------------

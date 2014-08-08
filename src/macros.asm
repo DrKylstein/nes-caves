@@ -26,6 +26,16 @@
     sta {1}+1
     ENDM
 
+    MAC MOVI
+    lda #{2}
+    sta {1}
+    ENDM
+    
+    MAC MOV
+    lda {2}
+    sta {1}
+    ENDM
+
 
     MAC ASL_D
     asl {1}
@@ -80,6 +90,21 @@
     lda {2}+1
     adc {3}+1
     sta {1}+1
+    ENDM
+        
+    MAC ADD_24
+    ; ADD_D dest a b
+    ; dest = a + b
+    clc
+    lda {2}
+    adc {3}
+    sta {1}
+    lda {2}+1
+    adc {3}+1
+    sta {1}+1
+    lda {2}+2
+    adc {3}+2
+    sta {1}+2
     ENDM
 
     MAC SUB_D
@@ -153,6 +178,18 @@
     
 	MAC BCS_L
 	bcc .not
+	jmp {1}
+.not:
+	ENDM
+    
+	MAC BMI_L
+	bpl .not
+	jmp {1}
+.not:
+	ENDM
+    
+	MAC BPL_L
+	bmi .not
 	jmp {1}
 .not:
 	ENDM
