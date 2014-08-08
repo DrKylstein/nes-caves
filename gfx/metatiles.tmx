@@ -14,7 +14,7 @@
  </tileset>
  <layer name="Names" width="32" height="32">
   <data encoding="base64" compression="zlib">
-   eJztz0kKAkEMQNEqZ9v5CM6ztt5APYl6EvXi/kUCTRBEF73pLB6BKsiviiGEiDIqGGKEqiiJmqijgTkWWMpsIkFL9vWNjpy3zVRjTDL9qdD+TNi+zih93bfCGhuk2JqevuGEs3FBFz0MhP7D7shKvtx/csXNuGOHPQ44yh/SHPu/7vlX0fsPPI1Xjn3nnHPOOedccbwBol0XVA==
+   eJztz0kOglAMgGGe84BT8ALOs6J4AfUk6knUi/uTlAS7MRrjhi6+lHTxfuo8z3PIo4Ae+iiKnCiJMiqYYIqZzCpqqKOLttKQvS89P/UdG2CY6o9E0h8L3U9mJP147jHHAkuEWMneea//cMBROaGJFjoiuSOQO5wSSF/v3znjolyxxgZb7OSGMHWffif6cf/Td76V9f4Nd+Xxx74xxhhjjDEmO57VWhko
   </data>
  </layer>
  <layer name="Attributes" width="32" height="32">

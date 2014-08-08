@@ -461,7 +461,7 @@ main_UpdatePlayerSprite subroutine
     tax
     SUB_D main_sav, main_playerY, shr_cameraY
     lda main_sav
-    adc #30
+    adc #31
     ldy #4
     jsr main_SetSpritePos
 
@@ -477,10 +477,28 @@ main_UpdatePlayerSprite subroutine
     bne .walk_anim
     sta main_playerFrame
 .walk_anim:
+    lda main_playerFlags
+    and #%01000000
+    ldy #4
+    sta shr_spriteFlags,y
+    sta shr_spriteFlags+4,y
+    bit main_playerFlags
+    bvs .left
+.right:
     lda main_playerFrame
     and #%11111100
-    jsr main_SetSpriteTiles
-    
+    sta shr_spriteIndex,y
+    clc
+    adc #2
+    sta shr_spriteIndex+4,y
+    jmp main_UpdatePlayerSprite_end
+.left:
+    lda main_playerFrame
+    and #%11111100
+    sta shr_spriteIndex+4,y
+    clc
+    adc #2
+    sta shr_spriteIndex,y
 main_UpdatePlayerSprite_end:
 
     inc shr_doDma
