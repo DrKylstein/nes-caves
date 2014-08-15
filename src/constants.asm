@@ -12,6 +12,12 @@ PX_MT_HEIGHT = 16
 
 HEXFONT_BASE = $E0
 
+;nametable info
+TOP_HEIGHT = 18
+BOTTOM_HEIGHT = 30
+TOP_OFFSET = $180
+
+
     SEG.U BEHAVIORS
     ORG $0000
 TB_EMPTY:      ds 1

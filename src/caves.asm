@@ -21,8 +21,13 @@
     include prgdata.asm
 irq subroutine
     rti
+    ECHO "PRGROM left:",$10000-.-6
+    IF . > $10000-6
+    ECHO "Exceeded PRGROM size!"
+    ERR
+    ENDIF
 ;interrupt vectors
-    ORG 16+32768-6
+    ORG 16+$8000-6
     .word nmi
     .word irq
     .word reset

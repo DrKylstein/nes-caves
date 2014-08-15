@@ -45,74 +45,34 @@ nmi subroutine
 
 .sprite_dma:
     lda shr_doDma
-    beq .vram_copy
+    beq .sprite_dma_end
     lda #0
     sta OAM_ADDR
     lda #>shr_spriteY
     sta OAM_DMA
     dec shr_doDma
-    
-.vram_copy:
-    lda shr_doVramCopy
-    beq .reg_update
-    dec shr_doVramCopy
-    ldy #0
-.while_requests:
-    lda shr_vramBuffer,y
-    beq .reg_update
-    ;length
-    sta nmi_len
-    ;ppu increment
-    iny
-    lda shr_vramBuffer,y
-    sta nmi_scratch
-    and #%00000100
-    ora shr_ppuCtrl
-    sta PPU_CTRL
-    ;ppu address
-    bit PPU_STATUS
-    REPEAT 2
-    iny
-    lda shr_vramBuffer,y
-    sta PPU_ADDR
-    REPEND
-    ;flags
-    lda nmi_scratch
-    bmi .from_ram
-.from_rom:
-    iny
-    lda shr_vramBuffer,y
-    sta nmi_src
-    iny
-    lda shr_vramBuffer,y
-    sta nmi_src+1
-    iny
-    tya ;preserve y in x
-    tax ;-
-    ldy #0
-.foreach_rombyte:
-    lda (nmi_src),y
-    sta PPU_DATA
-    iny
-    cpy nmi_len
-    bne .foreach_rombyte
-;end foreach_rombyte
-    txa
-    tay
-    jmp .while_requests
-.from_ram:
-    iny
-    ldx #0
-.foreach_rambyte
-    lda shr_vramBuffer,y
-    iny
-    sta PPU_DATA
-    inx
-    cpx nmi_len
-    bne .foreach_rambyte
-;end foreach_rambyte
-    jmp .while_requests
+.sprite_dma_end:
 
+.pal_copy:
+    lda shr_doPalCopy
+    beq .pal_copy_end
+    jsr nmi_CopyPal
+    dec shr_doPalCopy
+.pal_copy_end:
+
+.tilecol_copy:
+    lda shr_doTileCol
+    beq .tilecol_copy_end
+    jsr nmi_CopyTileCol
+    dec shr_doTileCol
+.tilecol_copy_end:
+    
+; .vram_copy:
+    ; lda shr_doVramCopy
+    ; beq .reg_update
+    ; dec shr_doVramCopy
+    ; jsr nmi_LoadBuffer
+    
 .reg_update:
     lda shr_doRegCopy
     beq .StatusBar
@@ -128,7 +88,6 @@ nmi subroutine
     asl
     asl
     sta nmi_scrollY+1
-
     dec shr_doRegCopy
 
 .StatusBar
@@ -173,10 +132,7 @@ nmi subroutine
     sta PPU_SCROLL
     lda nmi_scratch
     sta PPU_ADDR
-
-
-
-    
+ 
 .end
     lda #0
     sta shr_sleeping
@@ -188,3 +144,51 @@ nmi subroutine
     pla
     plp
     rti
+   
+;------------------------------------------------------------------------------
+nmi_CopyTileCol subroutine
+    ;vertical mode
+    lda #%00000100
+    ora shr_ppuCtrl
+    sta PPU_CTRL
+
+;top nametable
+    bit PPU_STATUS
+    lda #>[$2000+TOP_OFFSET]
+    sta PPU_ADDR
+    lda shr_tileCol
+    clc
+    adc #<[$2000+TOP_OFFSET]
+    sta PPU_ADDR
+    ldy #0
+    REPEAT TOP_HEIGHT
+    lda shr_tileBuffer,y
+    sta PPU_DATA
+    iny
+    REPEND
+    
+    ;bottom nametable
+    lda #$28
+    sta PPU_ADDR
+    lda shr_tileCol
+    sta PPU_ADDR
+    REPEAT BOTTOM_HEIGHT
+    lda shr_tileBuffer,y
+    sta PPU_DATA
+    iny
+    REPEND
+   rts
+;------------------------------------------------------------------------------
+nmi_CopyPal subroutine
+    bit PPU_STATUS
+    lda #$3F
+    sta PPU_ADDR
+    lda #$01
+    sta PPU_ADDR
+    ldy #0
+    REPEAT 32
+    lda (shr_palAddr),y
+    sta PPU_DATA
+    iny
+    REPEND
+    rts

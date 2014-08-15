@@ -12,8 +12,7 @@ sources		:= $(wildcard ../src/*.*)
 asmflags	:= -I$(srcdir) -f3 -v0 -l$(name).lst -s$(name).sym
 
 $(romname)		:	$(sources) $(incbins)
-					dasm $(name).asm $(asmflags) -o$(romname)
-					du -b $(romname)
+					dasm $(name).asm $(asmflags) -o$(romname) -l$(name).lst
 
 chrrom.bin		:	$(gfxdir)/sprites.png $(gfxdir)/tiles.png
 					tilestrip 8 16 <$(gfxdir)/sprites.png | planarbitmap 2 --interleave 8 >chrrom.bin

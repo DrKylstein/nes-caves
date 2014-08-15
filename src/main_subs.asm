@@ -91,9 +91,10 @@ main_InitialLevelLoad subroutine
     tya
     pha
     jsr main_EvenColumn
-    jsr main_LoadBuffer
-    lda #0
-    sta shr_vramBuffer
+    
+    ;terribly unsafe, by code duplication is worse
+    jsr nmi_CopyTileCol
+    
     pla
     tay
     
@@ -116,9 +117,10 @@ main_InitialLevelLoad subroutine
     tya
     pha
     jsr main_OddColumn
-    jsr main_LoadBuffer
-    lda #0
-    sta shr_vramBuffer
+    
+    ;ditto (irony!)
+    jsr nmi_CopyTileCol
+    
     pla
     tay
     
@@ -130,32 +132,7 @@ main_InitialLevelLoad subroutine
 ;------------------------------------------------------------------------------
 ;arg 0..1 -> rom address
 ;arg 2 -> nametable column
-TOP_HEIGHT = 18
-BOTTOM_HEIGHT = 30
-TOP_OFFSET = $180
-main_EvenColumn subroutine
-    lda #%10000100 ;use ram, use +32 increment
-    sta shr_vramBuffer_flags    
-    sta shr_vramBuffer_flags+TOP_HEIGHT+4  
-    lda #0 
-    sta shr_vramBuffer+TOP_HEIGHT+4+BOTTOM_HEIGHT+4
-    
-    lda #TOP_HEIGHT
-    sta shr_vramBuffer_length
-    lda #>[$2000+TOP_OFFSET]
-    sta shr_vramBuffer_ppuHigh    
-    lda main_arg+2
-    clc
-    adc #<[$2000+TOP_OFFSET]
-    sta shr_vramBuffer_ppuLow
-    
-    lda #BOTTOM_HEIGHT
-    sta shr_vramBuffer_length+TOP_HEIGHT+4
-    lda #$28
-    sta shr_vramBuffer_ppuHigh+TOP_HEIGHT+4
-    lda main_arg+2
-    sta shr_vramBuffer_ppuLow+TOP_HEIGHT+4
-    
+main_EvenColumn subroutine    
     ldy #0
     ldx #0
 .first_loop
@@ -163,10 +140,10 @@ main_EvenColumn subroutine
     lda (main_arg),y
     tay
     lda prgdata_metatiles,y
-    sta shr_vramBuffer_data,x
+    sta shr_tileBuffer,x
     inx
     lda prgdata_metatiles+512,y
-    sta shr_vramBuffer_data,x
+    sta shr_tileBuffer,x
     inx
     ldy main_tmp
     iny
@@ -182,43 +159,24 @@ main_EvenColumn subroutine
     lda (main_arg),y
     tay
     lda prgdata_metatiles,y
-    sta shr_vramBuffer_data+TOP_HEIGHT+4,x
+    sta shr_tileBuffer+TOP_HEIGHT,x
     inx
     lda prgdata_metatiles+512,y
-    sta shr_vramBuffer_data+TOP_HEIGHT+4,x
+    sta shr_tileBuffer+TOP_HEIGHT,x
     inx
     ldy main_tmp
     iny
     cpx #BOTTOM_HEIGHT
     bne .third_loop
+    
+    lda main_arg+2
+    sta shr_tileCol
     rts
 ;------------------------------------------------------------------------------
 ;arg 0..1 -> rom address
 ;arg 2 -> nametable column
 ; 20 top 30 bottom, x2 right and left
-main_OddColumn subroutine
-    lda #%10000100 ;use ram, use +32 increment
-    sta shr_vramBuffer_flags    
-    sta shr_vramBuffer_flags+TOP_HEIGHT+4  
-    lda #0 
-    sta shr_vramBuffer+TOP_HEIGHT+4+BOTTOM_HEIGHT+4
-    
-    lda #TOP_HEIGHT
-    sta shr_vramBuffer_length
-    lda #>[$2000+TOP_OFFSET]
-    sta shr_vramBuffer_ppuHigh    
-    lda main_arg+2
-    clc
-    adc #<[$2000+TOP_OFFSET]
-    sta shr_vramBuffer_ppuLow
-    
-    lda #BOTTOM_HEIGHT
-    sta shr_vramBuffer_length+TOP_HEIGHT+4
-    lda #$28
-    sta shr_vramBuffer_ppuHigh+TOP_HEIGHT+4
-    lda main_arg+2
-    sta shr_vramBuffer_ppuLow+TOP_HEIGHT+4
-    
+main_OddColumn subroutine    
     ldy #0
     ldx #0
 .second_loop
@@ -226,10 +184,10 @@ main_OddColumn subroutine
     lda (main_arg),y
     tay
     lda prgdata_metatiles+256,y
-    sta shr_vramBuffer_data,x
+    sta shr_tileBuffer,x
     inx
     lda prgdata_metatiles+768,y
-    sta shr_vramBuffer_data,x
+    sta shr_tileBuffer,x
     inx
     ldy main_tmp
     iny
@@ -245,82 +203,30 @@ main_OddColumn subroutine
     lda (main_arg),y
     tay
     lda prgdata_metatiles+256,y
-    sta shr_vramBuffer_data+TOP_HEIGHT+4,x
+    sta shr_tileBuffer+TOP_HEIGHT,x
     inx
     lda prgdata_metatiles+768,y
-    sta shr_vramBuffer_data+TOP_HEIGHT+4,x
+    sta shr_tileBuffer+TOP_HEIGHT,x
     inx
     ldy main_tmp
     iny
     cpx #BOTTOM_HEIGHT
     bne .fourth_loop 
+    lda main_arg+2
+    sta shr_tileCol
+    
     rts
 ;------------------------------------------------------------------------------
-;equivalent to nmi routine    
-main_LoadBuffer subroutine
-    lda main_sav
-    pha
-    ldy #0
-.while_requests:
-    lda shr_vramBuffer,y
-    beq .return
-    ;length
-    sta main_sav
-    ;increment
-    iny
-    lda shr_vramBuffer,y
-    sta main_tmp
-    and #%00000100
-    ora shr_ppuCtrl
-    sta PPU_CTRL
-    ;ppu address
-    bit PPU_STATUS
-    REPEAT 2
-    iny
-    lda shr_vramBuffer,y
-    sta PPU_ADDR
-    REPEND
-    ;flags
-    lda main_tmp
-    bmi .from_ram
-.from_rom:
-    iny
-    lda shr_vramBuffer,y
-    sta main_src
-    iny
-    lda shr_vramBuffer,y
-    sta main_src+1
-    iny
-    tya ;preserve y in x
-    tax ;-
-    ldy #0
-.foreach_rombyte:
-    lda (main_src),y
-    sta PPU_DATA
-    iny
-    cpy main_sav
-    bne .foreach_rombyte
-;end foreach_rombyte
-    txa
-    tay
-    jmp .while_requests
-.from_ram:
-    iny
-    ldx #0
-.foreach_rambyte
-    lda shr_vramBuffer,y
-    sta PPU_DATA
-    iny
-    inx
-    cpx main_sav
-    bne .foreach_rambyte
-;end foreach_rambyte
-    jmp .while_requests
-.return
-    pla
-    sta main_sav
+;arg 0..1 -> rom address
+;arg 2 -> nametable column
+main_EvenColorColumn subroutine
     rts
-    
+;------------------------------------------------------------------------------
+;arg 0..1 -> rom address
+;arg 2 -> nametable column
+; 20 top 30 bottom, x2 right and left
+main_OddColorColumn subroutine
+    rts
 ;------------------------------------------------------------------------------
 ; Reads controller
 ; Out: A=buttons pressed, where bit 0 is A button
