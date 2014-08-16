@@ -298,7 +298,6 @@ main_CheckCieling subroutine
     REPEND
     
     jsr main_GetTileBehavior
-    MOV shr_debugReg, main_ret
     lda main_ret
     cmp #TB_SOLID
     bne  main_CheckCieling_end
@@ -405,7 +404,6 @@ main_UpdateCameraY subroutine
     ;no scrolling because player not near screen edge
     SUB_D main_sav, main_playerY, shr_cameraY
     lda main_sav ;player's on-screen y
-    sta shr_debugReg
     cmp #[MT_VSCROLL_MARGIN*PX_MT_HEIGHT]
     bcs .Scroll_Up_end
     

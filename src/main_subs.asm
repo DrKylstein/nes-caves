@@ -91,10 +91,7 @@ main_InitialLevelLoad subroutine
     tya
     pha
     jsr main_EvenColumn
-    
-    ;terribly unsafe, by code duplication is worse
-    jsr nmi_CopyTileCol
-    
+    jsr nmi_CopyTileCol     ;terribly unsafe, by code duplication is worse
     pla
     tay
     
@@ -117,10 +114,7 @@ main_InitialLevelLoad subroutine
     tya
     pha
     jsr main_OddColumn
-    
-    ;ditto (irony!)
-    jsr nmi_CopyTileCol
-    
+    jsr nmi_CopyTileCol     ;ditto (irony!)
     pla
     tay
     
@@ -128,6 +122,33 @@ main_InitialLevelLoad subroutine
     ADDI_D main_sav, main_sav, 23
     cpy #16
     bne .loop
+    
+    ldy #0
+    lda #<prgdata_mainMap
+    sta main_arg
+    lda #>prgdata_mainMap
+    sta main_arg+1
+.attr_loop:
+    tya
+    asl
+    asl
+    sta shr_tileCol
+    tya
+    pha
+    jsr main_ColorColumn
+    jsr nmi_CopyAttrCol
+    pla
+    tay
+    clc
+    lda main_arg
+    adc #MT_MAP_HEIGHT*2
+    sta main_arg
+    lda main_arg+1
+    adc #0
+    sta main_arg+1
+    iny
+    cpy #8
+    bne .attr_loop
     rts
 ;------------------------------------------------------------------------------
 ;arg 0..1 -> rom address
@@ -215,6 +236,81 @@ main_OddColumn subroutine
     lda main_arg+2
     sta shr_tileCol
     
+    rts
+;------------------------------------------------------------------------------
+main_ColorColumn subroutine
+    ldy #0
+    ldx #0
+.loop:
+    cpx #TOP_ATTR_HEIGHT
+    bne .no_partial
+    dey
+.no_partial:
+    sty main_tmp
+    
+    lda (main_arg),y
+    tay
+    lda prgdata_metatiles+256*4,y
+    and #%00000011
+    sta main_tmp+1
+    
+    
+    ldy main_tmp
+    iny
+    sty main_tmp
+    
+    lda (main_arg),y
+    tay
+    lda prgdata_metatiles+256*4,y
+    and #%00000011
+    REPEAT 4
+    asl
+    REPEND
+    ora main_tmp+1
+    sta main_tmp+1
+    
+    
+    lda main_tmp
+    clc
+    adc #MT_MAP_HEIGHT-1
+    tay
+    sty main_tmp
+    
+    lda (main_arg),y
+    tay
+    lda prgdata_metatiles+256*4,y
+    and #%00000011
+    REPEAT 2
+    asl
+    REPEND
+    ora main_tmp+1
+    sta main_tmp+1
+    
+    
+    ldy main_tmp
+    iny
+    sty main_tmp
+    
+    lda (main_arg),y
+    tay
+    lda prgdata_metatiles+256*4,y
+    and #%00000011
+    REPEAT 6
+    asl
+    REPEND
+    ora main_tmp+1
+    
+    ;lda #%10101010
+    sta shr_attrBuffer,x
+    inx
+    
+    lda main_tmp
+    sec
+    sbc #MT_MAP_HEIGHT-1
+    tay
+    
+    cpx #TOP_ATTR_HEIGHT+BOTTOM_ATTR_HEIGHT
+    bne .loop
     rts
 ;------------------------------------------------------------------------------
 ;arg 0..1 -> rom address

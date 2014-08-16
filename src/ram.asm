@@ -13,9 +13,11 @@ main_src            ds 2
 
 main_ret            ds 2 ;MIPS-style $p#
 
+nmi_tmp:
 nmi_scratch         ds 1
 nmi_len             ds 1
 nmi_src             ds 2
+
 nmi_scrollY         ds 2
 nmi_scrollX         ds 1
 shr_sleeping        ds 1
@@ -54,4 +56,5 @@ main_playerFrame    ds 1
 
     ORG $0400
 shr_tileBuffer      ds TOP_HEIGHT+BOTTOM_HEIGHT
+shr_attrBuffer      ds TOP_ATTR_HEIGHT+BOTTOM_ATTR_HEIGHT
 

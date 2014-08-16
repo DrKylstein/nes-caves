@@ -146,6 +146,64 @@ nmi subroutine
     rti
    
 ;------------------------------------------------------------------------------
+nmi_CopyAttrCol subroutine
+    lda shr_tileCol
+    lsr
+    lsr
+    sta nmi_tmp+2
+
+;top
+    lda #<TOP_ATTR_OFFSET
+    sta nmi_tmp
+    lda #>TOP_ATTR_OFFSET
+    sta nmi_tmp+1
+    clc
+    lda nmi_tmp
+    adc nmi_tmp+2
+    sta nmi_tmp
+    lda nmi_tmp+1
+    adc #0
+    sta nmi_tmp+1
+
+    ldy #0
+    bit PPU_STATUS
+    
+    REPEAT TOP_ATTR_HEIGHT
+    lda nmi_tmp+1
+    sta PPU_ADDR
+    lda nmi_tmp
+    sta PPU_ADDR
+    lda shr_attrBuffer,y
+    sta PPU_DATA
+    iny
+    ADDI_D nmi_tmp, nmi_tmp, 8
+    REPEND
+    
+;bottom    
+    lda #<BOTTOM_ATTR_OFFSET
+    sta nmi_tmp
+    lda #>BOTTOM_ATTR_OFFSET
+    sta nmi_tmp+1
+    clc
+    lda nmi_tmp
+    adc nmi_tmp+2
+    sta nmi_tmp
+    lda nmi_tmp+1
+    adc #0
+    sta nmi_tmp+1
+    
+    REPEAT BOTTOM_ATTR_HEIGHT
+    lda nmi_tmp+1
+    sta PPU_ADDR
+    lda nmi_tmp
+    sta PPU_ADDR
+    lda shr_attrBuffer,y
+    sta PPU_DATA
+    iny
+    ADDI_D nmi_tmp, nmi_tmp, 8
+    REPEND
+    rts
+;------------------------------------------------------------------------------
 nmi_CopyTileCol subroutine
     ;vertical mode
     lda #%00000100
@@ -177,6 +235,10 @@ nmi_CopyTileCol subroutine
     sta PPU_DATA
     iny
     REPEND
+
+    lda #%11111011
+    and shr_ppuCtrl
+    sta PPU_CTRL
    rts
 ;------------------------------------------------------------------------------
 nmi_CopyPal subroutine
