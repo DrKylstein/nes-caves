@@ -28,6 +28,7 @@ shr_ppuCtrl         ds 1
 shr_doPalCopy       ds 1
 shr_palAddr         ds 2
 shr_doTileCol       ds 1
+shr_doAttrCol       ds 1
 shr_tileCol         ds 1
 
     ORG $0100
@@ -41,20 +42,24 @@ shr_spriteFlags     ds 1
 shr_spriteX         ds 1
 
     ORG $0300
-main_playerXVel     ds 1
-main_playerYFrac    ds 1
-main_playerY        ds 2
-main_playerYVel     ds 2
-main_playerX        ds 2
-shr_cameraX         ds 2
-shr_cameraY         ds 2
-shr_debugReg        ds 2
-shr_cameraYMod      ds 1
-shr_nameTable       ds 1
-main_playerFlags    ds 1
-main_playerFrame    ds 1
+main_playerXVel     ds 1 ;1
+main_playerYFrac    ds 1 ;2
+main_playerY        ds 2 ;4
+main_playerYVel     ds 2 ;6
+main_playerX        ds 2 ;8
+shr_cameraX         ds 2 ;10
+shr_cameraY         ds 2 ;12
+shr_debugReg        ds 2 ;14
+shr_cameraYMod      ds 1 ;15
+shr_nameTable       ds 1 ;16
+main_playerFlags    ds 1 ;17
+main_playerFrame    ds 1 ;18
+shr_tileBuffer      ds TOP_HEIGHT+BOTTOM_HEIGHT           ;18+30 = 48 : 66
+shr_attrBuffer      ds TOP_ATTR_HEIGHT+BOTTOM_ATTR_HEIGHT ; 5+ 8 = 13 : 79
 
     ORG $0400
-shr_tileBuffer      ds TOP_HEIGHT+BOTTOM_HEIGHT
-shr_attrBuffer      ds TOP_ATTR_HEIGHT+BOTTOM_ATTR_HEIGHT
-
+main_levelMap       ds 960
+;64 bytes left
+main_objectID       ds 12
+main_objectX        ds 24 ;36
+main_objectY        ds 24 ;60

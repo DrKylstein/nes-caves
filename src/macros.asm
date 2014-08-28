@@ -131,13 +131,6 @@
     sta {1}+1
     ENDM
 
-    MAC MOV_D
-    lda {2}
-    sta {1}
-    lda {2}+1
-    sta {1}+1
-    ENDM
-
     MAC CMP_D
     lda {1}
     cmp {2}

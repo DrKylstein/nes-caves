@@ -1,4 +1,150 @@
 ;------------------------------------------------------------------------------
+main_LoadLevel subroutine
+    MOVI_D main_tmp, main_levelMap
+    ldy #0
+    ldx #0
+.loop:
+    lda (main_arg),y
+    sta (main_tmp),y
+    iny
+    bne .loop
+    inc main_arg+1
+    inc main_tmp+1
+    inx
+    cpx #4
+    bne .loop
+    rts
+;------------------------------------------------------------------------------
+main_LoadTilesOnMoveRight subroutine
+    ;get tile column on screen
+    MOV_D main_tmp, shr_cameraX
+    REPEAT 3
+    LSR_D main_tmp
+    REPEND
+    lda main_tmp
+    and #31
+    clc
+    adc #31
+    and #31
+    sta main_arg+2
+    
+    ;get map index
+    ADDI_D main_tmp, main_tmp, 1
+    LSR_D main_tmp
+    ADDI_D main_tmp, main_tmp, 15
+    MOV_D main_arg, main_tmp
+    jsr main_MultiplyBy24 ;uses only arg 0..1
+    ;keeping ret value for later
+        
+    MOVI_D main_arg, main_levelMap
+    
+    ADD_D main_arg, main_arg, main_ret
+    
+    lda shr_cameraX
+    and #%00001000
+    beq .odd
+    jsr main_EvenColumn
+    jmp .return
+.odd:
+    jsr main_OddColumn
+.return:
+    inc shr_doTileCol
+    rts
+;------------------------------------------------------------------------------
+main_LoadTilesOnMoveLeft subroutine
+    ;get tile column on screen
+    MOV_D main_tmp, shr_cameraX
+    REPEAT 3
+    LSR_D main_tmp
+    REPEND
+    lda main_tmp
+    and #31
+    clc
+    adc #31
+    and #31
+    sta main_arg+2
+    
+    ;get map index
+    ADDI_D main_tmp, main_tmp, 1
+    LSR_D main_tmp
+    SUBI_D main_tmp, main_tmp, 1
+    MOV_D main_arg, main_tmp
+    jsr main_MultiplyBy24 ;uses only arg 0..1
+    ;keeping ret value for later
+        
+    MOVI_D main_arg, main_levelMap
+    
+    ADD_D main_arg, main_arg, main_ret
+    
+    lda shr_cameraX
+    and #%00001000
+    beq .odd
+    jsr main_EvenColumn
+    jmp .return
+.odd:
+    jsr main_OddColumn
+.return:
+    inc shr_doTileCol
+    rts
+;------------------------------------------------------------------------------
+main_LoadColorsOnMoveRight subroutine
+    ;get tile column on screen
+    MOV_D main_tmp, shr_cameraX
+    REPEAT 4
+    LSR_D main_tmp
+    REPEND
+    
+    ;get index to attribute table
+    lda main_tmp
+    lsr
+    and #7
+    clc
+    adc #7
+    and #7
+    sta main_arg+2
+    
+    ;get map index
+    MOV_D main_arg, main_tmp
+    jsr main_MultiplyBy24 ;uses only arg 0..1, keeping ret value for later
+
+    MOVI_D main_arg, main_levelMap
+    ADD_D main_arg, main_arg, main_ret
+    
+    jsr main_ColorColumn
+.return:
+    inc shr_doAttrCol
+    rts
+;------------------------------------------------------------------------------
+main_LoadColorsOnMoveLeft subroutine
+    ;get tile column on screen
+    MOV_D main_tmp, shr_cameraX
+    REPEAT 4
+    LSR_D main_tmp
+    REPEND
+    
+    ;get index to attribute table
+    lda main_tmp
+    lsr
+    and #7
+    clc
+    adc #7
+    and #7
+    sta main_arg+2
+    
+    ;get map index
+    MOV_D main_arg, main_tmp
+    jsr main_MultiplyBy24 ;uses only arg 0..1
+    ;keeping ret value for later
+
+    MOVI_D main_arg, main_levelMap
+    ADD_D main_arg, main_arg, main_ret
+    
+    jsr main_ColorColumn
+.return:
+    inc shr_doAttrCol
+    rts
+;------------------------------------------------------------------------------
+;------------------------------------------------------------------------------
 main_GetTileBehavior ;arg0..1 = mt_x arg2..3 = mt_y ret0 = value
     jsr main_MultiplyBy24 ;takes arg0, which we no longer care about after this
                           ;returns
@@ -6,7 +152,7 @@ main_GetTileBehavior ;arg0..1 = mt_x arg2..3 = mt_y ret0 = value
     ADD_D main_tmp, main_arg+2, main_ret
     
     ;lookup tile, get behavior
-    ADDI_D main_tmp, main_tmp, prgdata_mainMap
+    ADDI_D main_tmp, main_tmp, main_levelMap
     ldy #0
     lda (main_tmp),y
     tay
@@ -67,17 +213,11 @@ main_FlipSprite subroutine ;Y = oam index*4,
     rts
 ;------------------------------------------------------------------------------
 main_InitialLevelLoad subroutine
-    lda #<prgdata_mainMap
-    sta main_sav
-    lda #>prgdata_mainMap
-    sta main_sav+1
+    MOVI_D main_sav, main_levelMap
     ldy #0
 .loop:
     ;args to buffer column    
-    lda main_sav
-    sta main_arg
-    lda main_sav+1
-    sta main_arg+1
+    MOV_D main_arg, main_sav
     tya
     clc
     adc main_arg
@@ -95,10 +235,7 @@ main_InitialLevelLoad subroutine
     pla
     tay
     
-    lda main_sav
-    sta main_arg
-    lda main_sav+1
-    sta main_arg+1
+    MOV_D main_arg, main_sav
     tya
     clc
     adc main_arg
@@ -124,10 +261,7 @@ main_InitialLevelLoad subroutine
     bne .loop
     
     ldy #0
-    lda #<prgdata_mainMap
-    sta main_arg
-    lda #>prgdata_mainMap
-    sta main_arg+1
+    MOVI_D main_arg, main_levelMap
 .attr_loop:
     tya
     asl

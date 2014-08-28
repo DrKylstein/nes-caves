@@ -67,11 +67,12 @@ nmi subroutine
     dec shr_doTileCol
 .tilecol_copy_end:
     
-; .vram_copy:
-    ; lda shr_doVramCopy
-    ; beq .reg_update
-    ; dec shr_doVramCopy
-    ; jsr nmi_LoadBuffer
+.tileattr_copy:
+    lda shr_doAttrCol
+    beq .tileattr_copy_end
+    jsr nmi_CopyAttrCol
+    dec shr_doAttrCol
+.tileattr_copy_end:
     
 .reg_update:
     lda shr_doRegCopy

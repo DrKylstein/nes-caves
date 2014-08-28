@@ -99,6 +99,9 @@ reset subroutine
     cpy #$88
     bne .load_hud_attr
     
+    MOVI_D main_arg, prgdata_mainMap
+    jsr main_LoadLevel
+    
     jsr main_InitialLevelLoad
 
     ;set sprite 0 for status bar
@@ -391,7 +394,7 @@ main_UpdateCameraX subroutine
     
     ;no loading tiles if not at tile boundary
     lda shr_cameraX
-    and #15 ; 8-pixel boundaries
+    and #15 ; 16-pixel boundaries
     cmp #1
     bne .Scroll_Right_end
 
@@ -508,155 +511,5 @@ main_UpdatePlayerSprite_end:
     inc shr_doRegCopy
     jsr synchronize
     jmp main_loop
-
-;------------------------------------------------------------------------------
-main_LoadTilesOnMoveRight subroutine
-    ;get tile column on screen
-    MOV_D main_tmp, shr_cameraX
-    REPEAT 3
-    LSR_D main_tmp
-    REPEND
-    lda main_tmp
-    and #31
-    clc
-    adc #31
-    and #31
-    sta main_arg+2
-    ADDI_D main_tmp, main_tmp, 1
-    LSR_D main_tmp
-    ADDI_D main_tmp, main_tmp, 15
-    MOV_D main_arg, main_tmp
-    jsr main_MultiplyBy24 ;uses only arg 0..1
-    ;keeping ret value for later
-        
-    lda #<prgdata_mainMap
-    sta main_arg
-    lda #>prgdata_mainMap
-    sta main_arg+1
-    
-    ADD_D main_arg, main_arg, main_ret
-    
-    lda shr_cameraX
-    and #%00001000
-    beq .odd
-    jsr main_EvenColumn
-    jmp .return
-.odd:
-    jsr main_OddColumn
-.return:
-    inc shr_doTileCol
-    rts
-;------------------------------------------------------------------------------
-main_LoadTilesOnMoveLeft subroutine
-    ;get tile column on screen
-    MOV_D main_tmp, shr_cameraX
-    REPEAT 3
-    LSR_D main_tmp
-    REPEND
-    lda main_tmp
-    and #31
-    clc
-    adc #31
-    and #31
-    sta main_arg+2
-    ADDI_D main_tmp, main_tmp, 1
-    LSR_D main_tmp
-    SUBI_D main_tmp, main_tmp, 1
-    MOV_D main_arg, main_tmp
-    jsr main_MultiplyBy24 ;uses only arg 0..1
-    ;keeping ret value for later
-        
-    lda #<prgdata_mainMap
-    sta main_arg
-    lda #>prgdata_mainMap
-    sta main_arg+1
-    
-    ADD_D main_arg, main_arg, main_ret
-    
-    lda shr_cameraX
-    and #%00001000
-    beq .odd
-    jsr main_EvenColumn
-    jmp .return
-.odd:
-    jsr main_OddColumn
-.return:
-    inc shr_doTileCol
-    rts
-;------------------------------------------------------------------------------
-main_LoadColorsOnMoveRight subroutine
-    ;get tile column on screen
-    MOV_D main_tmp, shr_cameraX
-    REPEAT 4
-    LSR_D main_tmp
-    REPEND
-    
-    ;get index to attribute table
-    lda main_tmp
-    lsr
-    and #7
-    clc
-    adc #7
-    and #7
-    sta main_arg+2
-    
-    ;get map index
-    MOV_D main_arg, main_tmp
-    jsr main_MultiplyBy24 ;uses only arg 0..1, keeping ret value for later
-    lda #<prgdata_mainMap
-    sta main_arg
-    lda #>prgdata_mainMap
-    sta main_arg+1
-    ADD_D main_arg, main_arg, main_ret
-    
-    lda shr_cameraX
-    and #%00010000
-    beq .odd
-    jsr main_EvenColorColumn
-    jmp .return
-.odd:
-    jsr main_OddColorColumn
-.return:
-    inc shr_doTileCol
-    rts
-;------------------------------------------------------------------------------
-main_LoadColorsOnMoveLeft subroutine
-    ;get tile column on screen
-    MOV_D main_tmp, shr_cameraX
-    REPEAT 4
-    LSR_D main_tmp
-    REPEND
-    
-    ;get index to attribute table
-    lda main_tmp
-    lsr
-    and #7
-    clc
-    adc #7
-    and #7
-    sta main_arg+2
-    
-    ;get map index
-    MOV_D main_arg, main_tmp
-    jsr main_MultiplyBy24 ;uses only arg 0..1
-    ;keeping ret value for later
-    lda #<prgdata_mainMap
-    sta main_arg
-    lda #>prgdata_mainMap
-    sta main_arg+1
-    ADD_D main_arg, main_arg, main_ret
-    
-    lda shr_cameraX
-    and #%00010000
-    beq .odd
-    jsr main_EvenColorColumn
-    jmp .return
-.odd:
-    jsr main_OddColorColumn
-.return:
-    inc shr_doTileCol
-    rts
-;------------------------------------------------------------------------------
-
 
     include main_subs.asm
