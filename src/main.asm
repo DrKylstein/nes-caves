@@ -99,7 +99,7 @@ reset subroutine
     cpy #$88
     bne .load_hud_attr
     
-    MOVI_D main_arg, prgdata_mainMap
+    MOVI_D main_arg, prgdata_level01
     jsr main_LoadLevel
     
     jsr main_InitialLevelLoad

@@ -93,6 +93,7 @@ main_LoadColorsOnMoveRight subroutine
     REPEAT 4
     LSR_D main_tmp
     REPEND
+    ADDI_D main_tmp, main_tmp, 15
     
     ;get index to attribute table
     lda main_tmp
@@ -105,6 +106,7 @@ main_LoadColorsOnMoveRight subroutine
     
     ;get map index
     MOV_D main_arg, main_tmp
+    DEC_D main_arg
     jsr main_MultiplyBy24 ;uses only arg 0..1, keeping ret value for later
 
     MOVI_D main_arg, main_levelMap
@@ -133,6 +135,7 @@ main_LoadColorsOnMoveLeft subroutine
     
     ;get map index
     MOV_D main_arg, main_tmp
+    DEC_D main_arg
     jsr main_MultiplyBy24 ;uses only arg 0..1
     ;keeping ret value for later
 
@@ -143,7 +146,6 @@ main_LoadColorsOnMoveLeft subroutine
 .return:
     inc shr_doAttrCol
     rts
-;------------------------------------------------------------------------------
 ;------------------------------------------------------------------------------
 main_GetTileBehavior ;arg0..1 = mt_x arg2..3 = mt_y ret0 = value
     jsr main_MultiplyBy24 ;takes arg0, which we no longer care about after this

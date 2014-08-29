@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="40" height="24" tilewidth="16" tileheight="16">
+ <properties>
+  <property name="__script__" value="nescave"/>
+ </properties>
+ <tileset firstgid="1" name="metatiles" tilewidth="16" tileheight="16">
+  <image source="metatiles.png" width="256" height="256"/>
+ </tileset>
+ <layer name="Names" width="40" height="24">
+  <data encoding="base64" compression="zlib">
+   eJzNll0OgyAQhLlC7UuNVqM9gfX+dysmkmw3M7igGB4mUX6W2Y+FMDvnvpVq9vp4vSrVJPy1Xu8KNBJ/Q0XqgL+Y+sL/lv1l6oRK/+s+K7+azsd44/op/mR9ptRIrizx2f6WZmmNz/xplld7j8WXXLU/C3OL91z/Overz4e+Z89yjZ2PO9Qe8Dh7/z28ml1PQzvjxWLmvF/0/BnEmVSfxWvQ4tLfV8yT1V+KV1ln1v1F68XekRMZw/LJrb/ADcXe8ut3MX+hf3A4R8Qxpf4Yt1WNY/5QXR1xtNQf47a6/zMnxyF/kk+YtxxwtNSf5haY6btA5roa2sP6iCXzIdsRt1BrkhnKVXpH7WgeuodkPcp9iN0dDRjTJCoWi623ff8AlPBo/w==
+  </data>
+ </layer>
+</map>

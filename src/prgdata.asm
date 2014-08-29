@@ -16,3 +16,7 @@ prgdata_metatiles:
     .align 256
 prgdata_mainMap:
     incbin main_map.bin
+    
+    .align 256
+prgdata_level01:
+    incbin level01.bin

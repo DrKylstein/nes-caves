@@ -14,17 +14,17 @@
  </tileset>
  <layer name="Names" width="32" height="32">
   <data encoding="base64" compression="zlib">
-   eJztz0kOglAMgGGe84BT8ALOs6J4AfUk6knUi/uTlAS7MRrjhi6+lHTxfuo8z3PIo4Ae+iiKnCiJMiqYYIqZzCpqqKOLttKQvS89P/UdG2CY6o9E0h8L3U9mJP147jHHAkuEWMneea//cMBROaGJFjoiuSOQO5wSSF/v3znjolyxxgZb7OSGMHWffif6cf/Td76V9f4Nd+Xxx74xxhhjjDEmO57VWhko
+   eJztz8tSwkAQheEEEW/xQokYcYWI3FQuCgRcqU+CPAn64vxTdVI1zooVm/Tiq+70pOZMx1EUxThAGU084FBKUpEjHKODLnqqJzjFGWq4Cpxrnigv8XqnhUcvvy15/pOE+Xl9U76r7+hjgGeM8KJ5HP1/wye+At+4wCWqku9xrT1uUMctUs1d/hQz3KGhs9Tb0/X33vcKP4E1XjHEGBPtMPL2q+sNc2Te/vm9Cyx1lnn/u/5jh/x4T4qev8Fv4G+P+cYYY4wxxpji2AIo8RyG
   </data>
  </layer>
  <layer name="Attributes" width="32" height="32">
   <data encoding="base64" compression="zlib">
-   eJztzzEKACAMQ1FTe/8zC47FUpwU+t+SoRQSaWwq0kJWdw+Z/b02dU4PPb3oa5/suZXt76L7fgAAAAB9LIq2AF8=
+   eJztz0EKACAIRNGmuv+Zg8DNgLh04X+bwUJRaX0qcltW/9cy6+vme/v+sjr4e/Qdy2pOt+z+KabfDwAAAGCOB5jWAHE=
   </data>
  </layer>
  <layer name="Behavior" width="32" height="32">
   <data encoding="base64" compression="zlib">
-   eJztzzEOACAIwEBYlf+/18mFxBAWItpbOlfkDkNzna5dnf42a/4Xif5f9/s/AAAAgDoLZwMAyw==
+   eJzt0L0KACAIhVFbK3r/x21yEURa+rHvLBdBhKvIHWpZy2byVV4/1YN+dl//MZx7dj4t6p/d7/0BAAAA7DMBuJMBBw==
   </data>
  </layer>
 </map>
