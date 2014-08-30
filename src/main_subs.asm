@@ -165,6 +165,62 @@ main_GetTileBehavior ;arg0..1 = mt_x arg2..3 = mt_y ret0 = value
     sta main_ret
     rts
 ;------------------------------------------------------------------------------
+main_SetTileOnMatch ;arg0..1 = mt_x arg2..3 = mt_y, arg4 = test, arg5 = value
+    PUSH_D main_sav
+    PUSH_D main_sav+2
+    jsr main_MultiplyBy24 ;takes arg0, which we no longer care about after this
+                          ;returns
+    ;t0 = y+ x*24
+    ADD_D main_tmp, main_arg+2, main_ret
+    
+    ;lookup tile, get behavior
+    ADDI_D main_tmp, main_tmp, main_levelMap
+    ldy #0
+    lda (main_tmp),y
+    tay
+    lda prgdata_metatiles+256*4,y
+    REPEAT 2
+    lsr
+    REPEND
+    cmp main_arg+4
+    bne .no_match
+    
+    MOVI shr_debugReg, 1
+    lda main_arg+5
+    ldy #0
+    sta (main_tmp),y
+    
+    jsr main_MultiplyBy24
+    ADDI_D main_sav, main_ret, main_levelMap
+    
+    MOV_D main_tmp, main_playerX
+    REPEAT 3
+    LSR_D main_tmp
+    REPEND
+    lda main_tmp
+    and #31
+    clc
+    adc #33
+    and #30
+    sta main_sav+2
+    
+    MOV_D main_arg, main_sav
+    MOV main_arg+2, main_sav+2
+    jsr main_EvenColumn
+    inc shr_doTileCol
+    jsr synchronize
+    
+    MOV_D main_arg, main_sav
+    MOV main_arg+2, main_sav+2
+    inc main_arg+2
+    jsr main_OddColumn
+    inc shr_doTileCol
+    jsr synchronize
+.no_match:
+    POP_D main_sav+2
+    POP_D main_sav
+    rts
+;------------------------------------------------------------------------------
 main_MultiplyBy24: ;arg0..arg1 is factor, ret0..ret1 is result
     MOV_D main_ret, main_arg ; 1
     ASL_D main_ret

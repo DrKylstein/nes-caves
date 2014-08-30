@@ -186,6 +186,24 @@ main_ApplyGravity subroutine
     ADDI_D main_playerYVel, main_playerYVel, 16
 main_ApplyGravity_end:
 
+main_CheckCrystal subroutine
+    ;a0 = x in tiles
+    ADDI_D main_arg, main_playerX, 7
+    REPEAT 4
+    LSR_D main_arg
+    REPEND
+    ;a2 = y in tiles
+    ADDI_D main_arg+2, main_playerY, 7
+    REPEAT 4
+    LSR_D main_arg+2
+    REPEND
+    
+    MOVI main_arg+4, TB_CRYSTAL
+    MOVI main_arg+5, 0
+    
+    jsr main_SetTileOnMatch
+main_CheckCrystal_end:
+
 main_CheckLeft subroutine
     ;skip if not moving left (>= 0)
     lda main_playerXVel
