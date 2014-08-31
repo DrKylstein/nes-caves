@@ -165,9 +165,7 @@ main_GetTileBehavior ;arg0..1 = mt_x arg2..3 = mt_y ret0 = value
     sta main_ret
     rts
 ;------------------------------------------------------------------------------
-main_SetTileOnMatch ;arg0..1 = mt_x arg2..3 = mt_y, arg4 = test, arg5 = value
-    PUSH_D main_sav
-    PUSH_D main_sav+2
+main_GetTile ;arg0..1 = mt_x arg2..3 = mt_y ret0 = value
     jsr main_MultiplyBy24 ;takes arg0, which we no longer care about after this
                           ;returns
     ;t0 = y+ x*24
@@ -177,26 +175,24 @@ main_SetTileOnMatch ;arg0..1 = mt_x arg2..3 = mt_y, arg4 = test, arg5 = value
     ADDI_D main_tmp, main_tmp, main_levelMap
     ldy #0
     lda (main_tmp),y
-    tay
-    lda prgdata_metatiles+256*4,y
-    REPEAT 2
-    lsr
-    REPEND
-    cmp main_arg+4
-    bne .no_match
-    
-    MOVI shr_debugReg, 1
-    lda main_arg+5
+    sta main_ret
+    rts
+;------------------------------------------------------------------------------
+main_SetTile ;arg0..1 = mt_x arg2..3 = mt_y, arg4 = value
+    PUSH_D main_sav
+    PUSH_D main_sav+2
+    jsr main_MultiplyBy24 ;takes arg0, which we no longer care about after this
+                          ;returns
+    ;t0 = y+ x*24
+    ADDI_D main_sav, main_ret, main_levelMap
+    ADD_D main_tmp, main_arg+2, main_sav
+    lda main_arg+4
     ldy #0
     sta (main_tmp),y
     
-    jsr main_MultiplyBy24
-    ADDI_D main_sav, main_ret, main_levelMap
     
-    MOV_D main_tmp, main_playerX
-    REPEAT 3
-    LSR_D main_tmp
-    REPEND
+    MOV_D main_tmp, main_arg
+    ASL_D main_tmp
     lda main_tmp
     and #31
     clc

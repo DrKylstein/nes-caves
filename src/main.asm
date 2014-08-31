@@ -117,10 +117,7 @@ load_rest subroutine
     sta shr_ppuCtrl
     sta PPU_CTRL
     
-    lda #<prgdata_palettes
-    sta shr_palAddr
-    lda #>prgdata_palettes
-    sta shr_palAddr+1
+    MOVI_D shr_palAddr, [prgdata_palettes+32]
     inc shr_doPalCopy
     
     ldy #4 ;oam index
@@ -175,9 +172,133 @@ main_CheckInput subroutine
     bmi .jump_end
     MOVI_D main_playerYVel, -$0270
     lda main_playerFlags
-    ora #$80
+    ora #%10000000
     sta main_playerFlags
 .jump_end:
+.action:
+    lda main_sav
+    and #JOY_B_MASK
+    BEQ_L action_end
+    lda main_oldCtrl
+    and #JOY_B_MASK
+    BNE_L action_end
+    ;a0 = x in tiles
+    ADDI_D main_arg, main_playerX, 7
+    REPEAT 4
+    LSR_D main_arg
+    REPEND
+    ;a2 = y in tiles
+    ADDI_D main_arg+2, main_playerY, 7
+    REPEAT 4
+    LSR_D main_arg+2
+    REPEND
+    jsr main_GetTileBehavior
+    lda main_ret
+    
+    cmp #TB_LIGHTSON
+    beq .lights_on
+    cmp #TB_LIGHTSOFF
+    beq .lights_off
+    
+    cmp #TB_ON
+    BCS_L switch_on
+    cmp #TB_OFF
+    BCS_L switch_off
+    
+    jmp action_end
+.lights_on:
+    ;a0 = x in tiles
+    ADDI_D main_arg, main_playerX, 7
+    REPEAT 4
+    LSR_D main_arg
+    REPEND
+    ;a2 = y in tiles
+    ADDI_D main_arg+2, main_playerY, 7
+    REPEAT 4
+    LSR_D main_arg+2
+    REPEND
+    MOVI main_arg+4, 38
+    MOVI_D shr_palAddr, prgdata_palettes
+    inc shr_doPalCopy
+    jsr main_SetTile
+    jmp action_end
+.lights_off:
+    ;a0 = x in tiles
+    ADDI_D main_arg, main_playerX, 7
+    REPEAT 4
+    LSR_D main_arg
+    REPEND
+    ;a2 = y in tiles
+    ADDI_D main_arg+2, main_playerY, 7
+    REPEAT 4
+    LSR_D main_arg+2
+    REPEND
+    MOVI main_arg+4, 37
+    MOVI_D shr_palAddr, prgdata_palettes+32
+    inc shr_doPalCopy
+    jsr main_SetTile
+    jmp action_end
+    
+switch_on:
+    sec
+    sbc #TB_ON
+    tax
+    lda #1
+.off_loop:
+    cpx #0
+    beq .no_off_shift
+    asl
+    dex
+    jmp .on_loop
+.no_off_shift:
+    ora main_switches
+    
+    ;a0 = x in tiles
+    ADDI_D main_arg, main_playerX, 7
+    REPEAT 4
+    LSR_D main_arg
+    REPEND
+    ;a2 = y in tiles
+    ADDI_D main_arg+2, main_playerY, 7
+    REPEAT 4
+    LSR_D main_arg+2
+    REPEND
+    jsr main_GetTile    ;assuming it does not modify its arguments
+    SUBI_D main_arg+4, main_ret, 1
+    jsr main_SetTile
+    jmp action_end
+    
+switch_off:
+    sec
+    sbc #TB_OFF
+    tax
+    lda #1
+.on_loop:
+    cpx #0
+    beq .no_shift
+    asl
+    dex
+    jmp .on_loop
+.no_shift:
+    eor main_switches ; should be or of the inverse, not this
+    
+    ;a0 = x in tiles
+    ADDI_D main_arg, main_playerX, 7
+    REPEAT 4
+    LSR_D main_arg
+    REPEND
+    ;a2 = y in tiles
+    ADDI_D main_arg+2, main_playerY, 7
+    REPEAT 4
+    LSR_D main_arg+2
+    REPEND
+    jsr main_GetTile    ;assuming it does not modify its arguments
+    ADDI_D main_arg+4, main_ret, 1
+    jsr main_SetTile
+    jmp action_end
+    
+action_end:
+    MOV main_oldCtrl, main_sav
 main_CheckInput_end:
 
 main_ApplyGravity subroutine
@@ -197,11 +318,24 @@ main_CheckCrystal subroutine
     REPEAT 4
     LSR_D main_arg+2
     REPEND
+    jsr main_GetTileBehavior
+    lda main_ret
+    cmp #TB_CRYSTAL
+    bne main_CheckCrystal_end
     
-    MOVI main_arg+4, TB_CRYSTAL
-    MOVI main_arg+5, 0
-    
-    jsr main_SetTileOnMatch
+    ;a0 = x in tiles
+    ADDI_D main_arg, main_playerX, 7
+    REPEAT 4
+    LSR_D main_arg
+    REPEND
+    ;a2 = y in tiles
+    ADDI_D main_arg+2, main_playerY, 7
+    REPEAT 4
+    LSR_D main_arg+2
+    REPEND
+    MOVI main_arg+4, 0
+    jsr main_SetTile
+
 main_CheckCrystal_end:
 
 main_CheckLeft subroutine
@@ -225,9 +359,11 @@ main_CheckLeft subroutine
     jsr main_GetTileBehavior
     lda main_ret
     cmp #TB_SOLID
-    bne main_CheckLeft_end
-    
-    ;stop
+    beq .hit
+    cmp #TB_WEAKBLOCK
+    beq .hit
+    jmp main_CheckLeft_end
+.hit:
     MOVI main_playerXVel, 0
 main_CheckLeft_end:
 
@@ -254,9 +390,11 @@ main_CheckRight subroutine
     jsr main_GetTileBehavior
     lda main_ret
     cmp #TB_SOLID
-    bne main_CheckRight_end
-    
-    ;stop
+    beq .hit
+    cmp #TB_WEAKBLOCK
+    beq .hit
+    jmp main_CheckRight_end
+.hit:
     MOVI main_playerXVel, 0
 main_CheckRight_end:
 
@@ -264,7 +402,11 @@ main_CheckGround subroutine
     ;skip if not moving down (< 0)
     CMPI_D main_playerYVel, 0
     bmi main_CheckGround_end
-    
+
+    lda main_playerFlags
+    ora #%10000000
+    sta main_playerFlags
+
     ;a0 = x in tiles
     ADDI_D main_arg, main_playerX, 8
     REPEAT 4
@@ -283,9 +425,12 @@ main_CheckGround subroutine
     beq .hit_ground
     cmp #TB_PLATFORM
     beq .hit_ground
+    cmp #TB_WEAKBLOCK
+    beq .hit_ground
     jmp main_CheckGround_end
     
 .hit_ground: ;stop if moving down
+
     MOVI_D main_playerYVel, 0
     lda #$F0
     and main_playerY
@@ -293,7 +438,7 @@ main_CheckGround subroutine
     lda #0
     sta main_playerYFrac
     lda main_playerFlags
-    and #$7F
+    and #%01111111
     sta main_playerFlags
 main_CheckGround_end:
 
@@ -321,7 +466,10 @@ main_CheckCieling subroutine
     jsr main_GetTileBehavior
     lda main_ret
     cmp #TB_SOLID
-    bne  main_CheckCieling_end
+    beq  .hit_cieling
+    cmp #TB_WEAKBLOCK
+    beq  .hit_cieling
+    jmp main_CheckCieling_end
     
 .hit_cieling:
     MOVI_D main_playerYVel, 0
@@ -489,18 +637,27 @@ main_UpdatePlayerSprite subroutine
     ldy #4
     jsr main_SetSpritePos
 
-
     ;update tiles
     lda main_playerFrame
     clc
     adc main_playerXVel
     and #%00011111
     sta main_playerFrame
+
+.jump_anim:
+    bit main_playerFlags
+    bpl .walk_anim
+    lda #8
+    sta main_playerFrame
+    jmp .do_anim
+
+.walk_anim:
     lda #0
     cmp main_playerXVel
-    bne .walk_anim
+    bne .do_anim
     sta main_playerFrame
-.walk_anim:
+
+.do_anim:
     lda main_playerFlags
     and #%01000000
     ldy #4

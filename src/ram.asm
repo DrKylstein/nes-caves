@@ -49,13 +49,15 @@ shr_cameraY         ds 2 ;4
 shr_debugReg        ds 2 ;6
 shr_cameraYMod      ds 1 ;7
 shr_nameTable       ds 1 ;8
-main_playerFlags    ds 1 ;9
-main_playerFrame    ds 1 ;10
-main_playerXVel     ds 1 ;11
-main_playerYFrac    ds 1 ;12
-main_playerY        ds 2 ;14
-main_playerYVel     ds 2 ;16
-main_playerX        ds 2 ;18
+main_oldCtrl        ds 1 ;9
+main_switches       ds 1 ;10
+main_playerFlags    ds 1 ;11 ;jumping,flipped,in air,00000
+main_playerFrame    ds 1 ;12
+main_playerXVel     ds 1 ;13
+main_playerYFrac    ds 1 ;14
+main_playerY        ds 2 ;16
+main_playerYVel     ds 2 ;19
+main_playerX        ds 2 ;20
 
     ORG $0400
 main_levelMap       ds 960
