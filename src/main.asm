@@ -44,13 +44,26 @@ reset subroutine
     inx
     bne .clrmem
  
-.init_oam:
+main_clearOAM subroutine
     lda #$FF
     ldy #0
-.oam_loop:
+.loop:
     dey
     sta shr_oamShadow,y
-    bne .oam_loop
+    bne .loop
+main_clearOAM_end:
+main_clearEntities subroutine
+    lda #MAX_ENTITIES
+    asl
+    tay
+    lda #$7F
+.loop:
+    dey
+    sta main_entityX,y
+    sta main_entityY,y
+    bne .loop
+main_clearEntities_end:
+ 
  
     ;; Other things you can do between vblank waits are set up audio
     ;; or set up other mapper registers.
@@ -117,7 +130,7 @@ load_rest subroutine
     sta shr_ppuCtrl
     sta PPU_CTRL
     
-    MOVI_D shr_palAddr, [prgdata_palettes+32]
+    MOVI_D shr_palAddr, [prgdata_palettes];+32]
     inc shr_doPalCopy
     
     ldy #4 ;oam index
@@ -198,12 +211,17 @@ main_CheckInput subroutine
     cmp #TB_LIGHTSON
     beq .lights_on
     cmp #TB_LIGHTSOFF
-    beq .lights_off
+    BEQ_L lights_off
     
     cmp #TB_ON
     BCS_L switch_on
     cmp #TB_OFF
     BCS_L switch_off
+    
+    MOV_D main_entityX, main_playerX
+    MOV_D main_entityY, main_playerY
+    
+    MOV_D shr_debugReg, main_playerX
     
     jmp action_end
 .lights_on:
@@ -222,7 +240,7 @@ main_CheckInput subroutine
     inc shr_doPalCopy
     jsr main_SetTile
     jmp action_end
-.lights_off:
+lights_off:
     ;a0 = x in tiles
     ADDI_D main_arg, main_playerX, 7
     REPEAT 4
@@ -681,6 +699,102 @@ main_UpdatePlayerSprite subroutine
     adc #2
     sta shr_spriteIndex,y
 main_UpdatePlayerSprite_end:
+
+main_updateEntities subroutine
+    ldy #MAX_ENTITIES
+.loop:
+    dey
+    tya
+    asl
+    tay
+    lda main_entityX,y
+    sta main_tmp
+    lda main_entityX+1,y
+    sta main_tmp+1
+    CMPI_D main_tmp, $7F7F
+    beq .inactive
+    INC_D main_tmp
+    lda main_tmp
+    sta main_entityX,y
+    lda main_tmp+1
+    sta main_entityX+1,y
+.inactive:
+    tya
+    lsr
+    tay
+    bne .loop
+main_updateEntities_end:
+
+main_UpdateEntitySprites subroutine
+    ldy #[4+[2*4]]
+    ldx #0
+.loop:
+    tya
+
+    lda #0
+    sta shr_spriteFlags,y
+    sta shr_spriteFlags+4,y
+
+    lda #64
+    sta shr_spriteIndex,y
+    clc
+    adc #2
+    sta shr_spriteIndex+4,y
+
+    txa
+    asl
+    tax
+
+    sec
+    lda main_entityX,x
+    sbc shr_cameraX
+    sta main_tmp
+    lda main_entityX+1,x
+    sbc shr_cameraX+1
+    sta main_tmp+1
+    DEC_D main_tmp
+    CMPI_D main_tmp, $FF
+    bmi .x_in_range
+    MOVI main_tmp, $FF
+.x_in_range:
+    lda main_tmp
+    sta shr_spriteX,y
+    cmp #$FF
+    bcs .x_not_in_range_really 
+    clc
+    adc #8
+.x_not_in_range_really:
+    sta shr_spriteX+4,y
+
+    sec
+    lda main_entityY,x
+    sbc shr_cameraY
+    sta main_tmp
+    lda main_entityY+1,x
+    sbc shr_cameraY+1
+    sta main_tmp+1
+    ADDI_D main_tmp, main_tmp, 29
+    CMPI_D main_tmp, 240
+    bmi .y_in_range
+    MOVI main_tmp, $FF
+.y_in_range:
+    lda main_tmp
+    sta shr_spriteY,y
+    sta shr_spriteY+4,y
+    
+    txa
+    lsr
+    tax
+    
+    inx
+    tya
+    clc
+    adc #8
+    tay
+    cpy #64
+    bcs main_UpdateEntitySprites_end
+    jmp .loop
+main_UpdateEntitySprites_end
 
     inc shr_doDma
     inc shr_doRegCopy

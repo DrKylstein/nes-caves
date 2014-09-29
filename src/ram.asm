@@ -59,6 +59,12 @@ main_playerY        ds 2 ;16
 main_playerYVel     ds 2 ;19
 main_playerX        ds 2 ;20
 
+MAX_ENTITIES = 32
+;main_entityFrame    ds MAX_ENTITIES
+main_entityX        ds MAX_ENTITIES*2
+main_entityY        ds MAX_ENTITIES*2
+;main_entityType     ds MAX_ENTITIES
+
     ORG $0400
 main_levelMap       ds 960
 ;64 bytes left
