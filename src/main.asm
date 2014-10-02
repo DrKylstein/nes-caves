@@ -130,7 +130,7 @@ load_rest subroutine
     sta shr_ppuCtrl
     sta PPU_CTRL
     
-    MOVI_D shr_palAddr, [prgdata_palettes];+32]
+    MOVI_D shr_palAddr, [prgdata_palettes+32]
     inc shr_doPalCopy
     
     ldy #4 ;oam index
@@ -156,11 +156,17 @@ load_rest subroutine
 
 main_loop:
 main_CheckInput subroutine
+    lda main_ctrl
+    sta main_oldCtrl
     jsr read_joy
-    sta main_sav
+    sta main_ctrl
+    and main_oldCtrl
+    eor main_ctrl
+    sta main_pressed
+    
     MOVI main_playerXVel, 0
 .left:
-    lda main_sav
+    lda main_ctrl
     and #JOY_LEFT_MASK
     beq .left_end
     MOVI main_playerXVel, $FF
@@ -169,7 +175,7 @@ main_CheckInput subroutine
     sta main_playerFlags
 .left_end:
 .right:
-    lda main_sav
+    lda main_ctrl
     and #JOY_RIGHT_MASK
     beq .right_end
     MOVI main_playerXVel, 1
@@ -178,146 +184,106 @@ main_CheckInput subroutine
     sta main_playerFlags
 .right_end:
 .jump:
-    lda main_sav
+    lda main_ctrl
     and #JOY_A_MASK
-    beq .jump_end
+    beq main_CheckInput_end
     bit main_playerFlags
-    bmi .jump_end
+    bmi main_CheckInput_end
     MOVI_D main_playerYVel, -$0270
     lda main_playerFlags
     ora #%10000000
     sta main_playerFlags
-.jump_end:
-.action:
-    lda main_sav
-    and #JOY_B_MASK
-    BEQ_L action_end
-    lda main_oldCtrl
-    and #JOY_B_MASK
-    BNE_L action_end
+main_CheckInput_end:
+
+main_TileInteraction subroutine
     ;a0 = x in tiles
     ADDI_D main_arg, main_playerX, 7
     REPEAT 4
     LSR_D main_arg
     REPEND
+    lda main_arg
+    sta main_sav+1
     ;a2 = y in tiles
     ADDI_D main_arg+2, main_playerY, 7
     REPEAT 4
     LSR_D main_arg+2
     REPEND
-    jsr main_GetTileBehavior
-    lda main_ret
+    lda main_arg+2
+    sta main_sav+2
     
+    jsr main_MultiplyBy24 ;takes arg0, which we no longer care about after this
+                          ;returns
+    ;t0 = y+ x*24
+    ADD_D main_tmp, main_arg+2, main_ret
+    
+    ;lookup tile, get behavior
+    ADDI_D main_tmp, main_tmp, main_levelMap
+    ldy #0
+    lda (main_tmp),y
+    sta main_sav
+    tay
+    lda prgdata_metatiles+256*4,y
+    REPEAT 2
+    lsr
+    REPEND
+    sta main_sav+3
+    cmp #TB_CRYSTAL
+    bne .not_crystal
+    lda #0
+    sta main_sav
+    jmp .updateTile
+.not_crystal:
+    lda #JOY_B_MASK
+    and main_pressed
+    BEQ_L main_TileInteraction_end
+    lda main_sav+3
     cmp #TB_LIGHTSON
-    beq .lights_on
-    cmp #TB_LIGHTSOFF
-    BEQ_L lights_off
-    
-    cmp #TB_ON
-    BCS_L switch_on
-    cmp #TB_OFF
-    BCS_L switch_off
-    
-    MOV_D main_entityX, main_playerX
-    MOV_D main_entityY, main_playerY
-    
-    MOV_D shr_debugReg, main_playerX
-    
-    jmp action_end
-.lights_on:
-    ;a0 = x in tiles
-    ADDI_D main_arg, main_playerX, 7
-    REPEAT 4
-    LSR_D main_arg
-    REPEND
-    ;a2 = y in tiles
-    ADDI_D main_arg+2, main_playerY, 7
-    REPEAT 4
-    LSR_D main_arg+2
-    REPEND
-    MOVI main_arg+4, 38
+    bne .not_lighton
     MOVI_D shr_palAddr, prgdata_palettes
     inc shr_doPalCopy
-    jsr main_SetTile
-    jmp action_end
-lights_off:
-    ;a0 = x in tiles
-    ADDI_D main_arg, main_playerX, 7
-    REPEAT 4
-    LSR_D main_arg
-    REPEND
-    ;a2 = y in tiles
-    ADDI_D main_arg+2, main_playerY, 7
-    REPEAT 4
-    LSR_D main_arg+2
-    REPEND
-    MOVI main_arg+4, 37
-    MOVI_D shr_palAddr, prgdata_palettes+32
+    lda #38
+    sta main_sav
+    jmp .updateTile
+.not_lighton:
+    cmp #TB_LIGHTSOFF
+    bne .not_lightoff
+   MOVI_D shr_palAddr, [prgdata_palettes+32]
     inc shr_doPalCopy
-    jsr main_SetTile
-    jmp action_end
-    
-switch_on:
-    sec
-    sbc #TB_ON
-    tax
-    lda #1
-.off_loop:
-    cpx #0
-    beq .no_off_shift
-    asl
+    lda #37
+    sta main_sav
+    jmp .updateTile
+.not_lightoff:
+    cmp #TB_ON
+    bcc .not_switchon
+    ldx main_sav
     dex
-    jmp .on_loop
-.no_off_shift:
-    ora main_switches
-    
-    ;a0 = x in tiles
-    ADDI_D main_arg, main_playerX, 7
-    REPEAT 4
-    LSR_D main_arg
-    REPEND
-    ;a2 = y in tiles
-    ADDI_D main_arg+2, main_playerY, 7
-    REPEAT 4
-    LSR_D main_arg+2
-    REPEND
-    jsr main_GetTile    ;assuming it does not modify its arguments
-    SUBI_D main_arg+4, main_ret, 1
+    txa
+    sta main_sav
+    jmp .updateTile
+.not_switchon:
+    cmp #TB_OFF
+    bcc .notswitchoff
+    ldx main_sav
+    inx
+    txa
+    sta main_sav
+    jmp .updateTile
+.notswitchoff:
+    MOV_D main_entityX, main_playerX
+    MOV_D main_entityY, main_playerY
+    jmp main_TileInteraction_end
+.updateTile:
+    lda main_sav+1
+    sta main_arg
+    lda main_sav+2
+    sta main_arg+2
+    lda #0
+    sta main_arg+1
+    sta main_arg+3
+    lda main_sav
+    sta main_arg+4
     jsr main_SetTile
-    jmp action_end
-    
-switch_off:
-    sec
-    sbc #TB_OFF
-    tax
-    lda #1
-.on_loop:
-    cpx #0
-    beq .no_shift
-    asl
-    dex
-    jmp .on_loop
-.no_shift:
-    eor main_switches ; should be or of the inverse, not this
-    
-    ;a0 = x in tiles
-    ADDI_D main_arg, main_playerX, 7
-    REPEAT 4
-    LSR_D main_arg
-    REPEND
-    ;a2 = y in tiles
-    ADDI_D main_arg+2, main_playerY, 7
-    REPEAT 4
-    LSR_D main_arg+2
-    REPEND
-    jsr main_GetTile    ;assuming it does not modify its arguments
-    ADDI_D main_arg+4, main_ret, 1
-    jsr main_SetTile
-    jmp action_end
-    
-action_end:
-    MOV main_oldCtrl, main_sav
-main_CheckInput_end:
+main_TileInteraction_end:
 
 main_ApplyGravity subroutine
     CMPI_D main_playerYVel, $0400
@@ -325,36 +291,6 @@ main_ApplyGravity subroutine
     ADDI_D main_playerYVel, main_playerYVel, 16
 main_ApplyGravity_end:
 
-main_CheckCrystal subroutine
-    ;a0 = x in tiles
-    ADDI_D main_arg, main_playerX, 7
-    REPEAT 4
-    LSR_D main_arg
-    REPEND
-    ;a2 = y in tiles
-    ADDI_D main_arg+2, main_playerY, 7
-    REPEAT 4
-    LSR_D main_arg+2
-    REPEND
-    jsr main_GetTileBehavior
-    lda main_ret
-    cmp #TB_CRYSTAL
-    bne main_CheckCrystal_end
-    
-    ;a0 = x in tiles
-    ADDI_D main_arg, main_playerX, 7
-    REPEAT 4
-    LSR_D main_arg
-    REPEND
-    ;a2 = y in tiles
-    ADDI_D main_arg+2, main_playerY, 7
-    REPEAT 4
-    LSR_D main_arg+2
-    REPEND
-    MOVI main_arg+4, 0
-    jsr main_SetTile
-
-main_CheckCrystal_end:
 
 main_CheckLeft subroutine
     ;skip if not moving left (>= 0)
@@ -726,20 +662,20 @@ main_updateEntities subroutine
 main_updateEntities_end:
 
 main_UpdateEntitySprites subroutine
-    ldy #[4+[2*4]]
+    ldy #[shr_entitySprites-shr_oamShadow]
     ldx #0
 .loop:
     tya
 
     lda #0
     sta shr_spriteFlags,y
-    sta shr_spriteFlags+4,y
+    sta shr_spriteFlags+OAM_SIZE,y
 
     lda #64
     sta shr_spriteIndex,y
     clc
     adc #2
-    sta shr_spriteIndex+4,y
+    sta shr_spriteIndex+OAM_SIZE,y
 
     txa
     asl
@@ -753,19 +689,25 @@ main_UpdateEntitySprites subroutine
     sbc shr_cameraX+1
     sta main_tmp+1
     DEC_D main_tmp
+    
+    lda #$FF
+    sta shr_spriteX,y
+    sta shr_spriteX+OAM_SIZE,y
+    sta shr_spriteY,y
+    sta shr_spriteY+OAM_SIZE,y
+    
     CMPI_D main_tmp, $FF
-    bmi .x_in_range
-    MOVI main_tmp, $FF
-.x_in_range:
+    bcs .out_of_range
     lda main_tmp
     sta shr_spriteX,y
-    cmp #$FF
-    bcs .x_not_in_range_really 
-    clc
-    adc #8
-.x_not_in_range_really:
-    sta shr_spriteX+4,y
 
+    ADDI_D main_tmp, main_tmp, 8
+    
+    CMPI_D main_tmp, $FF
+    bcs .out_of_range
+    lda main_tmp
+    sta shr_spriteX+OAM_SIZE,y
+    
     sec
     lda main_entityY,x
     sbc shr_cameraY
@@ -775,12 +717,15 @@ main_UpdateEntitySprites subroutine
     sta main_tmp+1
     ADDI_D main_tmp, main_tmp, 29
     CMPI_D main_tmp, 240
-    bmi .y_in_range
-    MOVI main_tmp, $FF
-.y_in_range:
+    bcs .out_of_range
+    CMPI_D main_tmp, 3*8
+    bcc .out_of_range
     lda main_tmp
     sta shr_spriteY,y
-    sta shr_spriteY+4,y
+    sta shr_spriteY+OAM_SIZE,y
+    
+.out_of_range:
+
     
     txa
     lsr
@@ -791,7 +736,7 @@ main_UpdateEntitySprites subroutine
     clc
     adc #8
     tay
-    cpy #64
+    cpy #MAX_ENTITIES*2
     bcs main_UpdateEntitySprites_end
     jmp .loop
 main_UpdateEntitySprites_end

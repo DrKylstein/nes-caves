@@ -37,11 +37,19 @@ shr_attrBuffer      ds TOP_ATTR_HEIGHT+BOTTOM_ATTR_HEIGHT ; 5+ 8 = 13 : 61
 shr_stack:
 
     ORG $0200
+OAM_SIZE = 4
+SY = 0
+SI = 1
+SF = 2
+SX = 3
 shr_oamShadow:
 shr_spriteY         ds 1
 shr_spriteIndex     ds 1
 shr_spriteFlags     ds 1
 shr_spriteX         ds 1
+shr_blankSprite     ds 4
+shr_playerSprites   ds 8
+shr_entitySprites:
 
     ORG $0300
 shr_cameraX         ds 2 ;2
@@ -49,17 +57,19 @@ shr_cameraY         ds 2 ;4
 shr_debugReg        ds 2 ;6
 shr_cameraYMod      ds 1 ;7
 shr_nameTable       ds 1 ;8
+main_ctrl        ds 1 ;9
 main_oldCtrl        ds 1 ;9
-main_switches       ds 1 ;10
-main_playerFlags    ds 1 ;11 ;jumping,flipped,in air,00000
-main_playerFrame    ds 1 ;12
-main_playerXVel     ds 1 ;13
-main_playerYFrac    ds 1 ;14
-main_playerY        ds 2 ;16
-main_playerYVel     ds 2 ;19
-main_playerX        ds 2 ;20
+main_pressed      ds 1 ;
+main_switches       ds 1 ;
+main_playerFlags    ds 1 ; ;jumping,flipped,in air,00000
+main_playerFrame    ds 1 ;
+main_playerXVel     ds 1 ;
+main_playerYFrac    ds 1 ;
+main_playerY        ds 2 ;
+main_playerYVel     ds 2 ;
+main_playerX        ds 2 ;
 
-MAX_ENTITIES = 32
+MAX_ENTITIES = 16
 ;main_entityFrame    ds MAX_ENTITIES
 main_entityX        ds MAX_ENTITIES*2
 main_entityY        ds MAX_ENTITIES*2
