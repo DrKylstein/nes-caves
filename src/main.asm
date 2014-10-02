@@ -169,7 +169,8 @@ main_CheckInput subroutine
     lda main_ctrl
     and #JOY_LEFT_MASK
     beq .left_end
-    MOVI main_playerXVel, $FF
+    lda #<-1
+    sta main_playerXVel
     lda main_playerFlags
     ora #%01000000
     sta main_playerFlags
@@ -178,7 +179,8 @@ main_CheckInput subroutine
     lda main_ctrl
     and #JOY_RIGHT_MASK
     beq .right_end
-    MOVI main_playerXVel, 1
+    lda #1
+    sta main_playerXVel
     lda main_playerFlags
     and #%10111111
     sta main_playerFlags
