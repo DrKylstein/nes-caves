@@ -130,7 +130,7 @@ load_rest subroutine
     sta shr_ppuCtrl
     sta PPU_CTRL
     
-    MOVI_D shr_palAddr, [prgdata_palettes+32]
+    MOVI_D shr_palAddr, [prgdata_palettes];+32]
     inc shr_doPalCopy
     
     ldy #4 ;oam index
@@ -526,8 +526,8 @@ main_UpdateCameraX_end:
 
 main_UpdateCameraY subroutine
 .Scroll_Up:
-    ;no scrolling because player not near screen edge
     SUB_D main_sav, main_playerY, shr_cameraY
+    ;no scrolling because player not near screen edge
     lda main_sav ;player's on-screen y
     cmp #[MT_VSCROLL_MARGIN*PX_MT_HEIGHT]
     bcs .Scroll_Up_end
@@ -537,25 +537,36 @@ main_UpdateCameraY subroutine
     ora shr_cameraY+1
     beq .Scroll_Up_end
     
-    ;scroll up one pixel
-    DEC_D shr_cameraY
-	dec shr_cameraYMod
+    lda #[MT_VSCROLL_MARGIN*PX_MT_HEIGHT]
+    sec
+    sbc main_sav
+    sta main_tmp
+    lda #0
+    sta main_tmp+1
+    SUB_D shr_cameraY, shr_cameraY, main_tmp
+    
     ;handle nametable boundary
-	lda shr_cameraYMod
-	cmp #$FF
-	bne .noModUp
-	lda #239
-	sta shr_cameraYMod
+    lda shr_cameraYMod
+    cmp main_tmp
+    bcs .noModUp
+    clc
+    adc #240
+    sta shr_cameraYMod
 	lda #2
 	eor shr_nameTable
 	sta shr_nameTable
 .noModUp:
-    inc main_sav
+
+	lda shr_cameraYMod
+    sec
+	sbc main_tmp
+    sta shr_cameraYMod
 .Scroll_Up_end:
     
 .Scroll_Down:
     ;no scrolling because player not near screen edge
-    lda main_sav ;player's on-screen y
+    SUB_D main_sav, main_playerY, shr_cameraY
+    lda main_sav
     cmp #[[MT_VIEWPORT_HEIGHT - MT_VSCROLL_MARGIN]*PX_MT_HEIGHT]
     bcc .Scroll_Down_end
     
@@ -564,19 +575,27 @@ main_UpdateCameraY subroutine
     bcs .Scroll_Down_end
     
     ;scroll down one pixel
-    INC_D shr_cameraY
-    inc shr_cameraYMod
-    ;handle nametable boundary
-    lda shr_cameraYMod
-    cmp #240
-    bne .noModDown
+    lda main_sav ;player's on-screen y
+    sec
+    sbc #[[MT_VIEWPORT_HEIGHT - MT_VSCROLL_MARGIN]*PX_MT_HEIGHT]
+    sta main_tmp
     lda #0
+    sta main_tmp+1
+    ADD_D shr_cameraY, shr_cameraY, main_tmp
+    lda shr_cameraYMod
+    clc
+    adc main_tmp
+    sta shr_cameraYMod
+    
+    ;handle nametable boundary
+    cmp #240
+    bcc .Scroll_Down_end
+    sec
+    sbc #240
     sta shr_cameraYMod
 	lda #2
 	eor shr_nameTable
 	sta shr_nameTable
-.noModDown:
-    dec main_sav
 .Scroll_Down_end:
 main_UpdateCameraY_end:
 
