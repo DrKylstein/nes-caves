@@ -53,14 +53,14 @@ main_clearOAM subroutine
     bne .loop
 main_clearOAM_end:
 main_clearEntities subroutine
-    lda #MAX_ENTITIES
-    asl
-    tay
+    ldy #MAX_ENTITIES
     lda #$7F
 .loop:
     dey
-    sta main_entityX,y
-    sta main_entityY,y
+    sta main_entityXLo,y
+    sta main_entityXHi,y
+    sta main_entityYLo,y
+    sta main_entityYHi,y
     bne .loop
 main_clearEntities_end:
  
@@ -150,6 +150,9 @@ load_rest subroutine
 
 	lda #96
 	sta shr_cameraYMod
+
+    lda #5
+    sta shr_ammo
 
     lda #%00011000
     sta shr_ppuMask
@@ -271,9 +274,49 @@ main_TileInteraction subroutine
     sta main_sav
     jmp .updateTile
 .notswitchoff:
-    MOV_D main_entityX, main_playerX
-    MOV_D main_entityY, main_playerY
+
+;shoot
+    lda main_entityXHi
+    sta shr_debugReg
+    cmp #$7F
+    bne main_TileInteraction_end
+    lda shr_ammo
+    beq main_TileInteraction_end
+    dec shr_ammo
+    lda main_playerX
+    sta main_entityXLo
+    lda main_playerX+1
+    sta main_entityXHi
+    lda main_playerY
+    sta main_entityYLo
+    lda main_playerY+1
+    sta main_entityYHi
+    bit main_playerFlags
+    bvs .shootLeft
+.shootRight:
+    lda #2
+    sta main_entityXVel
+    clc
+    lda #16
+    adc main_entityXLo
+    sta main_entityXLo
+    lda #0
+    adc main_entityXHi
+    sta main_entityXHi
+    
     jmp main_TileInteraction_end
+.shootLeft:
+    lda #<-2
+    sta main_entityXVel
+    sec
+    lda main_entityXLo
+    sbc #8
+    sta main_entityXLo
+    lda main_entityXHi
+    sbc #0
+    sta main_entityXHi
+    jmp main_TileInteraction_end
+    
 .updateTile:
     lda main_sav+1
     sta main_arg
@@ -658,27 +701,57 @@ main_UpdatePlayerSprite subroutine
 main_UpdatePlayerSprite_end:
 
 main_updateEntities subroutine
-    ldy #MAX_ENTITIES
+    ldy #0
 .loop:
-    dey
-    tya
-    asl
-    tay
-    lda main_entityX,y
-    sta main_tmp
-    lda main_entityX+1,y
-    sta main_tmp+1
-    CMPI_D main_tmp, $7F7F
+    lda main_entityXHi,y
+    cmp #$7F
     beq .inactive
-    INC_D main_tmp
+    
+    sec
+    lda main_entityXLo,y
+    sbc shr_cameraX
+    sta main_tmp
+    lda main_entityXHi,y
+    sbc shr_cameraX+1
+    sta main_tmp+1
+    
+    CMPI_D main_tmp, #$FF
+    bcc .notoffright
+    lda #$7F
+    sta main_entityXHi,y
+    jmp .inactive
+.notoffright
+
+    CMPI_D main_tmp, #$0
+    bcs .notoffleft
+    lda #$7F
+    sta main_entityXHi,y
+    jmp .inactive
+.notoffleft
+    
+    lda main_entityXHi,y
+    sta main_tmp+1
+    lda main_entityXLo,y
+    sta main_tmp
+    lda main_entityXVel,y
+    sta shr_debugReg
+    sta main_tmp+2
+    bmi .negative
+    lda #0
+    sta main_tmp+3
+    jmp .continue
+.negative:
+    lda #$FF
+    sta main_tmp+3
+.continue:
+    ADD_D main_tmp, main_tmp, main_tmp+2
     lda main_tmp
-    sta main_entityX,y
+    sta main_entityXLo,y
     lda main_tmp+1
-    sta main_entityX+1,y
+    sta main_entityXHi,y
 .inactive:
-    tya
-    lsr
-    tay
+    iny
+    cpy #MAX_ENTITIES
     bne .loop
 main_updateEntities_end:
 
@@ -698,18 +771,14 @@ main_UpdateEntitySprites subroutine
     adc #2
     sta shr_spriteIndex+OAM_SIZE,y
 
-    txa
-    asl
-    tax
 
     sec
-    lda main_entityX,x
+    lda main_entityXLo,x
     sbc shr_cameraX
     sta main_tmp
-    lda main_entityX+1,x
+    lda main_entityXHi,x
     sbc shr_cameraX+1
     sta main_tmp+1
-    DEC_D main_tmp
     
     lda #$FF
     sta shr_spriteX,y
@@ -730,10 +799,10 @@ main_UpdateEntitySprites subroutine
     sta shr_spriteX+OAM_SIZE,y
     
     sec
-    lda main_entityY,x
+    lda main_entityYLo,x
     sbc shr_cameraY
     sta main_tmp
-    lda main_entityY+1,x
+    lda main_entityYHi,x
     sbc shr_cameraY+1
     sta main_tmp+1
     ADDI_D main_tmp, main_tmp, 29
@@ -747,11 +816,6 @@ main_UpdateEntitySprites subroutine
     
 .out_of_range:
 
-    
-    txa
-    lsr
-    tax
-    
     inx
     tya
     clc

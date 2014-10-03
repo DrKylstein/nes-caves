@@ -42,6 +42,18 @@ nmi subroutine
     adc #HEXFONT_BASE
     sta PPU_DATA
     
+    lda shr_ppuCtrl
+    and %11111011
+    sta PPU_CTRL
+    bit PPU_STATUS
+    lda #$20
+    sta PPU_ADDR
+    lda #$71
+    sta PPU_ADDR
+    lda shr_ammo
+    clc
+    adc #HEXFONT_BASE
+    sta PPU_DATA
 
 .sprite_dma:
     lda shr_doDma

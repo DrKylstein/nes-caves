@@ -57,9 +57,9 @@ shr_cameraY         ds 2 ;4
 shr_debugReg        ds 2 ;6
 shr_cameraYMod      ds 1 ;7
 shr_nameTable       ds 1 ;8
-main_ctrl        ds 1 ;9
+main_ctrl           ds 1 ;9
 main_oldCtrl        ds 1 ;9
-main_pressed      ds 1 ;
+main_pressed        ds 1 ;
 main_switches       ds 1 ;
 main_playerFlags    ds 1 ; ;jumping,flipped,in air,00000
 main_playerFrame    ds 1 ;
@@ -68,11 +68,15 @@ main_playerYFrac    ds 1 ;
 main_playerY        ds 2 ;
 main_playerYVel     ds 2 ;
 main_playerX        ds 2 ;
+shr_ammo            ds 1 ;
 
 MAX_ENTITIES = 16
 ;main_entityFrame    ds MAX_ENTITIES
-main_entityX        ds MAX_ENTITIES*2
-main_entityY        ds MAX_ENTITIES*2
+main_entityXLo        ds MAX_ENTITIES
+main_entityXHi        ds MAX_ENTITIES
+main_entityYLo        ds MAX_ENTITIES
+main_entityYHi        ds MAX_ENTITIES
+main_entityXVel    ds MAX_ENTITIES
 ;main_entityType     ds MAX_ENTITIES
 
     ORG $0400
