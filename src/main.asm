@@ -112,11 +112,6 @@ main_clearEntities_end:
     cpy #$88
     bne .load_hud_attr
     
-    MOVI_D main_arg, prgdata_level01
-    jsr main_LoadLevel
-    
-    jsr main_InitialLevelLoad
-
     ;set sprite 0 for status bar
     lda #22
     sta shr_spriteY
@@ -125,16 +120,32 @@ main_clearEntities_end:
     lda #$FE
     sta shr_spriteIndex
     
-load_rest subroutine
-    lda #%10110000 ;enable nmi
-    sta shr_ppuCtrl
-    sta PPU_CTRL
     
     MOVI_D shr_palAddr, [prgdata_palettes];+32]
     inc shr_doPalCopy
     
+    MOVI_D main_arg, prgdata_level01
+main_LevelStart:
+    ;lda #%00110000 ;disable nmi
+    ;sta shr_ppuCtrl
+    ;sta PPU_CTRL
+
+    MOVI_D shr_cameraX, 0
+    MOVI_D shr_cameraY, 0
+    jsr main_LoadLevel
+    jsr main_InitialLevelLoad
+    
+load_rest subroutine
+    lda #%10110000 ;enable nmi
+    sta shr_ppuCtrl
+    sta PPU_CTRL
+
+
     ldy #4 ;oam index
     lda #0
+    sta main_playerX+1
+    sta main_playerY+1
+    sta shr_nameTable
     sta shr_spriteFlags,y
     sta shr_spriteFlags+4,y
     lda #48
@@ -238,6 +249,11 @@ main_TileInteraction subroutine
     sta main_sav
     jmp .updateTile
 .not_crystal:
+    cmp #TB_MAPDOOR
+    bne .not_door
+    MOVI_D main_arg, prgdata_mainMap
+    jmp main_LevelStart
+.not_door:
     lda #JOY_B_MASK
     and main_pressed
     BEQ_L main_TileInteraction_end
@@ -705,8 +721,75 @@ main_updateEntities subroutine
 .loop:
     lda main_entityXHi,y
     cmp #$7F
-    beq .inactive
+    bne .active
+    jmp .inactive
+.active:   
     
+    lda main_entityXLo,y
+    sta main_tmp
+    lda main_entityXHi,y
+    sta main_tmp+1
+    ADDI_D main_arg, main_tmp, 7
+    REPEAT 4
+    LSR_D main_arg
+    REPEND
+    lda main_arg
+    sta main_sav+1
+    lda main_entityYLo,y
+    sta main_tmp
+    lda main_entityYHi,y
+    sta main_tmp+1
+    ADDI_D main_arg+2, main_tmp, 7
+    REPEAT 4
+    LSR_D main_arg+2
+    REPEND
+    lda main_arg+2
+    sta main_sav+2
+    jsr main_MultiplyBy24 ;takes arg0, which we no longer care about after this
+                          ;returns
+    ;t0 = y+ x*24
+    ADD_D main_tmp, main_arg+2, main_ret
+    ;lookup tile, get behavior
+    ADDI_D main_tmp, main_tmp, main_levelMap
+    tya
+    pha
+    ldy #0
+    lda (main_tmp),y
+    sta main_sav
+    tay
+    lda prgdata_metatiles+256*4,y
+    REPEAT 2
+    lsr
+    REPEND
+    sta main_sav+3
+    pla
+    tay
+    
+    lda main_sav+3
+    cmp #TB_WEAKBLOCK
+    bne .nosplode
+    lda main_sav+1
+    sta main_arg
+    lda main_sav+2
+    sta main_arg+2
+    lda #0
+    sta main_arg+1
+    sta main_arg+3
+    lda #0
+    sta main_arg+4
+    jsr main_SetTile
+    lda #$7F
+    sta main_entityXHi,y
+    jmp .inactive
+
+.nosplode:
+    cmp #TB_SOLID
+    bne .nostop
+    lda #$7F
+    sta main_entityXHi,y
+    jmp .inactive
+    
+.nostop:    
     sec
     lda main_entityXLo,y
     sbc shr_cameraX
@@ -734,7 +817,6 @@ main_updateEntities subroutine
     lda main_entityXLo,y
     sta main_tmp
     lda main_entityXVel,y
-    sta shr_debugReg
     sta main_tmp+2
     bmi .negative
     lda #0
@@ -752,7 +834,8 @@ main_updateEntities subroutine
 .inactive:
     iny
     cpy #MAX_ENTITIES
-    bne .loop
+    beq main_updateEntities_end
+    jmp .loop
 main_updateEntities_end:
 
 main_UpdateEntitySprites subroutine
