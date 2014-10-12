@@ -26,12 +26,13 @@ BOTTOM_ATTR_OFFSET = $2BC0
 TB_EMPTY:      ds 1 ;1
 TB_SOLID:      ds 1 ;2
 TB_PLATFORM:   ds 1 ;3
-TB_MAPDOOR:    ds 1 ;4
+TB_EXIT:    ds 1 ;4
 TB_DEADLY:     ds 1 ;5
 TB_CRYSTAL:    ds 1 ;6
 TB_LIGHTSON:   ds 1 ;7
 TB_LIGHTSOFF:  ds 1 ;8
 TB_WEAKBLOCK:  ds 1 ;9
-TB_UNUSED:     ds 47 ;56
+TB_UNUSED:     ds 31 ;56
+TB_MAPDOOR     ds 16
 TB_OFF:        ds 4 ;60
 TB_ON:         ds 4 ;64

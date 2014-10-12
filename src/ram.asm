@@ -54,30 +54,38 @@ shr_entitySprites:
     ORG $0300
 shr_cameraX         ds 2 ;2
 shr_cameraY         ds 2 ;4
-shr_debugReg        ds 2 ;6
-shr_cameraYMod      ds 1 ;7
-shr_nameTable       ds 1 ;8
+shr_cameraYMod      ds 1 ;5
+shr_nameTable       ds 1 ;6
+shr_debugReg        ds 2 ;8
 main_ctrl           ds 1 ;9
-main_oldCtrl        ds 1 ;9
-main_pressed        ds 1 ;
-main_switches       ds 1 ;
-main_playerFlags    ds 1 ; ;jumping,flipped,in air,00000
-main_playerFrame    ds 1 ;
-main_playerXVel     ds 1 ;
-main_playerYFrac    ds 1 ;
-main_playerY        ds 2 ;
-main_playerYVel     ds 2 ;
-main_playerX        ds 2 ;
-shr_ammo            ds 1 ;
+main_oldCtrl        ds 1 ;10
+main_pressed        ds 1 ;11
+main_switches       ds 1 ;12
+main_playerFlags    ds 1 ;13 ;jumping,flipped,in air,00000
+main_playerFrame    ds 1 ;14
+main_playerXVel     ds 1 ;15
+main_playerYFrac    ds 1 ;16
+main_playerY        ds 2 ;18
+main_playerYVel     ds 2 ;20
+main_playerX        ds 2 ;22
+shr_ammo            ds 1 ;23
+main_mapPX          ds 2;25
+main_mapPY          ds 2;27
+main_mapCamX        ds 2 ;29
+main_mapCamY        ds 2 ;31
+main_mapCamYMod     ds 1 ;32
+main_currLevel      ds 1 ;33
 
 MAX_ENTITIES = 16
 ;main_entityFrame    ds MAX_ENTITIES
-main_entityXLo        ds MAX_ENTITIES
-main_entityXHi        ds MAX_ENTITIES
-main_entityYLo        ds MAX_ENTITIES
-main_entityYHi        ds MAX_ENTITIES
-main_entityXVel    ds MAX_ENTITIES
+main_entityXLo        ds MAX_ENTITIES ;49
+main_entityXHi        ds MAX_ENTITIES ;65
+main_entityYLo        ds MAX_ENTITIES ;81
+main_entityYHi        ds MAX_ENTITIES ;97
+main_entityXVel       ds MAX_ENTITIES ;113
 ;main_entityType     ds MAX_ENTITIES
+
+main_levelFlags     ds 16 ; 129
 
     ORG $0400
 main_levelMap       ds 960

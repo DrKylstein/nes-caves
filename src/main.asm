@@ -124,14 +124,21 @@ main_clearEntities_end:
     MOVI_D shr_palAddr, [prgdata_palettes];+32]
     inc shr_doPalCopy
     
-    MOVI_D main_arg, prgdata_level01
-main_LevelStart:
-    ;lda #%00110000 ;disable nmi
-    ;sta shr_ppuCtrl
-    ;sta PPU_CTRL
-
+    MOVI_D main_arg, prgdata_mainMap
+    MOVI_D main_playerX, 48
+    MOVI_D main_playerY, 48
     MOVI_D shr_cameraX, 0
     MOVI_D shr_cameraY, 0
+    lda #0
+    sta shr_cameraYMod
+    sta shr_nameTable
+main_LevelStart:
+    lda #%00000000 ;disable nmi
+    sta shr_ppuCtrl
+    sta PPU_CTRL
+    sta shr_ppuMask
+    sta PPU_MASK
+
     jsr main_LoadLevel
     jsr main_InitialLevelLoad
     
@@ -139,23 +146,6 @@ load_rest subroutine
     lda #%10110000 ;enable nmi
     sta shr_ppuCtrl
     sta PPU_CTRL
-
-
-    ldy #4 ;oam index
-    lda #0
-    sta main_playerX+1
-    sta main_playerY+1
-    sta shr_nameTable
-    sta shr_spriteFlags,y
-    sta shr_spriteFlags+4,y
-    lda #48
-    sta main_playerX
-    tax
-    lda #48
-    sta main_playerY
-    jsr main_SetSpritePos
-    lda #0 ;first tile index
-    jsr main_SetSpriteTiles
 
     inc shr_doDma
 
@@ -249,9 +239,62 @@ main_TileInteraction subroutine
     sta main_sav
     jmp .updateTile
 .not_crystal:
-    cmp #TB_MAPDOOR
-    bne .not_door
+    cmp #TB_EXIT
+    bne .not_exit
+    ldy main_currLevel
+    lda #1
+    sta main_levelFlags,y
     MOVI_D main_arg, prgdata_mainMap
+    MOV_D main_playerX, main_mapPX
+    MOV_D main_playerY, main_mapPY
+    MOV_D shr_cameraX, main_mapCamX
+    MOV_D shr_cameraY, main_mapCamY
+    lda main_mapCamYMod
+    sta shr_cameraYMod
+    CMPI_D shr_cameraY, 240
+    lda #0
+    bcc .nt0
+    lda #2
+.nt0:
+    sta shr_nameTable
+    jmp main_LevelStart
+.not_exit:
+    cmp #TB_MAPDOOR+16
+    bcc .maybe_door
+    jmp .not_door
+.maybe_door:
+    cmp #TB_MAPDOOR-1
+    bcs .still_maybe_door
+    jmp .not_door
+.still_maybe_door:
+    sec
+    sbc #TB_MAPDOOR
+    sta main_currLevel
+    tay
+    lda main_levelFlags,y
+    bne .not_door
+    tya
+    asl
+    tay
+    lda prgdata_levelTable,y
+    sta main_arg
+    lda prgdata_levelTable+1,y
+    sta main_arg+1
+    ;MOV_D main_mapPX, main_playerX
+    ;MOV_D main_mapPY, main_playerY
+    ;MOV_D main_mapCamX, shr_cameraX
+    ;MOV_D main_mapCamY, shr_cameraY
+    ;lda shr_cameraYMod
+    ;sta main_mapCamYMod
+    
+    MOVI_D main_playerX, 48
+    MOVI_D main_playerY, 48
+    MOVI_D shr_cameraX, 0
+    MOVI_D shr_cameraY, 0
+    lda #0
+    sta shr_cameraYMod
+    sta shr_nameTable
+    
     jmp main_LevelStart
 .not_door:
     lda #JOY_B_MASK
