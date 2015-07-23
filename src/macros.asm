@@ -144,12 +144,6 @@
     lda {1}+1
     sbc #>{2}
 	ENDM
-
-	MAC LRB ;long reverse branch, doeas a long branch with inverted logic
-	{1} .not
-	jmp {2}
-.not:
-	ENDM
     
 	MAC BNE_L
 	beq .not

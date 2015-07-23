@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="40" height="24" tilewidth="16" tileheight="16">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="24" tilewidth="16" tileheight="16" nextobjectid="4">
  <properties>
   <property name="__script__" value="nescave"/>
  </properties>
@@ -8,7 +8,28 @@
  </tileset>
  <layer name="Names" width="40" height="24">
   <data encoding="base64" compression="zlib">
-   eJzNlt0OgjAMhfcK4g1EhIDGcKfIA+j7P5UjoUltekbHX3ZxEthPd/a1W9Y6596JqvW6eeWJqmH+Cq9rAqqBvyohXRR/IZU7/1vyi3Rh2vtf9ln5pXQ+6gPXj/HH6zOmRpbKEh/ld2+W1vjIn2S5tfdQfM5V+rMwt3hf6l/ufevzIe/ZtVxD5+MIFTM81t5/J69s0tmrA+1zvFDMJe8XOb9lcchfI/osXkm9i39fIU/SXz55lP5ivI48n16viPxq66F3JPcnx2j70fTx+hr8ETct9rjPchLKL/VXYI8ax5j6Q9wGMQ750+pqjqOl/hC3wf2fOT5Oyy/nQ/P6GY78nkP5ldyImbwL+F6JaQfaef1rLJGPsf0e4Ea1xplpe+XetXZtnnYP0ZiHyEPo7siUMVmkQrHQeuP3D1P8ags=
+   eJzNllFuwjAQRM0RSD8iRCpEQBV/peUA9P6nwkixtBpmdh3SBD5GSmKv93l2baVPKf2+qfqsQ9ZqUGu0Wkitk3dv+DZZn2+gHeHDPSzpH6vbNuDD+G7md9VbjA/jtkZzv+OY7b9X1dYTOx+7BfPX8rHzwXrE9srU3N76EV/k5dQ+qK2Vra/N6+X/D3YvT2fmIF8X8EX89o6P+Nladu/Ih2M1fK0zNoZNyatv7fqRJ17sBvxQfM/ufZ3VDPrIOonvau/RmuX/peZuVvG9Wafw7WEMWb19/yT9f6WkmJCvHRiRL2JFxu+sc3rsP+8ewjzsPxL5cA7uR/l4zfqr4Cu+qbW7Qaq+ZVztkfmo+m+MbxeIUXw2b+mryEfWf3g+lG+XxM+aqm/xB/vf87HmfkHfrGfqrJXxk/jO4tj5YnxH4oeKWxNPasTi2D1U5nxBHby7oyFzmpHy1lL57s83DlVH2Q==
   </data>
  </layer>
+ <objectgroup name="Entities">
+  <properties>
+   <property name="flags" value="0x62"/>
+   <property name="index" value="72"/>
+   <property name="velocity" value="1"/>
+  </properties>
+  <object id="1" x="224" y="320" width="16" height="16">
+   <properties>
+    <property name="flags" value="0x62"/>
+    <property name="index" value="72"/>
+    <property name="velocity" value="1"/>
+   </properties>
+  </object>
+  <object id="3" x="400" y="320" width="16" height="16">
+   <properties>
+    <property name="flags" value="0x62"/>
+    <property name="index" value="72"/>
+    <property name="velocity" value="1"/>
+   </properties>
+  </object>
+ </objectgroup>
 </map>

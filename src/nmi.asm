@@ -15,7 +15,7 @@ nmi subroutine
     bit PPU_STATUS
     lda #$20
     sta PPU_ADDR
-    lda #$01
+    lda #$5A
     sta PPU_ADDR
     lda shr_debugReg+1
     REPEAT 4
@@ -91,16 +91,15 @@ nmi subroutine
     beq .StatusBar
     lda shr_ppuMask
     sta PPU_MASK 
-    lda shr_cameraX
-    sec
-    sbc #8
+    
+    SUBI_D nmi_scratch, shr_cameraX, 8
+    lda nmi_scratch
     sta nmi_scrollX
+    
     lda shr_cameraYMod
     sta nmi_scrollY
     lda shr_nameTable
-    asl
-    asl
-    sta nmi_scrollY+1
+    sta nmi_nametable
     dec shr_doRegCopy
 
 .StatusBar
@@ -132,12 +131,7 @@ nmi subroutine
     bit PPU_STATUS
     bvc .wait2
 
-    ldx #14
-.wait3:
-    dex
-    bne .wait3
-
-    lda nmi_scrollY+1
+    lda nmi_nametable
     sta PPU_ADDR
     lda nmi_scrollY
     sta PPU_SCROLL

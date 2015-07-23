@@ -1,18 +1,28 @@
 ;------------------------------------------------------------------------------
 main_LoadLevel subroutine
+    MOV_D main_tmp+2, main_arg
     MOVI_D main_tmp, main_levelMap
     ldy #0
     ldx #0
 .loop:
-    lda (main_arg),y
+    lda (main_tmp+2),y
     sta (main_tmp),y
     iny
     bne .loop
-    inc main_arg+1
+    inc main_tmp+3
     inc main_tmp+1
     inx
     cpx #4
     bne .loop
+    
+    ADDI_D main_tmp+2, main_arg, 960
+    MOVI_D main_tmp, main_entityBlock
+    ldy #[main_entityBlockEnd-main_entityBlock]
+.copyEntities:
+    lda (main_tmp+2),y
+    sta (main_tmp),y
+    dey
+    bne .copyEntities
     rts
 ;------------------------------------------------------------------------------
 main_LoadTilesOnMoveRight subroutine

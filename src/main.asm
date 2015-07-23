@@ -115,7 +115,7 @@ main_clearEntities_end:
     ;set sprite 0 for status bar
     lda #22
     sta shr_spriteY
-    lda #254
+    lda #206
     sta shr_spriteX
     lda #$FE
     sta shr_spriteIndex
@@ -241,9 +241,6 @@ main_TileInteraction subroutine
 .not_crystal:
     cmp #TB_EXIT
     bne .not_exit
-    ldy main_currLevel
-    lda #1
-    sta main_levelFlags,y
     MOVI_D main_arg, prgdata_mainMap
     MOV_D main_playerX, main_mapPX
     MOV_D main_playerY, main_mapPY
@@ -270,10 +267,6 @@ main_TileInteraction subroutine
     sec
     sbc #TB_MAPDOOR
     sta main_currLevel
-    tay
-    lda main_levelFlags,y
-    bne .not_door
-    tya
     asl
     tay
     lda prgdata_levelTable,y
@@ -335,13 +328,11 @@ main_TileInteraction subroutine
 .notswitchoff:
 
 ;shoot
-    lda main_entityXHi
-    sta shr_debugReg
     cmp #$7F
     bne main_TileInteraction_end
-    lda shr_ammo
-    beq main_TileInteraction_end
-    dec shr_ammo
+    ;lda shr_ammo
+    ;beq main_TileInteraction_end
+    ;dec shr_ammo
     lda main_playerX
     sta main_entityXLo
     lda main_playerX+1
@@ -349,14 +340,17 @@ main_TileInteraction subroutine
     lda main_playerY
     sta main_entityYLo
     lda main_playerY+1
+    ora #ENT_ISPROJECTILE
     sta main_entityYHi
+    lda #64
+    sta main_entityIndex
     bit main_playerFlags
     bvs .shootLeft
 .shootRight:
     lda #2
     sta main_entityXVel
     clc
-    lda #16
+    lda #8
     adc main_entityXLo
     sta main_entityXLo
     lda #0
@@ -459,7 +453,7 @@ main_CheckRight_end:
 main_CheckGround subroutine
     ;skip if not moving down (< 0)
     CMPI_D main_playerYVel, 0
-    bmi main_CheckGround_end
+    BMI_L main_CheckGround_end
 
     lda main_playerFlags
     ora #%10000000
@@ -480,19 +474,68 @@ main_CheckGround subroutine
     jsr main_GetTileBehavior
     lda main_ret
     cmp #TB_SOLID
-    beq .hit_ground
+    beq .hitGroundTile
     cmp #TB_PLATFORM
-    beq .hit_ground
+    beq .hitGroundTile
     cmp #TB_WEAKBLOCK
-    beq .hit_ground
-    jmp main_CheckGround_end
+    beq .hitGroundTile
     
-.hit_ground: ;stop if moving down
-
-    MOVI_D main_playerYVel, 0
+    jmp .checkSpriteHit
+.hitGroundTile:
     lda #$F0
     and main_playerY
     sta main_playerY
+    jmp .hit_ground
+
+.checkSpriteHit:
+    ldy #MAX_ENTITIES
+    sty main_currPlatform
+.loop:
+    dey
+    BMI_L main_CheckGround_end
+    
+    lda main_entityYHi,y
+    and #ENT_ISPLATFORM
+    beq .loop
+    
+    lda main_entityXLo,y
+    sta main_tmp
+    lda main_entityXHi,y
+    sta main_tmp+1
+    
+    ADDI_D main_tmp+2, main_playerX, 4
+    SUBI_D main_tmp, main_tmp, 8
+    CMP_D main_tmp, main_tmp+2
+    bpl .loop
+    
+    SUBI_D main_tmp+2, main_playerX, 4
+    ADDI_D main_tmp, main_tmp, 16
+    CMP_D main_tmp, main_tmp+2
+    bmi .loop
+    
+    lda main_entityYLo,y
+    sta main_tmp
+    lda main_entityYHi,y
+    and #ENT_YPOS
+    sta main_tmp+1
+    
+    SUBI_D main_tmp+2, main_playerY, 16
+    CMP_D main_tmp, main_tmp+2
+    bmi .longLoop
+
+    SUBI_D main_tmp, main_tmp, 17
+    CMP_D main_tmp, main_playerY
+    bpl .longLoop
+    
+    jmp .hitSprite
+.longLoop:
+    jmp .loop
+.hitSprite:
+    
+    ADDI_D main_playerY, main_tmp, 1
+    sty main_currPlatform
+.hit_ground: ;stop if moving down
+    MOVI_D main_playerYVel, 0
     lda #0
     sta main_playerYFrac
     lda main_playerFlags
@@ -535,8 +578,18 @@ main_CheckCieling subroutine
 main_CheckCieling_end:
     
 main_ApplyVelocity subroutine
-    ;ADD_16_24 main_playerYFrac, main_playerYVel, main_playerYFrac
     MOV_D main_tmp, main_playerYVel
+    ldy main_currPlatform
+    cpy #MAX_ENTITIES
+    bcs .noLift
+    lda main_entityYHi,y
+    and #ENT_ISVERTICAL
+    beq .noLift
+    lda main_entityXVel,y
+    clc
+    adc main_tmp+1
+    ;sta main_tmp+1
+.noLift:    
     lda main_playerYVel+1
     bmi .negativeY
     lda #0
@@ -545,12 +598,22 @@ main_ApplyVelocity subroutine
     lda #$FF
 .continueY:
     sta main_tmp+2
-    
     ADD_24 main_playerYFrac, main_tmp, main_playerYFrac
-    
     
     lda main_playerXVel
     sta main_tmp
+    ldy main_currPlatform
+    cpy #MAX_ENTITIES
+    bcs .noTrolley
+    lda main_entityYHi,y
+    and #ENT_ISVERTICAL
+    bne .noTrolley
+    lda main_tmp
+    adc main_entityXVel,y
+    sta main_tmp
+.noTrolley:
+    lda main_tmp
+    cmp #0
     bmi .negativeX
     lda #0
     jmp .continueX
@@ -559,7 +622,7 @@ main_ApplyVelocity subroutine
 .continueX:
     sta main_tmp+1
     
-    ADD_D main_playerX, main_tmp, main_playerX
+    ADD_D main_playerX, main_playerX, main_tmp
 main_ApplyVelocity_end:
 
 main_UpdateCameraX subroutine
@@ -654,7 +717,7 @@ main_UpdateCameraY subroutine
     clc
     adc #240
     sta shr_cameraYMod
-	lda #2
+	lda #8
 	eor shr_nameTable
 	sta shr_nameTable
 .noModUp:
@@ -695,7 +758,7 @@ main_UpdateCameraY subroutine
     sec
     sbc #240
     sta shr_cameraYMod
-	lda #2
+	lda #8
 	eor shr_nameTable
 	sta shr_nameTable
 .Scroll_Down_end:
@@ -710,7 +773,8 @@ main_UpdatePlayerSprite subroutine
     tax
     SUB_D main_sav, main_playerY, shr_cameraY
     lda main_sav
-    adc #30
+    clc
+    adc #31
     ldy #4
     jsr main_SetSpritePos
 
@@ -760,29 +824,51 @@ main_UpdatePlayerSprite subroutine
 main_UpdatePlayerSprite_end:
 
 main_updateEntities subroutine
-    ldy #0
+    ldy #[MAX_ENTITIES-1]
 .loop:
     lda main_entityXHi,y
     cmp #$7F
     bne .active
     jmp .inactive
 .active:   
-    
+    ;calculate map tile
     lda main_entityXLo,y
-    sta main_tmp
+    sta main_arg
     lda main_entityXHi,y
-    sta main_tmp+1
-    ADDI_D main_arg, main_tmp, 7
+    sta main_arg+1
+    lda main_entityXVel,y
+    bmi .shift
+    lda main_entityYHi,y
+    and #ENT_YPOS
+    bne .shift
+    ADDI_D main_arg, main_arg, 15
+.shift:
     REPEAT 4
     LSR_D main_arg
     REPEND
     lda main_arg
     sta main_sav+1
     lda main_entityYLo,y
-    sta main_tmp
+    sta main_arg+2
     lda main_entityYHi,y
-    sta main_tmp+1
-    ADDI_D main_arg+2, main_tmp, 7
+    and #ENT_YPOS
+    sta main_arg+3
+    
+    lda main_entityYHi,y
+    and #ENT_ISVERTICAL
+    beq .shiftY
+    lda main_entityYHi,y
+    and #ENT_ISPLATFORM
+    beq .notPlatform
+    lda main_entityXVel,y
+    bpl .notPlatform
+    SUBI_D main_arg+2, main_arg+2, 15
+    
+.notPlatform
+    lda main_entityXVel,y
+    bmi .shiftY
+    ADDI_D main_arg+2, main_arg+2, 15
+.shiftY:
     REPEAT 4
     LSR_D main_arg+2
     REPEND
@@ -808,9 +894,17 @@ main_updateEntities subroutine
     pla
     tay
     
+    ;react to map tile
+    lda main_entityYHi,y
+    and #ENT_ISPROJECTILE
+    beq .checkObstacle
+    
+.checkImpact:
     lda main_sav+3
+    cmp #TB_SOLID
+    beq .die
     cmp #TB_WEAKBLOCK
-    bne .nosplode
+    bne .checkOffScreen
     lda main_sav+1
     sta main_arg
     lda main_sav+2
@@ -820,19 +914,13 @@ main_updateEntities subroutine
     sta main_arg+3
     lda #0
     sta main_arg+4
+    tya
+    pha
     jsr main_SetTile
-    lda #$7F
-    sta main_entityXHi,y
-    jmp .inactive
-
-.nosplode:
-    cmp #TB_SOLID
-    bne .nostop
-    lda #$7F
-    sta main_entityXHi,y
-    jmp .inactive
-    
-.nostop:    
+    pla
+    tay
+    jmp .die
+.checkOffScreen:
     sec
     lda main_entityXLo,y
     sbc shr_cameraX
@@ -840,25 +928,44 @@ main_updateEntities subroutine
     lda main_entityXHi,y
     sbc shr_cameraX+1
     sta main_tmp+1
-    
     CMPI_D main_tmp, #$FF
-    bcc .notoffright
-    lda #$7F
-    sta main_entityXHi,y
-    jmp .inactive
-.notoffright
-
+    bcs .die
     CMPI_D main_tmp, #$0
-    bcs .notoffleft
+    bcs .updateVel
+.die:
     lda #$7F
     sta main_entityXHi,y
     jmp .inactive
-.notoffleft
+
+
+.checkObstacle:
+    lda main_sav+3
+    cmp #TB_SOLID
+    beq .reverse
+    cmp #TB_WEAKBLOCK
+    bne .updateVel
+.reverse:
+    sec
+    lda #0
+    sbc main_entityXVel,y
+    sta main_entityXVel,y
     
+.updateVel:
     lda main_entityXHi,y
     sta main_tmp+1
     lda main_entityXLo,y
     sta main_tmp
+    lda main_entityYHi,y
+    and #ENT_ISVERTICAL
+    beq .horizontal
+    
+    lda main_entityYHi,y
+    and #ENT_YPOS
+    sta main_tmp+1
+    lda main_entityYLo,y
+    sta main_tmp
+.horizontal:
+
     lda main_entityXVel,y
     sta main_tmp+2
     bmi .negative
@@ -870,28 +977,38 @@ main_updateEntities subroutine
     sta main_tmp+3
 .continue:
     ADD_D main_tmp, main_tmp, main_tmp+2
+    lda main_entityYHi,y
+    and #ENT_ISVERTICAL
+    bne .vertical
     lda main_tmp
     sta main_entityXLo,y
     lda main_tmp+1
     sta main_entityXHi,y
+    jmp .inactive
+.vertical:
+    lda main_tmp
+    sta main_entityYLo,y
+    lda main_entityYHi,y
+    and #ENT_FLAGS
+    ora main_tmp+1 ; just assuming that calculated y will never be out of bounds
+    sta main_entityYHi,y
 .inactive:
-    iny
-    cpy #MAX_ENTITIES
-    beq main_updateEntities_end
+    dey
+    bmi main_updateEntities_end
     jmp .loop
 main_updateEntities_end:
 
 main_UpdateEntitySprites subroutine
     ldy #[shr_entitySprites-shr_oamShadow]
-    ldx #0
+    ldx #[MAX_ENTITIES-1]
 .loop:
-    tya
-
-    lda #0
+    lda main_entityYHi,x
+    and #ENT_COLOR
+    lsr
     sta shr_spriteFlags,y
     sta shr_spriteFlags+OAM_SIZE,y
 
-    lda #64
+    lda main_entityIndex,x
     sta shr_spriteIndex,y
     clc
     adc #2
@@ -912,12 +1029,20 @@ main_UpdateEntitySprites subroutine
     sta shr_spriteY,y
     sta shr_spriteY+OAM_SIZE,y
     
+    ;move origin to center
+    ADDI_D main_tmp, main_tmp, 8
+
+    
     CMPI_D main_tmp, $FF
     bcs .out_of_range
     lda main_tmp
     sta shr_spriteX,y
 
-    ADDI_D main_tmp, main_tmp, 8
+    ;move to pos of next sprite half
+    clc
+    lda main_tmp
+    adc #8
+    sta main_tmp;ADDI_D main_tmp, main_tmp, 8
     
     CMPI_D main_tmp, $FF
     bcs .out_of_range
@@ -929,9 +1054,10 @@ main_UpdateEntitySprites subroutine
     sbc shr_cameraY
     sta main_tmp
     lda main_entityYHi,x
+    and #$1 ;remove flags
     sbc shr_cameraY+1
     sta main_tmp+1
-    ADDI_D main_tmp, main_tmp, 29
+    ADDI_D main_tmp, main_tmp, 31
     CMPI_D main_tmp, 240
     bcs .out_of_range
     CMPI_D main_tmp, 3*8
@@ -939,16 +1065,15 @@ main_UpdateEntitySprites subroutine
     lda main_tmp
     sta shr_spriteY,y
     sta shr_spriteY+OAM_SIZE,y
-    
+        
 .out_of_range:
 
-    inx
     tya
     clc
-    adc #8
+    adc #[OAM_SIZE*2]
     tay
-    cpy #MAX_ENTITIES*2
-    bcs main_UpdateEntitySprites_end
+    dex
+    bmi main_UpdateEntitySprites_end
     jmp .loop
 main_UpdateEntitySprites_end
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="40" height="24" tilewidth="16" tileheight="16">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="24" tilewidth="16" tileheight="16" nextobjectid="9">
  <properties>
   <property name="__script__" value="nescave"/>
  </properties>
@@ -8,7 +8,30 @@
  </tileset>
  <layer name="Names" width="40" height="24">
   <data encoding="base64" compression="zlib">
-   eJzNVssKg0AMlB6q9qFe2kL7/x/YfkEVdiEMeau0h8Flk4zZmaw4NU0zzRjLE9dbYSRYU6sBayK1Go/Vu4cne8aoDhyvtbbOucY7C3cDlxlXR95eOPwZHsKehiG4n81DSP29k3wLPomaIwPa3yDkermi4HhPM85l3Rr6tQIHx1VxS9Qs6MvzSXiwvy6gH+WSNOXmDmssL2h/PdRZ+nHvkvTRarz+dkTDqq/mF/euZe9V1p2jBjXR/N1i5q17QPurevRMnPMXNcbv1cD4Z81AZNas+ateajNCY9QDDtxsYD6el5tfzd/IPfPogzONWnDa7OUvza1cv/C31uF9pXc5Cu/9XTPbW919yd/MuTVYvFI84i+dJQuYh7xanMbwH9DqLwuLV4r/+l/Zgy8Koz0i
+   eJzNVtluwzAMs/ewpN3m9mkF/P8/uKPdfSSADWgsJdlrNvSBSGpZMk3KbrYhhO2ETXnW9yh+L4GNwCm5FjCnJ9eq43FvqfPbPfbqwOrieyRzY+O6S/bEjFsH1xNuGub9FS7ODFEZs5Dg984Yl2D5LK5B43dn5Gj169i9w4Ht4ZJA8ktiPs5pqdULxn094aq8DyUu9ZM8hqB7hbUqHhyvZI6suSrPXJ6PhN8o8tg+kWOGtZk32Hc5HHPzNK78VpDL9NP41XGmqayJe7L0ZfpVDfclfjA4oha4/ujEpa+45yfCb4met84B4z8Cxxpn/qLGeK8l4t9geNl6h7T23zPsgUHGXgg/yec1HPfsAGO4X3a+LX9l71v71M4wYub3pvit9bTnr/wfa/GXaVFrneLve6e/H4XfZ/h5XrX7sQdfoe38WvfvfyAa/uI933JGrW8C7e624lK/eUDrUblmMuLa9xTzO0FOVmL4DZg7dPE08/pR48f0O2d8A6KMMlg=
   </data>
  </layer>
+ <objectgroup name="Entities">
+  <object id="5" name="Elevator" x="608" y="176" width="16" height="16">
+   <properties>
+    <property name="flags" value="0x62"/>
+    <property name="index" value="72"/>
+    <property name="velocity" value="1"/>
+   </properties>
+  </object>
+  <object id="7" name="Elevator" x="112" y="272" width="16" height="16">
+   <properties>
+    <property name="flags" value="0x62"/>
+    <property name="index" value="72"/>
+    <property name="velocity" value="1"/>
+   </properties>
+  </object>
+  <object id="8" name="Elevator" x="144" y="128" width="16" height="16">
+   <properties>
+    <property name="flags" value="0x42"/>
+    <property name="index" value="88"/>
+    <property name="velocity" value="1"/>
+   </properties>
+  </object>
+ </objectgroup>
 </map>

@@ -18,7 +18,8 @@ nmi_scratch         ds 1
 nmi_len             ds 1
 nmi_src             ds 2
 
-nmi_scrollY         ds 2
+nmi_scrollY         ds 1
+nmi_nametable       ds 1
 nmi_scrollX         ds 1
 shr_sleeping        ds 1
 shr_doDma           ds 1
@@ -75,17 +76,18 @@ main_mapCamX        ds 2 ;29
 main_mapCamY        ds 2 ;31
 main_mapCamYMod     ds 1 ;32
 main_currLevel      ds 1 ;33
+main_cleared        ds 2 ;34
+main_currPlatform   ds 1 ; 35
 
 MAX_ENTITIES = 16
-;main_entityFrame    ds MAX_ENTITIES
-main_entityXLo        ds MAX_ENTITIES ;49
-main_entityXHi        ds MAX_ENTITIES ;65
-main_entityYLo        ds MAX_ENTITIES ;81
-main_entityYHi        ds MAX_ENTITIES ;97
-main_entityXVel       ds MAX_ENTITIES ;113
-;main_entityType     ds MAX_ENTITIES
-
-main_levelFlags     ds 16 ; 129
+main_entityBlock:
+main_entityXLo        ds MAX_ENTITIES
+main_entityXHi        ds MAX_ENTITIES
+main_entityYLo        ds MAX_ENTITIES
+main_entityYHi        ds MAX_ENTITIES ; bottom bit
+main_entityIndex      ds MAX_ENTITIES 
+main_entityXVel       ds MAX_ENTITIES ; 35 + 96 = 131
+main_entityBlockEnd:
 
     ORG $0400
 main_levelMap       ds 960

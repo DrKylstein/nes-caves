@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" width="32" height="4" tilewidth="8" tileheight="8">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="32" height="4" tilewidth="8" tileheight="8" nextobjectid="1">
  <properties>
   <property name="__script__" value="name-attribute"/>
  </properties>
@@ -7,16 +7,16 @@
   <image source="tiles.png" width="256" height="64"/>
  </tileset>
  <tileset firstgid="257" name="pal" tilewidth="4" tileheight="1">
-  <image source="pal.png" width="4" height="8"/>
+  <image source="pal.png" width="4" height="16"/>
  </tileset>
  <layer name="Names" width="32" height="4">
   <data encoding="base64" compression="zlib">
-   eJxjZGBgYBzFgwZ/AuInQPwYiJ8B8VMgfgHEr4D4IZraz1D6KRZzPiJhXHaBCAAexwxW
+   eJxjZGBgYBzFgwZ/AuInQPwYiJ8B8VMgfgHEr4D4IZraz1D6KRZzPiJhmCC6GhABAB7FDFY=
   </data>
  </layer>
  <layer name="Attributes" width="32" height="4">
   <data encoding="base64" compression="zlib">
-   eJxjZGQAA8YBogcawNzBAaWZCdCMBMSJlR8s/gcAZmgAWA==
+   eJxjZGQAA8YBogcawNzBMUL9DwBZqABI
   </data>
  </layer>
 </map>

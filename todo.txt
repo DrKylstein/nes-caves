@@ -1,9 +1,0 @@
-combine PPU_CTRL and rom/ram step in vram loader
-combine nmi and main vram loaders?
-load attributes
-load level from ram?
-
-proper physics
-sound
-entering levels
-
