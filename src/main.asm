@@ -132,6 +132,8 @@ main_clearEntities_end:
     lda #0
     sta shr_cameraYMod
     sta shr_nameTable
+    
+    
 main_LevelStart:
     lda #%00000000 ;disable nmi
     sta shr_ppuCtrl
@@ -139,7 +141,32 @@ main_LevelStart:
     sta shr_ppuMask
     sta PPU_MASK
 
-    jsr main_LoadLevel
+main_LoadLevel subroutine
+    MOV_D main_tmp+2, main_arg
+    MOVI_D main_tmp, main_levelMap
+    ldy #0
+    ldx #0
+.loop:
+    lda (main_tmp+2),y
+    sta (main_tmp),y
+    iny
+    bne .loop
+    inc main_tmp+3
+    inc main_tmp+1
+    inx
+    cpx #4
+    bne .loop
+    
+    ADDI_D main_tmp+2, main_arg, 960
+    MOVI_D main_tmp, main_entityBlock
+    ldy #[main_entityBlockEnd-main_entityBlock]
+.copyEntities:
+    lda (main_tmp+2),y
+    sta (main_tmp),y
+    dey
+    bne .copyEntities
+main_LoadLevel_end
+
     jsr main_InitialLevelLoad
     
 load_rest subroutine
@@ -195,7 +222,7 @@ main_CheckInput subroutine
     beq main_CheckInput_end
     bit main_playerFlags
     bmi main_CheckInput_end
-    MOVI_D main_playerYVel, -$0270
+    MOVI_D main_playerYVel, -$0210
     lda main_playerFlags
     ora #%10000000
     sta main_playerFlags

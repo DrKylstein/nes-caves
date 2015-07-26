@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="24" tilewidth="16" tileheight="16" nextobjectid="3">
+ <properties>
+  <property name="__script__" value="nescave"/>
+ </properties>
+ <tileset firstgid="1" name="metatiles" tilewidth="16" tileheight="16">
+  <image source="metatiles.png" width="256" height="256"/>
+ </tileset>
+ <layer name="Names" width="40" height="24">
+  <data encoding="base64" compression="zlib">
+   eJzFVstOAzEMDJzosXBCu4i0PfEoUCoBLc///wvEcX+CrGRLZrAdh1biMNoqGzvj8cTbeUrpPoA5IbJ3XxjPWxQcBLAqWAf3MnJwzYqdAb/cmGNacCxw0hCPsTKeMSMNx/WO1rbw9M7ieO4H6rtNNifNK3Pgy57CvFnJp6HFH9NKLewhz38dAPXR7kvUk55/rR6x/5DXiD799CfmkO8+SR/Nf51yrgXpB9Z7QVw0jnh/tFiNr+W/LOI930jvoX6cYzD0m0Is62fVclWwBM7oM88/rfpJT66Trp/s73PBa0OP8Zyo/7h2jbOnX08aXhOWyp6srK120E/jYflvIA1fCFLLi4JLJcbKiXV4/AbSjWHxPi04a8C50uPI/M2VGLzPWGsPv7OyZnnQu0c4U7271/L/ITIXrZ7sC9JLqKcFuU/yG/X9EjpjvsP0e97W8lt8O3ha+3bRL1f4Rmqp1VXjx2c8FDwWPP2xFg2TQE2SH/M/MvJtGupunSnajNG+8Z5Okp/GCWvvIa6vPHEfzwnsr+RxU9HP8liuxGn1beDdbcEd8ZsY+d4C/fWwbYjjfQM93ws+kv/9+G+M3L4BHcZMEw==
+  </data>
+ </layer>
+ <objectgroup name="Entities">
+  <object id="1" name="Elevator" x="160" y="208" width="16" height="16">
+   <properties>
+    <property name="flags" value="0x62"/>
+    <property name="index" value="72"/>
+    <property name="velocity" value="1"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>
