@@ -607,6 +607,70 @@ main_CheckCieling subroutine
 
 main_CheckCieling_end:
     
+main_CheckHurt subroutine
+    lda main_mercyTime
+    beq .findEnemy
+    dec main_mercyTime
+    jmp main_CheckHurt_end
+.findEnemy:
+    ldy #MAX_ENTITIES
+.loop:
+    dey
+    BMI_L main_CheckHurt_end
+    
+    lda main_entityYHi,y
+    and #ENT_ISDEADLY
+    beq .loop
+    
+    lda main_entityXLo,y
+    sta main_tmp
+    lda main_entityXHi,y
+    sta main_tmp+1
+    
+    ADDI_D main_tmp+2, main_playerX, 4
+    SUBI_D main_tmp, main_tmp, 8
+    CMP_D main_tmp, main_tmp+2
+    bpl .loop
+    
+    SUBI_D main_tmp+2, main_playerX, 4
+    ADDI_D main_tmp, main_tmp, 16
+    CMP_D main_tmp, main_tmp+2
+    bmi .loop
+    
+    lda main_entityYLo,y
+    sta main_tmp
+    lda main_entityYHi,y
+    and #ENT_YPOS
+    sta main_tmp+1
+    
+    SUBI_D main_tmp+2, main_playerY, 16
+    CMP_D main_tmp, main_tmp+2
+    bmi .longLoop
+
+    SUBI_D main_tmp, main_tmp, 17
+    CMP_D main_tmp, main_playerY
+    bpl .longLoop
+    
+    lda shr_hp
+    bne .hurt
+    lda main_currLevel
+    asl
+    tay
+    lda prgdata_levelTable,y
+    sta main_arg
+    lda prgdata_levelTable+1,y
+    sta main_arg+1
+    jmp main_LevelStart
+.hurt:
+    dec shr_hp
+    lda #120
+    sta main_mercyTime
+    jmp main_CheckHurt_end
+.longLoop:
+    jmp .loop
+main_CheckHurt_end:
+
+    
 main_ApplyVelocity subroutine
     MOV_D main_tmp, main_playerYVel
     ldy main_currPlatform
@@ -795,6 +859,16 @@ main_UpdateCameraY subroutine
 main_UpdateCameraY_end:
 
 main_UpdatePlayerSprite subroutine
+    lda main_mercyTime
+    beq .visible
+    lda shr_frame
+    and #1
+    beq .visible
+    lda #$FF
+    sta shr_spriteY+OAM_SIZE
+    sta shr_spriteY+OAM_SIZE+OAM_SIZE
+    jmp main_UpdatePlayerSprite_end
+.visible:
     ;update position
     SUB_D main_sav, main_playerX, shr_cameraX
     lda main_sav
@@ -805,7 +879,7 @@ main_UpdatePlayerSprite subroutine
     lda main_sav
     clc
     adc #31
-    ldy #4
+    ldy #OAM_SIZE
     jsr main_SetSpritePos
 
     ;update tiles
@@ -831,26 +905,25 @@ main_UpdatePlayerSprite subroutine
 .do_anim:
     lda main_playerFlags
     and #%01000000
-    ldy #4
-    sta shr_spriteFlags,y
-    sta shr_spriteFlags+4,y
+    sta shr_spriteFlags+OAM_SIZE
+    sta shr_spriteFlags+OAM_SIZE+OAM_SIZE
     bit main_playerFlags
     bvs .left
 .right:
     lda main_playerFrame
     and #%11111100
-    sta shr_spriteIndex,y
+    sta shr_spriteIndex+OAM_SIZE
     clc
     adc #2
-    sta shr_spriteIndex+4,y
+    sta shr_spriteIndex+OAM_SIZE+OAM_SIZE
     jmp main_UpdatePlayerSprite_end
 .left:
     lda main_playerFrame
     and #%11111100
-    sta shr_spriteIndex+4,y
+    sta shr_spriteIndex+OAM_SIZE+OAM_SIZE
     clc
     adc #2
-    sta shr_spriteIndex,y
+    sta shr_spriteIndex+OAM_SIZE
 main_UpdatePlayerSprite_end:
 
 main_updateEntities subroutine
@@ -1038,6 +1111,26 @@ main_UpdateEntitySprites subroutine
     sta shr_spriteFlags,y
     sta shr_spriteFlags+OAM_SIZE,y
 
+    lda main_entityYHi,x
+    and #ENT_ISFACING
+    beq .noFacing
+    lda main_entityXVel,x
+    bpl .noFacing
+    lda main_entityYHi,x
+    and #ENT_ISVERTICAL
+    bne .vflip
+    lda #$40
+    ora shr_spriteFlags,y
+    sta shr_spriteFlags,y
+    sta shr_spriteFlags+OAM_SIZE,y
+    jmp .noFacing
+.vflip:
+    lda #$80
+    ora shr_spriteFlags,y
+    sta shr_spriteFlags,y
+    sta shr_spriteFlags+OAM_SIZE,y
+    
+.noFacing
     lda shr_frame
     asl
     and #12

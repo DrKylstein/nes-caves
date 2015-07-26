@@ -70,16 +70,17 @@ main_playerYFrac    ds 1 ;17
 main_playerY        ds 2 ;19
 main_playerYVel     ds 2 ;21
 main_playerX        ds 2 ;23
-shr_ammo            ds 1 ;24
-shr_hp              ds 1 ;25
-main_mapPX          ds 2;27
-main_mapPY          ds 2;29
-main_mapCamX        ds 2 ;31
-main_mapCamY        ds 2 ;33
-main_mapCamYMod     ds 1 ;34
-main_currLevel      ds 1 ;35
-main_cleared        ds 2 ;36
-main_currPlatform   ds 1 ; 37
+main_mercyTime      ds 1 ;24
+shr_ammo            ds 1 ;25
+shr_hp              ds 1 ;26
+main_mapPX          ds 2 ;28
+main_mapPY          ds 2 ;30
+main_mapCamX        ds 2 ;32
+main_mapCamY        ds 2 ;34
+main_mapCamYMod     ds 1 ;35
+main_currLevel      ds 1 ;36
+main_cleared        ds 2 ;37
+main_currPlatform   ds 1 ; 38
 
 MAX_ENTITIES = 16
 main_entityBlock:

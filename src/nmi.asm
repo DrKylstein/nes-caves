@@ -74,6 +74,7 @@ nmi subroutine
     sta PPU_ADDR
     lda #[HEXFONT_BASE+$10]
     ldy shr_hp
+    beq .sprite_dma
 .fill_hearts:
     sta PPU_DATA
     dey
