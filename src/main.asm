@@ -141,6 +141,9 @@ main_LevelStart:
     sta shr_ppuMask
     sta PPU_MASK
 
+    lda #3
+    sta shr_hp
+
 main_LoadLevel subroutine
     MOV_D main_tmp+2, main_arg
     MOVI_D main_tmp, main_levelMap
@@ -1035,7 +1038,11 @@ main_UpdateEntitySprites subroutine
     sta shr_spriteFlags,y
     sta shr_spriteFlags+OAM_SIZE,y
 
-    lda main_entityIndex,x
+    lda shr_frame
+    asl
+    and #12
+    clc
+    adc main_entityIndex,x
     sta shr_spriteIndex,y
     clc
     adc #2

@@ -9,6 +9,8 @@ nmi subroutine
     tya
     pha
 
+    inc shr_frame
+
     lda shr_ppuCtrl
     and %11111011
     sta PPU_CTRL
@@ -54,6 +56,29 @@ nmi subroutine
     clc
     adc #HEXFONT_BASE
     sta PPU_DATA
+    
+    lda #$20
+    sta PPU_ADDR
+    lda #$76
+    sta PPU_ADDR
+    lda #0
+    ldy #3
+.clear_hearts:
+    sta PPU_DATA
+    dey
+    bne .clear_hearts
+
+    lda #$20
+    sta PPU_ADDR
+    lda #$76
+    sta PPU_ADDR
+    lda #[HEXFONT_BASE+$10]
+    ldy shr_hp
+.fill_hearts:
+    sta PPU_DATA
+    dey
+    bne .fill_hearts
+
 
 .sprite_dma:
     lda shr_doDma

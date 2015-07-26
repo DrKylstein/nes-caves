@@ -20,14 +20,14 @@
   <object id="1" x="224" y="320" width="16" height="16">
    <properties>
     <property name="flags" value="0x62"/>
-    <property name="index" value="72"/>
+    <property name="index" value="80"/>
     <property name="velocity" value="1"/>
    </properties>
   </object>
   <object id="3" x="400" y="320" width="16" height="16">
    <properties>
     <property name="flags" value="0x62"/>
-    <property name="index" value="72"/>
+    <property name="index" value="80"/>
     <property name="velocity" value="1"/>
    </properties>
   </object>

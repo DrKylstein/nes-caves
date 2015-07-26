@@ -58,26 +58,28 @@ shr_cameraY         ds 2 ;4
 shr_cameraYMod      ds 1 ;5
 shr_nameTable       ds 1 ;6
 shr_debugReg        ds 2 ;8
-main_ctrl           ds 1 ;9
-main_oldCtrl        ds 1 ;10
-main_pressed        ds 1 ;11
-main_switches       ds 1 ;12
-main_playerFlags    ds 1 ;13 ;jumping,flipped,in air,00000
-main_playerFrame    ds 1 ;14
-main_playerXVel     ds 1 ;15
-main_playerYFrac    ds 1 ;16
-main_playerY        ds 2 ;18
-main_playerYVel     ds 2 ;20
-main_playerX        ds 2 ;22
-shr_ammo            ds 1 ;23
-main_mapPX          ds 2;25
-main_mapPY          ds 2;27
-main_mapCamX        ds 2 ;29
-main_mapCamY        ds 2 ;31
-main_mapCamYMod     ds 1 ;32
-main_currLevel      ds 1 ;33
-main_cleared        ds 2 ;34
-main_currPlatform   ds 1 ; 35
+shr_frame           ds 1 ;9
+main_ctrl           ds 1 ;10
+main_oldCtrl        ds 1 ;11
+main_pressed        ds 1 ;12
+main_switches       ds 1 ;13
+main_playerFlags    ds 1 ;14 ;jumping,flipped,in air,00000
+main_playerFrame    ds 1 ;15
+main_playerXVel     ds 1 ;16
+main_playerYFrac    ds 1 ;17
+main_playerY        ds 2 ;19
+main_playerYVel     ds 2 ;21
+main_playerX        ds 2 ;23
+shr_ammo            ds 1 ;24
+shr_hp              ds 1 ;25
+main_mapPX          ds 2;27
+main_mapPY          ds 2;29
+main_mapCamX        ds 2 ;31
+main_mapCamY        ds 2 ;33
+main_mapCamYMod     ds 1 ;34
+main_currLevel      ds 1 ;35
+main_cleared        ds 2 ;36
+main_currPlatform   ds 1 ; 37
 
 MAX_ENTITIES = 16
 main_entityBlock:
@@ -86,7 +88,7 @@ main_entityXHi        ds MAX_ENTITIES
 main_entityYLo        ds MAX_ENTITIES
 main_entityYHi        ds MAX_ENTITIES ; bottom bit
 main_entityIndex      ds MAX_ENTITIES 
-main_entityXVel       ds MAX_ENTITIES ; 35 + 96 = 131
+main_entityXVel       ds MAX_ENTITIES ; 37 + 96 = 133
 main_entityBlockEnd:
 
     ORG $0400
