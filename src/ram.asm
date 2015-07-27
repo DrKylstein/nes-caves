@@ -53,34 +53,35 @@ shr_playerSprites   ds 8
 shr_entitySprites:
 
     ORG $0300
-shr_cameraX         ds 2 ;2
-shr_cameraY         ds 2 ;4
-shr_cameraYMod      ds 1 ;5
-shr_nameTable       ds 1 ;6
-shr_debugReg        ds 2 ;8
-shr_frame           ds 1 ;9
-main_ctrl           ds 1 ;10
-main_oldCtrl        ds 1 ;11
-main_pressed        ds 1 ;12
-main_switches       ds 1 ;13
-main_playerFlags    ds 1 ;14 ;jumping,flipped,in air,00000
-main_playerFrame    ds 1 ;15
-main_playerXVel     ds 1 ;16
-main_playerYFrac    ds 1 ;17
-main_playerY        ds 2 ;19
-main_playerYVel     ds 2 ;21
-main_playerX        ds 2 ;23
-main_mercyTime      ds 1 ;24
-shr_ammo            ds 1 ;25
-shr_hp              ds 1 ;26
-main_mapPX          ds 2 ;28
-main_mapPY          ds 2 ;30
-main_mapCamX        ds 2 ;32
-main_mapCamY        ds 2 ;34
-main_mapCamYMod     ds 1 ;35
-main_currLevel      ds 1 ;36
-main_cleared        ds 2 ;37
-main_currPlatform   ds 1 ; 38
+main_playerYFrac    ds 1 ;
+main_playerY        ds 2 ;
+main_playerX        ds 2 ;
+shr_cameraX         ds 2 ;
+shr_cameraY         ds 2 ;
+shr_cameraYMod      ds 1 ;
+shr_nameTable       ds 1 ;
+
+shr_debugReg        ds 2 ;
+shr_frame           ds 1 ;
+main_ctrl           ds 1 ;
+main_oldCtrl        ds 1 ;
+main_pressed        ds 1 ;
+main_switches       ds 1 ;
+main_playerFlags    ds 1 ; ;jumping,flipped,in air,00000
+main_playerFrame    ds 1 ;
+main_playerXVel     ds 1 ;
+main_playerYVel     ds 2 ;
+main_mercyTime      ds 1 ;
+shr_ammo            ds 1 ;
+shr_hp              ds 1 ;
+main_mapPX          ds 2 ;
+main_mapPY          ds 2 ;
+main_mapCamX        ds 2 ;
+main_mapCamY        ds 2 ;
+main_mapCamYMod     ds 1 ;
+main_currLevel      ds 1 ;
+main_cleared        ds 2 ;
+main_currPlatform   ds 1 ;
 
 MAX_ENTITIES = 16
 main_entityBlock:

@@ -125,16 +125,18 @@ main_clearEntities_end:
     inc shr_doPalCopy
     
     MOVI_D main_arg, prgdata_mainMap
-    MOVI_D main_playerX, 48
-    MOVI_D main_playerY, 48
-    MOVI_D shr_cameraX, 0
-    MOVI_D shr_cameraY, 0
-    lda #0
-    sta shr_cameraYMod
-    sta shr_nameTable
+    ; MOVI_D main_playerX, 48
+    ; MOVI_D main_playerY, 48
+    ; MOVI_D shr_cameraX, 0
+    ; MOVI_D shr_cameraY, 0
+    ; lda #0
+    ; sta shr_cameraYMod
+    ; sta shr_nameTable
     
-    
-main_LevelStart:
+    lda #5
+    sta shr_ammo
+
+main_LevelStart subroutine
     lda #%00000000 ;disable nmi
     sta shr_ppuCtrl
     sta PPU_CTRL
@@ -144,7 +146,6 @@ main_LevelStart:
     lda #3
     sta shr_hp
 
-main_LoadLevel subroutine
     MOV_D main_tmp+2, main_arg
     MOVI_D main_tmp, main_levelMap
     ldy #0
@@ -168,9 +169,102 @@ main_LoadLevel subroutine
     sta (main_tmp),y
     dey
     bne .copyEntities
-main_LoadLevel_end
+    
+    ADDI_D main_tmp+2, main_arg, 1056
+    ldy #0
+    ldx #1
+    lda #0
+    sta main_playerYFrac
+.loadCoords:
+    lda (main_tmp+2),y
+    sta main_playerYFrac,x
+    inx
+    iny
+    cpy #10
+    bne .loadCoords
+main_LevelStart_end
 
-    jsr main_InitialLevelLoad
+main_InitialLevelLoad subroutine
+    MOV_D main_arg, shr_cameraX
+    REPEAT 4
+    LSR_D main_arg
+    REPEND
+    jsr main_MultiplyBy24
+    MOVI_D main_sav, main_levelMap
+    ADD_D main_sav, main_sav, main_ret
+    ldy #0
+.loop:
+    ;args to buffer column    
+    MOV_D main_arg, main_sav
+    tya
+    clc
+    adc main_arg
+    sta main_arg
+    lda #0
+    adc main_arg+1
+    sta main_arg+1
+    tya
+    asl
+    sta main_arg+2
+    tya
+    pha
+    jsr main_EvenColumn
+    jsr nmi_CopyTileCol     ;terribly unsafe, but code duplication is worse
+    pla
+    tay
+    
+    MOV_D main_arg, main_sav
+    tya
+    clc
+    adc main_arg
+    sta main_arg
+    lda #0
+    adc main_arg+1
+    sta main_arg+1
+    tya
+    asl
+    sec
+    adc #0
+    sta main_arg+2
+    tya
+    pha
+    jsr main_OddColumn
+    jsr nmi_CopyTileCol     ;ditto (irony!)
+    pla
+    tay
+    
+    iny
+    ADDI_D main_sav, main_sav, 23
+    cpy #16
+    bne .loop
+    
+    ldy #0
+    MOVI_D main_arg, main_levelMap
+.attr_loop:
+    tya
+    asl
+    asl
+    sta shr_tileCol
+    tya
+    pha
+    jsr main_ColorColumn
+    jsr nmi_CopyAttrCol
+    pla
+    tay
+    clc
+    lda main_arg
+    adc #MT_MAP_HEIGHT*2
+    sta main_arg
+    lda main_arg+1
+    adc #0
+    sta main_arg+1
+    iny
+    cpy #8
+    bne .attr_loop
+main_InitialLevelLoad_end:
+    
+    lda shr_cameraYMod
+    sta shr_debugReg
     
 load_rest subroutine
     lda #%10110000 ;enable nmi
@@ -178,12 +272,6 @@ load_rest subroutine
     sta PPU_CTRL
 
     inc shr_doDma
-
-	lda #96
-	sta shr_cameraYMod
-
-    lda #5
-    sta shr_ammo
 
     lda #%00011000
     sta shr_ppuMask
@@ -303,21 +391,12 @@ main_TileInteraction subroutine
     sta main_arg
     lda prgdata_levelTable+1,y
     sta main_arg+1
-    ;MOV_D main_mapPX, main_playerX
-    ;MOV_D main_mapPY, main_playerY
-    ;MOV_D main_mapCamX, shr_cameraX
-    ;MOV_D main_mapCamY, shr_cameraY
-    ;lda shr_cameraYMod
-    ;sta main_mapCamYMod
-    
-    MOVI_D main_playerX, 48
-    MOVI_D main_playerY, 48
-    MOVI_D shr_cameraX, 0
-    MOVI_D shr_cameraY, 0
-    lda #0
-    sta shr_cameraYMod
-    sta shr_nameTable
-    
+    MOV_D main_mapPX, main_playerX
+    MOV_D main_mapPY, main_playerY
+    MOV_D main_mapCamX, shr_cameraX
+    MOV_D main_mapCamY, shr_cameraY
+    lda shr_cameraYMod
+    sta main_mapCamYMod
     jmp main_LevelStart
 .not_door:
     lda #JOY_B_MASK

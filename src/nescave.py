@@ -9,9 +9,14 @@ from tiled.qt import *
 max_entities = 16
 
 def writeColumn(out, entities, func, default):
+    k = 0
     for i in range(max_entities):
-        if 0 <= i-1 < entities.objectCount():
-            out.write(chr(int(func(entities.objectAt(i-1))) & 0xFF))
+        while k < entities.objectCount() and (entities.objectAt(k).type() == 
+        'start' or entities.objectAt(k).type() == 'camera'):
+            k += 1
+        if k < entities.objectCount():
+            out.write(chr(int(func(entities.objectAt(k))) & 0xFF))
+            k += 1
         else:
             out.write(chr(default & 0xFF))
 
@@ -53,5 +58,25 @@ class NesCave(Plugin):
             writeColumn(out, entities, lambda e: (int(e.y()) >> 8) | int(e.property('flags'),16), 0)
             writeColumn(out, entities, lambda e: e.property('index'), 0)
             writeColumn(out, entities, lambda e: e.property('velocity'), 0)
-                                        
+            for i in range(entities.objectCount()):
+                start = entities.objectAt(i)
+                if start.type() == 'start':
+                    out.write(chr(int(start.y()) & 0xFF))
+                    out.write(chr(int(start.y()) >> 8))
+                    out.write(chr(int(start.x()) & 0xFF))
+                    out.write(chr(int(start.x()) >> 8))
+                    break
+            for i in range(entities.objectCount()):
+                start = entities.objectAt(i)
+                if start.type() == 'camera':
+                    out.write(chr(int(start.x()) & 0xFF))
+                    out.write(chr(int(start.x()) >> 8))
+                    out.write(chr(int(start.y()) & 0xFF))
+                    out.write(chr(int(start.y()) >> 8))
+                    out.write(chr((int(start.y()) % 240) + 96))
+                    if int(start.y()) >= 240:
+                        out.write(chr(0x02))
+                    else:
+                        out.write(chr(0x00))
+                    break
         return True

@@ -30,6 +30,24 @@ ENT_COLOR = $06
 ENT_YPOS = $01
 ENT_FLAGS = $FE
 
+ENT2_FLAGS = $FC
+ENT2_XPOS = $02
+ENT2_SHOOTSDOWN
+ENT2_SHOOTSRIGHT
+ENT2_SHOOTSLEFT
+ENT2_THINKS
+;laser
+;egg
+;web
+;eyeball
+;ball
+;biped bullet
+;stalactite
+;water
+;1-6 normal shots
+;power shot
+;switch to lookup? 5 bits table index, 2 bits hp?
+
     SEG.U BEHAVIORS
     ORG $0000
 TB_EMPTY:      ds 1 ;1

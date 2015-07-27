@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="24" tilewidth="16" tileheight="16" nextobjectid="9">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="24" tilewidth="16" tileheight="16" nextobjectid="11">
  <properties>
   <property name="__script__" value="nescave"/>
  </properties>
@@ -33,5 +33,7 @@
     <property name="velocity" value="1"/>
    </properties>
   </object>
+  <object id="9" name="start" type="start" x="16" y="64" width="16" height="16"/>
+  <object id="10" name="camera" type="camera" x="0" y="0" width="16" height="16"/>
  </objectgroup>
 </map>
