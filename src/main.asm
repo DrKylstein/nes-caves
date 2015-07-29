@@ -1,6 +1,10 @@
 ;------------------------------------------------------------------------------
 ; MAIN THREAD
 ;------------------------------------------------------------------------------
+
+;------------------------------------------------------------------------------
+;Initial Boot
+;------------------------------------------------------------------------------
 reset subroutine
     sei        ;; ignore IRQs
     cld        ;; disable decimal mode
@@ -136,16 +140,24 @@ main_clearEntities_end:
     lda #5
     sta shr_ammo
 
-main_LevelStart subroutine
+;------------------------------------------------------------------------------
+;Start of Level
+;------------------------------------------------------------------------------
+main_EnterLevel:
+main_DisableDisplay subroutine
     lda #%00000000 ;disable nmi
     sta shr_ppuCtrl
     sta PPU_CTRL
     sta shr_ppuMask
     sta PPU_MASK
+main_DisableDisplay_end:
 
+main_ResetStats subroutine
     lda #3
     sta shr_hp
+main_ResetStats_end:
 
+main_LoadLevel subroutine
     MOV_D main_tmp+2, main_arg
     MOVI_D main_tmp, main_levelMap
     ldy #0
@@ -182,9 +194,9 @@ main_LevelStart subroutine
     iny
     cpy #10
     bne .loadCoords
-main_LevelStart_end
+main_LoadLevel_end:
 
-main_InitialLevelLoad subroutine
+main_InitNametables subroutine
     MOV_D main_arg, shr_cameraX
     REPEAT 4
     LSR_D main_arg
@@ -219,7 +231,7 @@ main_InitialLevelLoad subroutine
     tya
     pha
     jsr main_EvenColumn
-    jsr nmi_CopyTileCol     ;terribly unsafe, but code duplication is worse
+    jsr nmi_CopyTileCol     ;terribly unsafe
     pla
     tay
     
@@ -241,7 +253,7 @@ main_InitialLevelLoad subroutine
     tya
     pha
     jsr main_OddColumn
-    jsr nmi_CopyTileCol     ;ditto (irony!)
+    jsr nmi_CopyTileCol     ;ditto
     pla
     tay
     
@@ -249,10 +261,12 @@ main_InitialLevelLoad subroutine
     ADDI_D main_sav, main_sav, 23
     cpy #16
     bne .loop
-    
+main_InitNametables_end:
+
+main_InitAttributes subroutine
     ldy #0
     MOVI_D main_arg, main_levelMap
-.attr_loop:
+.loop:
     tya
     asl
     asl
@@ -272,20 +286,20 @@ main_InitialLevelLoad subroutine
     sta main_arg+1
     iny
     cpy #8
-    bne .attr_loop
-main_InitialLevelLoad_end:
-    
-    
-load_rest subroutine
+    bne .loop
+main_InitAttributes_end:
+
+main_ReenableDisplay subroutine
     lda #%10110000 ;enable nmi
     sta shr_ppuCtrl
     sta PPU_CTRL
-
-    inc shr_doDma
-
     lda #%00011000
     sta shr_ppuMask
+main_ReenableDisplay_end:
 
+;------------------------------------------------------------------------------
+;Every Frame
+;------------------------------------------------------------------------------
 main_loop:
 main_CheckInput subroutine
     lda main_ctrl
@@ -382,7 +396,7 @@ main_TileInteraction subroutine
     lda #2
 .nt0:
     sta shr_nameTable
-    jmp main_LevelStart
+    jmp main_EnterLevel
 .not_exit:
     cmp #TB_MAPDOOR+16
     bcc .maybe_door
@@ -407,7 +421,7 @@ main_TileInteraction subroutine
     MOV_D main_mapCamY, shr_cameraY
     lda shr_cameraYMod
     sta main_mapCamYMod
-    jmp main_LevelStart
+    jmp main_EnterLevel
 .not_door:
     lda #JOY_B_MASK
     and main_pressed
@@ -749,7 +763,7 @@ main_CheckHurt subroutine
     sta main_arg
     lda prgdata_levelTable+1,y
     sta main_arg+1
-    jmp main_LevelStart
+    jmp main_EnterLevel
 .hurt:
     dec shr_hp
     lda #120
