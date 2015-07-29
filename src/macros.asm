@@ -180,19 +180,3 @@
 	jmp {1}
 .not:
 	ENDM
-
-    MAC L_PPU_ADDR
-    bit PPU_STATUS
-    lda {1}+1
-    sta PPU_ADDR
-    lda {1}
-    sta PPU_ADDR
-    ENDM
-
-    MAC LI_PPU_ADDR
-    bit PPU_STATUS
-    lda #>{1}
-    sta PPU_ADDR
-    lda #<{1}
-    sta PPU_ADDR
-    ENDM

@@ -193,6 +193,13 @@ main_InitialLevelLoad subroutine
     MOVI_D main_sav, main_levelMap
     ADD_D main_sav, main_sav, main_ret
     ldy #0
+    MOV_D main_sav+2, shr_cameraX
+    REPEAT 3
+    LSR_D main_sav+2
+    REPEND
+    
+    MOV_D shr_debugReg, main_sav+2
+    
 .loop:
     ;args to buffer column    
     MOV_D main_arg, main_sav
@@ -205,6 +212,9 @@ main_InitialLevelLoad subroutine
     sta main_arg+1
     tya
     asl
+    clc
+    adc main_sav+2
+    and #$1F
     sta main_arg+2
     tya
     pha
@@ -225,6 +235,8 @@ main_InitialLevelLoad subroutine
     asl
     sec
     adc #0
+    adc main_sav+2
+    and #$1F
     sta main_arg+2
     tya
     pha
@@ -263,8 +275,6 @@ main_InitialLevelLoad subroutine
     bne .attr_loop
 main_InitialLevelLoad_end:
     
-    lda shr_cameraYMod
-    sta shr_debugReg
     
 load_rest subroutine
     lda #%10110000 ;enable nmi
