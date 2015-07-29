@@ -529,13 +529,15 @@ main_CheckLeft subroutine
     cmp #0
     bpl main_CheckLeft_end
 
-    ;skip if not hit a wall
-    ;a0 = x in tiles
+    CMPI_D main_playerX, 1
+    bcc .hit
+    
+    ;main_arg = x in tiles
     MOV_D main_arg, main_playerX
     REPEAT 4
     LSR_D main_arg
     REPEND
-    ;t0 = y in tiles
+    ;main_arg+2 = y in tiles
     ADDI_D main_arg+2, main_playerY, 7
     REPEAT 4
     LSR_D main_arg+2
@@ -559,14 +561,16 @@ main_CheckRight subroutine
     bmi main_CheckRight_end
     beq main_CheckRight_end
 
-    ;skip if not hit a wall
-    ;a0 = x in tiles
+    CMPI_D main_playerX, [MT_MAP_WIDTH*PX_MT_WIDTH - 16]
+    bcs .hit
+
+    ;main_arg = x in tiles
     MOV_D main_arg, main_playerX
     REPEAT 4
     LSR_D main_arg
     REPEND
     INC_D main_arg
-    ;t0 = y in tiles
+    ;main_arg+2 = y in tiles
     ADDI_D main_arg+2, main_playerY, 7
     REPEAT 4
     LSR_D main_arg+2
@@ -861,7 +865,7 @@ main_UpdateCameraX subroutine
     bcc .Scroll_Right_end
     
     ;no scrolling becuse screen is at map edge
-    CMPI_D shr_cameraX, [[MT_MAP_WIDTH - MT_VIEWPORT_WIDTH]*PX_MT_WIDTH]
+    CMPI_D shr_cameraX, [[MT_MAP_WIDTH - MT_VIEWPORT_WIDTH]*PX_MT_WIDTH - 8]
     bcs .Scroll_Right_end
     
     ;scroll right 1 pixel
