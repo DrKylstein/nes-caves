@@ -157,6 +157,8 @@ main_ResetStats subroutine
     sta shr_hp
     lda #MAX_ENTITIES
     sta main_currPlatform
+    lda #0
+    sta main_paused
 main_ResetStats_end:
 
 main_LoadLevel subroutine
@@ -312,6 +314,20 @@ main_CheckInput subroutine
     sta main_pressed
     
     MOVI main_playerXVel, 0
+.start:
+    lda main_pressed
+    and #JOY_START_MASK
+    beq .foo
+    lda #1
+    eor main_paused
+    sta main_paused
+.foo    
+    lda main_paused
+    beq .left
+    lda main_pressed
+    and #JOY_SELECT_MASK
+    beq main_CheckInput
+    jmp main_doExit
 .left:
     lda main_ctrl
     and #JOY_LEFT_MASK
@@ -387,6 +403,7 @@ main_TileInteraction subroutine
     bne .not_exit
     lda main_crystalsLeft
     bne .not_exit
+main_doExit:
     MOVI_D main_arg, prgdata_mainMap
     MOV_D main_playerX, main_mapPX
     MOV_D main_playerY, main_mapPY

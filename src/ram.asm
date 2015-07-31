@@ -85,6 +85,7 @@ main_mapCamYMod     ds 1
 main_currLevel      ds 1
 main_cleared        ds 2
 main_currPlatform   ds 1
+main_paused         ds 1
 
 MAX_ENTITIES = 16
 main_entityBlock:
