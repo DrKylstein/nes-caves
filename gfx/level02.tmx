@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="24" tilewidth="16" tileheight="16" nextobjectid="3">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="24" tilewidth="16" tileheight="16" nextobjectid="4">
  <properties>
   <property name="__script__" value="nescave"/>
+  <property name="crystals" value="18"/>
  </properties>
  <tileset firstgid="1" name="metatiles" tilewidth="16" tileheight="16">
   <image source="metatiles.png" width="256" height="256"/>
@@ -19,5 +20,6 @@
     <property name="velocity" value="1"/>
    </properties>
   </object>
+  <object id="3" name="start" type="start" x="32" y="352" width="16" height="16"/>
  </objectgroup>
 </map>

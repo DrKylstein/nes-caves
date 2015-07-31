@@ -10,7 +10,8 @@ max_entities = 16
 
 def writeColumn(out, entities, func, default):
     k = 0
-    for i in range(max_entities):
+    out.write(chr(default & 0xFF))
+    for i in range(1,max_entities):
         while k < entities.objectCount() and (entities.objectAt(k).type() == 
         'start' or entities.objectAt(k).type() == 'camera'):
             k += 1
@@ -46,7 +47,7 @@ class NesCave(Plugin):
                 tiles = layer.asTileLayer()
             elif isObjectGroupAt(m, i):
                 entities = layer.asObjectGroup()
-            
+        gemCount = 0
         with open(f, 'wb') as out:
             for x in range(tiles.width()):
                 for y in range(tiles.height()):
@@ -65,18 +66,32 @@ class NesCave(Plugin):
                     out.write(chr(int(start.y()) >> 8))
                     out.write(chr(int(start.x()) & 0xFF))
                     out.write(chr(int(start.x()) >> 8))
-                    break
-            for i in range(entities.objectCount()):
-                start = entities.objectAt(i)
-                if start.type() == 'camera':
-                    out.write(chr(int(start.x()) & 0xFF))
-                    out.write(chr(int(start.x()) >> 8))
-                    out.write(chr(int(start.y()) & 0xFF))
-                    out.write(chr(int(start.y()) >> 8))
-                    out.write(chr((int(start.y()) % 240) + 96))
-                    if int(start.y()) >= 240:
-                        out.write(chr(0x02))
+                    
+                    camX = min(max(int(start.x()) - 128,0),640-256-8)
+                    camY = min(max(int(start.y()) - 104,0),384-208)
+                    out.write(chr(camX & 0xFF))
+                    out.write(chr(camX >> 8))
+                    out.write(chr(camY & 0xFF))
+                    out.write(chr(camY >> 8))
+                    out.write(chr((camY + 96) % 240))
+                    if camY+96 >= 240:
+                        out.write(chr(0x08))
                     else:
                         out.write(chr(0x00))
                     break
+            crystals = m.property('crystals')
+            out.write(chr(int(crystals)))
+            #~ for i in range(entities.objectCount()):
+                #~ start = entities.objectAt(i)
+                #~ if start.type() == 'camera':
+                    #~ out.write(chr(int(start.x()) & 0xFF))
+                    #~ out.write(chr(int(start.x()) >> 8))
+                    #~ out.write(chr(int(start.y()) & 0xFF))
+                    #~ out.write(chr(int(start.y()) >> 8))
+                    #~ out.write(chr((int(start.y()) % 240) + 96))
+                    #~ if int(start.y()) >= 240:
+                        #~ out.write(chr(0x02))
+                    #~ else:
+                        #~ out.write(chr(0x00))
+                    #~ break
         return True

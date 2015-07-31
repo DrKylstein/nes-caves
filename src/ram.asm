@@ -31,12 +31,14 @@ shr_palAddr         ds 2
 shr_doTileCol       ds 1
 shr_doAttrCol       ds 1
 shr_tileCol         ds 1
+    ECHO $100-.," bytes left in page $000"
 
     ORG $0100
 shr_tileBuffer      ds TOP_HEIGHT+BOTTOM_HEIGHT           ;18+30 = 48 : 48
 shr_attrBuffer      ds TOP_ATTR_HEIGHT+BOTTOM_ATTR_HEIGHT ; 5+ 8 = 13 : 61
 shr_stack:
-
+    ECHO $200-.," bytes left in page $100"
+    
     ORG $0200
 OAM_SIZE = 4
 SY = 0
@@ -53,35 +55,36 @@ shr_playerSprites   ds 8
 shr_entitySprites:
 
     ORG $0300
-main_playerYFrac    ds 1 ;
-main_playerY        ds 2 ;
-main_playerX        ds 2 ;
-shr_cameraX         ds 2 ;
-shr_cameraY         ds 2 ;
-shr_cameraYMod      ds 1 ;
-shr_nameTable       ds 1 ;
+main_playerYFrac    ds 1 
+main_playerY        ds 2 
+main_playerX        ds 2 
+shr_cameraX         ds 2 
+shr_cameraY         ds 2 
+shr_cameraYMod      ds 1 
+shr_nameTable       ds 1 
+main_crystalsLeft   ds 1
 
-shr_debugReg        ds 2 ;
-shr_frame           ds 1 ;
-main_ctrl           ds 1 ;
-main_oldCtrl        ds 1 ;
-main_pressed        ds 1 ;
-main_switches       ds 1 ;
-main_playerFlags    ds 1 ; ;jumping,flipped,in air,00000
-main_playerFrame    ds 1 ;
-main_playerXVel     ds 1 ;
-main_playerYVel     ds 2 ;
-main_mercyTime      ds 1 ;
-shr_ammo            ds 1 ;
-shr_hp              ds 1 ;
-main_mapPX          ds 2 ;
-main_mapPY          ds 2 ;
-main_mapCamX        ds 2 ;
-main_mapCamY        ds 2 ;
-main_mapCamYMod     ds 1 ;
-main_currLevel      ds 1 ;
-main_cleared        ds 2 ;
-main_currPlatform   ds 1 ;
+shr_debugReg        ds 2
+shr_frame           ds 1
+main_ctrl           ds 1
+main_oldCtrl        ds 1
+main_pressed        ds 1
+main_switches       ds 1
+main_playerFlags    ds 1 ;jumping,flipped,in air,00000
+main_playerFrame    ds 1
+main_playerXVel     ds 1
+main_playerYVel     ds 2
+main_mercyTime      ds 1
+shr_ammo            ds 1
+shr_hp              ds 1
+main_mapPX          ds 2
+main_mapPY          ds 2
+main_mapCamX        ds 2
+main_mapCamY        ds 2
+main_mapCamYMod     ds 1
+main_currLevel      ds 1
+main_cleared        ds 2
+main_currPlatform   ds 1
 
 MAX_ENTITIES = 16
 main_entityBlock:
@@ -92,7 +95,9 @@ main_entityYHi        ds MAX_ENTITIES ; bottom bit
 main_entityIndex      ds MAX_ENTITIES 
 main_entityXVel       ds MAX_ENTITIES ; 37 + 96 = 133
 main_entityBlockEnd:
+    ECHO $400-.," bytes left in page $300"
 
     ORG $0400
 main_levelMap       ds 960
-;64 bytes left
+    ECHO $800-.,"bytes left in pages $400-$700"
+

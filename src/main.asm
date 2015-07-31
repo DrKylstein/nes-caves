@@ -155,6 +155,8 @@ main_DisableDisplay_end:
 main_ResetStats subroutine
     lda #3
     sta shr_hp
+    lda #MAX_ENTITIES
+    sta main_currPlatform
 main_ResetStats_end:
 
 main_LoadLevel subroutine
@@ -175,13 +177,14 @@ main_LoadLevel subroutine
     
     ADDI_D main_tmp+2, main_arg, 960
     MOVI_D main_tmp, main_entityBlock
-    ldy #[main_entityBlockEnd-main_entityBlock]
+    ldy #0
 .copyEntities:
     lda (main_tmp+2),y
     sta (main_tmp),y
-    dey
+    iny
+    cpy #[main_entityBlockEnd-main_entityBlock]
     bne .copyEntities
-    
+        
     ADDI_D main_tmp+2, main_arg, 1056
     ldy #0
     ldx #1
@@ -192,7 +195,7 @@ main_LoadLevel subroutine
     sta main_playerYFrac,x
     inx
     iny
-    cpy #10
+    cpy #11
     bne .loadCoords
 main_LoadLevel_end:
 
@@ -209,9 +212,7 @@ main_InitNametables subroutine
     REPEAT 3
     LSR_D main_sav+2
     REPEND
-    
-    MOV_D shr_debugReg, main_sav+2
-    
+        
 .loop:
     ;args to buffer column    
     MOV_D main_arg, main_sav
@@ -337,7 +338,7 @@ main_CheckInput subroutine
     beq main_CheckInput_end
     bit main_playerFlags
     bmi main_CheckInput_end
-    MOVI_D main_playerYVel, -$0210
+    MOVI_D main_playerYVel, JUMP_VELOCITY
     lda main_playerFlags
     ora #%10000000
     sta main_playerFlags
@@ -377,11 +378,14 @@ main_TileInteraction subroutine
     sta main_sav+3
     cmp #TB_CRYSTAL
     bne .not_crystal
+    dec main_crystalsLeft
     lda #0
     sta main_sav
     jmp .updateTile
 .not_crystal:
     cmp #TB_EXIT
+    bne .not_exit
+    lda main_crystalsLeft
     bne .not_exit
     MOVI_D main_arg, prgdata_mainMap
     MOV_D main_playerX, main_mapPX
@@ -393,7 +397,7 @@ main_TileInteraction subroutine
     CMPI_D shr_cameraY, 240
     lda #0
     bcc .nt0
-    lda #2
+    lda #8
 .nt0:
     sta shr_nameTable
     jmp main_EnterLevel
@@ -461,6 +465,7 @@ main_TileInteraction subroutine
 .notswitchoff:
 
 ;shoot
+    lda main_entityXHi
     cmp #$7F
     bne main_TileInteraction_end
     ;lda shr_ammo
@@ -473,6 +478,7 @@ main_TileInteraction subroutine
     lda main_playerY
     sta main_entityYLo
     lda main_playerY+1
+    and #ENT_YPOS
     ora #ENT_ISPROJECTILE
     sta main_entityYHi
     lda #64
@@ -519,7 +525,7 @@ main_TileInteraction_end:
 main_ApplyGravity subroutine
     CMPI_D main_playerYVel, $0400
     bpl main_ApplyGravity_end
-    ADDI_D main_playerYVel, main_playerYVel, 16
+    ADDI_D main_playerYVel, main_playerYVel, GRAVITY
 main_ApplyGravity_end:
 
 
@@ -582,7 +588,10 @@ main_CheckRight subroutine
     beq .hit
     cmp #TB_WEAKBLOCK
     beq .hit
-    jmp main_CheckRight_end
+    cmp #TB_EXIT
+    bne main_CheckRight_end
+    lda main_crystalsLeft
+    beq main_CheckRight_end
 .hit:
     MOVI main_playerXVel, 0
 main_CheckRight_end:
@@ -777,12 +786,11 @@ main_CheckHurt subroutine
     jmp .loop
 main_CheckHurt_end:
 
-    
 main_ApplyVelocity subroutine
     MOV_D main_tmp, main_playerYVel
     ldy main_currPlatform
     cpy #MAX_ENTITIES
-    bcs .noLift
+    beq .noLift
     lda main_entityYHi,y
     and #ENT_ISVERTICAL
     beq .noLift
@@ -805,7 +813,7 @@ main_ApplyVelocity subroutine
     sta main_tmp
     ldy main_currPlatform
     cpy #MAX_ENTITIES
-    bcs .noTrolley
+    beq .noTrolley
     lda main_entityYHi,y
     and #ENT_ISVERTICAL
     bne .noTrolley
