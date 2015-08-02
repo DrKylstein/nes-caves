@@ -19,26 +19,26 @@ nmi subroutine
     sta PPU_ADDR
     lda #$5A
     sta PPU_ADDR
-    lda shr_debugReg+1
+    lda nmi_sfxPtr+1
     REPEAT 4
     lsr
     REPEND
     clc
     adc #HEXFONT_BASE
     sta PPU_DATA
-    lda shr_debugReg+1
+    lda nmi_sfxPtr+1
     and #$0F
     clc
     adc #HEXFONT_BASE
     sta PPU_DATA
-    lda shr_debugReg
+    lda nmi_sfxPtr
     REPEAT 4
     lsr
     REPEND
     clc
     adc #HEXFONT_BASE
     sta PPU_DATA
-    lda shr_debugReg
+    lda nmi_sfxPtr
     and #$0F
     clc
     adc #HEXFONT_BASE
@@ -56,7 +56,8 @@ nmi subroutine
     clc
     adc #HEXFONT_BASE
     sta PPU_DATA
-    
+
+nmi_updateHearts subroutine
     lda #$20
     sta PPU_ADDR
     lda #$76
@@ -74,22 +75,55 @@ nmi subroutine
     sta PPU_ADDR
     lda #[HEXFONT_BASE+$10]
     ldy shr_hp
-    beq .sprite_dma
+    beq nmi_updateHearts_end
 .fill_hearts:
     sta PPU_DATA
     dey
     bne .fill_hearts
+nmi_updateHearts_end:
 
+nmi_soundEffects:
+    lda shr_doSfx
+    beq .check
+    MOV_D nmi_sfxPtr, shr_sfxPtr
+.check:
+    ldy #0
+    lda (nmi_sfxPtr),y
+    bne .play
+    lda #0
+    sta APU_SQ1_VOL
+    jmp nmi_soundEffects_end
+.play:
+    sta APU_SQ1_LO
+    INC_D nmi_sfxPtr
+    
+    lda shr_frame
+    and #1
+    beq .vibrate
+    lda #%10111111
+    sta APU_SQ1_VOL
+    jmp .foo
+.vibrate:
+    lda #%10110000
+    sta APU_SQ1_VOL
+.foo
+    lda shr_doSfx
+    beq nmi_soundEffects_end
+    lda #$00
+    sta APU_SQ1_HI
+nmi_soundEffects_end:
+    lda #0
+    sta shr_doSfx
 
-.sprite_dma:
+nmi_spriteDma:
     lda shr_doDma
-    beq .sprite_dma_end
+    beq nmi_spriteDma_end
     lda #0
     sta OAM_ADDR
     lda #>shr_spriteY
     sta OAM_DMA
     dec shr_doDma
-.sprite_dma_end:
+nmi_spriteDma_end:
 
 .pal_copy:
     lda shr_doPalCopy

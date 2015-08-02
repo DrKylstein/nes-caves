@@ -48,6 +48,28 @@ reset subroutine
     inx
     bne .clrmem
  
+ 
+init_apu subroutine
+    lda #$0F
+    sta $4015
+    ldy #0
+.loop:  
+    lda .regs,y
+    sta $4000,y
+    iny
+    cpy #$18
+    bne .loop
+    MOVI_D nmi_sfxPtr, prgdata_nullSound
+    jmp init_apu_end
+.regs:
+    .byte $30,$08,$00,$00
+    .byte $30,$08,$00,$00
+    .byte $80,$00,$00,$00
+    .byte $30,$00,$00,$00
+    .byte $00,$00,$00,$00
+    .byte $00,$0F,$00,$40
+init_apu_end:
+
 main_clearOAM subroutine
     lda #$FF
     ldy #0
@@ -124,22 +146,16 @@ main_clearEntities_end:
     lda #$FE
     sta shr_spriteIndex
     
-    
     MOVI_D shr_palAddr, [prgdata_palettes];+32]
     inc shr_doPalCopy
-    
-    MOVI_D main_arg, prgdata_mainMap
-    ; MOVI_D main_playerX, 48
-    ; MOVI_D main_playerY, 48
-    ; MOVI_D shr_cameraX, 0
-    ; MOVI_D shr_cameraY, 0
-    ; lda #0
-    ; sta shr_cameraYMod
-    ; sta shr_nameTable
-    
+        
+;------------------------------------------------------------------------------
+;New Game
+;------------------------------------------------------------------------------
     lda #5
     sta shr_ammo
-
+    
+    MOVI_D main_arg, prgdata_mainMap
 ;------------------------------------------------------------------------------
 ;Start of Level
 ;------------------------------------------------------------------------------
@@ -358,6 +374,8 @@ main_CheckInput subroutine
     lda main_playerFlags
     ora #%10000000
     sta main_playerFlags
+    MOVI_D shr_sfxPtr, prgdata_jumpSound
+    inc shr_doSfx
 main_CheckInput_end:
 
 main_TileInteraction subroutine
@@ -394,6 +412,8 @@ main_TileInteraction subroutine
     sta main_sav+3
     cmp #TB_CRYSTAL
     bne .not_crystal
+    MOVI_D shr_sfxPtr, prgdata_crystalSound
+    inc shr_doSfx
     dec main_crystalsLeft
     lda #0
     sta main_sav
@@ -500,6 +520,10 @@ main_doExit:
     sta main_entityYHi
     lda #64
     sta main_entityIndex
+    
+    MOVI_D shr_sfxPtr, prgdata_crystalSound
+    inc shr_doSfx
+    
     bit main_playerFlags
     bvs .shootLeft
 .shootRight:

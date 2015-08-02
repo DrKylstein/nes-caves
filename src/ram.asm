@@ -21,6 +21,9 @@ nmi_src             ds 2
 nmi_scrollY         ds 1
 nmi_nametable       ds 1
 nmi_scrollX         ds 1
+nmi_sfxPtr         ds 2
+shr_sfxPtr         ds 2
+shr_doSfx           ds 1
 shr_sleeping        ds 1
 shr_doDma           ds 1
 shr_doRegCopy       ds 1
