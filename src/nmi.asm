@@ -1,16 +1,58 @@
 ;------------------------------------------------------------------------------
 ; NMI (VBLANK) HANDLER
 ;------------------------------------------------------------------------------
-nmi subroutine
+nmi:
     php
     pha
     txa
     pha
     tya
     pha
-
     inc shr_frame
 
+nmi_SpriteDma subroutine
+    lda shr_doDma
+    beq nmi_SpriteDma_end
+    lda #0
+    sta OAM_ADDR
+    lda #>shr_spriteY
+    sta OAM_DMA
+    dec shr_doDma
+nmi_SpriteDma_end:
+
+nmi_PalCopy subroutine
+    lda shr_doPalCopy
+    beq nmi_PalCopy_end
+    bit PPU_STATUS
+    lda #$3F
+    sta PPU_ADDR
+    lda #$01
+    sta PPU_ADDR
+    ldy #0
+.loop:
+    lda (shr_palAddr),y
+    sta PPU_DATA
+    iny
+    cpy #32
+    bne .loop
+    dec shr_doPalCopy
+nmi_PalCopy_end:
+
+nmi_TileCopy subroutine
+    lda shr_doTileCol
+    beq nmi_TileCopy_end
+    jsr nmi_CopyTileCol
+    dec shr_doTileCol
+nmi_TileCopy_end:
+    
+nmi_AttrCopy subroutine
+    lda shr_doAttrCol
+    beq nmi_AttrCopy_end
+    jsr nmi_CopyAttrCol
+    dec shr_doAttrCol
+nmi_AttrCopy_end:
+
+nmi_DebugCounter subroutine
     lda shr_ppuCtrl
     and %11111011
     sta PPU_CTRL
@@ -43,7 +85,9 @@ nmi subroutine
     clc
     adc #HEXFONT_BASE
     sta PPU_DATA
-    
+nmi_DebugCounter_end:
+
+nmi_UpdateAmmo subroutine
     lda shr_ppuCtrl
     and %11111011
     sta PPU_CTRL
@@ -56,8 +100,9 @@ nmi subroutine
     clc
     adc #HEXFONT_BASE
     sta PPU_DATA
+nmi_UpdateAmmo_end:
 
-nmi_updateHearts subroutine
+nmi_UpdateHearts subroutine
     lda #$20
     sta PPU_ADDR
     lda #$76
@@ -75,80 +120,16 @@ nmi_updateHearts subroutine
     sta PPU_ADDR
     lda #[HEXFONT_BASE+$10]
     ldy shr_hp
-    beq nmi_updateHearts_end
+    beq nmi_UpdateHearts_end
 .fill_hearts:
     sta PPU_DATA
     dey
     bne .fill_hearts
-nmi_updateHearts_end:
+nmi_UpdateHearts_end:
 
-nmi_soundEffects:
-    lda shr_doSfx
-    beq .check
-    MOV_D nmi_sfxPtr, shr_sfxPtr
-.check:
-    ldy #0
-    lda (nmi_sfxPtr),y
-    bne .play
-    lda #0
-    sta APU_SQ1_VOL
-    jmp nmi_soundEffects_end
-.play:
-    sta APU_SQ1_LO
-    INC_D nmi_sfxPtr
-    
-    lda shr_frame
-    and #1
-    beq .vibrate
-    lda #%10111111
-    sta APU_SQ1_VOL
-    jmp .foo
-.vibrate:
-    lda #%10110000
-    sta APU_SQ1_VOL
-.foo
-    lda shr_doSfx
-    beq nmi_soundEffects_end
-    lda #$00
-    sta APU_SQ1_HI
-nmi_soundEffects_end:
-    lda #0
-    sta shr_doSfx
-
-nmi_spriteDma:
-    lda shr_doDma
-    beq nmi_spriteDma_end
-    lda #0
-    sta OAM_ADDR
-    lda #>shr_spriteY
-    sta OAM_DMA
-    dec shr_doDma
-nmi_spriteDma_end:
-
-.pal_copy:
-    lda shr_doPalCopy
-    beq .pal_copy_end
-    jsr nmi_CopyPal
-    dec shr_doPalCopy
-.pal_copy_end:
-
-.tilecol_copy:
-    lda shr_doTileCol
-    beq .tilecol_copy_end
-    jsr nmi_CopyTileCol
-    dec shr_doTileCol
-.tilecol_copy_end:
-    
-.tileattr_copy:
-    lda shr_doAttrCol
-    beq .tileattr_copy_end
-    jsr nmi_CopyAttrCol
-    dec shr_doAttrCol
-.tileattr_copy_end:
-    
-.reg_update:
+nmi_updateReg subroutine
     lda shr_doRegCopy
-    beq .StatusBar
+    beq nmi_updateReg_end
     lda shr_ppuMask
     sta PPU_MASK 
     
@@ -161,8 +142,9 @@ nmi_spriteDma_end:
     lda shr_nameTable
     sta nmi_nametable
     dec shr_doRegCopy
+nmi_updateReg_end:
 
-.StatusBar
+nmi_doStatus subroutine
     lda shr_ppuCtrl
     and #$FE
     sta PPU_CTRL
@@ -183,11 +165,39 @@ nmi_spriteDma_end:
     ora nmi_scratch
     sta nmi_scratch
 
-;sync to sprite zero
-.wait1: ;wait for it to be cleared from last frame
+.wait: ;wait for sprite 0 to be cleared from last frame
     bit PPU_STATUS
-    bvs .wait1
-.wait2: ;wait for it to be set again
+    bvs .wait
+    
+;update sound during wait
+    lda shr_doSfx
+    beq .check
+    dec shr_doSfx
+    MOV_D nmi_sfxPtr, shr_sfxPtr
+    lda #0
+    sta APU_SQ1_HI
+.check:
+    ldy #0
+    lda (nmi_sfxPtr),y
+    bne .play
+    lda #0
+    sta APU_SQ1_VOL
+    jmp .wait2
+.play:
+    sta APU_SQ1_LO
+    INC_D nmi_sfxPtr
+    
+    lda shr_frame
+    and #1
+    beq .vibrate
+    lda #%10111111
+    sta APU_SQ1_VOL
+    jmp .wait2
+.vibrate:
+    lda #%10110000
+    sta APU_SQ1_VOL
+
+.wait2: ;wait for sprite 0 to be set again
     bit PPU_STATUS
     bvc .wait2
 
@@ -199,11 +209,10 @@ nmi_spriteDma_end:
     sta PPU_SCROLL
     lda nmi_scratch
     sta PPU_ADDR
+nmi_doStatus_end:
  
-.end
     lda #0
     sta shr_sleeping
-    
     pla
     tay
     pla
@@ -308,16 +317,3 @@ nmi_CopyTileCol subroutine
     sta PPU_CTRL
    rts
 ;------------------------------------------------------------------------------
-nmi_CopyPal subroutine
-    bit PPU_STATUS
-    lda #$3F
-    sta PPU_ADDR
-    lda #$01
-    sta PPU_ADDR
-    ldy #0
-    REPEAT 32
-    lda (shr_palAddr),y
-    sta PPU_DATA
-    iny
-    REPEND
-    rts
