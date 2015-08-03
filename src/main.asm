@@ -187,8 +187,8 @@ main_LoadLevel subroutine
     sta (main_tmp),y
     iny
     bne .loop
-    inc main_tmp+3
-    inc main_tmp+1
+    ADDI_D main_tmp+2, main_tmp+2, 256
+    ADDI_D main_tmp, main_tmp, 256
     inx
     cpx #4
     bne .loop
