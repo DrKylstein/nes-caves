@@ -6,17 +6,17 @@
  <tileset firstgid="1" name="tiles" tilewidth="8" tileheight="8">
   <image source="tiles.png" width="256" height="64"/>
  </tileset>
- <tileset firstgid="257" name="pal" tilewidth="4" tileheight="1">
-  <image source="pal.png" width="4" height="16"/>
+ <tileset firstgid="257" name="colorsets" tilewidth="16" tileheight="16">
+  <image source="../../../../Projects/nes caves/gfx/colorsets.png" width="16" height="64"/>
  </tileset>
  <layer name="Names" width="32" height="4">
   <data encoding="base64" compression="zlib">
-   eJxjZGBgYBzFgwZ/AuInQPwYiJ8B8VMgfgHEr4D4IZraz1D6KRZzPiJhmCC6GhABAB7FDFY=
+   eJxjZGBgYBzFA4avoeEbQHwbiO8A8V0gvgfE94H4FhQjq70JpdHFQfg6EkaXQ8YAc+UbWA==
   </data>
  </layer>
  <layer name="Attributes" width="32" height="4">
   <data encoding="base64" compression="zlib">
-   eJxjZGQAA8YBogcawNzBMUL9DwBZqABI
+   eJxjYBhYwMI4sPRAg4H2PwB8YACh
   </data>
  </layer>
 </map>

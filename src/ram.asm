@@ -31,9 +31,11 @@ shr_ppuMask         ds 1
 shr_ppuCtrl         ds 1
 shr_doPalCopy       ds 1
 shr_palAddr         ds 2
+shr_palDest         ds 1
 shr_doTileCol       ds 1
 shr_doAttrCol       ds 1
 shr_tileCol         ds 1
+shr_earlyExit       ds 1
     ECHO $100-.," bytes left in page $000"
 
     ORG $0100

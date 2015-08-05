@@ -26,16 +26,15 @@ nmi_PalCopy subroutine
     bit PPU_STATUS
     lda #$3F
     sta PPU_ADDR
-    lda #$01
+    lda shr_palDest
     sta PPU_ADDR
-    ldy #0
+    ldy #16
 .loop:
     lda (shr_palAddr),y
     sta PPU_DATA
-    iny
-    cpy #32
+    dey
     bne .loop
-    dec shr_doPalCopy
+    sty shr_doPalCopy
 nmi_PalCopy_end:
 
 nmi_TileCopy subroutine
@@ -51,6 +50,10 @@ nmi_AttrCopy subroutine
     jsr nmi_CopyAttrCol
     dec shr_doAttrCol
 nmi_AttrCopy_end:
+
+    lda shr_earlyExit
+    beq nmi_DebugCounter
+    jmp nmi_Exit
 
 nmi_DebugCounter subroutine
     lda shr_ppuCtrl
@@ -107,7 +110,7 @@ nmi_UpdateHearts subroutine
     sta PPU_ADDR
     lda #$76
     sta PPU_ADDR
-    lda #0
+    lda #[HEXFONT_BASE-4]
     ldy #3
 .clear_hearts:
     sta PPU_DATA
@@ -118,7 +121,7 @@ nmi_UpdateHearts subroutine
     sta PPU_ADDR
     lda #$76
     sta PPU_ADDR
-    lda #[HEXFONT_BASE+$10]
+    lda #[HEXFONT_BASE-3]
     ldy shr_hp
     beq nmi_UpdateHearts_end
 .fill_hearts:
@@ -210,7 +213,8 @@ nmi_doStatus subroutine
     lda nmi_scratch
     sta PPU_ADDR
 nmi_doStatus_end:
- 
+
+nmi_Exit:
     lda #0
     sta shr_sleeping
     pla

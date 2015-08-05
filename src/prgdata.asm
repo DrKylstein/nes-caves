@@ -4,7 +4,7 @@
 
 prgdata_palettes:
 ;global
-    incbin pal.bin
+    incbin palsp.pal
 
 prgdata_hud:
 	incbin hud.bin
@@ -80,7 +80,10 @@ prgdata_levelTable
     
 prgdata_mainMap:
     incbin main_map.bin
+    incbin pal00.pal
 prgdata_level01:
     incbin level01.bin
+    incbin pal01.pal
 prgdata_level02:
     incbin level02.bin
+    incbin pal02.pal

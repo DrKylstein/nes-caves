@@ -6,25 +6,25 @@
  <tileset firstgid="1" name="tiles" tilewidth="8" tileheight="8">
   <image source="tiles.png" width="256" height="64"/>
  </tileset>
- <tileset firstgid="257" name="pal" tilewidth="4" tileheight="1">
-  <image source="pal.png" width="4" height="16"/>
- </tileset>
- <tileset firstgid="273" name="behaviours" tilewidth="16" tileheight="16">
+ <tileset firstgid="257" name="behaviours" tilewidth="16" tileheight="16">
   <image source="behaviours.png" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="321" name="colorsets" tilewidth="16" tileheight="16">
+  <image source="../../../../Projects/nes caves/gfx/colorsets.png" width="16" height="64"/>
  </tileset>
  <layer name="Names" width="32" height="32">
   <data encoding="base64" compression="zlib">
-   eJzt1vlTTlEcx/HnCREpTaJCjYqypSRKlpFWJMpSMbaKFiq0YmihVJYs2Vr4QYskqcwY8g/on+r9zHzvzJnTfZrphzSj+8Nrvufcc+75nO/M/eHabTabHQuwEOsRhEXCRbiKxViCUIRhk1Q3LMUyOW+FZrk8d9eqIRghSv4GYeRvFHq+Ue2Sb5y3GVuwFRHYpuUZdziIeM0hk71GH95YCR+swmr4KvnR2AU/+Muar3KOY7wGnjK/hMuaXJP8CBGFnZLtuMNuxJj0H4s9shaj7HeM45R9zvLXYh0CEIgEJCIJyUhBKt6jA53ownlc0FxU8rzEUaRNk78X+7AfB5CHfFzBVRSgEL/wG+P4g3u4r6lFC1pxGEdwDddn0P8DPEQjmvAIzehFn9Kfs/wBfEERivEYT1CHek2DSf+f0KPk9eOzlu+BbnzQfMRfTCBSDOKrbep3ZtD7d7Zvtuj9/+v8+d6/xWKxWCyW/9cxpCMc23EcJ5CBTJzEKZzGGXknC9nIwVmcwx3cxVM8Qxue4wVe4hXa8Rpv8BbvUIJSpZbhBm7iFspRgUpUSX41anDbpA7hG4bxHSMYxRh+KPOfsu41xxz/4jvmsE4CLZBudQ==
-  </data>
- </layer>
- <layer name="Attributes" width="32" height="32">
-  <data encoding="base64" compression="zlib">
-   eJztl0sKgDAMRI16/zMLQjcPhvippOq8zdCWhEzbRRIx7USiMzQ7X6EqrhrWzfoD6wb3W9wCVXlG95/9B/XuZ/NVc9f/0fsY1b/iLXU+xd/9G2OMMea7qD6VcwznG85Jat7JtJqrfX4vrWYDnFMBCQ==
+   eJzt1ulXTVEYx/FzzWRqSd1CKTKkTClXISRThswUKmOEJorKkCkyNyFRL8xDA7q3Jf4Nf4/vWeu56257nWsta3HvC+fFZz17333O/u3nxT7rOgzDcGAwhiAWcRgqBolhYjhGYCZmYbbUkRiFENlPN0bqaPxQeNenYbqSHy+8+TOEnu+tDsn37peAOUiUeZJUNds8y0qs0mRanH+8mIAwTEQ4IuBU8lOQikhEyZpT2cccT8I4mRfioOaQRf58kYxFkm2eYTFcFv0vQZqsuZTnzXG68py//MmYgmjEYDWysAZrsQ7r0YanaMczHEC+pkDJCxUbsek3+UuxDMuRgcM4gqM4hiIcx1cM4Bu+4yIuaS6jAbexAdk4iVN/0P81XMcN1OMmbuEVXiv9+ct/h/c4gWLcwV3U4YrmqkX/L/DSIk+dj8VzdGg68QZvsUB8wEdMNXx3e7+yr96/1Z3+G1YYvrt9Qfld7/9f5ZvfATc8xq/fhkD171bGHuUsgerfZrPZbDbb/2cztmAu5iEHW7EN27EDO7ELu+WdPdiLXORhH2pQi3u4jwd4iEY0oRktaMUjPMYTnEaJUktRhnJU4AzOohJVkn8O51FtUbvQjR704hM+4wv6lHm/rIcGmflffGEQ60+8N3qJ
   </data>
  </layer>
  <layer name="Behavior" width="32" height="32">
   <data encoding="base64" compression="zlib">
-   eJzt1jsOgkAURmFYAkhQliKIijxERGT/q7E500xyIxaEQe5pvpAQwj+hwPPcKPR/c2e51qR9puDLPvt+cx6x8Dz7eumk/Q984R4PmAjfgaQpEs5lqaT9HQ4Td03Ntf1ST97v7fh7zlXP7nGj+zVN0zRN0/61I/93KWZ4whzPeMErFnjDEiusscE7tvgBg/QJew==
+   eJzt1ssKglAURuFzKswepTJvlWUX7f2fqsnakwObdBCecq/JhyDiLwo6F0cLP85l4K+m7ZP8h33h+fI8EuV64fHUaftbfOIaU9wo74GmtFKey1Rp+2/YDdw1tNj3S3eO+0ju81vJ9x36wNef77csy7Isy5pbW/7vdrjHDA+YY4ElVljjEU94xgYveMU3K20Fpw==
+  </data>
+ </layer>
+ <layer name="Color" width="32" height="32" opacity="0.13">
+  <data encoding="base64" compression="zlib">
+   eJztlzEKwDAMA5OntfX/39SheBEV9hLUFN1ymBCwEg/JGFpiPj4Kn+BqPcBsnxqWF4n5XmPu9EXOA2s1LD/eHzPLX83Dbvm7+XbLj30mX+tzFd05N8YYY4z5C/lPUVlN9/23yjd2BRsL
   </data>
  </layer>
 </map>

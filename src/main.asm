@@ -146,9 +146,17 @@ main_clearEntities_end:
     lda #$FE
     sta shr_spriteIndex
     
-    MOVI_D shr_palAddr, [prgdata_palettes];+32]
+    MOVI_D shr_palAddr, prgdata_palettes
+    lda #SPRITE_PAL
+    sta shr_palDest
     inc shr_doPalCopy
-        
+    inc shr_earlyExit
+    lda #%10110000 ;enable nmi
+    sta PPU_CTRL
+    jsr synchronize
+    lda #0
+    sta PPU_CTRL
+    dec shr_earlyExit
 ;------------------------------------------------------------------------------
 ;New Game
 ;------------------------------------------------------------------------------
@@ -176,6 +184,12 @@ main_ResetStats subroutine
     lda #0
     sta main_paused
 main_ResetStats_end:
+
+    ADDI_D shr_palAddr, main_arg, PAL_OFFSET
+    lda #BG_PAL
+    sta shr_palDest
+    inc shr_doPalCopy
+
 
 main_LoadLevel subroutine
     MOV_D main_tmp+2, main_arg

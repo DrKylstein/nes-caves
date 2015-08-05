@@ -43,7 +43,7 @@ class NameAttribute(Plugin):
             for y in range(layers['Attributes'].height()/4):
                 for x in range(layers['Attributes'].width()/4):
                     data = 0
-                    for offsets in ((2,2),(0,2),(2,0),(0,0)):
+                    for offsets in ((2,3),(0,3),(2,1),(0,1)):
                         cell = layers['Attributes'].cellAt(x*4 + offsets[0], y*4 + offsets[1])
                         if cell is not None and cell.tile is not None and cell.tile.id() < 4:
                             data |= cell.tile.id()
