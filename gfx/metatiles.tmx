@@ -14,15 +14,15 @@
  </tileset>
  <layer name="Names" width="32" height="32">
   <data encoding="base64" compression="zlib">
-   eJzt1ulXTVEYx/FzzWRqSd1CKTKkTClXISRThswUKmOEJorKkCkyNyFRL8xDA7q3Jf4Nf4/vWeu56257nWsta3HvC+fFZz17333O/u3nxT7rOgzDcGAwhiAWcRgqBolhYjhGYCZmYbbUkRiFENlPN0bqaPxQeNenYbqSHy+8+TOEnu+tDsn37peAOUiUeZJUNds8y0qs0mRanH+8mIAwTEQ4IuBU8lOQikhEyZpT2cccT8I4mRfioOaQRf58kYxFkm2eYTFcFv0vQZqsuZTnzXG68py//MmYgmjEYDWysAZrsQ7r0YanaMczHEC+pkDJCxUbsek3+UuxDMuRgcM4gqM4hiIcx1cM4Bu+4yIuaS6jAbexAdk4iVN/0P81XMcN1OMmbuEVXiv9+ct/h/c4gWLcwV3U4YrmqkX/L/DSIk+dj8VzdGg68QZvsUB8wEdMNXx3e7+yr96/1Z3+G1YYvrt9Qfld7/9f5ZvfATc8xq/fhkD171bGHuUsgerfZrPZbDbb/2cztmAu5iEHW7EN27EDO7ELu+WdPdiLXORhH2pQi3u4jwd4iEY0oRktaMUjPMYTnEaJUktRhnJU4AzOohJVkn8O51FtUbvQjR704hM+4wv6lHm/rIcGmflffGEQ60+8N3qJ
+   eJzt18VvFVEUx/GLBNmxgf+AHa7F3d3b4u5e3N2tAsUKFHd3aNPiUBw2yOLhDg0kuHwn70x6evsehSakC2bxyZn77sz87knGns8Y48NDPMId3MVj8UA8EU/xDNdwHTekPscLvJTz2V5LfYXCijt/D/dV/hXh5l8Vdr5bfZLvnu8mbqGIjItK1dnOWmqgpqUWciIHckktIN7jAwqiED7ik8ovi3L4jC8y5877ZPsr3sq4K7pZukumVkKURhnJdtZQHiEB+q+AijIXovZ3tiup/YLlf8N3/MBP1EYd1EU91EcDrMBKrMJqdEJnSxeVlyoao8lv8iujCqqiGnqgJ3qhN/qgL47hOE7gJCZikmWyymuIRhiAgX/R/3TMwEzMwmzMwSZsVv0Fy5+LeeiH/piPBZiCqZZpAfrfgI0B8vT4DeKwxrIWW7AVJcUO7IRzcbn3dkfk9v+UoX/3eLuuM+nv8/XWOI+cL6/UfFLzS61u0u7tCSbterf7P40zOItzOI8LSJKcZFmLHp8yGe8jm/McSECiSf9s+NP+461+M8uzJahjE9Va7P6D5et+47OQ7/F4PB7P/2gbtiMFl7HM+N+nsViOtjJuZ7L2fs/MRVwy/m8Xx2HJOYKjGCnjUf8ovymaoRiKozlaoCVaoTXa4J3kh0oNQzjaowPGYTwWYhEWYwkiEaVqNGKwFLcxCINVHYKhGIbhiMAI4//v4+SOljoGYwPUXdiNPdiLfdiPAzioxodkPjWbOd/ipbKx/gIbLyIP
   </data>
  </layer>
- <layer name="Behavior" width="32" height="32">
+ <layer name="Behavior" width="32" height="32" opacity="0.48">
   <data encoding="base64" compression="zlib">
-   eJzt1ssKglAURuFzKswepTJvlWUX7f2fqsnakwObdBCecq/JhyDiLwo6F0cLP85l4K+m7ZP8h33h+fI8EuV64fHUaftbfOIaU9wo74GmtFKey1Rp+2/YDdw1tNj3S3eO+0ju81vJ9x36wNef77csy7Isy5pbW/7vdrjHDA+YY4ElVljjEU94xgYveMU3K20Fpw==
+   eJzt1scKwkAURuGMir3F9g72Gnt7/6dyc2YzcHFcyIzxns3HQJD8IQGTJI4K5jOLjr+atM9m3uxzr7fPIxV+zz2HTtp/whtWsIo14T2QtJWE5xIqaf8Z7567fIt9v+3C+RHJfX4r+327XvGZ8/2apmma9o8NjZ/9nP4P6Dq76pyb2MI2dnCADSxjD0eehm7MfUxwijOc4wKXuMI1bnCLO8xwjwc84gtBBQc4
   </data>
  </layer>
- <layer name="Color" width="32" height="32" opacity="0.13">
+ <layer name="Color" width="32" height="32" opacity="0.38">
   <data encoding="base64" compression="zlib">
    eJztlzEKwDAMA5OntfX/39SheBEV9hLUFN1ymBCwEg/JGFpiPj4Kn+BqPcBsnxqWF4n5XmPu9EXOA2s1LD/eHzPLX83Dbvm7+XbLj30mX+tzFd05N8YYY4z5C/lPUVlN9/23yjd2BRsL
   </data>

@@ -59,16 +59,32 @@ ENT2_THINKS
 
     SEG.U BEHAVIORS
     ORG $0000
-TB_EMPTY:      ds 1 ;1
-TB_SOLID:      ds 1 ;2
-TB_PLATFORM:   ds 1 ;3
-TB_EXIT:    ds 1 ;4
-TB_DEADLY:     ds 1 ;5
-TB_CRYSTAL:    ds 1 ;6
-TB_LIGHTSON:   ds 1 ;7
-TB_LIGHTSOFF:  ds 1 ;8
-TB_WEAKBLOCK:  ds 1 ;9
-TB_UNUSED:     ds 31 ;56
+TB_EMPTY:      ds 1
+TB_SOLID:      ds 1
+TB_PLATFORM:   ds 1
+TB_EXIT:       ds 1
+TB_HAZARD:     ds 1
+TB_DEATH:      ds 1
+TB_LIGHTSON:   ds 1
+TB_LIGHTSOFF:  ds 1
+TB_WEAKBLOCK:  ds 1
+TB_AMMO:       ds 1
+TB_STRENGTH:   ds 1
+TB_POWERSHOT:  ds 1
+TB_GRAVITY:    ds 1
+TB_KEY:        ds 1
+TB_STOP:       ds 1
+TB_CHEST:      ds 1
+TB_POINTS:
+TB_CRYSTAL:    ds 1
+TB_EGG:        ds 1
+TB_800         ds 1
+TB_1000        ds 1
+TB_5000        ds 1
+               ds 1
+               ds 1
+TB_DOOR        ds 8
+TB_LOCK        ds 8
 TB_MAPDOOR     ds 16
-TB_OFF:        ds 4 ;60
-TB_ON:         ds 4 ;64
+TB_OFF:        ds 4
+TB_ON:         ds 4

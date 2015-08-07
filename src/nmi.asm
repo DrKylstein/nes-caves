@@ -55,62 +55,66 @@ nmi_AttrCopy_end:
     beq nmi_DebugCounter
     jmp nmi_Exit
 
-nmi_DebugCounter subroutine
+
     lda shr_ppuCtrl
     and %11111011
     sta PPU_CTRL
+nmi_DebugCounter subroutine
     bit PPU_STATUS
     lda #$20
     sta PPU_ADDR
     lda #$5A
     sta PPU_ADDR
-    lda nmi_sfxPtr+1
+    lda shr_debugReg+1
     REPEAT 4
     lsr
     REPEND
-    clc
-    adc #HEXFONT_BASE
     sta PPU_DATA
-    lda nmi_sfxPtr+1
+    lda shr_debugReg+1
     and #$0F
-    clc
-    adc #HEXFONT_BASE
     sta PPU_DATA
-    lda nmi_sfxPtr
+    lda shr_debugReg
     REPEAT 4
     lsr
     REPEND
-    clc
-    adc #HEXFONT_BASE
     sta PPU_DATA
-    lda nmi_sfxPtr
+    lda shr_debugReg
     and #$0F
-    clc
-    adc #HEXFONT_BASE
     sta PPU_DATA
 nmi_DebugCounter_end:
-
 nmi_UpdateAmmo subroutine
-    lda shr_ppuCtrl
-    and %11111011
-    sta PPU_CTRL
     bit PPU_STATUS
     lda #$20
     sta PPU_ADDR
     lda #$71
     sta PPU_ADDR
     lda shr_ammo
-    clc
-    adc #HEXFONT_BASE
+    jsr nmi_CentToDec
+    sty PPU_DATA
     sta PPU_DATA
 nmi_UpdateAmmo_end:
-
+nmi_UpdateScore subroutine
+    bit PPU_STATUS
+    lda #$20
+    sta PPU_ADDR
+    lda #$65
+    sta PPU_ADDR
+    
+    ldx #3
+.loop:
+    lda shr_score-1,x
+    jsr nmi_CentToDec
+    sty PPU_DATA
+    sta PPU_DATA
+    dex
+    bne .loop
+nmi_UpdateScore_end:
 nmi_UpdateHearts subroutine
     lda #$20
     sta PPU_ADDR
     lda #$76
     sta PPU_ADDR
-    lda #[HEXFONT_BASE-4]
+    lda #$24
     ldy #3
 .clear_hearts:
     sta PPU_DATA
@@ -121,7 +125,7 @@ nmi_UpdateHearts subroutine
     sta PPU_ADDR
     lda #$76
     sta PPU_ADDR
-    lda #[HEXFONT_BASE-3]
+    lda #$28
     ldy shr_hp
     beq nmi_UpdateHearts_end
 .fill_hearts:
@@ -321,3 +325,15 @@ nmi_CopyTileCol subroutine
     sta PPU_CTRL
    rts
 ;------------------------------------------------------------------------------
+nmi_CentToDec subroutine ;input in A, output ones to A, tens to Y
+    ldy #0
+.loop:
+    cmp #10
+    bcc .end
+    sbc #10
+    iny
+    jmp .loop
+.end:
+    rts
+nmi_CentToDec_end:
+

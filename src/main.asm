@@ -424,15 +424,45 @@ main_TileInteraction subroutine
     lsr
     REPEND
     sta main_sav+3
-    cmp #TB_CRYSTAL
-    bne .not_crystal
+    cmp #TB_POINTS
+    bcc .ammo
+    cmp #TB_POINTS+8
+    bcs .ammo
+    sec
+    sbc #TB_POINTS
+    asl
+    asl
+    tax
+    lda prgdata_points+1,x
+    sta main_arg+2
+    lda prgdata_points+2,x
+    sta main_arg+1
+    lda prgdata_points+3,x
+    sta main_arg
+    cpx #0
+    bne .notCrystal
+    dec main_crystalsLeft
+.notCrystal:
+    jsr main_AddScore
     MOVI_D shr_sfxPtr, prgdata_crystalSound
     inc shr_doSfx
-    dec main_crystalsLeft
+    
     lda #0
     sta main_sav
     jmp .updateTile
-.not_crystal:
+.ammo:
+    cmp #TB_AMMO
+    bne .exit
+    MOVI_D shr_sfxPtr, prgdata_crystalSound
+    inc shr_doSfx
+    lda shr_ammo
+    clc
+    adc #5
+    sta shr_ammo
+    lda #0
+    sta main_sav
+    jmp .updateTile
+.exit:
     cmp #TB_EXIT
     bne .not_exit
     lda main_crystalsLeft
@@ -461,8 +491,9 @@ main_doExit:
     bcs .still_maybe_door
     jmp .not_door
 .still_maybe_door:
-    sec
+    clc
     sbc #TB_MAPDOOR
+    sta shr_debugReg
     sta main_currLevel
     asl
     tay

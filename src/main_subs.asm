@@ -453,3 +453,21 @@ read_joy subroutine
    bne .loop
     
    rts
+;------------------------------------------------------------------------------
+main_AddScore subroutine ; main_arg 3 bytes value to add, A and X trashed
+    ldx #0
+.loop:
+    lda main_arg,x
+    clc
+    adc shr_score,x
+    cmp #100
+    bcc .foo
+    sbc #100
+    inc shr_score+1,x
+.foo
+    sta shr_score,x
+    inx
+    cpx #3
+    bne .loop
+    rts
+main_AddScore_end:

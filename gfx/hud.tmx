@@ -11,10 +11,10 @@
  </tileset>
  <layer name="Names" width="32" height="4">
   <data encoding="base64" compression="zlib">
-   eJxjZGBgYBzFA4avoeEbQHwbiO8A8V0gvgfE94H4FhQjq70JpdHFQfg6EkaXQ8YAc+UbWA==
+   eJxTZWBgUB3FgwZrAbEGDsyIplYbSsPkkeU0kTA++wCp9hKM
   </data>
  </layer>
- <layer name="Attributes" width="32" height="4">
+ <layer name="Attributes" width="32" height="4" visible="0">
   <data encoding="base64" compression="zlib">
    eJxjYBhYwMI4sPRAg4H2PwB8YACh
   </data>
