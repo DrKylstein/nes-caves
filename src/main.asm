@@ -226,7 +226,7 @@ main_LoadLevel subroutine
     sta main_playerYFrac,x
     inx
     iny
-    cpy #17
+    cpy #20
     bne .loadCoords
 main_LoadLevel_end:
 
@@ -540,6 +540,12 @@ main_doExit:
 .switch:
     cmp #TB_ON
     bcc .not_switchon
+    sec
+    sbc #TB_ON
+    tax
+    ldy main_switchable,x
+    lda #0
+    sta main_entityXVel,y
     ldx main_sav
     dex
     txa
@@ -548,6 +554,12 @@ main_doExit:
 .not_switchon:
     cmp #TB_OFF
     bcc .shoot
+    sec
+    sbc #TB_OFF
+    tax
+    ldy main_switchable,x
+    lda #1
+    sta main_entityXVel,y
     ldx main_sav
     inx
     txa
