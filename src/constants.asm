@@ -15,7 +15,7 @@ HEXFONT_BASE = $D9
 BG_PAL = 0
 SPRITE_PAL = $10
 
-PAL_OFFSET = 1067
+PAL_OFFSET = 1073
 
 ;nametable info
 TOP_HEIGHT = 18
@@ -78,13 +78,24 @@ TB_CHEST:      ds 1
 TB_POINTS:
 TB_CRYSTAL:    ds 1
 TB_EGG:        ds 1
-TB_800         ds 1
-TB_1000        ds 1
-TB_5000        ds 1
+TB_800:        ds 1
+TB_1000:       ds 1
+TB_5000:       ds 1
+TB_BONUS:      ds 1
                ds 1
                ds 1
-TB_DOOR        ds 8
-TB_LOCK        ds 8
+TB_DOOR:       ds 3
+TB_LOCK:       ds 3
+               ds 1
+               ds 1
+TB_AIR:        ds 1
+               ds 1
+               ds 1
+               ds 1
+               ds 1
+               ds 1
+               ds 1
+               ds 1
 TB_MAPDOOR     ds 16
 TB_OFF:        ds 4
 TB_ON:         ds 4

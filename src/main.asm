@@ -195,7 +195,7 @@ main_LoadLevel subroutine
     MOV_D main_tmp+2, main_arg
     MOVI_D main_tmp, main_levelMap
     ldy #0
-    ldx #0
+    ldx #4
 .loop:
     lda (main_tmp+2),y
     sta (main_tmp),y
@@ -203,8 +203,7 @@ main_LoadLevel subroutine
     bne .loop
     ADDI_D main_tmp+2, main_tmp+2, 256
     ADDI_D main_tmp, main_tmp, 256
-    inx
-    cpx #4
+    dex
     bne .loop
     
     ADDI_D main_tmp+2, main_arg, 960
@@ -227,7 +226,7 @@ main_LoadLevel subroutine
     sta main_playerYFrac,x
     inx
     iny
-    cpy #11
+    cpy #17
     bne .loadCoords
 main_LoadLevel_end:
 
@@ -491,9 +490,8 @@ main_doExit:
     bcs .still_maybe_door
     jmp .not_door
 .still_maybe_door:
-    clc
+    sec
     sbc #TB_MAPDOOR
-    sta shr_debugReg
     sta main_currLevel
     asl
     tay
@@ -513,6 +511,33 @@ main_doExit:
     and main_pressed
     BEQ_L main_TileInteraction_end
     lda main_sav+3
+    
+    cmp #TB_LOCK+3
+    bcs .switch
+    cmp #TB_LOCK
+    bcc .switch
+    
+    sec
+    sbc #TB_LOCK
+    tay
+    lda main_doorsLo,y
+    sta main_tmp
+    lda main_doorsHi,y
+    sta main_tmp+1
+    ADDI_D main_tmp, main_tmp, main_levelMap
+    MOV_D shr_debugReg, main_tmp
+    ldy #0
+    lda #0
+    sta (main_tmp),y
+    iny
+    sta (main_tmp),y
+    
+    ldy main_sav
+    iny
+    tya
+    sta main_sav
+    jmp .updateTile
+.switch:
     cmp #TB_ON
     bcc .not_switchon
     ldx main_sav
@@ -522,15 +547,13 @@ main_doExit:
     jmp .updateTile
 .not_switchon:
     cmp #TB_OFF
-    bcc .notswitchoff
+    bcc .shoot
     ldx main_sav
     inx
     txa
     sta main_sav
     jmp .updateTile
-.notswitchoff:
-
-;shoot
+.shoot:
     lda main_entityXHi
     cmp #$7F
     bne main_TileInteraction_end

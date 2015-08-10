@@ -68,6 +68,8 @@ shr_cameraY         ds 2
 shr_cameraYMod      ds 1 
 shr_nameTable       ds 1 
 main_crystalsLeft   ds 1
+main_doorsLo        ds 3
+main_doorsHi        ds 3
 
 shr_debugReg        ds 2
 shr_frame           ds 1

@@ -35,6 +35,5 @@
    </properties>
   </object>
   <object id="9" name="start" type="start" x="16" y="64" width="16" height="16"/>
-  <object id="10" name="camera" type="camera" x="0" y="0" width="16" height="16"/>
  </objectgroup>
 </map>
