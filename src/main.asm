@@ -513,22 +513,6 @@ main_doExit:
     and main_pressed
     BEQ_L main_TileInteraction_end
     lda main_sav+3
-    cmp #TB_LIGHTSON
-    bne .not_lighton
-    MOVI_D shr_palAddr, prgdata_palettes
-    inc shr_doPalCopy
-    lda #38
-    sta main_sav
-    jmp .updateTile
-.not_lighton:
-    cmp #TB_LIGHTSOFF
-    bne .not_lightoff
-   MOVI_D shr_palAddr, [prgdata_palettes+32]
-    inc shr_doPalCopy
-    lda #37
-    sta main_sav
-    jmp .updateTile
-.not_lightoff:
     cmp #TB_ON
     bcc .not_switchon
     ldx main_sav

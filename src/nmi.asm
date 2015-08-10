@@ -114,7 +114,7 @@ nmi_UpdateHearts subroutine
     sta PPU_ADDR
     lda #$76
     sta PPU_ADDR
-    lda #$24
+    lda #$10
     ldy #3
 .clear_hearts:
     sta PPU_DATA
@@ -125,7 +125,7 @@ nmi_UpdateHearts subroutine
     sta PPU_ADDR
     lda #$76
     sta PPU_ADDR
-    lda #$28
+    lda #$11
     ldy shr_hp
     beq nmi_UpdateHearts_end
 .fill_hearts:
