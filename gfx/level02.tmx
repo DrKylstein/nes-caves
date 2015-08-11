@@ -15,8 +15,7 @@
  <objectgroup name="Entities">
   <object id="1" name="Elevator" type="switchable1" x="160" y="208" width="16" height="16">
    <properties>
-    <property name="flags" value="0x62"/>
-    <property name="index" value="80"/>
+    <property name="index" value="1"/>
     <property name="velocity" value="0"/>
    </properties>
   </object>

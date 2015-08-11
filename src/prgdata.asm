@@ -2,6 +2,18 @@
 ; PRG ROM DATA
 ;------------------------------------------------------------------------------
 
+prgdata_entityFlags:
+    .byte $80 ; bullet
+    .byte $62 ; vertical platform
+    .byte $42 ; horizontal platform
+    .byte $38 ; spider
+    
+prgdata_entityTiles:
+    .byte 64 ; bullet
+    .byte 80 ; vertical platform
+    .byte 96 ; horizontal platform
+    .byte 112 ;spider
+    
 prgdata_points:
     .byte 00,00,00,05;0
     .byte 00,00,01,00;0

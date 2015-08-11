@@ -102,7 +102,6 @@ main_entityXLo        ds MAX_ENTITIES
 main_entityXHi        ds MAX_ENTITIES
 main_entityYLo        ds MAX_ENTITIES
 main_entityYHi        ds MAX_ENTITIES ; bottom bit
-main_entityIndex      ds MAX_ENTITIES 
 main_entityXVel       ds MAX_ENTITIES ; 37 + 96 = 133
 main_entityBlockEnd:
     ECHO $400-.," bytes left in page $300"

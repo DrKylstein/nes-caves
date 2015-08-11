@@ -66,8 +66,7 @@ class NesCave(Plugin):
             writeColumn(out, entities, lambda e: int(e.x()), 0xFF, switchables)
             writeColumn(out, entities, lambda e: (int(e.x())) >> 8, 0x7F, switchables)
             writeColumn(out, entities, lambda e: e.y(), 0, switchables)
-            writeColumn(out, entities, lambda e: (int(e.y()) >> 8) | int(e.property('flags'),16), 0, switchables)
-            writeColumn(out, entities, lambda e: e.property('index'), 0, switchables)
+            writeColumn(out, entities, lambda e: (int(e.y()) >> 8) | (int(e.property('index')) << 1), 0, switchables)
             writeColumn(out, entities, lambda e: e.property('velocity'), 0, switchables)
             for i in range(entities.objectCount()):
                 start = entities.objectAt(i)

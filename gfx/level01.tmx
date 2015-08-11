@@ -20,43 +20,37 @@
   </properties>
   <object id="1" name="Elevator" x="224" y="320" width="16" height="16">
    <properties>
-    <property name="flags" value="0x62"/>
-    <property name="index" value="80"/>
+    <property name="index" value="1"/>
     <property name="velocity" value="1"/>
    </properties>
   </object>
   <object id="3" name="Elevator" x="400" y="320" width="16" height="16">
    <properties>
-    <property name="flags" value="0x62"/>
-    <property name="index" value="80"/>
+    <property name="index" value="1"/>
     <property name="velocity" value="1"/>
    </properties>
   </object>
   <object id="4" name="Spider" x="32" y="48" width="16" height="16">
    <properties>
-    <property name="flags" value="0x38"/>
-    <property name="index" value="112"/>
+    <property name="index" value="3"/>
     <property name="velocity" value="-1"/>
    </properties>
   </object>
   <object id="5" name="Spider" x="240" y="80" width="16" height="16">
    <properties>
-    <property name="flags" value="0x38"/>
-    <property name="index" value="112"/>
+    <property name="index" value="3"/>
     <property name="velocity" value="-1"/>
    </properties>
   </object>
   <object id="6" name="Spider" x="352" y="144" width="16" height="16">
    <properties>
-    <property name="flags" value="0x38"/>
-    <property name="index" value="112"/>
+    <property name="index" value="3"/>
     <property name="velocity" value="-1"/>
    </properties>
   </object>
   <object id="7" name="Spider" x="512" y="112" width="16" height="16">
    <properties>
-    <property name="flags" value="0x38"/>
-    <property name="index" value="112"/>
+    <property name="index" value="3"/>
     <property name="velocity" value="1"/>
    </properties>
   </object>

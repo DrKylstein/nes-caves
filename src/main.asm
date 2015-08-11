@@ -216,7 +216,7 @@ main_LoadLevel subroutine
     cpy #[main_entityBlockEnd-main_entityBlock]
     bne .copyEntities
         
-    ADDI_D main_tmp+2, main_arg, 1056
+    ADDI_D main_tmp+2, main_arg, 1040
     ldy #0
     ldx #1
     lda #0
@@ -580,10 +580,8 @@ main_doExit:
     sta main_entityYLo
     lda main_playerY+1
     and #ENT_YPOS
-    ora #ENT_ISPROJECTILE
+    ;ora #ENT_ISPROJECTILE
     sta main_entityYHi
-    lda #64
-    sta main_entityIndex
     
     MOVI_D shr_sfxPtr, prgdata_crystalSound
     inc shr_doSfx
@@ -746,6 +744,9 @@ main_CheckGround subroutine
     BMI_L main_CheckGround_end
     
     lda main_entityYHi,y
+    lsr
+    tax
+    lda prgdata_entityFlags,x
     and #ENT_ISPLATFORM
     beq .loop
     
@@ -840,6 +841,9 @@ main_CheckHurt subroutine
     BMI_L main_CheckHurt_end
     
     lda main_entityYHi,y
+    lsr
+    tax
+    lda prgdata_entityFlags,x
     and #ENT_ISDEADLY
     beq .loop
     
@@ -896,7 +900,14 @@ main_ApplyVelocity subroutine
     ldy main_currPlatform
     cpy #MAX_ENTITIES
     beq .noLift
+    
     lda main_entityYHi,y
+    lsr
+    tax
+    lda prgdata_entityFlags,x
+    sta main_sav
+    
+    lda main_sav
     and #ENT_ISVERTICAL
     beq .noLift
     lda main_entityXVel,y
@@ -919,7 +930,7 @@ main_ApplyVelocity subroutine
     ldy main_currPlatform
     cpy #MAX_ENTITIES
     beq .noTrolley
-    lda main_entityYHi,y
+    lda main_sav
     and #ENT_ISVERTICAL
     bne .noTrolley
     lda main_tmp
@@ -1178,9 +1189,15 @@ main_updateEntities subroutine
     sta main_arg+3
     
     lda main_entityYHi,y
+    lsr
+    tax
+    lda prgdata_entityFlags,x
+    sta main_sav+4
+    
+    ;lda main_sav
     and #ENT_ISVERTICAL
     beq .shiftY
-    lda main_entityYHi,y
+    lda main_sav+4
     and #ENT_ISPLATFORM
     beq .notPlatform
     lda main_entityXVel,y
@@ -1218,7 +1235,7 @@ main_updateEntities subroutine
     tay
     
     ;react to map tile
-    lda main_entityYHi,y
+    lda main_sav+4
     and #ENT_ISPROJECTILE
     beq .checkObstacle
     
@@ -1278,7 +1295,7 @@ main_updateEntities subroutine
     sta main_tmp+1
     lda main_entityXLo,y
     sta main_tmp
-    lda main_entityYHi,y
+    lda main_sav+4
     and #ENT_ISVERTICAL
     beq .horizontal
     
@@ -1300,7 +1317,7 @@ main_updateEntities subroutine
     sta main_tmp+3
 .continue:
     ADD_D main_tmp, main_tmp, main_tmp+2
-    lda main_entityYHi,y
+    lda main_sav+4
     and #ENT_ISVERTICAL
     bne .vertical
     lda main_tmp
@@ -1326,17 +1343,24 @@ main_UpdateEntitySprites subroutine
     ldx #[MAX_ENTITIES-1]
 .loop:
     lda main_entityYHi,x
+    stx main_tmp
+    lsr
+    tax
+    lda prgdata_entityFlags,x
+    ldx main_tmp
+    sta main_tmp
+    
     and #ENT_COLOR
     lsr
     sta shr_spriteFlags,y
     sta shr_spriteFlags+OAM_SIZE,y
 
-    lda main_entityYHi,x
+    lda main_tmp
     and #ENT_ISFACING
     beq .noFacing
     lda main_entityXVel,x
     bpl .noFacing
-    lda main_entityYHi,x
+    lda main_tmp
     and #ENT_ISVERTICAL
     bne .vflip
     lda #$40
@@ -1350,12 +1374,19 @@ main_UpdateEntitySprites subroutine
     sta shr_spriteFlags,y
     sta shr_spriteFlags+OAM_SIZE,y
     
-.noFacing
+.noFacing:
+    lda main_entityYHi,x
+    stx main_tmp
+    lsr
+    tax
+    lda prgdata_entityTiles,x
+    ldx main_tmp
+    sta main_tmp
     lda shr_frame
     asl
     and #12
     clc
-    adc main_entityIndex,x
+    adc main_tmp
     sta shr_spriteIndex,y
     clc
     adc #2

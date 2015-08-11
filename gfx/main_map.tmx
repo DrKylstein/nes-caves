@@ -15,22 +15,19 @@
  <objectgroup name="Entities">
   <object id="5" name="Elevator" x="608" y="176" width="16" height="16">
    <properties>
-    <property name="flags" value="0x62"/>
-    <property name="index" value="80"/>
+    <property name="index" value="1"/>
     <property name="velocity" value="1"/>
    </properties>
   </object>
   <object id="7" name="Elevator" x="112" y="272" width="16" height="16">
    <properties>
-    <property name="flags" value="0x62"/>
-    <property name="index" value="80"/>
+    <property name="index" value="1"/>
     <property name="velocity" value="1"/>
    </properties>
   </object>
   <object id="8" name="Elevator" x="144" y="128" width="16" height="16">
    <properties>
-    <property name="flags" value="0x42"/>
-    <property name="index" value="96"/>
+    <property name="index" value="2"/>
     <property name="velocity" value="1"/>
    </properties>
   </object>
