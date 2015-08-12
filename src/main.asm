@@ -441,6 +441,8 @@ main_TileInteraction subroutine
     cpx #0
     bne .notCrystal
     dec main_crystalsLeft
+    bne .notCrystal
+    inc shr_flashBg
 .notCrystal:
     jsr main_AddScore
     MOVI_D shr_sfxPtr, prgdata_crystalSound
@@ -771,11 +773,11 @@ main_CheckGround subroutine
     and #ENT_YPOS
     sta main_tmp+1
     
-    SUBI_D main_tmp+2, main_playerY, 16
-    CMP_D main_tmp, main_tmp+2
+    SUBI_D main_tmp, main_tmp, 15
+    CMP_D main_tmp, main_playerY
     bmi .longLoop
 
-    SUBI_D main_tmp, main_tmp, 17
+    SUBI_D main_tmp, main_tmp, 2
     CMP_D main_tmp, main_playerY
     bpl .longLoop
     

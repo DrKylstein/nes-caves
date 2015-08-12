@@ -36,6 +36,7 @@ shr_doTileCol       ds 1
 shr_doAttrCol       ds 1
 shr_tileCol         ds 1
 shr_earlyExit       ds 1
+shr_flashBg         ds 1
     ECHO $100-.," bytes left in page $000"
 
     ORG $0100

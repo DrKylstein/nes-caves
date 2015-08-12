@@ -52,9 +52,21 @@ nmi_AttrCopy subroutine
 nmi_AttrCopy_end:
 
     lda shr_earlyExit
-    beq nmi_DebugCounter
+    beq nmi_FlashBg
     jmp nmi_Exit
 
+nmi_FlashBg subroutine
+    lda shr_flashBg
+    beq nmi_FlashBg_end
+    bit PPU_STATUS
+    lda #$3F
+    sta PPU_ADDR
+    lda #$00
+    sta PPU_ADDR
+    lda #$0A
+    sta PPU_DATA
+    dec shr_flashBg
+nmi_FlashBg_end:
 
     lda shr_ppuCtrl
     and %11111011
