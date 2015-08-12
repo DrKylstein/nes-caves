@@ -429,6 +429,8 @@ main_TileInteraction subroutine
     cpx #0
     bne .notCrystal
     dec main_crystalsLeft
+    bne .notCrystal
+    inc shr_flashBg
 .notCrystal:
     jsr main_AddScore
     MOVI_D shr_sfxPtr, prgdata_crystalSound
@@ -761,11 +763,11 @@ main_CheckGround subroutine
     and #ENT_Y_POS
     sta main_tmp+1
     
-    SUBI_D main_tmp+2, main_playerY, 16
-    CMP_D main_tmp, main_tmp+2
+    SUBI_D main_tmp, main_tmp, 15
+    CMP_D main_tmp, main_playerY
     bmi .longLoop
 
-    SUBI_D main_tmp, main_tmp, 17
+    SUBI_D main_tmp, main_tmp, 2
     CMP_D main_tmp, main_playerY
     bpl .longLoop
     
@@ -1341,6 +1343,8 @@ main_UpdateEntitySprites subroutine
     stx main_tmp
     lsr
     tax
+    lda prgdata_entityTiles,x
+    sta main_tmp+2
     lda prgdata_entityFlags,x
     ldx main_tmp
     sta main_tmp
@@ -1349,6 +1353,17 @@ main_UpdateEntitySprites subroutine
     lsr
     sta shr_spriteFlags,y
     sta shr_spriteFlags+OAM_SIZE,y
+
+    lda shr_frame
+    ;asl
+    and #12
+    clc
+    adc main_tmp+2
+    sta shr_spriteIndex,y
+    clc
+    adc #2
+    sta shr_spriteIndex+OAM_SIZE,y
+
 
     lda main_tmp
     and #ENT_F_ISFACING
@@ -1362,6 +1377,12 @@ main_UpdateEntitySprites subroutine
     ora shr_spriteFlags,y
     sta shr_spriteFlags,y
     sta shr_spriteFlags+OAM_SIZE,y
+    lda shr_spriteIndex+OAM_SIZE,y
+    sta main_tmp
+    lda shr_spriteIndex,y
+    sta shr_spriteIndex+OAM_SIZE,y
+    lda main_tmp
+    sta shr_spriteIndex,y
     jmp .noFacing
 .vflip:
     lda #$80
@@ -1370,23 +1391,7 @@ main_UpdateEntitySprites subroutine
     sta shr_spriteFlags+OAM_SIZE,y
     
 .noFacing:
-    lda main_entityYHi,x
-    stx main_tmp
-    lsr
-    tax
-    lda prgdata_entityTiles,x
-    ldx main_tmp
-    sta main_tmp
-    lda shr_frame
-    asl
-    and #12
-    clc
-    adc main_tmp
-    sta shr_spriteIndex,y
-    clc
-    adc #2
-    sta shr_spriteIndex+OAM_SIZE,y
-
+    
 
     lda main_entityXLo,x
     sec
