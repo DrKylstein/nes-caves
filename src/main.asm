@@ -1187,13 +1187,13 @@ main_updateEntities subroutine
     lda main_entityYHi,y
     lsr
     tax
-    lda prgdata_entityFlags,x
-    sta main_sav+4
+    ;lda prgdata_entityFlags,x
+    ;sta main_sav+4
     
-    ;lda main_sav
+    lda prgdata_entityFlags,x
     and #ENT_F_ISVERTICAL
     beq .shiftY
-    lda main_sav+4
+    lda prgdata_entityFlags,x
     and #ENT_F_ISPLATFORM
     beq .notPlatform
     lda main_entityXVel,y
@@ -1231,7 +1231,7 @@ main_updateEntities subroutine
     tay
     
     ;react to map tile
-    lda main_sav+4
+    lda prgdata_entityFlags,x
     and #ENT_F_ISPROJECTILE
     beq .checkObstacle
     
@@ -1293,7 +1293,7 @@ main_updateEntities subroutine
 
 .tileCheckDone:
 
-    lda main_sav+4
+    lda prgdata_entityFlags,x
     and #ENT_F_ISMORTAL
     beq .longimmortal
     lda main_entityXLo
@@ -1339,10 +1339,6 @@ main_updateEntities subroutine
     lda #$80
     sta main_entityXHi
 
-    lda main_entityYHi,y
-    and #ENT_Y_INDEX
-    lsr
-    tax
     lda prgdata_entityHPs,x
     sta main_tmp
     lda main_entityXHi,y
@@ -1358,7 +1354,12 @@ main_updateEntities subroutine
     bcc .notDead
     lda #$80
     sta main_entityXHi,y
-    sta main_entityXHi
+    lda #10
+    sta main_arg
+    lda #0
+    sta main_arg+1
+    sta main_arg+2
+    jsr main_AddScore
     jmp .inactive
 .notDead:
     asl
@@ -1373,7 +1374,7 @@ main_updateEntities subroutine
     sta main_tmp+1
     lda main_entityXLo,y
     sta main_tmp
-    lda main_sav+4
+    lda prgdata_entityFlags,x
     and #ENT_F_ISVERTICAL
     beq .horizontal
     
@@ -1395,7 +1396,7 @@ main_updateEntities subroutine
     sta main_tmp+3
 .continue:
     ADD_D main_tmp, main_tmp, main_tmp+2
-    lda main_sav+4
+    lda prgdata_entityFlags,x
     and #ENT_F_ISVERTICAL
     bne .vertical
     lda main_tmp
@@ -1409,7 +1410,7 @@ main_updateEntities subroutine
     lda main_tmp
     sta main_entityYLo,y
     lda main_entityYHi,y
-    and #ENT_Y_INDEX
+    and #~ENT_Y_POS
     ora main_tmp+1 ; just assuming that calculated y will never be out of bounds
     sta main_entityYHi,y
 .inactive:
