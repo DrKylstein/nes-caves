@@ -1348,6 +1348,8 @@ main_UpdateEntitySprites subroutine
     stx main_tmp
     lsr
     tax
+    lda prgdata_entityTiles,x
+    sta main_tmp+2
     lda prgdata_entityFlags,x
     ldx main_tmp
     sta main_tmp
@@ -1356,6 +1358,17 @@ main_UpdateEntitySprites subroutine
     lsr
     sta shr_spriteFlags,y
     sta shr_spriteFlags+OAM_SIZE,y
+
+    lda shr_frame
+    ;asl
+    and #12
+    clc
+    adc main_tmp+2
+    sta shr_spriteIndex,y
+    clc
+    adc #2
+    sta shr_spriteIndex+OAM_SIZE,y
+
 
     lda main_tmp
     and #ENT_ISFACING
@@ -1369,6 +1382,12 @@ main_UpdateEntitySprites subroutine
     ora shr_spriteFlags,y
     sta shr_spriteFlags,y
     sta shr_spriteFlags+OAM_SIZE,y
+    lda shr_spriteIndex+OAM_SIZE,y
+    sta main_tmp
+    lda shr_spriteIndex,y
+    sta shr_spriteIndex+OAM_SIZE,y
+    lda main_tmp
+    sta shr_spriteIndex,y
     jmp .noFacing
 .vflip:
     lda #$80
@@ -1377,23 +1396,7 @@ main_UpdateEntitySprites subroutine
     sta shr_spriteFlags+OAM_SIZE,y
     
 .noFacing:
-    lda main_entityYHi,x
-    stx main_tmp
-    lsr
-    tax
-    lda prgdata_entityTiles,x
-    ldx main_tmp
-    sta main_tmp
-    lda shr_frame
-    asl
-    and #12
-    clc
-    adc main_tmp
-    sta shr_spriteIndex,y
-    clc
-    adc #2
-    sta shr_spriteIndex+OAM_SIZE,y
-
+    
 
     sec
     lda main_entityXLo,x
