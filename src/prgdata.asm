@@ -6,8 +6,8 @@ prgdata_entityFlags:
     .byte $80 ; bullet
     .byte $62 ; vertical platform
     .byte $42 ; horizontal platform
-    .byte $3E ; spider
-    .byte $0A ; bat
+    .byte $3F ; spider
+    .byte $0B ; bat
     
 prgdata_entityTiles:
     .byte 64 ; bullet
@@ -15,6 +15,13 @@ prgdata_entityTiles:
     .byte 96 ; horizontal platform
     .byte 112 ;spider
     .byte 128 ;bat
+    
+prgdata_entityHPs:
+    .byte 0 ; bullet
+    .byte 0 ; vertical platform
+    .byte 0 ; horizontal platform
+    .byte 1 ;spider
+    .byte 1 ;bat
     
 prgdata_points:
     .byte 00,00,00,05;0

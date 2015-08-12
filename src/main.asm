@@ -832,6 +832,9 @@ main_CheckHurt subroutine
     dey
     BMI_L main_CheckHurt_end
     
+    lda main_entityXHi,y
+    bmi .loop
+    
     lda main_entityYHi,y
     lsr
     tax
@@ -1265,7 +1268,7 @@ main_updateEntities subroutine
     CMPI_D main_tmp, #$FF
     bcs .die
     CMPI_D main_tmp, #$0
-    bcs .updateVel
+    bcs .tileCheckDone
 .die:
     lda #$80
     sta main_entityXHi,y
@@ -1277,13 +1280,93 @@ main_updateEntities subroutine
     cmp #TB_SOLID
     beq .reverse
     cmp #TB_WEAKBLOCK
-    bne .updateVel
+    bne .tileCheckDone
 .reverse:
     sec
     lda #0
     sbc main_entityXVel,y
     sta main_entityXVel,y
+    jmp .tileCheckDone
+
+.longimmortal:
+    jmp .immortal
+
+.tileCheckDone:
+
+    lda main_sav+4
+    and #ENT_F_ISMORTAL
+    beq .longimmortal
+    lda main_entityXLo
+    sta main_tmp
+    lda main_entityXHi
+    bmi .longimmortal
+    and #ENT_X_POS
+    sta main_tmp+1
+    lda main_entityXLo,y
+    sta main_tmp+2
+    lda main_entityXHi,y
+    and #ENT_X_POS
+    sta main_tmp+3
+    SUBI_D main_tmp, main_tmp, 8
+    ADDI_D main_tmp+2, main_tmp+2, 8
+    CMP_D main_tmp, main_tmp+2
+    bcs .longimmortal
+    ADDI_D main_tmp, main_tmp, 16
+    SUBI_D main_tmp+2, main_tmp+2, 16
+    CMP_D main_tmp, main_tmp+2
+    bcc .longimmortal
     
+    lda main_entityYLo
+    sta main_tmp
+    lda main_entityYHi
+    and #ENT_Y_POS
+    sta main_tmp+1
+    lda main_entityYLo,y
+    sta main_tmp+2
+    lda main_entityYHi,y
+    and #ENT_Y_POS
+    sta main_tmp+3
+    SUBI_D main_tmp, main_tmp, 16
+    ;ADDI_D main_tmp+2, main_tmp+2, 8
+    CMP_D main_tmp, main_tmp+2
+    bcs .immortal
+    ADDI_D main_tmp, main_tmp, 16
+    SUBI_D main_tmp+2, main_tmp+2, 16
+    CMP_D main_tmp, main_tmp+2
+    bcc .immortal
+    
+    ;destroy bullet
+    lda #$80
+    sta main_entityXHi
+
+    lda main_entityYHi,y
+    and #ENT_Y_INDEX
+    lsr
+    tax
+    lda prgdata_entityHPs,x
+    sta main_tmp
+    lda main_entityXHi,y
+    and #~ENT_X_HP
+    sta main_tmp+1
+    lda main_entityXHi,y
+    and #ENT_X_HP
+    lsr
+    lsr
+    clc
+    adc #1
+    cmp main_tmp
+    bcc .notDead
+    lda #$80
+    sta main_entityXHi,y
+    sta main_entityXHi
+    jmp .inactive
+.notDead:
+    asl
+    asl
+    and #ENT_X_HP
+    ora main_tmp+1
+    sta main_entityXHi,y
+.immortal:
 .updateVel:
     lda main_entityXHi,y
     and #ENT_X_POS
