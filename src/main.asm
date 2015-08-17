@@ -1535,6 +1535,8 @@ main_UpdateEntitySprites subroutine
     tax
     lda prgdata_entityTiles,x
     sta main_tmp+2
+    lda prgdata_entityFlags2,x
+    sta main_tmp+1
     lda prgdata_entityFlags,x
     ldx main_tmp
     sta main_tmp
@@ -1556,8 +1558,19 @@ main_UpdateEntitySprites subroutine
     sta shr_spriteIndex+OAM_SIZE,y
     jmp .facing
 .moving:
+    lda main_tmp+1
+    and #ENT_F2_SHORTANIM
+    beq .longanim
     lda shr_frame
     and #12
+    cmp #12
+    bne .longanim
+    lda #4
+    jmp .anim
+.longanim:
+    lda shr_frame
+    and #12
+.anim:
     clc
     adc main_tmp+2
     sta shr_spriteIndex,y

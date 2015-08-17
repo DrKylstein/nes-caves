@@ -24,22 +24,22 @@ prgdata_entityFlags:
     .byte $1B ; rock
     
 prgdata_entityFlags2:
-    .byte $00 ; bullet
-    .byte $00 ; vertical platform
-    .byte $00 ; horizontal platform
-    .byte $00 ; spider
-    .byte $00 ; bat
-    .byte $00 ; power shot
-    .byte ENT_F2_ISGROUNDED | ENT_F2_NEEDPOWERSHOT ; rock
+    .byte 0 ; bullet
+    .byte 0 ; vertical platform
+    .byte 0 ; horizontal platform
+    .byte ENT_F2_SHORTANIM ; spider
+    .byte ENT_F2_SHORTANIM ; bat
+    .byte ENT_F2_SHORTANIM ; power shot
+    .byte ENT_F2_SHORTANIM | ENT_F2_ISGROUNDED | ENT_F2_NEEDPOWERSHOT ; rock
     
 prgdata_entityTiles:
     .byte 64 ; bullet
     .byte 80 ; vertical platform
     .byte 96 ; horizontal platform
-    .byte 112 ; spider
+    .byte 152 ; spider
     .byte 128 ; bat
-    .byte 192 ; power shot
-    .byte 144 ; rock
+    .byte 164 ; power shot
+    .byte 140 ; rock
     
 prgdata_entityHPs:
     .byte 0 ; bullet
