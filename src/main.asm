@@ -1426,6 +1426,13 @@ main_updateEntities subroutine
     lda #0
     sbc main_entityXVel,y
     sta main_entityXVel,y
+    lda prgdata_entityFlags2,x
+    and #ENT_F2_PAUSETURN
+    beq .tileCheckDone
+    lda main_entityXHi,y
+    and #~ENT_X_COUNT
+    ora #$60
+    sta main_entityXHi,y
     jmp .tileCheckDone
 
 .longimmortal:
@@ -1520,6 +1527,26 @@ main_updateEntities subroutine
 .immortal:
 .updateVel:
     lda main_entityXHi,y
+    REPEAT 4
+    lsr
+    REPEND
+    beq .notPaused
+    sec
+    sbc #1
+    REPEAT 4
+    asl
+    REPEND
+    sta main_tmp
+    lda shr_frame
+    and #31
+    bne .inactive
+    lda main_entityXHi,y
+    and #~ENT_X_COUNT
+    ora main_tmp
+    sta main_entityXHi,y
+    jmp .inactive
+.notPaused
+    lda main_entityXHi,y
     and #ENT_X_POS
     sta main_tmp+1
     lda main_entityXLo,y
@@ -1590,11 +1617,15 @@ main_UpdateEntitySprites subroutine
     sta shr_spriteFlags,y
     sta shr_spriteFlags+OAM_SIZE,y
 
+    lda main_entityXHi,x
+    and #ENT_X_COUNT
+    bne .notmoving
     lda main_entityXVel,x
     bne .moving
     lda main_tmp
     and #ENT_F_ISFACING
     beq .moving
+.notmoving:
     lda main_tmp+2
     sta shr_spriteIndex,y
     clc

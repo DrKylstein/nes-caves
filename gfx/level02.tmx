@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="24" tilewidth="16" tileheight="16" nextobjectid="13">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="24" tilewidth="16" tileheight="16" nextobjectid="14">
  <properties>
   <property name="__script__" value="nescave"/>
   <property name="crystals" value="25"/>
@@ -39,6 +39,12 @@
    <properties>
     <property name="index" value="6"/>
     <property name="velocity" value="0"/>
+   </properties>
+  </object>
+  <object id="13" x="592" y="96" width="16" height="16">
+   <properties>
+    <property name="index" value="7"/>
+    <property name="velocity" value="-1"/>
    </properties>
   </object>
  </objectgroup>

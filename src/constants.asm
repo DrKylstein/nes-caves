@@ -33,6 +33,7 @@ ENT_Y_INDEX = $FE
 ;contents of main_entityXHi
 ENT_X_POS = $03
 ENT_X_HP = %00001100
+ENT_X_COUNT = $F0
 
 ;contents of prgdata_entityFlags
 ENT_F_ISPROJECTILE = $80
@@ -45,6 +46,7 @@ ENT_F_ISMORTAL = $01
 ENT_F2_ISGROUNDED = $80
 ENT_F2_NEEDPOWERSHOT = $40
 ENT_F2_SHORTANIM = $20
+ENT_F2_PAUSETURN = $10
 
 PLR_F_BG = $10
 PLR_F_KEY = $08

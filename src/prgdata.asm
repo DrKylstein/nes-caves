@@ -22,6 +22,7 @@ prgdata_entityFlags:
     .byte $0B ; bat
     .byte $90 ; power shot
     .byte $1B ; rock
+    .byte ENT_F_ISDEADLY | ENT_F_ISFACING | ENT_F_ISMORTAL | $02 ; cart
     
 prgdata_entityFlags2:
     .byte 0 ; bullet
@@ -31,6 +32,7 @@ prgdata_entityFlags2:
     .byte ENT_F2_SHORTANIM ; bat
     .byte ENT_F2_SHORTANIM ; power shot
     .byte ENT_F2_SHORTANIM | ENT_F2_ISGROUNDED | ENT_F2_NEEDPOWERSHOT ; rock
+    .byte ENT_F2_ISGROUNDED | ENT_F2_NEEDPOWERSHOT | ENT_F2_PAUSETURN ; cart
     
 prgdata_entityTiles:
     .byte 64 ; bullet
@@ -40,6 +42,7 @@ prgdata_entityTiles:
     .byte 128 ; bat
     .byte 164 ; power shot
     .byte 140 ; rock
+    .byte 176 ; cart
     
 prgdata_entityHPs:
     .byte 0 ; bullet
@@ -49,6 +52,7 @@ prgdata_entityHPs:
     .byte 1 ; bat
     .byte 0 ; power shot
     .byte 1 ; rock
+    .byte 1 ; cart
     
 prgdata_points:
     .byte 00,00,00,05;0
