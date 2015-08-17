@@ -2,26 +2,53 @@
 ; PRG ROM DATA
 ;------------------------------------------------------------------------------
 
+prgdata_playerWalk:
+    .byte $00
+    .byte $04
+    .byte $08
+    .byte $04
+    .byte $00
+    .byte $0C
+    .byte $10
+    .byte $0C
+    .byte $14
+    .byte $08
+    
 prgdata_entityFlags:
-    .byte $80 ; bullet
+    .byte $92 ; bullet
     .byte $62 ; vertical platform
     .byte $42 ; horizontal platform
     .byte $3F ; spider
     .byte $0B ; bat
+    .byte $90 ; power shot
+    .byte $1B ; rock
+    
+prgdata_entityFlags2:
+    .byte $00 ; bullet
+    .byte $00 ; vertical platform
+    .byte $00 ; horizontal platform
+    .byte $00 ; spider
+    .byte $00 ; bat
+    .byte $00 ; power shot
+    .byte ENT_F2_ISGROUNDED | ENT_F2_NEEDPOWERSHOT ; rock
     
 prgdata_entityTiles:
     .byte 64 ; bullet
     .byte 80 ; vertical platform
     .byte 96 ; horizontal platform
-    .byte 112 ;spider
-    .byte 128 ;bat
+    .byte 112 ; spider
+    .byte 128 ; bat
+    .byte 192 ; power shot
+    .byte 144 ; rock
     
 prgdata_entityHPs:
     .byte 0 ; bullet
     .byte 0 ; vertical platform
     .byte 0 ; horizontal platform
-    .byte 1 ;spider
-    .byte 1 ;bat
+    .byte 1 ; spider
+    .byte 1 ; bat
+    .byte 0 ; power shot
+    .byte 1 ; rock
     
 prgdata_points:
     .byte 00,00,00,05;0

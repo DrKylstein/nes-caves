@@ -2,6 +2,25 @@
 ; MAIN THREAD
 ;------------------------------------------------------------------------------
 
+;powershot time limit
+;door updates
+;individual enemy hit boxes?
+
+;enemy stops at ledge
+;enemy requires power shot
+;enemy pauses (randomly at differnt intervals or on each turn)
+;entity has child entities
+;entity spawns more entities at start
+;enemy shoots
+;wide and tall enemies
+;enemy active when player near
+;enemy faster when player near
+
+;child index
+;counter
+;enemy points table
+;
+
 ;------------------------------------------------------------------------------
 ;Initial Boot
 ;------------------------------------------------------------------------------
@@ -82,7 +101,7 @@ main_clearOAM_end:
     ;; Other things you can do between vblank waits are set up audio
     ;; or set up other mapper registers.
     
-    MOVI_D shr_debugReg, $DEAD
+    MOVI_D shr_debugReg, $BEEF
     
 .vblankwait2:
     bit PPU_STATUS
@@ -441,13 +460,25 @@ main_TileInteraction subroutine
     jmp .updateTile
 .ammo:
     cmp #TB_AMMO
-    bne .exit
+    bne .powershot
     MOVI_D shr_sfxPtr, prgdata_crystalSound
     inc shr_doSfx
     lda shr_ammo
     clc
     adc #5
     sta shr_ammo
+    lda #0
+    sta main_sav
+    jmp .updateTile
+.powershot:
+    cmp #TB_POWERSHOT
+    bne .exit
+    MOVI_D shr_sfxPtr, prgdata_crystalSound
+    inc shr_doSfx
+    lda #10
+    sta shr_powerTime+1
+    lda #60
+    sta shr_powerTime
     lda #0
     sta main_sav
     jmp .updateTile
@@ -515,7 +546,6 @@ main_doExit:
     lda main_doorsHi,y
     sta main_tmp+1
     ADDI_D main_tmp, main_tmp, main_levelMap
-    MOV_D shr_debugReg, main_tmp
     ldy #0
     lda #0
     sta (main_tmp),y
@@ -557,7 +587,7 @@ main_doExit:
     jmp .updateTile
 .shoot:
     bit main_entityXHi
-    bpl main_TileInteraction_end
+    BPL_L main_TileInteraction_end
     ;lda shr_ammo
     ;beq main_TileInteraction_end
     ;dec shr_ammo
@@ -571,7 +601,12 @@ main_doExit:
     lda main_playerY+1
     and #ENT_Y_POS
     sta main_entityYHi
-    
+    lda shr_powerTime+1
+    beq .notPowerShot
+    lda #POWERSHOT_ID<<1
+    ora main_entityYHi
+    sta main_entityYHi
+.notPowerShot
     MOVI_D shr_sfxPtr, prgdata_crystalSound
     inc shr_doSfx
     
@@ -849,7 +884,7 @@ main_CheckHurt subroutine
     sta main_tmp+1
     
     ADDI_D main_tmp+2, main_playerX, 4
-    SUBI_D main_tmp, main_tmp, 8
+    SUBI_D main_tmp, main_tmp, 7
     CMP_D main_tmp, main_tmp+2
     bpl .loop
     
@@ -864,11 +899,11 @@ main_CheckHurt subroutine
     and #ENT_Y_POS
     sta main_tmp+1
     
-    SUBI_D main_tmp+2, main_playerY, 16
+    SUBI_D main_tmp+2, main_playerY, 15
     CMP_D main_tmp, main_tmp+2
     bmi .longLoop
 
-    SUBI_D main_tmp, main_tmp, 17
+    SUBI_D main_tmp, main_tmp, 15
     CMP_D main_tmp, main_playerY
     bpl .longLoop
     
@@ -1116,18 +1151,22 @@ main_UpdatePlayerSprite subroutine
     and #%00011111
     sta main_playerFrame
 
-.jump_anim:
+
+    lda main_playerFrame
+    lsr
+    lsr
+    tax
+
     bit main_playerFlags
     bpl .walk_anim
-    lda #8
-    sta main_playerFrame
+    ldx #9
     jmp .do_anim
 
 .walk_anim:
     lda #0
     cmp main_playerXVel
     bne .do_anim
-    sta main_playerFrame
+    ldx #8
 
 .do_anim:
     lda main_playerFlags
@@ -1137,16 +1176,14 @@ main_UpdatePlayerSprite subroutine
     bit main_playerFlags
     bvs .left
 .right:
-    lda main_playerFrame
-    and #%11111100
+    lda prgdata_playerWalk,x
     sta shr_spriteIndex+OAM_SIZE
     clc
     adc #2
     sta shr_spriteIndex+OAM_SIZE+OAM_SIZE
     jmp main_UpdatePlayerSprite_end
 .left:
-    lda main_playerFrame
-    and #%11111100
+    lda prgdata_playerWalk,x
     sta shr_spriteIndex+OAM_SIZE+OAM_SIZE
     clc
     adc #2
@@ -1160,6 +1197,78 @@ main_updateEntities subroutine
     bpl .active
     jmp .inactive
 .active:   
+    lda main_entityYHi,y
+    lsr
+    tax
+
+    cpx #ROCK_ID
+    bne .notRock
+    lda main_entityYLo,y
+    sta main_tmp
+    lda main_entityYHi,y
+    and #ENT_Y_POS
+    sta main_tmp+1
+    lda main_tmp
+    cmp main_playerY
+    bne .notRock
+    lda main_tmp+1
+    cmp main_playerY+1
+    bne .notRock
+    MOV_D shr_debugReg, main_playerY
+    lda main_entityXVel,y
+    bne .notRock
+    lda #1
+    sta main_entityXVel,y
+.notRock:
+
+
+    lda prgdata_entityFlags2,x
+    and #ENT_F2_ISGROUNDED
+    bne .checkfloor
+    jmp .hitwall
+.checkfloor:
+    ;calculate map tile
+    lda main_entityXLo,y
+    sta main_arg
+    lda main_entityXHi,y
+    and #ENT_X_POS
+    sta main_arg+1
+    
+    lda main_entityXVel,y
+    bmi .shift2
+    ADDI_D main_arg, main_arg, 15
+.shift2:
+    REPEAT 4
+    LSR_D main_arg
+    REPEND
+    jsr main_MultiplyBy24
+    lda main_entityYLo,y
+    sta main_tmp
+    lda main_entityYHi,y
+    and #ENT_Y_POS
+    sta main_tmp+1
+    ADDI_D main_tmp, main_tmp, 16
+    REPEAT 4
+    LSR_D main_tmp
+    REPEND
+    ADD_D main_tmp, main_tmp, main_ret
+    ADDI_D main_tmp, main_tmp, main_levelMap
+    sty main_tmp+2
+    ldy #0
+    lda (main_tmp),y
+    tay
+    lda prgdata_metatiles+256*4,y
+    ldy main_tmp+2
+    lsr
+    lsr
+    cmp #TB_SOLID
+    beq .hitwall
+    cmp #TB_PLATFORM
+    beq .hitwall
+    jmp .reverse
+
+
+.hitwall:
     ;calculate map tile
     lda main_entityXLo,y
     sta main_arg
@@ -1168,9 +1277,9 @@ main_updateEntities subroutine
     sta main_arg+1
     lda main_entityXVel,y
     bmi .shift
-    lda main_entityYHi,y
-    and #ENT_Y_POS
-    bne .shift
+    ; lda main_entityYHi,y
+    ; and #ENT_Y_POS
+    ; bne .shift
     ADDI_D main_arg, main_arg, 15
 .shift:
     REPEAT 4
@@ -1178,17 +1287,13 @@ main_updateEntities subroutine
     REPEND
     lda main_arg
     sta main_sav+1
+    jsr main_MultiplyBy24
+    
     lda main_entityYLo,y
-    sta main_arg+2
+    sta main_tmp
     lda main_entityYHi,y
     and #ENT_Y_POS
-    sta main_arg+3
-    
-    lda main_entityYHi,y
-    lsr
-    tax
-    ;lda prgdata_entityFlags,x
-    ;sta main_sav+4
+    sta main_tmp+1
     
     lda prgdata_entityFlags,x
     and #ENT_F_ISVERTICAL
@@ -1198,37 +1303,28 @@ main_updateEntities subroutine
     beq .notPlatform
     lda main_entityXVel,y
     bpl .notPlatform
-    SUBI_D main_arg+2, main_arg+2, 15
+    SUBI_D main_tmp, main_tmp, 15
     
-.notPlatform
+.notPlatform:
     lda main_entityXVel,y
     bmi .shiftY
-    ADDI_D main_arg+2, main_arg+2, 15
+    ADDI_D main_tmp, main_tmp, 15
 .shiftY:
     REPEAT 4
-    LSR_D main_arg+2
+    LSR_D main_tmp
     REPEND
-    lda main_arg+2
-    sta main_sav+2
-    jsr main_MultiplyBy24 ;takes arg0, which we no longer care about after this
-                          ;returns
-    ;t0 = y+ x*24
-    ADD_D main_tmp, main_arg+2, main_ret
-    ;lookup tile, get behavior
+    ADD_D main_tmp, main_tmp, main_ret
     ADDI_D main_tmp, main_tmp, main_levelMap
-    tya
-    pha
+    sty main_tmp+2
     ldy #0
     lda (main_tmp),y
     sta main_sav
     tay
     lda prgdata_metatiles+256*4,y
-    REPEAT 2
+    ldy main_tmp+2
     lsr
-    REPEND
+    lsr
     sta main_sav+3
-    pla
-    tay
     
     ;react to map tile
     lda prgdata_entityFlags,x
@@ -1338,6 +1434,15 @@ main_updateEntities subroutine
     ;destroy bullet
     lda #$80
     sta main_entityXHi
+    
+    lda main_entityYHi
+    lsr
+    cmp #POWERSHOT_ID
+    beq .reallyDead
+
+    lda prgdata_entityFlags2,x
+    and #ENT_F2_NEEDPOWERSHOT
+    bne .immortal
 
     lda prgdata_entityHPs,x
     sta main_tmp
@@ -1352,6 +1457,7 @@ main_updateEntities subroutine
     adc #1
     cmp main_tmp
     bcc .notDead
+.reallyDead:
     lda #$80
     sta main_entityXHi,y
     lda #10
@@ -1438,8 +1544,19 @@ main_UpdateEntitySprites subroutine
     sta shr_spriteFlags,y
     sta shr_spriteFlags+OAM_SIZE,y
 
+    lda main_entityXVel,x
+    bne .moving
+    lda main_tmp
+    and #ENT_F_ISFACING
+    beq .moving
+    lda main_tmp+2
+    sta shr_spriteIndex,y
+    clc
+    adc #2
+    sta shr_spriteIndex+OAM_SIZE,y
+    jmp .facing
+.moving:
     lda shr_frame
-    ;asl
     and #12
     clc
     adc main_tmp+2
@@ -1448,7 +1565,7 @@ main_UpdateEntitySprites subroutine
     adc #2
     sta shr_spriteIndex+OAM_SIZE,y
 
-
+.facing:
     lda main_tmp
     and #ENT_F_ISFACING
     beq .noFacing
@@ -1496,7 +1613,9 @@ main_UpdateEntitySprites subroutine
     ADDI_D main_tmp, main_tmp, 8
 
     lda main_entityXHi,x
-    bmi .out_of_range
+    bpl .foo
+    jmp .out_of_range
+.foo:
     
     CMPI_D main_tmp, $FF
     bcs .out_of_range
@@ -1528,9 +1647,27 @@ main_UpdateEntitySprites subroutine
     bcs .out_of_range
     CMPI_D main_tmp, 3*8
     bcc .out_of_range
+    lda main_entityYHi,x
+    lsr
+    cmp #ROCK_ID
+    bne .notRock
+    lda main_entityXVel,x
+    bne .notRock
+    lda #4
+    adc main_tmp
+    sta main_tmp
+    lda shr_spriteFlags,y
+    ora #$20
+    sta shr_spriteFlags,y
+    lda shr_spriteFlags+OAM_SIZE,y
+    ora #$20
+    sta shr_spriteFlags+OAM_SIZE,y
+.notRock:
     lda main_tmp
     sta shr_spriteY,y
     sta shr_spriteY+OAM_SIZE,y
+        
+
         
 .out_of_range:
     tya

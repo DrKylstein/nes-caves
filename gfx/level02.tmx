@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="24" tilewidth="16" tileheight="16" nextobjectid="8">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="24" tilewidth="16" tileheight="16" nextobjectid="13">
  <properties>
   <property name="__script__" value="nescave"/>
-  <property name="crystals" value="18"/>
+  <property name="crystals" value="25"/>
  </properties>
  <tileset firstgid="1" name="metatiles" tilewidth="16" tileheight="16">
   <image source="metatiles.png" width="256" height="256"/>
@@ -23,5 +23,23 @@
   <object id="4" type="door1" x="160" y="32" width="16" height="32"/>
   <object id="5" type="door2" x="480" y="80" width="16" height="32"/>
   <object id="7" type="door3" x="288" y="64" width="16" height="32"/>
+  <object id="8" x="448" y="32" width="16" height="16">
+   <properties>
+    <property name="index" value="6"/>
+    <property name="velocity" value="0"/>
+   </properties>
+  </object>
+  <object id="11" x="512" y="16" width="16" height="16">
+   <properties>
+    <property name="index" value="6"/>
+    <property name="velocity" value="0"/>
+   </properties>
+  </object>
+  <object id="12" x="544" y="16" width="16" height="16">
+   <properties>
+    <property name="index" value="6"/>
+    <property name="velocity" value="0"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>
