@@ -190,6 +190,9 @@ main_ResetStats subroutine
     sta main_currPlatform
     lda #0
     sta main_paused
+    lda main_playerFlags
+    and #~PLR_F_KEY
+    sta main_playerFlags
 main_ResetStats_end:
 
     ADDI_D shr_palAddr, main_arg, PAL_OFFSET
@@ -431,9 +434,9 @@ main_TileInteraction subroutine
     REPEND
     sta main_sav+3
     cmp #TB_POINTS
-    bcc .ammo
+    bcc .key
     cmp #TB_POINTS+8
-    bcs .ammo
+    bcs .key
     sec
     sbc #TB_POINTS
     asl
@@ -457,6 +460,36 @@ main_TileInteraction subroutine
     
     lda #0
     sta main_sav
+    jmp .updateTile
+.key:
+    cmp #TB_KEY
+    bne .chest
+    MOVI_D shr_sfxPtr, prgdata_crystalSound
+    inc shr_doSfx
+    lda main_playerFlags
+    ora #PLR_F_KEY
+    sta main_playerFlags
+    lda #0
+    sta main_sav
+    jmp .updateTile
+.chest:
+    cmp #TB_CHEST
+    bne .ammo
+    lda #PLR_F_KEY
+    bit main_playerFlags
+    beq .ammo
+    MOVI_D shr_sfxPtr, prgdata_crystalSound
+    inc shr_doSfx
+    
+    lda #2
+    sta main_arg+1
+    lda #0
+    sta main_arg
+    sta main_arg+2
+    jsr main_AddScore
+    
+    
+    inc main_sav
     jmp .updateTile
 .ammo:
     cmp #TB_AMMO
@@ -563,10 +596,7 @@ main_doExit:
     iny
     sta (main_tmp),y
     
-    ldy main_sav
-    iny
-    tya
-    sta main_sav
+    inc main_sav
     jmp .updateTile
 .switch:
     cmp #TB_ON
@@ -577,10 +607,7 @@ main_doExit:
     ldy main_switchable,x
     lda #0
     sta main_entityXVel,y
-    ldx main_sav
-    dex
-    txa
-    sta main_sav
+    dec main_sav
     jmp .updateTile
 .not_switchon:
     cmp #TB_OFF
@@ -591,10 +618,7 @@ main_doExit:
     ldy main_switchable,x
     lda #1
     sta main_entityXVel,y
-    ldx main_sav
-    inx
-    txa
-    sta main_sav
+    inc main_sav
     jmp .updateTile
 .shoot:
     bit main_entityXHi
