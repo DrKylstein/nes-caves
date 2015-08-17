@@ -46,6 +46,8 @@ ENT_F2_ISGROUNDED = $80
 ENT_F2_NEEDPOWERSHOT = $40
 ENT_F2_SHORTANIM = $20
 
+PLR_F_BG = $10
+
 POWERSHOT_ID = 5
 ROCK_ID = 6
 
@@ -104,8 +106,8 @@ TB_LOCK:       ds 3
                ds 1
                ds 1
 TB_AIR:        ds 1
-               ds 1
-               ds 1
+TB_FOREGROUND  ds 1
+TB_BACKGROUND  ds 1
                ds 1
                ds 1
                ds 1

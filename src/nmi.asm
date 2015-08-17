@@ -111,7 +111,6 @@ nmi_UpdateScore subroutine
     sta PPU_ADDR
     lda #$65
     sta PPU_ADDR
-    
     ldx #3
 .loop:
     lda shr_score-1,x
@@ -121,6 +120,7 @@ nmi_UpdateScore subroutine
     dex
     bne .loop
 nmi_UpdateScore_end:
+
 nmi_UpdateHearts subroutine
     lda #$20
     sta PPU_ADDR

@@ -472,7 +472,7 @@ main_TileInteraction subroutine
     jmp .updateTile
 .powershot:
     cmp #TB_POWERSHOT
-    bne .exit
+    bne .foreground
     MOVI_D shr_sfxPtr, prgdata_crystalSound
     inc shr_doSfx
     lda #10
@@ -482,6 +482,17 @@ main_TileInteraction subroutine
     lda #0
     sta main_sav
     jmp .updateTile
+.foreground:
+    lda main_playerFlags
+    and #~PLR_F_BG
+    sta main_playerFlags
+    lda main_sav+3
+    cmp #TB_FOREGROUND
+    bne .exit
+    lda main_playerFlags
+    ora #PLR_F_BG
+    sta main_playerFlags
+    jmp .not_door
 .exit:
     cmp #TB_EXIT
     bne .not_exit
@@ -1181,13 +1192,22 @@ main_UpdatePlayerSprite subroutine
     clc
     adc #2
     sta shr_spriteIndex+OAM_SIZE+OAM_SIZE
-    jmp main_UpdatePlayerSprite_end
+    jmp .fg
 .left:
     lda prgdata_playerWalk,x
     sta shr_spriteIndex+OAM_SIZE+OAM_SIZE
     clc
     adc #2
     sta shr_spriteIndex+OAM_SIZE
+.fg:
+    lda main_playerFlags
+    and #PLR_F_BG
+    beq main_UpdatePlayerSprite_end
+    lda #$20
+    ora shr_spriteFlags+OAM_SIZE
+    sta shr_spriteFlags+OAM_SIZE
+    sta shr_spriteFlags+OAM_SIZE+OAM_SIZE
+    
 main_UpdatePlayerSprite_end:
 
 main_updateEntities subroutine

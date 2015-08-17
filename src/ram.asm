@@ -79,7 +79,7 @@ main_ctrl           ds 1
 main_oldCtrl        ds 1
 main_pressed        ds 1
 main_switches       ds 1
-main_playerFlags    ds 1 ;jumping,flipped,in air,00000
+main_playerFlags    ds 1 ;jumping,flipped,in air,behind,0000
 main_playerFrame    ds 1
 main_playerXVel     ds 1
 main_playerYVel     ds 2
