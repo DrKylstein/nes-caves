@@ -105,6 +105,23 @@ nmi_UpdateAmmo subroutine
     sty PPU_DATA
     sta PPU_DATA
 nmi_UpdateAmmo_end:
+nmi_UpdatePower subroutine
+    bit PPU_STATUS
+    lda #$20
+    sta PPU_ADDR
+    lda #$7A
+    sta PPU_ADDR
+    lda shr_powerTime+1
+    beq .none
+    jsr nmi_CentToDec
+    sty PPU_DATA
+    sta PPU_DATA
+    jmp nmi_UpdatePower_end
+.none:
+    lda #$10
+    sta PPU_DATA
+    sta PPU_DATA
+nmi_UpdatePower_end:
 nmi_UpdateScore subroutine
     bit PPU_STATUS
     lda #$20

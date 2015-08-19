@@ -176,6 +176,8 @@ main_ResetStats subroutine
     sta main_currPlatform
     lda #0
     sta main_paused
+    sta shr_powerTime
+    sta shr_powerTime+1
     lda main_playerFlags
     and #~PLR_F_KEY
     sta main_playerFlags
@@ -948,6 +950,16 @@ main_CheckHurt subroutine
 .longLoop:
     jmp .loop
 main_CheckHurt_end:
+
+main_UpdatePower subroutine
+    lda shr_powerTime+1
+    beq main_UpdatePower_end
+    dec shr_powerTime
+    bne main_UpdatePower_end
+    lda #63
+    sta shr_powerTime
+    dec shr_powerTime+1
+main_UpdatePower_end:
 
 main_updateEntities subroutine
     ldy #[MAX_ENTITIES-1]
