@@ -5,21 +5,7 @@
 ;powershot time limit
 ;door updates
 ;individual enemy hit boxes?
-
-;enemy stops at ledge
-;enemy requires power shot
-;enemy pauses (randomly at differnt intervals or on each turn)
-;entity has child entities
-;entity spawns more entities at start
-;enemy shoots
-;wide and tall enemies
-;enemy active when player near
-;enemy faster when player near
-
-;child index
-;counter
 ;enemy points table
-;
 
 ;------------------------------------------------------------------------------
 ;Initial Boot
@@ -193,6 +179,8 @@ main_ResetStats subroutine
     lda main_playerFlags
     and #~PLR_F_KEY
     sta main_playerFlags
+    lda #CATERPILLAR_ID+1
+    sta main_caterpillarNext
 main_ResetStats_end:
 
     ADDI_D shr_palAddr, main_arg, PAL_OFFSET
@@ -1433,16 +1421,11 @@ main_updateEntities subroutine
     and #~ENT_X_COUNT
     ora #$60
     sta main_entityXHi,y
-    jmp .tileCheckDone
-
-.longimmortal:
-    jmp .immortal
 
 .tileCheckDone:
-
-    lda prgdata_entityFlags,x
-    and #ENT_F_ISMORTAL
+    cpy #0
     beq .longimmortal
+
     lda main_entityXLo
     sta main_tmp
     lda main_entityXHi
@@ -1463,6 +1446,11 @@ main_updateEntities subroutine
     CMP_D main_tmp, main_tmp+2
     bcc .longimmortal
     
+    jmp .spam
+.longimmortal:
+    jmp .immortal
+.spam:
+
     lda main_entityYLo
     sta main_tmp
     lda main_entityYHi
@@ -1476,15 +1464,19 @@ main_updateEntities subroutine
     SUBI_D main_tmp, main_tmp, 16
     ;ADDI_D main_tmp+2, main_tmp+2, 8
     CMP_D main_tmp, main_tmp+2
-    bcs .immortal
+    bcs .longimmortal
     ADDI_D main_tmp, main_tmp, 16
     SUBI_D main_tmp+2, main_tmp+2, 16
     CMP_D main_tmp, main_tmp+2
-    bcc .immortal
+    bcc .longimmortal
     
     ;destroy bullet
     lda #$80
     sta main_entityXHi
+    
+    lda prgdata_entityFlags,x
+    and #ENT_F_ISMORTAL
+    beq .longimmortal
     
     lda main_entityYHi
     lsr
@@ -1516,7 +1508,36 @@ main_updateEntities subroutine
     lda #0
     sta main_arg+1
     sta main_arg+2
+    stx main_sav
     jsr main_AddScore
+    ldx main_sav
+    cpx #CATERPILLAR_ID
+    beq .caterpillar
+    jmp .inactive
+.caterpillar:  
+    lda main_caterpillarNext
+    cmp #CATERPILLAR_ID+4
+    bcc .segmentsleft 
+    jmp .inactive
+.segmentsleft:
+    sty main_tmp
+    ldy #0
+.caterpillarLoop:
+    lda main_entityYHi,y
+    lsr
+    cmp main_caterpillarNext
+    bne .nodice
+    lda main_entityYHi,y
+    and #~ENT_Y_INDEX
+    ora #CATERPILLAR_ID<<1
+    sta main_entityYHi,y
+    inc main_caterpillarNext
+    jmp .inactive
+.nodice:
+    iny
+    cpy #MAX_ENTITIES
+    bne .caterpillarLoop
+    ldy main_tmp
     jmp .inactive
 .notDead:
     asl
@@ -1597,8 +1618,14 @@ main_updateEntities subroutine
 main_updateEntities_end:
 
 main_UpdateEntitySprites subroutine
+    lda shr_frame
+    and #1
+    sta main_sav
     ldy #[shr_entitySprites-shr_oamShadow]
     ldx #[MAX_ENTITIES-1]
+    lda main_sav
+    beq .loop
+    ldx #0
 .loop:
     lda main_entityYHi,x
     stx main_tmp
@@ -1617,6 +1644,9 @@ main_UpdateEntitySprites subroutine
     sta shr_spriteFlags,y
     sta shr_spriteFlags+OAM_SIZE,y
 
+    lda main_tmp+1
+    and #ENT_F2_NOANIM
+    bne .notmoving
     lda main_entityXHi,x
     and #ENT_X_COUNT
     bne .notmoving
@@ -1762,8 +1792,15 @@ main_UpdateEntitySprites subroutine
     clc
     adc #[OAM_SIZE*2]
     tay
+    lda main_sav
+    bne .bar
     dex
     bmi main_UpdateEntitySprites_end
+    jmp .loop
+.bar:
+    inx
+    cpx #MAX_ENTITIES
+    beq main_UpdateEntitySprites_end
     jmp .loop
 main_UpdateEntitySprites_end
 

@@ -23,6 +23,10 @@ prgdata_entityFlags:
     .byte $90 ; power shot
     .byte $1B ; rock
     .byte ENT_F_ISDEADLY | ENT_F_ISFACING | ENT_F_ISMORTAL | $02 ; cart
+    .byte ENT_F_ISDEADLY | ENT_F_ISFACING | ENT_F_ISMORTAL | $04 ; caterpillar head
+    .byte ENT_F_ISDEADLY | ENT_F_ISFACING | $04 ; caterpillar front
+    .byte ENT_F_ISDEADLY | ENT_F_ISFACING | $04 ; caterpillar back
+    .byte ENT_F_ISDEADLY | ENT_F_ISFACING | $04 ; caterpillar tail
     
 prgdata_entityFlags2:
     .byte 0 ; bullet
@@ -33,6 +37,10 @@ prgdata_entityFlags2:
     .byte ENT_F2_SHORTANIM ; power shot
     .byte ENT_F2_SHORTANIM | ENT_F2_ISGROUNDED | ENT_F2_NEEDPOWERSHOT ; rock
     .byte ENT_F2_ISGROUNDED | ENT_F2_NEEDPOWERSHOT | ENT_F2_PAUSETURN ; cart
+    .byte ENT_F2_NOANIM | ENT_F2_ISGROUNDED ;caterpillar head
+    .byte ENT_F2_NOANIM | ENT_F2_ISGROUNDED ;caterpillar front
+    .byte ENT_F2_NOANIM | ENT_F2_ISGROUNDED ;caterpillar back
+    .byte ENT_F2_NOANIM | ENT_F2_ISGROUNDED ;caterpillar tail
     
 prgdata_entityTiles:
     .byte 64 ; bullet
@@ -43,6 +51,10 @@ prgdata_entityTiles:
     .byte 164 ; power shot
     .byte 140 ; rock
     .byte 176 ; cart
+    .byte 120 ; caterpillar head
+    .byte 116 ; caterpillar front
+    .byte 116 ; caterpillar back
+    .byte 112 ; caterpillar tail
     
 prgdata_entityHPs:
     .byte 0 ; bullet
@@ -53,6 +65,10 @@ prgdata_entityHPs:
     .byte 0 ; power shot
     .byte 1 ; rock
     .byte 1 ; cart
+    .byte 1 ; caterpillar head
+    .byte 1 ; caterpillar front
+    .byte 1 ; caterpillar back
+    .byte 1 ; caterpillar tail
     
 prgdata_points:
     .byte 00,00,00,05;0

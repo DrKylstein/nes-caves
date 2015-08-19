@@ -88,6 +88,7 @@ shr_ammo            ds 1
 shr_powerTime       ds 2
 shr_hp              ds 1
 shr_score           ds 3
+main_caterpillarNext ds 1
 main_mapPX          ds 2
 main_mapPY          ds 2
 main_mapCamX        ds 2
