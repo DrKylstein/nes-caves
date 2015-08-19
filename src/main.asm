@@ -1142,15 +1142,48 @@ main_updateEntities subroutine
     jmp .inactive
 
 
-.checkObstacle:
+.checkObstacle:    
     lda main_sav+3
     cmp #TB_SOLID
     beq .reverse
     cmp #TB_WEAKBLOCK
-    bne .tileCheckDone
+    beq .reverse
+    jmp .tileCheckDone
+    ; cpx #SLIME_ID
+    ; beq .random
+    ; cpx #SLIME_ID+1
+    ; bne .tileCheckDone
+; .random:
+    ; lda shr_frame
+    ; and #63
+    ; bne .tileCheckDone
 .reverse:
+    lda shr_frame
+    and #2
+    bne .noSwitch
+    cpx #SLIME_ID
+    beq .goVertical
+    cpx #SLIME_ID+1
+    beq .goHorizontal
+    jmp .noSwitch
+.goVertical:
+    lda main_entityYHi,y
+    clc
+    adc #%10
+    sta main_entityYHi,y
+    jmp .noSwitch
+.goHorizontal:
+    lda main_entityYHi,y
     sec
+    sbc #%10
+    sta main_entityYHi,y
+.noSwitch:
     lda #0
+    cpx #HAMMER_ID
+    bne .notHammer
+    lda #5
+.notHammer:
+    sec
     sbc main_entityXVel,y
     sta main_entityXVel,y
     lda prgdata_entityFlags2,x
@@ -1158,7 +1191,7 @@ main_updateEntities subroutine
     beq .tileCheckDone
     lda main_entityXHi,y
     and #~ENT_X_COUNT
-    ora #$60
+    ora prgdata_entityCounts,x
     sta main_entityXHi,y
 
 .tileCheckDone:

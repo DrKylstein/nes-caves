@@ -27,6 +27,9 @@ prgdata_entityFlags:
     .byte ENT_F_ISDEADLY | ENT_F_ISFACING | $04 ; caterpillar front
     .byte ENT_F_ISDEADLY | ENT_F_ISFACING | $04 ; caterpillar back
     .byte ENT_F_ISDEADLY | ENT_F_ISFACING | $04 ; caterpillar tail
+    .byte ENT_F_ISDEADLY | ENT_F_ISFACING | ENT_F_ISMORTAL | $04 ; slime horizontal
+    .byte ENT_F_ISDEADLY | ENT_F_ISFACING | ENT_F_ISMORTAL | ENT_F_ISVERTICAL | $04 ; slime horizontal
+    .byte ENT_F_ISDEADLY | ENT_F_ISVERTICAL | $02 ; hammer
     
 prgdata_entityFlags2:
     .byte 0 ; bullet
@@ -41,6 +44,9 @@ prgdata_entityFlags2:
     .byte ENT_F2_NOANIM | ENT_F2_ISGROUNDED ;caterpillar front
     .byte ENT_F2_NOANIM | ENT_F2_ISGROUNDED ;caterpillar back
     .byte ENT_F2_NOANIM | ENT_F2_ISGROUNDED ;caterpillar tail
+    .byte ENT_F2_SHORTANIM ; slime horizontal
+    .byte ENT_F2_SHORTANIM ; slime vertical
+    .byte ENT_F2_NOANIM | ENT_F2_PAUSETURN ; hammer
     
 prgdata_entityTiles:
     .byte 64 ; bullet
@@ -55,6 +61,9 @@ prgdata_entityTiles:
     .byte 116 ; caterpillar front
     .byte 116 ; caterpillar back
     .byte 112 ; caterpillar tail
+    .byte 192 ; slime horizontal
+    .byte 204 ; slime vertical
+    .byte 124 ; hammer
     
 prgdata_entityHPs:
     .byte 0 ; bullet
@@ -69,7 +78,25 @@ prgdata_entityHPs:
     .byte 1 ; caterpillar front
     .byte 1 ; caterpillar back
     .byte 1 ; caterpillar tail
-    
+    .byte 1 ; slime horizontal
+    .byte 1 ; slime vertical
+    .byte 0 ; hammer
+prgdata_entityCounts:
+    .byte 0 ; bullet
+    .byte 0 ; vertical platform
+    .byte 0 ; horizontal platform
+    .byte 0 ; spider
+    .byte 0 ; bat
+    .byte 0 ; power shot
+    .byte 0 ; rock
+    .byte $60 ; cart
+    .byte 0 ; caterpillar head
+    .byte 0 ; caterpillar front
+    .byte 0 ; caterpillar back
+    .byte 0 ; caterpillar tail
+    .byte 0 ; slime horizontal
+    .byte 0 ; slime vertical
+    .byte $20 ; hammer
 prgdata_points:
     .byte 00,00,00,05;0
     .byte 00,00,01,00;0

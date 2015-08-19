@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="24" tilewidth="16" tileheight="16" nextobjectid="19">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="24" tilewidth="16" tileheight="16" nextobjectid="23">
  <properties>
   <property name="__script__" value="nescave"/>
   <property name="crystals" value="25"/>
@@ -68,6 +68,30 @@
   <object id="18" name="caterpillar" x="192" y="352" width="16" height="16">
    <properties>
     <property name="index" value="11"/>
+    <property name="velocity" value="-1"/>
+   </properties>
+  </object>
+  <object id="19" name="slime" x="80" y="32" width="16" height="16">
+   <properties>
+    <property name="index" value="13"/>
+    <property name="velocity" value="2"/>
+   </properties>
+  </object>
+  <object id="20" name="slime" x="96" y="48" width="16" height="16">
+   <properties>
+    <property name="index" value="13"/>
+    <property name="velocity" value="-2"/>
+   </properties>
+  </object>
+  <object id="21" x="519.667" y="207.667" width="16" height="16">
+   <properties>
+    <property name="index" value="14"/>
+    <property name="velocity" value="6"/>
+   </properties>
+  </object>
+  <object id="22" x="440.333" y="288" width="16" height="16">
+   <properties>
+    <property name="index" value="14"/>
     <property name="velocity" value="-1"/>
    </properties>
   </object>

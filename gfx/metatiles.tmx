@@ -14,7 +14,7 @@
  </tileset>
  <layer name="Names" width="32" height="32">
   <data encoding="base64" compression="zlib">
-   eJzt1tVvFUEYxuFpQgJc8n/gWtzd3d3dHUpwd9fg7q5tcHe3i4M7NJBQnN+m76bTYU8JIaQX7MWTb+fszrz7bVZOxBgTwUM8wh3cxWN5IE/kKZ7hEi7jiupzvMBLred6rfoKWSz+/nu4b+VfED//orj5fo0o31/vKq4hq8bZVO1s71xKopSjtI6NE287Rt7jA27gJj4iycrPh/z4hM/al2TN97a/4K3mtEQrR+s08vMgL27hNgogNqD/giikfbHWfG+7sHVctPyv+Ibv+IEyKItyKI8KqIgFWIhFWIxmaO5oYeUlShVUTSO/CIqiGIqjDdqiHdqjAzpiPw7gIA7peg1zxFl5lVAZXdD1D/ofhdEYg7EYh/FYjTVWf9HyJ2AiOqEzJmEyhmOEY2RA//76bp49foMlAdd/KU7gJHLJRmyCd1P4z3ZTZEj+6Zf+V2JVQF1mUj/n7niFZNS6mVQzq5YwKc/2UJNyn7r9H8PxgHpYOUeU7Y6XS0wU3nsgHgkm9bvB7X8t1gVUt193/d/lx1tzE6xzcfs/hdMB1e3XXf+oRMsPhUKhUOh/tB4bcA7nMdckf0/nYT7qaVzfBH/f/9YZnDXJ327PHuXsxT7007j/P8qvhurIjhyogZqohdqog7p4p/wGqg3RCI3RBIMxBFMwFdMwHTMw06qzMBtzcB3d0N2qPdATvdAbfdAXOZU7QHUgBgXUzdiCrdiG7diBndhljXdrf2I68/6L507H+hNORyzJ
+   eJzt1tVvFUEUx/FpQgI88n/gWtxa3N29FHeXEtzdNTi0uHsb3N3t4eIODSQU57u5Z9PTYW4JIaQP7MMnZ+fO7vz23KyFjDEhPMQj3MFdPBYPxBPxFM9wCZdxRepzvMBLWc/2Wuor5FL8+Xu4r/IvCD//orDz/RqSfH+9q7iG3DLOI1Vne+dSHhUsFWXfN3gr21HiPT7gBm7iI9JUfhEUxSd8lrk0dby3/UWt2xbtLO0zyS+EwriF2yiGaEf/xVFC5qLV8d52SbVfpPyv+Ibv+IEYxKISKqMKqmIRFmMJlqIVWlvaqLxUUQM1M8kvhdIog7LogDh0RDw6oTP24wAO4hASMMKSoPKqoTq6ofsf9D8GYzEO4zEBE7EW61R/kfInYTK6oCumYCpGYpRltKN/f307T4+962WZ4/9fjhM4iQJiIzbBuyj8e7slsoV/+qX/1VjjqCtMxvvcHq8S2WXdHFJzSi1n0u/t4Sb9OrX7P4bjjnpYco5Itj1eKaIi8J4DyUgxGZ8Ndv/rkeiodr/2+r/LT1bHpqhzsfs/hdOOavdrr39URMoPBAKBQOB/lIQNOIfzmG/C79MFWIhGMm5s3O/3v3UGZ0343e3ZIzl7sQ8DZDzwH+XXQm3kRT7UQV3UQ300QEO8k/wmUpuiGZqjBYZiGKZhOmZgJmZhtqpzMBfzcB090FPVXuiNPuiLfuiP/JI7SOpgDHHUzdiCrdiG7diBndilxrtlPjWLed/iBbOw/gQIjS6L
   </data>
  </layer>
  <layer name="Behavior" width="32" height="32" opacity="0.48">
@@ -22,7 +22,7 @@
    eJzt1bcOwjAUheE4IHpvEyDBRgm99/d/KpY/y5WuHKYY8Fk+2Rni4zhJELiR0HxmRji2aBTTjtZPW6ecD0XPeD+a4rq8n+v9z3jHPBawqJwDzRFmlX1JK1r/Cz4svWzn23xZ/zhXxk/Ld6Aveg4dfc+1aM/rhi9L/4Glp+v9fXx8fHx8/jFdk8z2j/7HG6JXiXEFq1jDOnawjDlsYS+haWfCOqY4wzlGuMAlrnCNG9ziDvd4wCOe8A21pwja
   </data>
  </layer>
- <layer name="Color" width="32" height="32" visible="0" opacity="0.38">
+ <layer name="Color" width="32" height="32" opacity="0.38">
   <data encoding="base64" compression="zlib">
    eJztl8EOwBAQRPXTbP3/Nzm5TDKxbcmi8y5zsBKPjZBSLOXyZYbsjd8ksS4aXA/zY2kwz8DXSH05xJ+dMyabH81Xf+9+7OLfYF6sz7HfV+tzxtNzRf/efba6vxBCCPFHdnuvjWbWO9f7L4jmrf+orD3NIUU=
   </data>
