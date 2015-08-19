@@ -976,7 +976,7 @@ main_updateEntities subroutine
     MOV_D shr_debugReg, main_playerY
     lda main_entityXVel,y
     bne .notRock
-    lda #1
+    lda #2
     sta main_entityXVel,y
 .notRock:
 

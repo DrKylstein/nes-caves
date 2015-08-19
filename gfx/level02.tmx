@@ -44,7 +44,7 @@
   <object id="13" x="592" y="96" width="16" height="16">
    <properties>
     <property name="index" value="7"/>
-    <property name="velocity" value="-1"/>
+    <property name="velocity" value="-2"/>
    </properties>
   </object>
   <object id="14" name="caterpillar" x="144" y="352" width="16" height="16">
