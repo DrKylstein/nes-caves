@@ -636,7 +636,7 @@ main_doExit:
     bit main_playerFlags
     bvs .shootLeft
 .shootRight:
-    lda #2
+    lda #3
     sta main_entityXVel
     clc
     lda #8
@@ -649,7 +649,7 @@ main_doExit:
     
     jmp main_TileInteraction_end
 .shootLeft:
-    lda #<-2
+    lda #<-3
     sta main_entityXVel
     lda main_entityXLo
     sec
@@ -948,279 +948,6 @@ main_CheckHurt subroutine
 .longLoop:
     jmp .loop
 main_CheckHurt_end:
-
-main_ApplyVelocity subroutine
-    MOV_D main_tmp, main_playerYVel
-    ldy main_currPlatform
-    cpy #MAX_ENTITIES
-    beq .noLift
-    
-    lda main_entityYHi,y
-    lsr
-    tax
-    lda prgdata_entityFlags,x
-    sta main_sav
-    
-    lda main_sav
-    and #ENT_F_ISVERTICAL
-    beq .noLift
-    lda main_entityXVel,y
-    clc
-    adc main_tmp+1
-    ;sta main_tmp+1
-.noLift:    
-    lda main_playerYVel+1
-    bmi .negativeY
-    lda #0
-    jmp .continueY
-.negativeY:
-    lda #$FF
-.continueY:
-    sta main_tmp+2
-    ADD_24 main_playerYFrac, main_tmp, main_playerYFrac
-    
-    lda main_playerXVel
-    sta main_tmp
-    ldy main_currPlatform
-    cpy #MAX_ENTITIES
-    beq .noTrolley
-    lda main_sav
-    and #ENT_F_ISVERTICAL
-    bne .noTrolley
-    lda main_tmp
-    adc main_entityXVel,y
-    sta main_tmp
-.noTrolley:
-    lda main_tmp
-    cmp #0
-    bmi .negativeX
-    lda #0
-    jmp .continueX
-.negativeX:
-    lda #$FF
-.continueX:
-    sta main_tmp+1
-    
-    ADD_D main_playerX, main_playerX, main_tmp
-main_ApplyVelocity_end:
-
-main_UpdateCameraX subroutine
-.Scroll_Left:
-    ;no scrolling because player is not close to screen edge
-    SUB_D main_sav, main_playerX, shr_cameraX
-    lda main_sav ;player's on-screen x
-    cmp #[MT_HSCROLL_MARGIN*PX_MT_WIDTH]
-    bcs .Scroll_Left_end
-    
-    ;no scrolling because screen is at map edge
-    lda shr_cameraX
-    ora shr_cameraX+1
-    beq .Scroll_Left_end
-    
-    ;scroll left one pixel
-    DEC_D shr_cameraX
-    inc main_sav
-    
-    ;no loading tiles if not at tile boundary
-    lda shr_cameraX
-    and #7
-    bne .Scroll_Left_end
-    
-    jsr main_LoadTilesOnMoveLeft
-    
-    ;no loading attributes if not at attributes boundary
-    lda shr_cameraX
-    and #15
-    bne .Scroll_Left_end
-    
-    jsr main_LoadColorsOnMoveLeft
-.Scroll_Left_end:
-
-.Scroll_Right:
-    ;no scrolling right because player not near screen edge
-    lda main_sav ;player's on-screen x
-    cmp #[[MT_VIEWPORT_WIDTH - MT_HSCROLL_MARGIN]*PX_MT_WIDTH]
-    bcc .Scroll_Right_end
-    
-    ;no scrolling becuse screen is at map edge
-    CMPI_D shr_cameraX, [[MT_MAP_WIDTH - MT_VIEWPORT_WIDTH]*PX_MT_WIDTH - 8]
-    bcs .Scroll_Right_end
-    
-    ;scroll right 1 pixel
-    INC_D shr_cameraX
-    dec main_sav
-    
-    ;no loading tiles if not at tile boundary
-    lda shr_cameraX
-    and #7 ; 8-pixel boundaries
-    cmp #1
-    bne .Scroll_Right_end
-    
-    jsr main_LoadTilesOnMoveRight
-    
-    ;no loading tiles if not at tile boundary
-    lda shr_cameraX
-    and #15 ; 16-pixel boundaries
-    cmp #1
-    bne .Scroll_Right_end
-
-    jsr main_LoadColorsOnMoveRight
-.Scroll_Right_end:
-main_UpdateCameraX_end:
-
-main_UpdateCameraY subroutine
-.Scroll_Up:
-    SUB_D main_sav, main_playerY, shr_cameraY
-    ;no scrolling because player not near screen edge
-    lda main_sav ;player's on-screen y
-    cmp #[MT_VSCROLL_MARGIN*PX_MT_HEIGHT]
-    bcs .Scroll_Up_end
-    
-    ;no scrolling becuse screen is at map edge
-    lda shr_cameraY
-    ora shr_cameraY+1
-    beq .Scroll_Up_end
-    
-    lda #[MT_VSCROLL_MARGIN*PX_MT_HEIGHT]
-    sec
-    sbc main_sav
-    sta main_tmp
-    lda #0
-    sta main_tmp+1
-    SUB_D shr_cameraY, shr_cameraY, main_tmp
-    
-    ;handle nametable boundary
-    lda shr_cameraYMod
-    cmp main_tmp
-    bcs .noModUp
-    clc
-    adc #240
-    sta shr_cameraYMod
-	lda #8
-	eor shr_nameTable
-	sta shr_nameTable
-.noModUp:
-
-	lda shr_cameraYMod
-    sec
-	sbc main_tmp
-    sta shr_cameraYMod
-.Scroll_Up_end:
-    
-.Scroll_Down:
-    ;no scrolling because player not near screen edge
-    SUB_D main_sav, main_playerY, shr_cameraY
-    lda main_sav
-    cmp #[[MT_VIEWPORT_HEIGHT - MT_VSCROLL_MARGIN]*PX_MT_HEIGHT]
-    bcc .Scroll_Down_end
-    
-    ;no scrolling becuse screen is at map edge
-    CMPI_D shr_cameraY, [[MT_MAP_HEIGHT - MT_VIEWPORT_HEIGHT]*PX_MT_HEIGHT]
-    bcs .Scroll_Down_end
-    
-    ;scroll down one pixel
-    lda main_sav ;player's on-screen y
-    sec
-    sbc #[[MT_VIEWPORT_HEIGHT - MT_VSCROLL_MARGIN]*PX_MT_HEIGHT]
-    sta main_tmp
-    lda #0
-    sta main_tmp+1
-    ADD_D shr_cameraY, shr_cameraY, main_tmp
-    lda shr_cameraYMod
-    clc
-    adc main_tmp
-    sta shr_cameraYMod
-    
-    ;handle nametable boundary
-    cmp #240
-    bcc .Scroll_Down_end
-    sec
-    sbc #240
-    sta shr_cameraYMod
-	lda #8
-	eor shr_nameTable
-	sta shr_nameTable
-.Scroll_Down_end:
-main_UpdateCameraY_end:
-
-main_UpdatePlayerSprite subroutine
-    lda main_mercyTime
-    beq .visible
-    lda shr_frame
-    and #1
-    beq .visible
-    lda #$FF
-    sta shr_spriteY+OAM_SIZE
-    sta shr_spriteY+OAM_SIZE+OAM_SIZE
-    jmp main_UpdatePlayerSprite_end
-.visible:
-    ;update position
-    SUB_D main_sav, main_playerX, shr_cameraX
-    lda main_sav
-    clc
-    adc #8
-    tax
-    SUB_D main_sav, main_playerY, shr_cameraY
-    lda main_sav
-    clc
-    adc #31
-    ldy #OAM_SIZE
-    jsr main_SetSpritePos
-
-    ;update tiles
-    lda main_playerFrame
-    clc
-    adc main_playerXVel
-    and #%00011111
-    sta main_playerFrame
-
-
-    lda main_playerFrame
-    lsr
-    lsr
-    tax
-
-    bit main_playerFlags
-    bpl .walk_anim
-    ldx #9
-    jmp .do_anim
-
-.walk_anim:
-    lda #0
-    cmp main_playerXVel
-    bne .do_anim
-    ldx #8
-
-.do_anim:
-    lda main_playerFlags
-    and #%01000000
-    sta shr_spriteFlags+OAM_SIZE
-    sta shr_spriteFlags+OAM_SIZE+OAM_SIZE
-    bit main_playerFlags
-    bvs .left
-.right:
-    lda prgdata_playerWalk,x
-    sta shr_spriteIndex+OAM_SIZE
-    clc
-    adc #2
-    sta shr_spriteIndex+OAM_SIZE+OAM_SIZE
-    jmp .fg
-.left:
-    lda prgdata_playerWalk,x
-    sta shr_spriteIndex+OAM_SIZE+OAM_SIZE
-    clc
-    adc #2
-    sta shr_spriteIndex+OAM_SIZE
-.fg:
-    lda main_playerFlags
-    and #PLR_F_BG
-    beq main_UpdatePlayerSprite_end
-    lda #$20
-    ora shr_spriteFlags+OAM_SIZE
-    sta shr_spriteFlags+OAM_SIZE
-    sta shr_spriteFlags+OAM_SIZE+OAM_SIZE
-    
-main_UpdatePlayerSprite_end:
 
 main_updateEntities subroutine
     ldy #[MAX_ENTITIES-1]
@@ -1560,30 +1287,57 @@ main_updateEntities subroutine
     sta main_tmp
     lda shr_frame
     and #31
-    bne .inactive
+    beq .updateCount
+    jmp .inactive
+.updateCount:
     lda main_entityXHi,y
     and #~ENT_X_COUNT
     ora main_tmp
     sta main_entityXHi,y
     jmp .inactive
-.notPaused
+.notPaused:
+    lda main_entityXLo,y
+    sta main_tmp
     lda main_entityXHi,y
     and #ENT_X_POS
     sta main_tmp+1
-    lda main_entityXLo,y
-    sta main_tmp
     lda prgdata_entityFlags,x
     and #ENT_F_ISVERTICAL
     beq .horizontal
     
+    lda main_entityYLo,y
+    sta main_tmp
     lda main_entityYHi,y
     and #ENT_Y_POS
     sta main_tmp+1
-    lda main_entityYLo,y
-    sta main_tmp
 .horizontal:
-
     lda main_entityXVel,y
+    and #1
+    bne .extra
+    lda main_entityXVel,y
+    jmp .noExtra
+.extra:
+    lda shr_frame
+    and #1
+    bne .leapFrame
+    lda main_entityXVel,y
+    jmp .noExtra
+.leapFrame:
+    lda main_entityXVel,y
+    bmi .negativeLeap
+    clc
+    adc #1
+    jmp .noExtra
+.negativeLeap:
+    sec
+    sbc #1
+.noExtra:
+    cmp #<-1
+    bne .noRotateError
+    lda #0
+.noRotateError:
+    cmp #80
+    ror
     sta main_tmp+2
     bmi .negative
     lda #0
@@ -1603,6 +1357,9 @@ main_updateEntities subroutine
     and #~ENT_X_POS
     ora main_tmp+1
     sta main_entityXHi,y
+    cpy main_currPlatform
+    bne .inactive
+    ADD_D main_playerX, main_playerX, main_tmp+2
     jmp .inactive
 .vertical:
     lda main_tmp
@@ -1611,11 +1368,259 @@ main_updateEntities subroutine
     and #~ENT_Y_POS
     ora main_tmp+1 ; just assuming that calculated y will never be out of bounds
     sta main_entityYHi,y
+    cpy main_currPlatform
+    bne .inactive
+    ADD_D main_playerY, main_playerY, main_tmp+2
 .inactive:
     dey
     bmi main_updateEntities_end
     jmp .loop
 main_updateEntities_end:
+
+
+main_ApplyVelocity subroutine
+    MOV_D main_tmp, main_playerYVel
+    lda main_playerYVel+1
+    bmi .negativeY
+    lda #0
+    jmp .continueY
+.negativeY:
+    lda #$FF
+.continueY:
+    sta main_tmp+2
+    ADD_24 main_playerYFrac, main_tmp, main_playerYFrac
+    
+    lda main_playerXVel
+    sta main_tmp
+    cmp #0
+    bmi .negativeX
+    lda #0
+    jmp .continueX
+.negativeX:
+    lda #$FF
+.continueX:
+    sta main_tmp+1
+    
+    ADD_D main_playerX, main_playerX, main_tmp
+main_ApplyVelocity_end:
+
+main_UpdateCameraX subroutine
+.Scroll_Left:
+    ;no scrolling because player is not close to screen edge
+    SUB_D main_sav, main_playerX, shr_cameraX
+    lda main_sav ;player's on-screen x
+    cmp #[MT_HSCROLL_MARGIN*PX_MT_WIDTH]
+    bcs .Scroll_Left_end
+    
+    ;no scrolling because screen is at map edge
+    lda shr_cameraX
+    ora shr_cameraX+1
+    beq .Scroll_Left_end
+    
+    ;scroll left one pixel
+    DEC_D shr_cameraX
+    inc main_sav
+    
+    ;no loading tiles if not at tile boundary
+    lda shr_cameraX
+    and #7
+    bne .Scroll_Left_end
+    
+    jsr main_LoadTilesOnMoveLeft
+    
+    ;no loading attributes if not at attributes boundary
+    lda shr_cameraX
+    and #15
+    bne .Scroll_Left_end
+    
+    jsr main_LoadColorsOnMoveLeft
+.Scroll_Left_end:
+
+.Scroll_Right:
+    ;no scrolling right because player not near screen edge
+    lda main_sav ;player's on-screen x
+    cmp #[[MT_VIEWPORT_WIDTH - MT_HSCROLL_MARGIN]*PX_MT_WIDTH]
+    bcc .Scroll_Right_end
+    
+    ;no scrolling becuse screen is at map edge
+    CMPI_D shr_cameraX, [[MT_MAP_WIDTH - MT_VIEWPORT_WIDTH]*PX_MT_WIDTH - 8]
+    bcs .Scroll_Right_end
+    
+    ;scroll right 1 pixel
+    INC_D shr_cameraX
+    dec main_sav
+    
+    ;no loading tiles if not at tile boundary
+    lda shr_cameraX
+    and #7 ; 8-pixel boundaries
+    cmp #1
+    bne .Scroll_Right_end
+    
+    jsr main_LoadTilesOnMoveRight
+    
+    ;no loading tiles if not at tile boundary
+    lda shr_cameraX
+    and #15 ; 16-pixel boundaries
+    cmp #1
+    bne .Scroll_Right_end
+
+    jsr main_LoadColorsOnMoveRight
+.Scroll_Right_end:
+main_UpdateCameraX_end:
+
+main_UpdateCameraY subroutine
+.Scroll_Up:
+    SUB_D main_sav, main_playerY, shr_cameraY
+    ;no scrolling because player not near screen edge
+    lda main_sav ;player's on-screen y
+    cmp #[MT_VSCROLL_MARGIN*PX_MT_HEIGHT]
+    bcs .Scroll_Up_end
+    
+    ;no scrolling becuse screen is at map edge
+    lda shr_cameraY
+    ora shr_cameraY+1
+    beq .Scroll_Up_end
+    
+    lda #[MT_VSCROLL_MARGIN*PX_MT_HEIGHT]
+    sec
+    sbc main_sav
+    sta main_tmp
+    lda #0
+    sta main_tmp+1
+    SUB_D shr_cameraY, shr_cameraY, main_tmp
+    
+    ;handle nametable boundary
+    lda shr_cameraYMod
+    cmp main_tmp
+    bcs .noModUp
+    clc
+    adc #240
+    sta shr_cameraYMod
+	lda #8
+	eor shr_nameTable
+	sta shr_nameTable
+.noModUp:
+
+	lda shr_cameraYMod
+    sec
+	sbc main_tmp
+    sta shr_cameraYMod
+.Scroll_Up_end:
+    
+.Scroll_Down:
+    ;no scrolling because player not near screen edge
+    SUB_D main_sav, main_playerY, shr_cameraY
+    lda main_sav
+    cmp #[[MT_VIEWPORT_HEIGHT - MT_VSCROLL_MARGIN]*PX_MT_HEIGHT]
+    bcc .Scroll_Down_end
+    
+    ;no scrolling becuse screen is at map edge
+    CMPI_D shr_cameraY, [[MT_MAP_HEIGHT - MT_VIEWPORT_HEIGHT]*PX_MT_HEIGHT]
+    bcs .Scroll_Down_end
+    
+    ;scroll down one pixel
+    lda main_sav ;player's on-screen y
+    sec
+    sbc #[[MT_VIEWPORT_HEIGHT - MT_VSCROLL_MARGIN]*PX_MT_HEIGHT]
+    sta main_tmp
+    lda #0
+    sta main_tmp+1
+    ADD_D shr_cameraY, shr_cameraY, main_tmp
+    lda shr_cameraYMod
+    clc
+    adc main_tmp
+    sta shr_cameraYMod
+    
+    ;handle nametable boundary
+    cmp #240
+    bcc .Scroll_Down_end
+    sec
+    sbc #240
+    sta shr_cameraYMod
+	lda #8
+	eor shr_nameTable
+	sta shr_nameTable
+.Scroll_Down_end:
+main_UpdateCameraY_end:
+
+main_UpdatePlayerSprite subroutine
+    lda main_mercyTime
+    beq .visible
+    lda shr_frame
+    and #1
+    beq .visible
+    lda #$FF
+    sta shr_spriteY+OAM_SIZE
+    sta shr_spriteY+OAM_SIZE+OAM_SIZE
+    jmp main_UpdatePlayerSprite_end
+.visible:
+    ;update position
+    SUB_D main_sav, main_playerX, shr_cameraX
+    lda main_sav
+    clc
+    adc #8
+    tax
+    SUB_D main_sav, main_playerY, shr_cameraY
+    lda main_sav
+    clc
+    adc #31
+    ldy #OAM_SIZE
+    jsr main_SetSpritePos
+
+    ;update tiles
+    lda main_playerFrame
+    clc
+    adc main_playerXVel
+    and #%00011111
+    sta main_playerFrame
+
+
+    lda main_playerFrame
+    lsr
+    lsr
+    tax
+
+    bit main_playerFlags
+    bpl .walk_anim
+    ldx #9
+    jmp .do_anim
+
+.walk_anim:
+    lda #0
+    cmp main_playerXVel
+    bne .do_anim
+    ldx #8
+
+.do_anim:
+    lda main_playerFlags
+    and #%01000000
+    sta shr_spriteFlags+OAM_SIZE
+    sta shr_spriteFlags+OAM_SIZE+OAM_SIZE
+    bit main_playerFlags
+    bvs .left
+.right:
+    lda prgdata_playerWalk,x
+    sta shr_spriteIndex+OAM_SIZE
+    clc
+    adc #2
+    sta shr_spriteIndex+OAM_SIZE+OAM_SIZE
+    jmp .fg
+.left:
+    lda prgdata_playerWalk,x
+    sta shr_spriteIndex+OAM_SIZE+OAM_SIZE
+    clc
+    adc #2
+    sta shr_spriteIndex+OAM_SIZE
+.fg:
+    lda main_playerFlags
+    and #PLR_F_BG
+    beq main_UpdatePlayerSprite_end
+    lda #$20
+    ora shr_spriteFlags+OAM_SIZE
+    sta shr_spriteFlags+OAM_SIZE
+    sta shr_spriteFlags+OAM_SIZE+OAM_SIZE
+    
+main_UpdatePlayerSprite_end:
 
 main_UpdateEntitySprites subroutine
     lda shr_frame
