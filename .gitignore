@@ -1,4 +1,6 @@
 build/*.bin
+build/*.pal
 *.lst
 *.sym
 *.nes
+CAVES
