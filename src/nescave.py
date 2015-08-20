@@ -6,7 +6,7 @@ Raw binary export for Tiled
 from tiled import *
 from tiled.qt import *
 
-max_entities = 16
+max_entities = 24
 
 def writeColumn(out, entities, func, default, switchables):
     k = 0

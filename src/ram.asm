@@ -99,13 +99,12 @@ main_cleared        ds 2
 main_currPlatform   ds 1
 main_paused         ds 1
 
-MAX_ENTITIES = 16
 main_entityBlock:
 main_entityXLo        ds MAX_ENTITIES
 main_entityXHi        ds MAX_ENTITIES
 main_entityYLo        ds MAX_ENTITIES
 main_entityYHi        ds MAX_ENTITIES ; bottom bit
-main_entityXVel       ds MAX_ENTITIES ; 37 + 96 = 133
+main_entityXVel       ds MAX_ENTITIES ; 
 main_entityBlockEnd:
     ECHO $400-.," bytes left in page $300"
 

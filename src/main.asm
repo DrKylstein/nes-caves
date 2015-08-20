@@ -206,7 +206,7 @@ main_LoadLevel subroutine
     dex
     bne .loop
     
-    ADDI_D main_tmp+2, main_arg, 960
+    ADDI_D main_tmp+2, main_arg, ENTITIES_OFFSET
     MOVI_D main_tmp, main_entityBlock
     ldy #0
 .copyEntities:
@@ -216,7 +216,7 @@ main_LoadLevel subroutine
     cpy #[main_entityBlockEnd-main_entityBlock]
     bne .copyEntities
         
-    ADDI_D main_tmp+2, main_arg, 1040
+    ADDI_D main_tmp+2, main_arg, COORDS_OFFSET
     ldy #0
     ldx #1
     lda #0
