@@ -30,23 +30,27 @@ prgdata_entityFlags:
     .byte ENT_F_ISDEADLY | ENT_F_ISFACING | ENT_F_ISMORTAL | $04 ; slime horizontal
     .byte ENT_F_ISDEADLY | ENT_F_ISFACING | ENT_F_ISMORTAL | ENT_F_ISVERTICAL | $04 ; slime horizontal
     .byte ENT_F_ISDEADLY | ENT_F_ISVERTICAL | $02 ; hammer
+    .byte $06 ; faucet
+    .byte ENT_F_ISPROJECTILE | ENT_F_ISDEADLY | ENT_F_ISVERTICAL | $06 ; water
     
 prgdata_entityFlags2:
     .byte 0 ; bullet
     .byte 0 ; vertical platform
     .byte 0 ; horizontal platform
-    .byte ENT_F2_SHORTANIM ; spider
-    .byte ENT_F2_SHORTANIM ; bat
-    .byte ENT_F2_SHORTANIM ; power shot
-    .byte ENT_F2_SHORTANIM | ENT_F2_ISGROUNDED | ENT_F2_NEEDPOWERSHOT ; rock
-    .byte ENT_F2_ISGROUNDED | ENT_F2_NEEDPOWERSHOT | ENT_F2_PAUSETURN ; cart
-    .byte ENT_F2_NOANIM | ENT_F2_ISGROUNDED ;caterpillar head
-    .byte ENT_F2_NOANIM | ENT_F2_ISGROUNDED ;caterpillar front
-    .byte ENT_F2_NOANIM | ENT_F2_ISGROUNDED ;caterpillar back
-    .byte ENT_F2_NOANIM | ENT_F2_ISGROUNDED ;caterpillar tail
-    .byte ENT_F2_SHORTANIM ; slime horizontal
-    .byte ENT_F2_SHORTANIM ; slime vertical
+    .byte ENT_F2_ISHITTABLE | ENT_F2_SHORTANIM ; spider
+    .byte ENT_F2_ISHITTABLE | ENT_F2_SHORTANIM ; bat
+    .byte ENT_F2_ISHITTABLE | ENT_F2_SHORTANIM ; power shot
+    .byte ENT_F2_ISHITTABLE | ENT_F2_SHORTANIM | ENT_F2_ISGROUNDED | ENT_F2_NEEDPOWERSHOT ; rock
+    .byte ENT_F2_ISHITTABLE | ENT_F2_ISGROUNDED | ENT_F2_NEEDPOWERSHOT | ENT_F2_PAUSETURN ; cart
+    .byte ENT_F2_ISHITTABLE | ENT_F2_NOANIM | ENT_F2_ISGROUNDED ;caterpillar head
+    .byte ENT_F2_ISHITTABLE | ENT_F2_NOANIM | ENT_F2_ISGROUNDED ;caterpillar front
+    .byte ENT_F2_ISHITTABLE |  ENT_F2_NOANIM | ENT_F2_ISGROUNDED ;caterpillar back
+    .byte ENT_F2_ISHITTABLE | ENT_F2_NOANIM | ENT_F2_ISGROUNDED ;caterpillar tail
+    .byte ENT_F2_ISHITTABLE | ENT_F2_SHORTANIM ; slime horizontal
+    .byte ENT_F2_ISHITTABLE | ENT_F2_SHORTANIM ; slime vertical
     .byte ENT_F2_NOANIM | ENT_F2_PAUSETURN ; hammer
+    .byte ENT_F2_NOANIM ; faucet
+    .byte ENT_F2_NOANIM | ENT_F2_PAUSETURN ;water
     
 prgdata_entityTiles:
     .byte 64 ; bullet
@@ -64,6 +68,8 @@ prgdata_entityTiles:
     .byte 192 ; slime horizontal
     .byte 204 ; slime vertical
     .byte 124 ; hammer
+    .byte 220 ; faucet
+    .byte 216 ; water
     
 prgdata_entityHPs:
     .byte 0 ; bullet
@@ -81,6 +87,9 @@ prgdata_entityHPs:
     .byte 1 ; slime horizontal
     .byte 1 ; slime vertical
     .byte 0 ; hammer
+    .byte 0 ; faucet
+    .byte 0 ; water
+    
 prgdata_entityCounts:
     .byte 0 ; bullet
     .byte 0 ; vertical platform
@@ -97,6 +106,8 @@ prgdata_entityCounts:
     .byte 0 ; slime horizontal
     .byte 0 ; slime vertical
     .byte $20 ; hammer
+    .byte 0 ; faucet
+    .byte $20 ; water
 prgdata_points:
     .byte 00,00,00,05;0
     .byte 00,00,01,00;0

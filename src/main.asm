@@ -327,6 +327,7 @@ main_ReenableDisplay subroutine
     sta PPU_CTRL
     lda #%00011000
     sta shr_ppuMask
+    inc shr_doRegCopy
 main_ReenableDisplay_end:
 
 ;------------------------------------------------------------------------------
@@ -1100,14 +1101,15 @@ main_updateEntities subroutine
     ;react to map tile
     lda prgdata_entityFlags,x
     and #ENT_F_ISPROJECTILE
-    beq .checkObstacle
+    bne .checkImpact
+    jmp .checkObstacle
     
 .checkImpact:
     lda main_sav+3
     cmp #TB_SOLID
     beq .die
     cmp #TB_WEAKBLOCK
-    bne .checkOffScreen
+    bne .notWeakBlock
     lda main_sav+1
     sta main_arg
     lda main_sav+2
@@ -1123,7 +1125,16 @@ main_updateEntities subroutine
     pla
     tay
     jmp .die
-.checkOffScreen:
+.notWeakBlock:
+    cmp #TB_PLATFORM
+    bne .checkOffScreen
+    lda prgdata_entityFlags,x
+    and #ENT_F_ISVERTICAL
+    beq .checkOffScreen
+    lda main_entityXVel,y
+    bmi .checkOffScreen
+    jmp .die
+.checkOffScreen:    
     lda main_entityXLo,y
     sec
     sbc shr_cameraX
@@ -1135,8 +1146,43 @@ main_updateEntities subroutine
     CMPI_D main_tmp, #$FF
     bcs .die
     CMPI_D main_tmp, #$0
-    bcs .tileCheckDone
+    bcc .die
+    jmp .tileCheckDone
 .die:
+    cpy #0
+    beq .playerShot
+    lda main_entityXLo-1,y
+    sta main_entityXLo,y
+    lda main_entityYLo-1,y
+    sta main_entityYLo,y
+    
+    lda main_entityXHi,y
+    and #~ENT_X_POS
+    sta main_entityXHi,y
+    lda main_entityXHi-1,y
+    and #ENT_X_POS
+    ora main_entityXHi,y
+    sta main_entityXHi,y
+    
+    lda main_entityYHi,y
+    and #~ENT_Y_POS
+    sta main_entityYHi,y
+    lda main_entityYHi-1,y
+    and #ENT_Y_POS
+    ora main_entityYHi,y
+    sta main_entityYHi,y
+    
+    lda prgdata_entityFlags2,x
+    and #ENT_F2_PAUSETURN
+    beq .noPause
+    lda main_entityXHi,y
+    and #~ENT_X_COUNT
+    ora prgdata_entityCounts,x
+    sta main_entityXHi,y
+.noPause:
+
+    jmp .inactive
+.playerShot:
     lda #$80
     sta main_entityXHi,y
     jmp .inactive
@@ -1243,6 +1289,9 @@ main_updateEntities subroutine
     bcc .longimmortal
     
     ;destroy bullet
+    lda prgdata_entityFlags2,x
+    and #ENT_F2_ISHITTABLE
+    beq .longimmortal
     lda #$80
     sta main_entityXHi
     

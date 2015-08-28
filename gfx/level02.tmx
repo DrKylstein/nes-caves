@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="24" tilewidth="16" tileheight="16" nextobjectid="23">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="24" tilewidth="16" tileheight="16" nextobjectid="27">
  <properties>
   <property name="__script__" value="nescave"/>
   <property name="crystals" value="25"/>
@@ -7,9 +7,13 @@
  <tileset firstgid="1" name="metatiles" tilewidth="16" tileheight="16">
   <image source="metatiles.png" width="256" height="256"/>
  </tileset>
+ <tileset firstgid="257" name="Sprites" tilewidth="16" tileheight="16">
+  <tileoffset x="0" y="16"/>
+  <image source="../../../../Projects/nes caves/gfx/sprites.png" trans="000000" width="256" height="64"/>
+ </tileset>
  <layer name="Names" width="40" height="24">
   <data encoding="base64" compression="zlib">
-   eJzFVklOxDAQdDgxx2GRQAnCZLiwDDCMWCasJxYhriwHns0DEAgh5RPYUremVWnbCSBxKDnpuN3lctlOaYzZb4GS0KbvX8HXGzhkAdwT/PPIYRzpq8G2jIVy14jfK+Ry+0Lwz1fKGH2HOYH5DhwwV+Z73BK/kuI5xStoudYDjP8h8nk9UN/KhDlpXimBL3sKx7XKeBqkP25E/qHDkcMxcMO5vDsUAiOFr/RfDkB9tP3Cc3uCOU7gHf17reghcWem/kNeOc2Hv+MYB/DtjfSR/mN+uWnW9nhUYt4PNeg9IC4aR8mB8QW5WaDvxDT9Z0XtmG+k91A/HqMO6NeHXNZP4+fbLYehiPsa6LOYf7rqJz05Nrp+cn1PHM6UtSygRXCdtv5jf2icY/oVpOE2YWiaXKwSG/1CP4zF/FeThqcEqeWGwyaMVQVqfcI8nhP8atKNEdJv2WGlA1aVNW5z/tpEDp6leP75NVpwWKRnq8S0NUn9k+DdEtt7si/yywQXro8xbY/E/l8kllr2Q//JPaBxwRivE3ra68v3obanZkzzvNXAeTH9WLs8wJnrdNFP4xHjm1pfjKEeofNDm4f2P8JY/yG/nhLD+Up+zH+2Q70Q765ninbG4B2f0kneB9ZMfcpxnDt+x/sMW+zH5wSur9RpJ6FfFYjbRJ5VYhP4tuuwR/x6gfHOE3Vi8Rj/2Dj8/3fhcGni98d/w3P7BgYNXTg=
+   eJzFVslOwzAQdTjRI5sEShAm5cJSoFQsDeuJRYgry4HP5gMqEELKT2BLM+roZWwnCMThKe3E43l+82ynNMYctEBJaDP2t+Dr9R2yAB4I/vfQYRQZq8G2jIVy14nfG+Ty85Xgf18rc8w5zAssdOCAuTLf4474lRTPKV7Bk2s9wvwfIp/7gfpWJsxJ80oJfNlTOK9V5tMg/XEr8o8cjh1OgBuu5d2hEBgqfKX/cgDqo+0XXtszrHEM/9G/N4oeEvdm6j/kldN6+D3OcQjvJqSP9B/zy02ztseTEvN+qEHvPnHROEoOjC/IzQJjx6bpPytqx3wjvYf68Rx1QD/pI+7XJMDPP7cdBiLua6DPYv7pqp8Ww7Gyv6cO50ovC3gi2Ptt/cf+0PjF9CtIwx3CwDS5WCU2/EP9pP9q0vCMILXcdNiCuapArU9Yx0uCX026MUL6rTisdsCa0uM2569N5OBZiuef79GiwxL9tkpM60nqmwTvltjek2ORXya4cH2MaXsk9v0isdxyHPpP7gGNC8a4T+hpry/fh9qemjHN81YD58X0Y+3yAGeu00U/jUeMb6q/GEM9QueHtg7te4Sx8UN+PSWG65X8mP9sh3oh3l3PFO2MwTs+pZO8D6yZ+pTjuHZ8j/cZPnEcnxPYX6nTbkK/KhC3iTyrxMbwbs9hn/j1AvNdJOrE4jH+sXn4++/S4crE74//huf2Db4cXPY=
   </data>
  </layer>
  <objectgroup name="Entities">
@@ -93,6 +97,30 @@
    <properties>
     <property name="index" value="14"/>
     <property name="velocity" value="-1"/>
+   </properties>
+  </object>
+  <object id="23" gid="312" x="64" y="16">
+   <properties>
+    <property name="index" value="15"/>
+    <property name="velocity" value="0"/>
+   </properties>
+  </object>
+  <object id="24" gid="311" x="64" y="32">
+   <properties>
+    <property name="index" value="16"/>
+    <property name="velocity" value="4"/>
+   </properties>
+  </object>
+  <object id="25" gid="312" x="224" y="144">
+   <properties>
+    <property name="index" value="15"/>
+    <property name="velocity" value="0"/>
+   </properties>
+  </object>
+  <object id="26" gid="311" x="224" y="160">
+   <properties>
+    <property name="index" value="16"/>
+    <property name="velocity" value="4"/>
    </properties>
   </object>
  </objectgroup>
