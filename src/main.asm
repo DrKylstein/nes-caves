@@ -987,6 +987,43 @@ main_updateEntities subroutine
     lsr
     tax
     
+    lda prgdata_entityFlags,x
+    and #ENT_F_ISPLATFORM
+    bne .persistent
+    lda main_entityXLo,y
+    sec
+    sbc shr_cameraX
+    sta main_tmp
+    lda main_entityXHi,y
+    and #ENT_X_POS
+    sbc shr_cameraX+1
+    sta main_tmp+1
+    CMPI_D main_tmp, #$FF
+    bcs .offScreen
+    CMPI_D main_tmp, #$0
+    bcc .offScreen
+    lda main_entityYLo,y
+    sec
+    sbc shr_cameraY
+    sta main_tmp
+    lda main_entityYHi,y
+    and #ENT_Y_POS
+    sbc shr_cameraY+1
+    sta main_tmp+1
+    CMPI_D main_tmp, #$FF
+    bcs .offScreen
+    CMPI_D main_tmp, #$0
+    bcc .offScreen
+    jmp .persistent
+.offScreen:
+    lda prgdata_entityFlags,x
+    and #ENT_F_ISPROJECTILE
+    beq .normal
+    jmp .die
+.normal:
+    jmp .inactive
+.persistent:
+
     cpx #ROCK_ID
     bne .notRock
     lda main_entityYLo,y
@@ -1139,29 +1176,16 @@ main_updateEntities subroutine
     pla
     tay
     jmp .die
+.longCheckDone
+    jmp .tileCheckDone
 .notWeakBlock:
     cmp #TB_PLATFORM
-    bne .checkOffScreen
+    bne .longCheckDone
     lda prgdata_entityFlags,x
     and #ENT_F_ISVERTICAL
-    beq .checkOffScreen
+    beq .longCheckDone
     lda main_entityXVel,y
-    bmi .checkOffScreen
-    jmp .die
-.checkOffScreen:    
-    lda main_entityXLo,y
-    sec
-    sbc shr_cameraX
-    sta main_tmp
-    lda main_entityXHi,y
-    and #ENT_X_POS
-    sbc shr_cameraX+1
-    sta main_tmp+1
-    CMPI_D main_tmp, #$FF
-    bcs .die
-    CMPI_D main_tmp, #$0
-    bcc .die
-    jmp .tileCheckDone
+    bmi .longCheckDone
 .die:
     cpy #0
     beq .playerShot
@@ -1211,11 +1235,11 @@ main_updateEntities subroutine
     ; cpx #SLIME_ID+1
     ; bne .tileCheckDone
 ; .random:
-    ; lda shr_frame
+    ; lda main_frame
     ; and #63
     ; bne .tileCheckDone
 .reverse:
-    lda shr_frame
+    lda main_frame
     and #2
     bne .noSwitch
     cpx #SLIME_ID
@@ -1400,7 +1424,7 @@ main_updateEntities subroutine
     asl
     REPEND
     sta main_tmp
-    lda shr_frame
+    lda main_frame
     and #31
     beq .updateCount
     jmp .inactive
@@ -1432,7 +1456,7 @@ main_updateEntities subroutine
     lda main_entityXVel,y
     jmp .noExtra
 .extra:
-    lda shr_frame
+    lda main_frame
     and #1
     bne .leapFrame
     lda main_entityXVel,y
@@ -1661,7 +1685,7 @@ main_UpdateCameraY_end:
 main_UpdatePlayerSprite subroutine
     lda main_mercyTime
     beq .visible
-    lda shr_frame
+    lda main_frame
     and #1
     beq .visible
     lda #$FF
@@ -1738,7 +1762,7 @@ main_UpdatePlayerSprite subroutine
 main_UpdatePlayerSprite_end:
 
 main_UpdateEntitySprites subroutine
-    lda shr_frame
+    lda main_frame
     and #1
     sta main_sav
     ldy #[shr_entitySprites-shr_oamShadow]
@@ -1786,14 +1810,14 @@ main_UpdateEntitySprites subroutine
     lda main_tmp+1
     and #ENT_F2_SHORTANIM
     beq .longanim
-    lda shr_frame
+    lda main_frame
     and #12
     cmp #12
     bne .longanim
     lda #4
     jmp .anim
 .longanim:
-    lda shr_frame
+    lda main_frame
     and #12
 .anim:
     clc
@@ -1937,6 +1961,7 @@ main_UpdateEntitySprites subroutine
     jmp .loop
 main_UpdateEntitySprites_end
 
+    inc main_frame
     inc shr_doDma
     inc shr_doRegCopy
     jsr synchronize

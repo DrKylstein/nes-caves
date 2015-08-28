@@ -62,7 +62,8 @@ shr_entitySprites:
 
     ORG $0300
 shr_debugReg        ds 2
-shr_frame           ds 1
+nmi_frame           ds 1
+main_frame           ds 1
 main_ctrl           ds 1
 main_oldCtrl        ds 1
 main_pressed        ds 1

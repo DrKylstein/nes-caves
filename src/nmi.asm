@@ -8,7 +8,7 @@ nmi:
     pha
     tya
     pha
-    inc shr_frame
+    inc nmi_frame
 
 nmi_SpriteDma subroutine
     lda shr_doDma
@@ -223,7 +223,7 @@ nmi_doStatus subroutine
     sta APU_SQ1_LO
     INC_D nmi_sfxPtr
     
-    lda shr_frame
+    lda nmi_frame
     and #1
     beq .vibrate
     lda #%10111111
