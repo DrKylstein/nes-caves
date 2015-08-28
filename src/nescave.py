@@ -55,13 +55,10 @@ class NesCave(Plugin):
                 for y in range(tiles.height()):
                     cell = tiles.cellAt(x, y)
                     out.write(chr(cell.tile.id()))
-            writeColumn(out, entities, lambda e: int(e.x()), 0xFF)
-            writeColumn(out, entities, lambda e: (int(e.x())) >> 8, 0x80)
-            writeColumn(out, entities, lambda e: e.y(), 0)
-            writeColumn(out, entities, lambda e: (int(e.y()) >> 8) | (int(e.property('index')) << 1), 0)
             for i in range(entities.objectCount()):
                 start = entities.objectAt(i)
                 if start.type() == 'start':
+                    out.write(chr(0))
                     out.write(chr(int(start.y()) & 0xFF))
                     out.write(chr(int(start.y()) >> 8))
                     out.write(chr(int(start.x()) & 0xFF))
@@ -95,4 +92,8 @@ class NesCave(Plugin):
                 out.write(chr(door & 0xFF))
             for door in doors:
                 out.write(chr(door >> 8))
+            writeColumn(out, entities, lambda e: int(e.x()), 0xFF)
+            writeColumn(out, entities, lambda e: (int(e.x())) >> 8, 0x80)
+            writeColumn(out, entities, lambda e: e.y(), 0)
+            writeColumn(out, entities, lambda e: (int(e.y()) >> 8) | (int(e.property('index')) << 1), 0)
         return True

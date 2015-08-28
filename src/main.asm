@@ -185,7 +185,7 @@ main_ResetStats subroutine
     sta main_caterpillarNext
 main_ResetStats_end:
 
-    ADDI_D shr_palAddr, main_arg, PAL_OFFSET
+    ADDI_D shr_palAddr, main_arg, [main_levelDataEnd-main_levelMap+main_entityBlockEnd-main_entityBlock]
     lda #BG_PAL
     sta shr_palDest
     inc shr_doPalCopy
@@ -206,28 +206,15 @@ main_LoadLevel subroutine
     dex
     bne .loop
     
-    ADDI_D main_tmp+2, main_arg, ENTITIES_OFFSET
+    ADDI_D main_tmp+2, main_arg, [main_levelDataEnd-main_levelMap]
     MOVI_D main_tmp, main_entityBlock
     ldy #0
 .copyEntities:
     lda (main_tmp+2),y
     sta (main_tmp),y
     iny
-    cpy #[main_entityXVel-main_entityBlock]
+    cpy #[main_entityBlockEnd-main_entityBlock]
     bne .copyEntities
-        
-    ADDI_D main_tmp+2, main_arg, COORDS_OFFSET
-    ldy #0
-    ldx #1
-    lda #0
-    sta main_playerYFrac
-.loadCoords:
-    lda (main_tmp+2),y
-    sta main_playerYFrac,x
-    inx
-    iny
-    cpy #17
-    bne .loadCoords
 main_LoadLevel_end:
 
 main_InitEntities subroutine

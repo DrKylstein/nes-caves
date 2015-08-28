@@ -61,18 +61,6 @@ shr_playerSprites   ds 8
 shr_entitySprites:
 
     ORG $0300
-main_playerYFrac    ds 1 
-main_playerY        ds 2 
-main_playerX        ds 2 
-shr_cameraX         ds 2 
-shr_cameraY         ds 2 
-shr_cameraYMod      ds 1 
-shr_nameTable       ds 1 
-main_crystalsLeft   ds 1
-main_doorsLo        ds 3
-main_doorsHi        ds 3
-main_switchable     ds 3
-
 shr_debugReg        ds 2
 shr_frame           ds 1
 main_ctrl           ds 1
@@ -104,11 +92,23 @@ main_entityXLo        ds MAX_ENTITIES
 main_entityXHi        ds MAX_ENTITIES
 main_entityYLo        ds MAX_ENTITIES
 main_entityYHi        ds MAX_ENTITIES ; bottom bit
-main_entityXVel       ds MAX_ENTITIES ; 
 main_entityBlockEnd:
+main_entityXVel       ds MAX_ENTITIES ; 
     ECHO $400-.," bytes left in page $300"
 
     ORG $0400
 main_levelMap       ds 960
+main_playerYFrac    ds 1 
+main_playerY        ds 2 
+main_playerX        ds 2 
+shr_cameraX         ds 2 
+shr_cameraY         ds 2 
+shr_cameraYMod      ds 1 
+shr_nameTable       ds 1 
+main_crystalsLeft   ds 1
+main_doorsLo        ds 3
+main_doorsHi        ds 3
+main_levelDataEnd:
+
     ECHO $800-.,"bytes left in pages $400-$700"
 
