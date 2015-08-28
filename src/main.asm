@@ -1859,16 +1859,6 @@ main_UpdateEntitySprites subroutine
     
 .noFacing:
     
-
-    lda main_entityXLo,x
-    sec
-    sbc shr_cameraX
-    sta main_tmp
-    lda main_entityXHi,x
-    and #ENT_X_POS
-    sbc shr_cameraX+1
-    sta main_tmp+1
-    
     lda #$FF
     sta shr_spriteX,y
     sta shr_spriteX+OAM_SIZE,y
@@ -1883,6 +1873,15 @@ main_UpdateEntitySprites subroutine
     beq .notHidden
     jmp .out_of_range
 .notHidden:
+
+    lda main_entityXLo,x
+    sec
+    sbc shr_cameraX
+    sta main_tmp
+    lda main_entityXHi,x
+    and #ENT_X_POS
+    sbc shr_cameraX+1
+    sta main_tmp+1
     
     ;move origin to center
     ADDI_D main_tmp, main_tmp, 8
