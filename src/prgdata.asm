@@ -32,6 +32,8 @@ prgdata_entityFlags:
     .byte ENT_F_ISDEADLY | ENT_F_ISVERTICAL | $02 ; hammer
     .byte $06 ; faucet
     .byte ENT_F_ISPROJECTILE | ENT_F_ISDEADLY | ENT_F_ISVERTICAL | $06 ; water
+    .byte $62 ; vertical platform
+    .byte $42 ; horizontal platform
     
 prgdata_entityFlags2:
     .byte 0 ; bullet
@@ -51,6 +53,8 @@ prgdata_entityFlags2:
     .byte ENT_F2_NOANIM | ENT_F2_PAUSETURN ; hammer
     .byte ENT_F2_NOANIM ; faucet
     .byte ENT_F2_NOANIM | ENT_F2_PAUSETURN ;water
+    .byte 1 ; vertical platform
+    .byte 2 ; horizontal platform
     
 prgdata_entityTiles:
     .byte 64 ; bullet
@@ -70,6 +74,8 @@ prgdata_entityTiles:
     .byte 124 ; hammer
     .byte 220 ; faucet
     .byte 216 ; water
+    .byte 80 ; vertical platform
+    .byte 96 ; horizontal platform
     
 prgdata_entityHPs:
     .byte 0 ; bullet
@@ -89,6 +95,8 @@ prgdata_entityHPs:
     .byte 0 ; hammer
     .byte 0 ; faucet
     .byte 0 ; water
+    .byte 0 ; vertical platform
+    .byte 0 ; horizontal platform
     
 prgdata_entityCounts:
     .byte 0 ; bullet
@@ -108,6 +116,36 @@ prgdata_entityCounts:
     .byte $20 ; hammer
     .byte 0 ; faucet
     .byte $20 ; water
+    .byte 0 ; vertical platform
+    .byte 0 ; horizontal platform
+    
+prgdata_entitySpeeds:
+    .byte 4 ; bullet
+    .byte 1 ; vertical platform
+    .byte 1 ; horizontal platform
+    .byte 1 ; spider
+    .byte 1 ; bat
+    .byte 4 ; power shot
+    .byte 0 ; rock
+    .byte 2 ; cart
+    .byte 1 ; caterpillar head
+    .byte 1 ; caterpillar front
+    .byte 1 ; caterpillar back
+    .byte 1 ; caterpillar tail
+    .byte 2 ; slime horizontal
+    .byte 2 ; slime vertical
+    .byte 6 ; hammer
+    .byte 0 ; faucet
+    .byte 4 ; water
+    .byte 1 ; vertical platform
+    .byte 1 ; horizontal platform
+    
+prgdata_bits:
+    .byte 1
+    .byte 2
+    .byte 4
+    .byte 8
+
 prgdata_points:
     .byte 00,00,00,05;0
     .byte 00,00,01,00;0

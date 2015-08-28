@@ -8,7 +8,7 @@ from tiled.qt import *
 
 max_entities = 24
 
-def writeColumn(out, entities, func, default, switchables):
+def writeColumn(out, entities, func, default):
     k = 0
     out.write(chr(default & 0xFF))
     for i in range(1,max_entities):
@@ -16,13 +16,6 @@ def writeColumn(out, entities, func, default, switchables):
         'start' or entities.objectAt(k).type().startswith('door')):
             k += 1
         if k < entities.objectCount():
-            if entities.objectAt(k).type() == 'switchable1':
-                switchables[0] = i
-            if entities.objectAt(k).type() == 'switchable2':
-                switchables[1] = i
-            if entities.objectAt(k).type() == 'switchable3':
-                switchables[2] = i
-
             out.write(chr(int(func(entities.objectAt(k))) & 0xFF))
             k += 1
         else:
@@ -48,7 +41,6 @@ class NesCave(Plugin):
         tiles = None
         entities = None
         
-        switchables = [0,0,0]
         doors = [0,0,0]
         
         for i in range(m.layerCount()):
@@ -63,11 +55,10 @@ class NesCave(Plugin):
                 for y in range(tiles.height()):
                     cell = tiles.cellAt(x, y)
                     out.write(chr(cell.tile.id()))
-            writeColumn(out, entities, lambda e: int(e.x()), 0xFF, switchables)
-            writeColumn(out, entities, lambda e: (int(e.x())) >> 8, 0x80, switchables)
-            writeColumn(out, entities, lambda e: e.y(), 0, switchables)
-            writeColumn(out, entities, lambda e: (int(e.y()) >> 8) | (int(e.property('index')) << 1), 0, switchables)
-            writeColumn(out, entities, lambda e: e.property('velocity'), 0, switchables)
+            writeColumn(out, entities, lambda e: int(e.x()), 0xFF)
+            writeColumn(out, entities, lambda e: (int(e.x())) >> 8, 0x80)
+            writeColumn(out, entities, lambda e: e.y(), 0)
+            writeColumn(out, entities, lambda e: (int(e.y()) >> 8) | (int(e.property('index')) << 1), 0)
             for i in range(entities.objectCount()):
                 start = entities.objectAt(i)
                 if start.type() == 'start':
@@ -104,6 +95,4 @@ class NesCave(Plugin):
                 out.write(chr(door & 0xFF))
             for door in doors:
                 out.write(chr(door >> 8))
-            for switchable in switchables:
-                out.write(chr(int(switchable) & 0xFF))
         return True

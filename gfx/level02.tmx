@@ -19,7 +19,7 @@
  <objectgroup name="Entities">
   <object id="1" name="Elevator" type="switchable1" x="160" y="208" width="16" height="16">
    <properties>
-    <property name="index" value="1"/>
+    <property name="index" value="17"/>
     <property name="velocity" value="0"/>
    </properties>
   </object>
@@ -51,13 +51,13 @@
     <property name="velocity" value="-2"/>
    </properties>
   </object>
-  <object id="14" name="caterpillar" x="272" y="352" width="16" height="16">
+  <object id="14" name="caterpillar" x="336" y="352" width="16" height="16">
    <properties>
     <property name="index" value="8"/>
     <property name="velocity" value="-1"/>
    </properties>
   </object>
-  <object id="16" name="caterpillar" x="288" y="352" width="16" height="16">
+  <object id="16" name="caterpillar" x="320" y="352" width="16" height="16">
    <properties>
     <property name="index" value="9"/>
     <property name="velocity" value="-1"/>
@@ -69,7 +69,7 @@
     <property name="velocity" value="-1"/>
    </properties>
   </object>
-  <object id="18" name="caterpillar" x="320" y="352" width="16" height="16">
+  <object id="18" name="caterpillar" x="288" y="352" width="16" height="16">
    <properties>
     <property name="index" value="11"/>
     <property name="velocity" value="-1"/>

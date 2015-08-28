@@ -20,13 +20,13 @@
   </properties>
   <object id="1" name="Elevator" x="224" y="320" width="16" height="16">
    <properties>
-    <property name="index" value="1"/>
+    <property name="index" value="17"/>
     <property name="velocity" value="1"/>
    </properties>
   </object>
   <object id="3" name="Elevator" x="400" y="320" width="16" height="16">
    <properties>
-    <property name="index" value="1"/>
+    <property name="index" value="17"/>
     <property name="velocity" value="1"/>
    </properties>
   </object>

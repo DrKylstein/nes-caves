@@ -213,7 +213,7 @@ main_LoadLevel subroutine
     lda (main_tmp+2),y
     sta (main_tmp),y
     iny
-    cpy #[main_entityBlockEnd-main_entityBlock]
+    cpy #[main_entityXVel-main_entityBlock]
     bne .copyEntities
         
     ADDI_D main_tmp+2, main_arg, COORDS_OFFSET
@@ -226,9 +226,22 @@ main_LoadLevel subroutine
     sta main_playerYFrac,x
     inx
     iny
-    cpy #20
+    cpy #17
     bne .loadCoords
 main_LoadLevel_end:
+
+main_InitEntities subroutine
+    ldy #0
+.loop:
+    lda main_entityYHi,y
+    lsr
+    tax
+    lda prgdata_entitySpeeds,x
+    sta main_entityXVel,y
+    iny
+    cpy #MAX_ENTITIES
+    bne .loop
+main_InitEntities_end:
 
 main_InitNametables subroutine
     MOV_D main_arg, shr_cameraX
@@ -595,9 +608,9 @@ main_doExit:
     sec
     sbc #TB_ON
     tax
-    ldy main_switchable,x
-    lda #0
-    sta main_entityXVel,y
+    lda prgdata_bits,x
+    eor main_switches
+    sta main_switches
     dec main_sav
     jmp .updateTile
 .not_switchon:
@@ -606,9 +619,9 @@ main_doExit:
     sec
     sbc #TB_OFF
     tax
-    ldy main_switchable,x
-    lda #1
-    sta main_entityXVel,y
+    lda prgdata_bits,x
+    eor main_switches
+    sta main_switches
     inc main_sav
     jmp .updateTile
 .shoot:
@@ -972,7 +985,7 @@ main_updateEntities subroutine
     lda main_entityYHi,y
     lsr
     tax
-
+    
     cpx #ROCK_ID
     bne .notRock
     lda main_entityYLo,y
@@ -1368,6 +1381,17 @@ main_updateEntities subroutine
     sta main_entityXHi,y
 .immortal:
 .updateVel:
+    lda prgdata_entityFlags2,x
+    and #ENT_F2_SWITCHID
+    beq .notSwitchable
+    stx main_tmp
+    tax
+    lda prgdata_bits-1,x
+    ldx main_tmp
+    and main_switches
+    bne .notSwitchable
+    jmp .inactive
+.notSwitchable:
     lda main_entityXHi,y
     REPEAT 4
     lsr
