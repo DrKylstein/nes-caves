@@ -34,6 +34,11 @@ prgdata_entityFlags:
     .byte ENT_F_ISPROJECTILE | ENT_F_ISDEADLY | ENT_F_ISVERTICAL | $06 ; water
     .byte $62 ; vertical platform
     .byte $42 ; horizontal platform
+    .byte $02 | ENT_F_ISVERTICAL ; right cannon
+    .byte ENT_F_ISPROJECTILE | ENT_F_ISDEADLY | $00 ; right laser
+    .byte $02 | ENT_F_ISVERTICAL ; left cannon
+    .byte ENT_F_ISPROJECTILE | ENT_F_ISDEADLY | $00 ; left laser
+    
     
 prgdata_entityFlags2:
     .byte 0 ; bullet
@@ -43,18 +48,22 @@ prgdata_entityFlags2:
     .byte ENT_F2_ISHITTABLE | ENT_F2_SHORTANIM ; bat
     .byte ENT_F2_ISHITTABLE | ENT_F2_SHORTANIM ; power shot
     .byte ENT_F2_ISHITTABLE | ENT_F2_SHORTANIM | ENT_F2_ISGROUNDED | ENT_F2_NEEDPOWERSHOT ; rock
-    .byte ENT_F2_ISHITTABLE | ENT_F2_ISGROUNDED | ENT_F2_NEEDPOWERSHOT | ENT_F2_PAUSETURN ; cart
+    .byte ENT_F2_ISHITTABLE | ENT_F2_ISGROUNDED | ENT_F2_NEEDPOWERSHOT ; cart
     .byte ENT_F2_ISHITTABLE | ENT_F2_NOANIM | ENT_F2_ISGROUNDED ;caterpillar head
     .byte ENT_F2_ISHITTABLE | ENT_F2_NOANIM | ENT_F2_ISGROUNDED ;caterpillar front
     .byte ENT_F2_ISHITTABLE |  ENT_F2_NOANIM | ENT_F2_ISGROUNDED ;caterpillar back
     .byte ENT_F2_ISHITTABLE | ENT_F2_NOANIM | ENT_F2_ISGROUNDED ;caterpillar tail
     .byte ENT_F2_ISHITTABLE | ENT_F2_SHORTANIM ; slime horizontal
     .byte ENT_F2_ISHITTABLE | ENT_F2_SHORTANIM ; slime vertical
-    .byte ENT_F2_NOANIM | ENT_F2_PAUSETURN ; hammer
+    .byte ENT_F2_NOANIM ; hammer
     .byte ENT_F2_NOANIM ; faucet
-    .byte ENT_F2_NOANIM | ENT_F2_PAUSETURN ;water
+    .byte ENT_F2_NOANIM ;water
     .byte 1 ; vertical platform
     .byte 2 ; horizontal platform
+    .byte ENT_F2_NOANIM ; right cannon
+    .byte ENT_F2_NOANIM | 3 ; right laser
+    .byte ENT_F2_ISXFLIPPED | ENT_F2_NOANIM ; left cannon
+    .byte ENT_F2_NOANIM | 3 ; left laser
     
 prgdata_entityTiles:
     .byte 64 ; bullet
@@ -76,6 +85,10 @@ prgdata_entityTiles:
     .byte 216 ; water
     .byte 80 ; vertical platform
     .byte 96 ; horizontal platform
+    .byte 224 ; right cannon
+    .byte 228 ; right laser
+    .byte 224 ; left cannon
+    .byte 228 ; left laser
     
 prgdata_entityHPs:
     .byte 0 ; bullet
@@ -97,6 +110,10 @@ prgdata_entityHPs:
     .byte 0 ; water
     .byte 0 ; vertical platform
     .byte 0 ; horizontal platform
+    .byte 0 ; right cannon
+    .byte 0 ; right laser
+    .byte 0 ; left cannon
+    .byte 0 ; left laser
     
 prgdata_entityCounts:
     .byte 0 ; bullet
@@ -118,6 +135,10 @@ prgdata_entityCounts:
     .byte $20 ; water
     .byte 0 ; vertical platform
     .byte 0 ; horizontal platform
+    .byte 0 ; right cannon
+    .byte $20 ; right laser
+    .byte 0 ; left cannon
+    .byte $20 ; left laser
     
 prgdata_entitySpeeds:
     .byte 4 ; bullet
@@ -139,6 +160,10 @@ prgdata_entitySpeeds:
     .byte 4 ; water
     .byte 1 ; vertical platform
     .byte 1 ; horizontal platform
+    .byte 0 ; right cannon
+    .byte 2 ; right laser
+    .byte 0 ; left cannon
+    .byte -2 ; left laser
     
 prgdata_bits:
     .byte 1

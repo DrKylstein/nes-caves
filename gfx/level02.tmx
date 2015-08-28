@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="24" tilewidth="16" tileheight="16" nextobjectid="27">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="24" tilewidth="16" tileheight="16" nextobjectid="31">
  <properties>
   <property name="__script__" value="nescave"/>
   <property name="crystals" value="25"/>
@@ -13,7 +13,7 @@
  </tileset>
  <layer name="Names" width="40" height="24">
   <data encoding="base64" compression="zlib">
-   eJzFVslOwzAQdTjRI5sEShAm5cJSoFQsDeuJRYgry4HP5gMqEELKT2BLM+roZWwnCMThKe3E43l+82ynNMYctEBJaDP2t+Dr9R2yAB4I/vfQYRQZq8G2jIVy14nfG+Ty85Xgf18rc8w5zAssdOCAuTLf4474lRTPKV7Bk2s9wvwfIp/7gfpWJsxJ80oJfNlTOK9V5tMg/XEr8o8cjh1OgBuu5d2hEBgqfKX/cgDqo+0XXtszrHEM/9G/N4oeEvdm6j/kldN6+D3OcQjvJqSP9B/zy02ztseTEvN+qEHvPnHROEoOjC/IzQJjx6bpPytqx3wjvYf68Rx1QD/pI+7XJMDPP7cdBiLua6DPYv7pqp8Ww7Gyv6cO50ovC3gi2Ptt/cf+0PjF9CtIwx3CwDS5WCU2/EP9pP9q0vCMILXcdNiCuapArU9Yx0uCX026MUL6rTisdsCa0uM2569N5OBZiuef79GiwxL9tkpM60nqmwTvltjek2ORXya4cH2MaXsk9v0isdxyHPpP7gGNC8a4T+hpry/fh9qemjHN81YD58X0Y+3yAGeu00U/jUeMb6q/GEM9QueHtg7te4Sx8UN+PSWG65X8mP9sh3oh3l3PFO2MwTs+pZO8D6yZ+pTjuHZ8j/cZPnEcnxPYX6nTbkK/KhC3iTyrxMbwbs9hn/j1AvNdJOrE4jH+sXn4++/S4crE74//huf2Db4cXPY=
+   eJzFVslOwzAQdTjRI5sEShAm5cJSoFQCGtYLmxBXlgOfzQdUIISUn8CWZtTRy9hOEIjDU9qJx/P85tlOaYw5aIGS0Gbsb8HX6ztkATwQ/O+hwygyVoNtGQvlrhO/N8jl5yvB/75W5phzmBdY6MABc2W+xx3xKymeU7yCJ9d6hPk/RD73A/WtTJiT5pUS+LKncF6rzKdB+uNW5B86HDkcAzdcy7tDITBU+Er/5QDUR9svvLZnWOMY/qN/bxQ9JO7N1H/IK6f18Huc4wreTUgf6T/ml5tmbY8nJeb9UIPefeKicZQcGF+QmwXGjk3Tf1bUjvlGeg/14znqgH7SR9yvSYCff247DETc10CfxfzTVT8thmNlf08czpReFvBEsPfb+o/9ofGL6VeQhjuEgWlysUps+If6Sf/VpOEpQWq56bAFc1WBWp+wjpcEv5p0Y4T0W3FY7YA1pcdtzl+byMGzFM8/36NFhyX6bZWY1pPUNwneLbG9J8civ0xw4foY0/ZI7PtFYrnlOPSf3AMaF4xxn9DTXl++D7U9NWOa560Gzovpx9rlAc5cp4t+Go8Y31R/MYZ6hM4PbR3a9whj44f8ekoM1yv5Mf/ZDvVCvLueKdoZg3d8Sid5H1gz9SnHce34Hu8zfOI4Piewv1Kn3YR+VSBuE3lWiY3h3Z7DPvHrBeY7T9SJxWP8Y/Pw99+Fw6WJ3x//Dc/tG27rXQY=
   </data>
  </layer>
  <objectgroup name="Entities">
@@ -121,6 +121,26 @@
    <properties>
     <property name="index" value="16"/>
     <property name="velocity" value="4"/>
+   </properties>
+  </object>
+  <object id="27" gid="313" x="608" y="176">
+   <properties>
+    <property name="index" value="21"/>
+   </properties>
+  </object>
+  <object id="28" gid="314" x="592" y="176">
+   <properties>
+    <property name="index" value="22"/>
+   </properties>
+  </object>
+  <object id="29" gid="313" x="592" y="160">
+   <properties>
+    <property name="index" value="21"/>
+   </properties>
+  </object>
+  <object id="30" gid="314" x="576" y="160">
+   <properties>
+    <property name="index" value="22"/>
    </properties>
   </object>
  </objectgroup>

@@ -2,7 +2,9 @@
 ; MAIN THREAD
 ;------------------------------------------------------------------------------
 
-;powershot time limit
+;lasers should only fire if player is within y range and is onscreen
+;lasers lagging game?
+
 ;door updates
 ;individual enemy hit boxes?
 ;enemy points table
@@ -170,6 +172,8 @@ main_DisableDisplay subroutine
 main_DisableDisplay_end:
 
 main_ResetStats subroutine
+    lda #4
+    sta main_switches
     lda #3
     sta shr_hp
     lda #MAX_ENTITIES
@@ -895,13 +899,23 @@ main_CheckHurt subroutine
     
     lda main_entityXHi,y
     bmi .loop
-    
+        
     lda main_entityYHi,y
     lsr
     tax
     lda prgdata_entityFlags,x
     and #ENT_F_ISDEADLY
     beq .loop
+    
+    lda main_entityXHi,y
+    and #ENT_X_COUNT
+    beq .notHidden
+    lda prgdata_entityFlags,x
+    and #ENT_F_ISPROJECTILE
+    beq .notHidden
+    jmp .loop
+.notHidden:
+
     
     lda main_entityXLo,y
     sta main_tmp
@@ -1172,9 +1186,6 @@ main_updateEntities subroutine
     ora main_entityYHi,y
     sta main_entityYHi,y
     
-    lda prgdata_entityFlags2,x
-    and #ENT_F2_PAUSETURN
-    beq .noPause
     lda main_entityXHi,y
     and #~ENT_X_COUNT
     ora prgdata_entityCounts,x
@@ -1232,9 +1243,6 @@ main_updateEntities subroutine
     sec
     sbc main_entityXVel,y
     sta main_entityXVel,y
-    lda prgdata_entityFlags2,x
-    and #ENT_F2_PAUSETURN
-    beq .tileCheckDone
     lda main_entityXHi,y
     and #~ENT_X_COUNT
     ora prgdata_entityCounts,x
@@ -1377,7 +1385,9 @@ main_updateEntities subroutine
     ldx main_tmp
     and main_switches
     bne .notSwitchable
-    jmp .inactive
+    lda main_entityXHi,y
+    ora #$10
+    sta main_entityXHi,y
 .notSwitchable:
     lda main_entityXHi,y
     REPEAT 4
@@ -1794,6 +1804,9 @@ main_UpdateEntitySprites subroutine
     sta shr_spriteIndex+OAM_SIZE,y
 
 .facing:
+    lda main_tmp+1
+    and #ENT_F2_ISXFLIPPED
+    bne .xflip
     lda main_tmp
     and #ENT_F_ISFACING
     beq .noFacing
@@ -1802,6 +1815,7 @@ main_UpdateEntitySprites subroutine
     lda main_tmp
     and #ENT_F_ISVERTICAL
     bne .vflip
+.xflip:
     lda #$40
     ora shr_spriteFlags,y
     sta shr_spriteFlags,y
@@ -1836,6 +1850,15 @@ main_UpdateEntitySprites subroutine
     sta shr_spriteX+OAM_SIZE,y
     sta shr_spriteY,y
     sta shr_spriteY+OAM_SIZE,y
+    
+    lda main_tmp
+    and #ENT_F_ISPROJECTILE
+    beq .notHidden
+    lda main_entityXHi,x
+    and #ENT_X_COUNT
+    beq .notHidden
+    jmp .out_of_range
+.notHidden:
     
     ;move origin to center
     ADDI_D main_tmp, main_tmp, 8
