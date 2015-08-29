@@ -1791,19 +1791,19 @@ main_UpdateEntitySprites subroutine
     lsr
     tax
     lda prgdata_entityTiles,x
-    sta main_tmp+2
+    sta main_sav+2
     lda prgdata_entityFlags2,x
-    sta main_tmp+1
+    sta main_sav+1
     lda prgdata_entityFlags,x
     ldx main_tmp
-    sta main_tmp
+    sta main_sav+3
     
     and #ENT_F_COLOR
     lsr
     sta shr_spriteFlags,y
     sta shr_spriteFlags+OAM_SIZE,y
 
-    lda main_tmp+1
+    lda main_sav+1
     and #ENT_F2_NOANIM
     bne .notmoving
     lda main_entityXHi,x
@@ -1811,18 +1811,18 @@ main_UpdateEntitySprites subroutine
     bne .notmoving
     lda main_entityXVel,x
     bne .moving
-    lda main_tmp
+    lda main_sav+3
     and #ENT_F_ISFACING
     beq .moving
 .notmoving:
-    lda main_tmp+2
+    lda main_sav+2
     sta shr_spriteIndex,y
     clc
     adc #2
     sta shr_spriteIndex+OAM_SIZE,y
     jmp .facing
 .moving:
-    lda main_tmp+1
+    lda main_sav+1
     and #ENT_F2_SHORTANIM
     beq .longanim
     lda main_frame
@@ -1836,22 +1836,22 @@ main_UpdateEntitySprites subroutine
     and #12
 .anim:
     clc
-    adc main_tmp+2
+    adc main_sav+2
     sta shr_spriteIndex,y
     clc
     adc #2
     sta shr_spriteIndex+OAM_SIZE,y
 
 .facing:
-    lda main_tmp+1
+    lda main_sav+1
     and #ENT_F2_ISXFLIPPED
     bne .xflip
-    lda main_tmp
+    lda main_sav+3
     and #ENT_F_ISFACING
     beq .noFacing
     lda main_entityXVel,x
     bpl .noFacing
-    lda main_tmp
+    lda main_sav+3
     and #ENT_F_ISVERTICAL
     bne .vflip
 .xflip:
@@ -1880,7 +1880,7 @@ main_UpdateEntitySprites subroutine
     sta shr_spriteY,y
     sta shr_spriteY+OAM_SIZE,y
     
-    lda main_tmp
+    lda main_sav+3
     and #ENT_F_ISPROJECTILE
     beq .notHidden
     lda main_entityXHi,x
