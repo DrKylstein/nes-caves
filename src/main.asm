@@ -1741,7 +1741,13 @@ main_UpdatePlayerSprite subroutine
     clc
     adc #31
     ldy #OAM_SIZE
-    jsr main_SetSpritePos
+    sta shr_spriteY,y
+    sta shr_spriteY+4,y
+    txa
+    sta shr_spriteX,y
+    clc
+    adc #8
+    sta shr_spriteX+4,y
 
     ;update tiles
     lda main_playerFrame

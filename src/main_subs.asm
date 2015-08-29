@@ -218,38 +218,6 @@ synchronize subroutine
     bne .loop
 rts
 ;------------------------------------------------------------------------------
-main_SetSpriteTiles subroutine ;Y = oam index*4, A = first tile
-    sta shr_spriteIndex,y
-    clc
-    adc #2
-    sta shr_spriteIndex+4,y
-    rts
-;------------------------------------------------------------------------------
-main_SetSpritePos subroutine ;Y = oam index*4, X = xpos, A = ypos
-    sta shr_spriteY,y
-    sta shr_spriteY+4,y
-    txa
-    sta shr_spriteX,y
-    clc
-    adc #8
-    sta shr_spriteX+4,y
-    rts
-;------------------------------------------------------------------------------
-main_FlipSprite subroutine ;Y = oam index*4,
-    lda shr_spriteIndex,y
-    sta main_tmp
-    lda shr_spriteIndex+4,y
-    sta shr_spriteIndex,y
-    lda main_tmp
-    sta shr_spriteIndex+4,y
-    lda shr_spriteFlags,y
-    eor #%01000000
-    sta shr_spriteFlags,y
-    lda shr_spriteFlags+4,y
-    eor #%01000000
-    sta shr_spriteFlags+4,y
-    rts
-;------------------------------------------------------------------------------
 ;arg 0..1 -> rom address
 ;arg 2 -> nametable column
 main_EvenColumn subroutine    
