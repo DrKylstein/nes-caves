@@ -987,6 +987,14 @@ main_updateEntities subroutine
     lsr
     tax
     
+    cpx #CATERPILLAR_ID
+    bcc .noSkipHTest
+    cpx #CATERPILLAR_ID+4
+    bcs .noSkipHTest
+    jmp .vtest
+.noSkipHTest:
+    
+    
     lda prgdata_entityFlags,x
     and #ENT_F_ISPLATFORM
     bne .persistent
@@ -998,10 +1006,11 @@ main_updateEntities subroutine
     and #ENT_X_POS
     sbc shr_cameraX+1
     sta main_tmp+1
-    CMPI_D main_tmp, #$FF
-    bcs .offScreen
-    CMPI_D main_tmp, #$0
-    bcc .offScreen
+    CMPI_D main_tmp, [MT_VIEWPORT_WIDTH*PX_MT_WIDTH + PX_MT_WIDTH]
+    bpl .offScreen
+    CMPI_D main_tmp, -PX_MT_WIDTH
+    bmi .offScreen
+.vtest:
     lda main_entityYLo,y
     sec
     sbc shr_cameraY
@@ -1010,10 +1019,10 @@ main_updateEntities subroutine
     and #ENT_Y_POS
     sbc shr_cameraY+1
     sta main_tmp+1
-    CMPI_D main_tmp, #$FF
-    bcs .offScreen
-    CMPI_D main_tmp, #$0
-    bcc .offScreen
+    CMPI_D main_tmp, [MT_VIEWPORT_HEIGHT*PX_MT_HEIGHT + PX_MT_HEIGHT]
+    bpl .offScreen
+    CMPI_D main_tmp, -PX_MT_HEIGHT
+    bmi .offScreen
     jmp .persistent
 .offScreen:
     lda prgdata_entityFlags,x
