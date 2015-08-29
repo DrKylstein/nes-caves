@@ -96,7 +96,29 @@ main_clearOAM_end:
     bpl .vblankwait2
 ;end reset subroutine
 
-;load name tables
+main_loadPatterns subroutine
+    lda #<bank0_defaultTiles
+    sta main_tmp
+    lda #>bank0_defaultTiles
+    sta main_tmp+1
+    ldy #0
+    lda banktable,y
+    sta banktable,y
+    bit PPU_STATUS
+    sty PPU_ADDR
+    sty PPU_ADDR
+    ldx #32
+.loop:
+    lda (main_tmp),y
+    sta PPU_DATA
+    iny
+    bne .loop
+    inc main_tmp+1
+    dex
+    bne .loop
+main_loadPatterns_end:
+
+main_initNametables subroutine
     ldy #$A0
     bit PPU_STATUS
     lda #$20
