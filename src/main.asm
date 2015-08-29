@@ -781,7 +781,13 @@ main_CheckGround subroutine
     cmp #TB_SOLID
     beq .hitGroundTile
     cmp #TB_PLATFORM
-    beq .hitGroundTile
+    bne .notPlatform
+    lda main_playerY
+    and #$F
+    cmp #8
+    bcc .hitGroundTile
+    jmp .checkSpriteHit
+.notPlatform:
     cmp #TB_WEAKBLOCK
     beq .hitGroundTile
     
