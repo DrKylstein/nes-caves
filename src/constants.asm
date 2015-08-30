@@ -76,6 +76,11 @@ HAMMER_ID = 14
 ;power shot
 ;switch to lookup? 5 bits table index, 2 bits hp?
 
+OAM_SIZE = 4
+SPR_Y = 0
+SPR_INDEX = 1
+SPR_FLAGS = 2
+SPR_X = 3
 
 
 GRAVITY = 10

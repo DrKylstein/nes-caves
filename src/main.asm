@@ -1738,19 +1738,17 @@ main_UpdatePlayerSprite subroutine
     lda main_sav
     clc
     adc #8
-    tax
+    sta shr_playerSprites+SPR_X
+    clc
+    adc #8
+    sta shr_playerSprites+OAM_SIZE+SPR_X
+    
     SUB_D main_sav, main_playerY, shr_cameraY
     lda main_sav
     clc
     adc #31
-    ldy #OAM_SIZE
-    sta shr_spriteY,y
-    sta shr_spriteY+4,y
-    txa
-    sta shr_spriteX,y
-    clc
-    adc #8
-    sta shr_spriteX+4,y
+    sta shr_playerSprites+SPR_Y
+    sta shr_playerSprites+OAM_SIZE+SPR_Y
 
     ;update tiles
     lda main_playerFrame
@@ -1758,7 +1756,6 @@ main_UpdatePlayerSprite subroutine
     adc main_playerXVel
     and #%00011111
     sta main_playerFrame
-
 
     lda main_playerFrame
     lsr
@@ -1779,39 +1776,40 @@ main_UpdatePlayerSprite subroutine
 .do_anim:
     lda main_playerFlags
     and #%01000000
-    sta shr_spriteFlags+OAM_SIZE
-    sta shr_spriteFlags+OAM_SIZE+OAM_SIZE
+    sta shr_playerSprites+SPR_FLAGS
+    sta shr_playerSprites+OAM_SIZE+SPR_FLAGS
     bit main_playerFlags
     bvs .left
 .right:
     lda prgdata_playerWalk,x
-    sta shr_spriteIndex+OAM_SIZE
+    sta shr_playerSprites+SPR_INDEX
     clc
     adc #2
-    sta shr_spriteIndex+OAM_SIZE+OAM_SIZE
-    jmp .fg
+    sta shr_playerSprites+OAM_SIZE+SPR_INDEX
+    jmp .animEnd
 .left:
     lda prgdata_playerWalk,x
-    sta shr_spriteIndex+OAM_SIZE+OAM_SIZE
+    sta shr_playerSprites+OAM_SIZE+SPR_INDEX
     clc
     adc #2
-    sta shr_spriteIndex+OAM_SIZE
+    sta shr_playerSprites+SPR_INDEX
+.animEnd:
 
     lda main_mercyTime
-    beq .fg
+    beq .notFlashing
     lda #$01
-    ora shr_spriteFlags+OAM_SIZE
-    sta shr_spriteFlags+OAM_SIZE
-    sta shr_spriteFlags+OAM_SIZE+OAM_SIZE
+    ora shr_playerSprites+SPR_FLAGS
+    sta shr_playerSprites+SPR_FLAGS
+    sta shr_playerSprites+OAM_SIZE+SPR_FLAGS
+.notFlashing:
 
-.fg:
     lda main_playerFlags
     and #PLR_F_BG
     beq main_UpdatePlayerSprite_end
     lda #$20
-    ora shr_spriteFlags+OAM_SIZE
-    sta shr_spriteFlags+OAM_SIZE
-    sta shr_spriteFlags+OAM_SIZE+OAM_SIZE
+    ora shr_playerSprites+SPR_FLAGS
+    sta shr_playerSprites+SPR_FLAGS
+    sta shr_playerSprites+OAM_SIZE+SPR_FLAGS
     
 main_UpdatePlayerSprite_end:
 

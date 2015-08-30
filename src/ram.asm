@@ -46,18 +46,12 @@ shr_stack:
     ECHO $200-.," bytes left in page $100"
     
     ORG $0200
-OAM_SIZE = 4
-SY = 0
-SI = 1
-SF = 2
-SX = 3
 shr_oamShadow:
 shr_spriteY         ds 1
 shr_spriteIndex     ds 1
 shr_spriteFlags     ds 1
 shr_spriteX         ds 1
-shr_blankSprite     ds 4
-shr_playerSprites   ds 8
+shr_playerSprites   ds OAM_SIZE*2
 shr_entitySprites:
 
     ORG $0300
