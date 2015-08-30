@@ -262,8 +262,7 @@ main_InitNametables subroutine
     LSR_D main_arg
     REPEND
     jsr main_MultiplyBy24
-    MOVI_D main_sav, main_levelMap
-    ADD_D main_sav, main_sav, main_ret
+    ADDI_D main_sav, main_ret, main_levelMap
     ldy #0
     MOV_D main_sav+2, shr_cameraX
     REPEAT 3
@@ -322,21 +321,33 @@ main_InitNametables subroutine
 main_InitNametables_end:
 
 main_InitAttributes subroutine
+    MOV_D main_arg, shr_cameraX
+    REPEAT 4
+    LSR_D main_arg
+    REPEND
+    jsr main_MultiplyBy24
+    ADDI_D main_arg, main_ret, main_levelMap
+    lda shr_cameraX
+    REPEAT 5
+    lsr
+    REPEND
+    sta main_sav+3
+    sta shr_debugReg
     ldy #0
-    MOVI_D main_arg, main_levelMap
 .loop:
     tya
+    clc
+    adc main_sav+3
+    and #7
     asl
     asl
     sta shr_tileCol
-    tya
-    pha
+    sty main_sav+2
     jsr main_ColorColumn
     jsr nmi_CopyAttrCol
-    pla
-    tay
-    clc
+    ldy main_sav+2
     lda main_arg
+    clc
     adc #MT_MAP_HEIGHT*2
     sta main_arg
     lda main_arg+1
@@ -346,6 +357,8 @@ main_InitAttributes subroutine
     cpy #8
     bne .loop
 main_InitAttributes_end:
+
+    jsr main_LoadTilesOnMoveLeft
 
 main_ReenableDisplay subroutine
     lda #%10110000 ;enable nmi

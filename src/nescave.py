@@ -66,7 +66,7 @@ class NesCave(Plugin):
                     
                     camX = min(max(int(start.x()) - 128,0),640-256-8)
                     camY = min(max(int(start.y()) - 104,0),384-208)
-                    out.write(chr(camX & 0xFF))
+                    out.write(chr(camX & 0xE0))
                     out.write(chr(camX >> 8))
                     out.write(chr(camY & 0xFF))
                     out.write(chr(camY >> 8))
