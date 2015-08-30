@@ -1074,7 +1074,6 @@ main_updateEntities subroutine
     lda main_tmp+1
     cmp main_playerY+1
     bne .notRock
-    MOV_D shr_debugReg, main_playerY
     lda main_entityXVel,y
     bne .notRock
     lda #2
@@ -1600,13 +1599,14 @@ main_UpdateCameraX subroutine
     ;no loading tiles if not at tile boundary
     lda shr_cameraX
     and #7
-    bne .Scroll_Left_end
-    
+    bne .noTiles
     jsr main_LoadTilesOnMoveLeft
+.noTiles:
     
     ;no loading attributes if not at attributes boundary
     lda shr_cameraX
     and #15
+    cmp #15
     bne .Scroll_Left_end
     
     jsr main_LoadColorsOnMoveLeft

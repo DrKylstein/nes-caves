@@ -90,14 +90,18 @@ main_LoadColorsOnMoveRight subroutine
     
     ;get map index
     MOV_D main_arg, main_tmp
-    DEC_D main_arg
     jsr main_MultiplyBy24 ;uses only arg 0..1, keeping ret value for later
-
-    MOVI_D main_arg, main_levelMap
-    ADD_D main_arg, main_arg, main_ret
+    ADDI_D main_arg, main_ret, main_levelMap
     
+    lda shr_cameraX
+    and #$10
+    bne .unaligned
+    SUBI_D main_arg, main_arg, [1*MT_MAP_HEIGHT]
     jsr main_ColorColumn
-.return:
+    inc shr_doAttrCol
+    rts
+.unaligned:
+    jsr main_ColorWrappedColumn
     inc shr_doAttrCol
     rts
 ;------------------------------------------------------------------------------
@@ -111,7 +115,6 @@ main_LoadColorsOnMoveLeft subroutine
     ;get index to attribute table
     lda main_tmp
     lsr
-    and #7
     clc
     adc #7
     and #7
@@ -119,15 +122,19 @@ main_LoadColorsOnMoveLeft subroutine
     
     ;get map index
     MOV_D main_arg, main_tmp
-    DEC_D main_arg
     jsr main_MultiplyBy24 ;uses only arg 0..1
-    ;keeping ret value for later
-
-    MOVI_D main_arg, main_levelMap
-    ADD_D main_arg, main_arg, main_ret
+    ADDI_D main_arg, main_ret, main_levelMap
     
+    lda shr_cameraX
+    and #$10
+    bne .unaligned
+    ;ADDI_D main_arg, main_arg, [3*MT_MAP_HEIGHT]
     jsr main_ColorColumn
-.return:
+    inc shr_doAttrCol
+    rts
+.unaligned:
+    ADDI_D main_arg, main_arg, [15*MT_MAP_HEIGHT]
+    jsr main_ColorWrappedColumn
     inc shr_doAttrCol
     rts
 ;------------------------------------------------------------------------------
@@ -305,6 +312,7 @@ main_OddColumn subroutine
     
     rts
 ;------------------------------------------------------------------------------
+;for revealing aligned columns - subtract 1 for moving viewport right
 main_ColorColumn subroutine
     ldy #0
     ldx #0
@@ -380,15 +388,78 @@ main_ColorColumn subroutine
     bne .loop
     rts
 ;------------------------------------------------------------------------------
-;arg 0..1 -> rom address
-;arg 2 -> nametable column
-main_EvenColorColumn subroutine
-    rts
-;------------------------------------------------------------------------------
-;arg 0..1 -> rom address
-;arg 2 -> nametable column
-; 20 top 30 bottom, x2 right and left
-main_OddColorColumn subroutine
+;for revealing unaligned columns - add 15 for moving viewport left
+main_ColorWrappedColumn subroutine
+    ldy #0
+    ldx #0
+.loop:
+    cpx #TOP_ATTR_HEIGHT
+    bne .no_partial
+    dey
+.no_partial:
+    sty main_tmp
+    
+    lda (main_arg),y
+    tay
+    lda prgdata_metatiles+256*4,y
+    and #%00000011
+    sta main_tmp+1
+    
+    
+    ldy main_tmp
+    iny
+    sty main_tmp
+    
+    lda (main_arg),y
+    tay
+    lda prgdata_metatiles+256*4,y
+    and #%00000011
+    REPEAT 4
+    asl
+    REPEND
+    ora main_tmp+1
+    sta main_tmp+1
+    
+    
+    ldy main_tmp
+    dey
+    sty main_tmp
+    
+    SUBI_D main_tmp+2, main_arg, [15*MT_MAP_HEIGHT]
+    
+    lda (main_tmp+2),y
+    tay
+    lda prgdata_metatiles+256*4,y
+    and #%00000011
+    REPEAT 2
+    asl
+    REPEND
+    ora main_tmp+1
+    sta main_tmp+1
+    
+    
+    ldy main_tmp
+    iny
+    sty main_tmp
+    
+    lda (main_tmp+2),y
+    tay
+    lda prgdata_metatiles+256*4,y
+    and #%00000011
+    REPEAT 6
+    asl
+    REPEND
+    ora main_tmp+1
+    
+    ;lda #%10101010
+    sta shr_attrBuffer,x
+    inx
+    
+    ldy main_tmp
+    iny
+    
+    cpx #TOP_ATTR_HEIGHT+BOTTOM_ATTR_HEIGHT
+    bne .loop
     rts
 ;------------------------------------------------------------------------------
 ; Reads controller
