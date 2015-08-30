@@ -156,13 +156,23 @@ main_initNametables subroutine
     bne .load_hud_attr
     
     ;set sprite 0 for status bar
-    lda #22
-    sta shr_spriteY
+main_InitSprites subroutine
+    ldy #0
+.loop:
+    lda #15
+    sta shr_spriteY,y
     lda #206
-    sta shr_spriteX
+    sta shr_spriteX,y
     lda #$FE
-    sta shr_spriteIndex
-    
+    sta shr_spriteIndex,y
+    lda #%00100000
+    sta shr_spriteFlags,y
+    REPEAT OAM_SIZE
+    iny
+    REPEND
+    cpy #8*OAM_SIZE
+    bne .loop
+
     MOVI_D shr_palAddr, prgdata_palettes
     lda #SPRITE_PAL
     sta shr_palDest
@@ -1971,7 +1981,7 @@ main_UpdateEntitySprites subroutine
     ADDI_D main_tmp, main_tmp, 31
     CMPI_D main_tmp, 240
     bcs .out_of_range
-    CMPI_D main_tmp, 3*8
+    CMPI_D main_tmp, 2*8
     bcc .out_of_range
     lda main_entityYHi,x
     lsr

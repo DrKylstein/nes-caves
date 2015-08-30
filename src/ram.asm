@@ -51,6 +51,7 @@ shr_spriteY         ds 1
 shr_spriteIndex     ds 1
 shr_spriteFlags     ds 1
 shr_spriteX         ds 1
+shr_hudCurtain      ds OAM_SIZE*7
 shr_playerSprites   ds OAM_SIZE*2
 shr_entitySprites:
 
