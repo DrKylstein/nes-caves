@@ -1000,7 +1000,7 @@ main_CheckHurt subroutine
     jmp main_EnterLevel
 .hurt:
     dec shr_hp
-    lda #120
+    lda #60
     sta main_mercyTime
     jmp main_CheckHurt_end
 .longLoop:
@@ -1733,16 +1733,6 @@ main_UpdateCameraY subroutine
 main_UpdateCameraY_end:
 
 main_UpdatePlayerSprite subroutine
-    lda main_mercyTime
-    beq .visible
-    lda main_frame
-    and #1
-    beq .visible
-    lda #$FF
-    sta shr_spriteY+OAM_SIZE
-    sta shr_spriteY+OAM_SIZE+OAM_SIZE
-    jmp main_UpdatePlayerSprite_end
-.visible:
     ;update position
     SUB_D main_sav, main_playerX, shr_cameraX
     lda main_sav
@@ -1806,6 +1796,14 @@ main_UpdatePlayerSprite subroutine
     clc
     adc #2
     sta shr_spriteIndex+OAM_SIZE
+
+    lda main_mercyTime
+    beq .fg
+    lda #$01
+    ora shr_spriteFlags+OAM_SIZE
+    sta shr_spriteFlags+OAM_SIZE
+    sta shr_spriteFlags+OAM_SIZE+OAM_SIZE
+
 .fg:
     lda main_playerFlags
     and #PLR_F_BG
