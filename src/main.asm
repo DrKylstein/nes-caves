@@ -342,7 +342,6 @@ main_InitAttributes subroutine
     lsr
     REPEND
     sta main_sav+3
-    sta shr_debugReg
     ldy #0
 .loop:
     tya
@@ -2010,6 +2009,8 @@ main_UpdateEntitySprites subroutine
     clc
     adc #[OAM_SIZE*2]
     tay
+    cpy #[$300-shr_entitySprites]
+    bcs main_UpdateEntitySprites_end
     lda main_sav
     bne .bar
     dex
