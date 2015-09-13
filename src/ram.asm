@@ -13,16 +13,15 @@ main_src            ds 2
 
 main_ret            ds 2 ;MIPS-style $p#
 
-nmi_tmp:
-nmi_scratch         ds 1
+nmi_tmp             ds 1
 nmi_len             ds 1
 nmi_src             ds 2
-
+nmi_sfxPeriod       ds 2
 nmi_scrollY         ds 1
 nmi_nametable       ds 1
 nmi_scrollX         ds 1
-nmi_sfxPtr         ds 2
-shr_sfxPtr         ds 2
+nmi_sfxPtr          ds 2
+
 shr_doSfx           ds 1
 shr_sleeping        ds 1
 shr_doDma           ds 1

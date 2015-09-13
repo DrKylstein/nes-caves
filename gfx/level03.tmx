@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="24" tilewidth="16" tileheight="16" nextobjectid="31">
+ <properties>
+  <property name="__script__" value="nescave"/>
+  <property name="crystals" value="25"/>
+ </properties>
+ <tileset firstgid="1" name="metatiles" tilewidth="16" tileheight="16">
+  <image source="metatiles.png" width="256" height="256"/>
+ </tileset>
+ <tileset firstgid="257" name="Sprites" tilewidth="16" tileheight="16">
+  <tileoffset x="0" y="16"/>
+  <image source="../../../../Projects/nes caves/gfx/sprites.png" trans="000000" width="256" height="64"/>
+ </tileset>
+ <layer name="Names" width="40" height="24">
+  <data encoding="base64" compression="zlib">
+   eJzNlktuwkAMhidZFInuUVXlAKxoT0ALuf+u9AJR1QeXICNiYf367TgPCotfE5iJ/fkFU6aUyoCK4LlrqOi06NYaPuu16lSADnBGr3i2Ab9Mmm8FXB4vYyuUDY8v+/ogedH7jJHF6PEyYa719wfwZ3Fk/Qb4VsQ/+t61elCy+OpALaVnkF3zVVAj/S7WH9k0X61sW2dF+2BesVfy2nRcrMcl3mOw9n0qwRbyWfHdSlIv4bNm8laSWiCf1ytD4s7aEL9V4LlJl36bM3/Sp2JzS87gbFrPmL8pOZMZFL5vsD22vtfK3z3332KGOvxH/qqRq5W/OftvTGxYN8zfHD2j53eKHfl9sWZsSg9mu1/K1t9Ixkj+lq0eHRts35uPvWOrb34Z47Pz/hr2P9P5/93qvyPx8zQwf8jo8eE+u0fmO6m+K0fvgHrOvPeG8L20egU+5Fr32NN9X4MNdvcS/z8BvrdW7059WX1Yz4hYjPeqE177KAo=
+  </data>
+ </layer>
+ <objectgroup name="Entities">
+  <object id="3" name="start" type="start" x="16" y="16" width="16" height="16"/>
+ </objectgroup>
+</map>

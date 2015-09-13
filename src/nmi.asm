@@ -169,8 +169,8 @@ nmi_updateReg subroutine
     lda shr_ppuMask
     sta PPU_MASK 
     
-    SUBI_D nmi_scratch, shr_cameraX, 8
-    lda nmi_scratch
+    SUBI_D nmi_tmp, shr_cameraX, 8
+    lda nmi_tmp
     sta nmi_scrollX
     
     lda shr_cameraYMod
@@ -193,13 +193,13 @@ nmi_doStatus subroutine
     and #%00111000
     asl
     asl
-    sta nmi_scratch
+    sta nmi_tmp
     lda nmi_scrollX
     lsr
     lsr
     lsr
-    ora nmi_scratch
-    sta nmi_scratch
+    ora nmi_tmp
+    sta nmi_tmp
 
 .wait: ;wait for sprite 0 to be cleared from last frame
     bit PPU_STATUS
@@ -208,30 +208,41 @@ nmi_doStatus subroutine
 ;update sound during wait
     lda shr_doSfx
     beq .check
-    dec shr_doSfx
-    MOV_D nmi_sfxPtr, shr_sfxPtr
-    lda #0
-    sta APU_SQ1_HI
-.check:
+    tay
+    lda prgdata_sfx,y
+    sta nmi_sfxPtr
+    iny
+    lda prgdata_sfx,y
+    sta nmi_sfxPtr+1
+    
     ldy #0
     lda (nmi_sfxPtr),y
-    bne .play
+    sta nmi_sfxPeriod
+    INC_D nmi_sfxPtr
+    lda (nmi_sfxPtr),y
+    sta nmi_sfxPeriod+1
+    INC_D nmi_sfxPtr
+    sty shr_doSfx
+.check:
+    lda nmi_sfxPeriod+1
+    bpl .play
     lda #0
     sta APU_SQ1_VOL
     jmp .wait2
 .play:
-    sta APU_SQ1_LO
-    INC_D nmi_sfxPtr
-    
-    lda nmi_frame
-    and #1
-    beq .vibrate
+    MOV_D APU_SQ1_LO, nmi_sfxPeriod
+    MOV_D shr_debugReg, nmi_sfxPeriod
     lda #%10111111
     sta APU_SQ1_VOL
-    jmp .wait2
-.vibrate:
-    lda #%10110000
-    sta APU_SQ1_VOL
+    
+    ldy #0
+    lda (nmi_sfxPtr),y
+    sta nmi_sfxPeriod
+    INC_D nmi_sfxPtr
+    lda (nmi_sfxPtr),y
+    sta nmi_sfxPeriod+1
+    INC_D nmi_sfxPtr
+
 
 .wait2: ;wait for sprite 0 to be set again
     bit PPU_STATUS
@@ -243,7 +254,7 @@ nmi_doStatus subroutine
     sta PPU_SCROLL
     lda nmi_scrollX
     sta PPU_SCROLL
-    lda nmi_scratch
+    lda nmi_tmp
     sta PPU_ADDR
 nmi_doStatus_end:
 

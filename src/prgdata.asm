@@ -188,59 +188,108 @@ prgdata_hud:
 prgdata_metatiles:
     incbin metatiles.bin
 
+prgdata_sfx:
+    .word prgdata_nullSound
+    .word prgdata_jumpSound
+    .word prgdata_crystalSound
+    .word prgdata_crystalSound
+
 prgdata_jumpSound:
-    .byte 255
-    .byte 250
-    .byte 245
-    .byte 240
-    .byte 235
-    .byte 230
-    .byte 225
-    .byte 220
-    .byte 215
-    .byte 210
-    .byte 205
-    .byte 200
-    .byte 195
-    .byte 190
-    .byte 185
-    .byte 180
-    .byte 175
-    .byte 170
-    .byte 165
-    .byte 160
-    .byte 155
-    .byte 150
-    .byte 145
-    .byte 140
-    .byte 135
-    .byte 130
-    .byte 125
-    .byte 120
+    .word 50
+    .word 48
+    .word 45
+    .word 43
+    .word 40
+    .word 40
+    .word 37
+    .word 37
+    .word 37
+    .word 37
+    .word 37
+    .word 37
+    .word 40
+    .word 43
+    .word 50
+    .word 55
+    .word 58
+    .word 70
+    .word 75
+    .word 80
+    .word 86
+    .word 93
+    .word 98
+    .word 103
+    .word 113
+    .word 124
+    .word 131
+    .word 144
+    .word 215
 prgdata_nullSound:
-    .byte 0
+    .word $FFFF
     
 prgdata_crystalSound:
-    .byte 100
-    .byte 110
-    .byte 120
-    .byte 130
-    .byte 140
-    .byte 150
-    .byte 100
-    .byte 110
-    .byte 120
-    .byte 130
-    .byte 140
-    .byte 150
-    .byte 155
+    .word 101
+    .word 98
+    .word 98
+    .word 96
+    .word 0
+    .word 0
+    .word 101
+    .word 101
+    .word 98
+    .word 91
+    .word 0
+    .word 88
+    .word 86
+    .word 80
+    .word 0
+    .word 75
+    .word 0
+    .word 70
+    .word 0
+    .word 65
+    .word 0
+    .word 0
+    .word 60
+    .word 0
+    .word 55
+    .word 0
+    .word 0
+    .word 50
+    .word 0
+    .word 45
+    .word 0
+    .word 0
+    .word 40
+    .word 0
+    .word 37
+    .word 0
+    .word 32
+    .word 0
+    .word 0
+    .word 27
+    .word 0
+    .word 25
+    .word 22
+    .word 0
+    .word 20
+    .word 0
+    .word 20
+    .word 17
+    .word 15
+    .word 0
+    .word $FFFF
     
-    .byte 0
+prgdata_titleNames:
+    incbin title-names.bin
+    incbin title-attr.bin
+prgdata_titlePalette:
+    incbin paltl.pal
     
 prgdata_levelTable
     dc.w  prgdata_level01
     dc.w  prgdata_level02
-    dc.w  prgdata_level01
+    dc.w  prgdata_level03
     dc.w  prgdata_level01
     dc.w  prgdata_level01
     dc.w  prgdata_level01
@@ -264,3 +313,6 @@ prgdata_level01:
 prgdata_level02:
     incbin level02.bin
     incbin pal02.pal
+prgdata_level03:
+    incbin level03.bin
+    incbin pal00.pal

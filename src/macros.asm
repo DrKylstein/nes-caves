@@ -1,3 +1,8 @@
+    MAC HCF
+.loop:
+    jmp .loop
+    ENDM
+
     MAC PUSH_D
     lda {1}
     pha

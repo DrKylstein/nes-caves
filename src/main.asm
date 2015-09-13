@@ -96,7 +96,92 @@ main_clearOAM_end:
     bpl .vblankwait2
 ;end reset subroutine
 
-main_loadPatterns subroutine
+    lda #0
+    sta PPU_CTRL
+    lda #0
+    sta PPU_MASK
+
+main_LoadTitlePatterns subroutine
+    lda #<bank0_titleTiles
+    sta main_tmp
+    lda #>bank0_titleTiles
+    sta main_tmp+1
+    ldy #0
+    lda banktable,y
+    sta banktable,y
+    bit PPU_STATUS
+    lda #$10
+    sta PPU_ADDR
+    lda #$00
+    sta PPU_ADDR
+    ldx #16
+.loop:
+    lda (main_tmp),y
+    sta PPU_DATA
+    iny
+    bne .loop
+    inc main_tmp+1
+    dex
+    bne .loop
+main_LoadTitlePatterns_end:
+main_LoadTitleNames subroutine
+    lda #<prgdata_titleNames
+    sta main_tmp
+    lda #>prgdata_titleNames
+    sta main_tmp+1
+    bit PPU_STATUS
+    lda #$20
+    sta PPU_ADDR
+    lda #$00
+    sta PPU_ADDR
+    ldx #4
+.loop:
+    lda (main_tmp),y
+    sta PPU_DATA
+    iny
+    bne .loop
+    inc main_tmp+1
+    dex
+    bne .loop
+main_LoadTitleNames_end:
+
+main_LoadTitlePalette subroutine
+    ldy #16
+    bit PPU_STATUS
+    lda #$3F
+    sta PPU_ADDR
+    lda #$00
+    sta PPU_ADDR
+.loop:
+    lda prgdata_titlePalette,y
+    sta PPU_DATA
+    dey
+    bpl .loop
+main_LoadTitlePalette_end:
+
+main_DoTitleScreen subroutine
+    lda #0
+    bit PPU_STATUS
+    sta PPU_SCROLL
+    sta PPU_SCROLL
+
+    lda #%0011000
+    sta PPU_CTRL
+    lda #%00011110
+    sta PPU_MASK
+    
+.waitForPress:
+    jsr read_joy
+    cmp #0
+    beq .waitForPress
+    
+    lda #0
+    sta PPU_CTRL
+    lda #0
+    sta PPU_MASK
+main_DoTitleScreen_end:
+
+main_LoadPatterns subroutine
     lda #<bank0_defaultTiles
     sta main_tmp
     lda #>bank0_defaultTiles
@@ -116,7 +201,7 @@ main_loadPatterns subroutine
     inc main_tmp+1
     dex
     bne .loop
-main_loadPatterns_end:
+main_LoadPatterns_end:
 
 main_initNametables subroutine
     ldy #$A0
@@ -436,8 +521,8 @@ main_CheckInput subroutine
     lda main_playerFlags
     ora #%10000000
     sta main_playerFlags
-    MOVI_D shr_sfxPtr, prgdata_jumpSound
-    inc shr_doSfx
+    lda #SFX_JUMP
+    sta shr_doSfx
 main_CheckInput_end:
 
 main_TileInteraction subroutine
@@ -494,8 +579,8 @@ main_TileInteraction subroutine
     inc shr_flashBg
 .notCrystal:
     jsr main_AddScore
-    MOVI_D shr_sfxPtr, prgdata_crystalSound
-    inc shr_doSfx
+    lda #SFX_CRYSTAL
+    sta shr_doSfx
     
     lda #0
     sta main_sav
@@ -503,8 +588,8 @@ main_TileInteraction subroutine
 .key:
     cmp #TB_KEY
     bne .chest
-    MOVI_D shr_sfxPtr, prgdata_crystalSound
-    inc shr_doSfx
+    lda #SFX_CRYSTAL
+    sta shr_doSfx
     lda main_playerFlags
     ora #PLR_F_KEY
     sta main_playerFlags
@@ -517,8 +602,8 @@ main_TileInteraction subroutine
     lda #PLR_F_KEY
     bit main_playerFlags
     beq .ammo
-    MOVI_D shr_sfxPtr, prgdata_crystalSound
-    inc shr_doSfx
+    lda #SFX_CRYSTAL
+    sta shr_doSfx
     
     lda #2
     sta main_arg+1
@@ -533,8 +618,8 @@ main_TileInteraction subroutine
 .ammo:
     cmp #TB_AMMO
     bne .powershot
-    MOVI_D shr_sfxPtr, prgdata_crystalSound
-    inc shr_doSfx
+    lda #SFX_CRYSTAL
+    sta shr_doSfx
     lda shr_ammo
     clc
     adc #5
@@ -545,8 +630,8 @@ main_TileInteraction subroutine
 .powershot:
     cmp #TB_POWERSHOT
     bne .foreground
-    MOVI_D shr_sfxPtr, prgdata_crystalSound
-    inc shr_doSfx
+    lda #SFX_CRYSTAL
+    sta shr_doSfx
     lda #10
     sta shr_powerTime+1
     lda #60
@@ -681,8 +766,8 @@ main_doExit:
     ora main_entityYHi
     sta main_entityYHi
 .notPowerShot
-    MOVI_D shr_sfxPtr, prgdata_crystalSound
-    inc shr_doSfx
+    lda #SFX_ROCKET
+    sta shr_doSfx
     
     bit main_playerFlags
     bvs .shootLeft
