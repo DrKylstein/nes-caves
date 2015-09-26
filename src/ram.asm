@@ -67,6 +67,7 @@ main_playerFrame    ds 1
 main_playerXVel     ds 1
 main_playerYVel     ds 2
 main_mercyTime      ds 1
+main_bonusCount     ds 1
 shr_ammo            ds 1
 shr_powerTime       ds 2
 shr_hp              ds 1

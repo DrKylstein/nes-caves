@@ -178,6 +178,7 @@ prgdata_points:
     .byte 00,00,01,00;0
     .byte 00,00,05,00;0
     .byte 00,00,00,10;0
+    .byte 00,00,10,00;0
 
 prgdata_palettes:
 ;global

@@ -231,7 +231,6 @@ nmi_doStatus subroutine
     jmp .wait2
 .play:
     MOV_D APU_SQ1_LO, nmi_sfxPeriod
-    MOV_D shr_debugReg, nmi_sfxPeriod
     lda #%10111111
     sta APU_SQ1_VOL
     

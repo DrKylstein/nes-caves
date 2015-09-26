@@ -299,6 +299,7 @@ main_ResetStats subroutine
     sta main_paused
     sta shr_powerTime
     sta shr_powerTime+1
+    sta main_bonusCount
     lda main_playerFlags
     and #~PLY_HASKEY
     sta main_playerFlags
@@ -583,6 +584,22 @@ main_TileInteraction subroutine
     bne .notCrystal
     inc shr_flashBg
 .notCrystal:
+    cpx #5<<2
+    bne .notBonus
+    lda #8
+    clc
+    adc main_bonusCount
+    sta main_bonusCount
+    cmp #5<<3
+    bcc .notBonus
+    ldx #6<<2
+    lda prgdata_points+1,x
+    sta main_arg+2
+    lda prgdata_points+2,x
+    sta main_arg+1
+    lda prgdata_points+3,x
+    sta main_arg
+.notBonus:
     jsr main_AddScore
     lda #SFX_CRYSTAL
     sta shr_doSfx
@@ -1304,9 +1321,6 @@ main_updateEntities subroutine
     sta main_arg+1
     lda main_entityXVel,y
     bmi .shift
-    ; lda main_entityYHi,y
-    ; and #ENT_Y_POS
-    ; bne .shift
     ADDI_D main_arg, main_arg, 15
 .shift:
     REPEAT 4
@@ -1363,6 +1377,8 @@ main_updateEntities subroutine
     lda main_sav+3
     cmp #TB_SOLID
     beq .die
+    cpy #0
+    bne .notEgg
     cmp #TB_WEAKBLOCK
     bne .notWeakBlock
     lda main_sav+1
@@ -1383,6 +1399,28 @@ main_updateEntities subroutine
 .longCheckDone
     jmp .tileCheckDone
 .notWeakBlock:
+    cmp #TB_EGG
+    bne .notEgg
+    lda main_sav+1
+    sta main_arg
+    lda main_sav+2
+    sta main_arg+2
+    lda #0
+    sta main_arg+1
+    sta main_arg+3
+    lda main_bonusCount
+    and #7
+    clc
+    adc #BONUS_TILES
+    sta main_arg+4
+    inc main_bonusCount
+    tya
+    pha
+    jsr main_SetTile
+    pla
+    tay
+    jmp .die
+.notEgg:
     cmp #TB_PLATFORM
     bne .longCheckDone
     lda prgdata_entityFlags,x
