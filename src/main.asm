@@ -300,7 +300,7 @@ main_ResetStats subroutine
     sta shr_powerTime
     sta shr_powerTime+1
     lda main_playerFlags
-    and #~PLR_F_KEY
+    and #~PLY_HASKEY
     sta main_playerFlags
     lda #CATERPILLAR_ID+1
     sta main_caterpillarNext
@@ -498,7 +498,7 @@ main_CheckInput subroutine
     lda #<-1
     sta main_playerXVel
     lda main_playerFlags
-    ora #%01000000
+    ora #PLY_ISFLIPPED
     sta main_playerFlags
 .left_end:
 .right:
@@ -508,7 +508,7 @@ main_CheckInput subroutine
     lda #1
     sta main_playerXVel
     lda main_playerFlags
-    and #%10111111
+    and #~PLY_ISFLIPPED
     sta main_playerFlags
 .right_end:
 .jump:
@@ -519,7 +519,12 @@ main_CheckInput subroutine
     bmi main_CheckInput_end
     MOVI_D main_playerYVel, JUMP_VELOCITY
     lda main_playerFlags
-    ora #%10000000
+    and #PLY_ISUPSIDEDOWN
+    beq .notUpsideDown
+    MOVI_D main_playerYVel, -JUMP_VELOCITY
+.notUpsideDown:
+    lda main_playerFlags
+    ora #PLY_ISJUMPING
     sta main_playerFlags
     lda #SFX_JUMP
     sta shr_doSfx
@@ -591,7 +596,7 @@ main_TileInteraction subroutine
     lda #SFX_CRYSTAL
     sta shr_doSfx
     lda main_playerFlags
-    ora #PLR_F_KEY
+    ora #PLY_HASKEY
     sta main_playerFlags
     lda #0
     sta main_sav
@@ -599,7 +604,7 @@ main_TileInteraction subroutine
 .chest:
     cmp #TB_CHEST
     bne .ammo
-    lda #PLR_F_KEY
+    lda #PLY_HASKEY
     bit main_playerFlags
     beq .ammo
     lda #SFX_CRYSTAL
@@ -629,6 +634,21 @@ main_TileInteraction subroutine
     jmp .updateTile
 .powershot:
     cmp #TB_POWERSHOT
+    bne .gravity
+    lda #SFX_CRYSTAL
+    sta shr_doSfx
+    lda #10
+    sta shr_powerTime+1
+    lda #60
+    sta shr_powerTime
+    lda #~PLY_ISUPSIDEDOWN
+    and main_playerFlags
+    sta main_playerFlags
+    lda #0
+    sta main_sav
+    jmp .updateTile
+.gravity:
+    cmp #TB_GRAVITY
     bne .foreground
     lda #SFX_CRYSTAL
     sta shr_doSfx
@@ -636,18 +656,21 @@ main_TileInteraction subroutine
     sta shr_powerTime+1
     lda #60
     sta shr_powerTime
+    lda #PLY_ISUPSIDEDOWN
+    ora main_playerFlags
+    sta main_playerFlags
     lda #0
     sta main_sav
     jmp .updateTile
 .foreground:
     lda main_playerFlags
-    and #~PLR_F_BG
+    and #~PLY_ISBEHIND
     sta main_playerFlags
     lda main_sav+3
     cmp #TB_FOREGROUND
     bne .exit
     lda main_playerFlags
-    ora #PLR_F_BG
+    ora #PLY_ISBEHIND
     sta main_playerFlags
     jmp .not_door
 .exit:
@@ -762,6 +785,9 @@ main_doExit:
     sta main_entityYHi
     lda shr_powerTime+1
     beq .notPowerShot
+    lda #PLY_ISUPSIDEDOWN
+    and main_playerFlags
+    bne .notPowerShot
     lda #POWERSHOT_ID<<1
     ora main_entityYHi
     sta main_entityYHi
@@ -811,9 +837,17 @@ main_doExit:
 main_TileInteraction_end:
 
 main_ApplyGravity subroutine
+    lda main_playerFlags
+    and #PLY_ISUPSIDEDOWN
+    bne .reverseGravity
     CMPI_D main_playerYVel, $0400
     bpl main_ApplyGravity_end
     ADDI_D main_playerYVel, main_playerYVel, GRAVITY
+    jmp main_ApplyGravity_end
+.reverseGravity:
+    CMPI_D main_playerYVel, -$0400
+    bmi main_ApplyGravity_end
+    SUBI_D main_playerYVel, main_playerYVel, GRAVITY
 main_ApplyGravity_end:
 
 
@@ -890,8 +924,12 @@ main_CheckGround subroutine
     BMI_L main_CheckGround_end
 
     lda main_playerFlags
-    ora #%10000000
+    and #PLY_ISUPSIDEDOWN
+    bne .upsideDown
+    lda main_playerFlags
+    ora #PLY_ISJUMPING
     sta main_playerFlags
+.upsideDown:
 
     ;a0 = x in tiles
     ADDI_D main_arg, main_playerX, 8
@@ -983,7 +1021,10 @@ main_CheckGround subroutine
     lda #0
     sta main_playerYFrac
     lda main_playerFlags
-    and #%01111111
+    and #PLY_ISUPSIDEDOWN
+    bne main_CheckGround_end
+    lda main_playerFlags
+    and #~PLY_ISJUMPING
     sta main_playerFlags
 main_CheckGround_end:
 
@@ -991,7 +1032,16 @@ main_CheckCieling subroutine
 
     ;skip if not moving up (>= 0)
     CMPI_D main_playerYVel, 0
-    bpl main_CheckCieling_end
+    BPL_L main_CheckCieling_end
+
+    lda main_playerFlags
+    and #PLY_ISUPSIDEDOWN
+    beq .notUpsideDown
+    lda main_playerFlags
+    ora #PLY_ISJUMPING
+    sta main_playerFlags
+.notUpsideDown:
+
 
     ;hit head on top of screen
     CMPI_D main_playerY, 8
@@ -1018,7 +1068,14 @@ main_CheckCieling subroutine
     
 .hit_cieling:
     MOVI_D main_playerYVel, 0
-
+    lda #0
+    sta main_playerYFrac
+    lda main_playerFlags
+    and #PLY_ISUPSIDEDOWN
+    beq main_CheckCieling_end
+    lda main_playerFlags
+    and #~PLY_ISJUMPING
+    sta main_playerFlags
 main_CheckCieling_end:
     
 main_CheckHurt subroutine
@@ -1106,9 +1163,13 @@ main_UpdatePower subroutine
     beq main_UpdatePower_end
     dec shr_powerTime
     bne main_UpdatePower_end
-    lda #63
+    lda #60
     sta shr_powerTime
     dec shr_powerTime+1
+    bne main_UpdatePower_end
+    lda #~PLY_ISUPSIDEDOWN
+    and main_playerFlags
+    sta main_playerFlags
 main_UpdatePower_end:
 
 main_updateEntities subroutine
@@ -1869,7 +1930,7 @@ main_UpdatePlayerSprite subroutine
 
 .do_anim:
     lda main_playerFlags
-    and #%01000000
+    and #PLY_ISFLIPPED
     sta shr_playerSprites+SPR_FLAGS
     sta shr_playerSprites+OAM_SIZE+SPR_FLAGS
     bit main_playerFlags
@@ -1898,13 +1959,23 @@ main_UpdatePlayerSprite subroutine
 .notFlashing:
 
     lda main_playerFlags
-    and #PLR_F_BG
-    beq main_UpdatePlayerSprite_end
+    and #PLY_ISBEHIND
+    beq .notBehind
     lda #$20
     ora shr_playerSprites+SPR_FLAGS
     sta shr_playerSprites+SPR_FLAGS
     sta shr_playerSprites+OAM_SIZE+SPR_FLAGS
+.notBehind:
     
+    lda main_playerFlags
+    and #PLY_ISUPSIDEDOWN
+    beq .notUpsideDown
+    lda #$80
+    ora shr_playerSprites+SPR_FLAGS
+    sta shr_playerSprites+SPR_FLAGS
+    sta shr_playerSprites+OAM_SIZE+SPR_FLAGS
+.notUpsideDown:
+
 main_UpdatePlayerSprite_end:
 
 main_UpdateEntitySprites subroutine
