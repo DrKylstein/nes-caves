@@ -170,42 +170,44 @@ main_GetTile ;arg0..1 = mt_x arg2..3 = mt_y ret0 = value
     rts
 ;------------------------------------------------------------------------------
 main_SetTile ;arg0..1 = mt_x arg2..3 = mt_y, arg4 = value
-    PUSH_D main_sav
-    PUSH_D main_sav+2
-    jsr main_MultiplyBy24 ;takes arg0, which we no longer care about after this
-                          ;returns
-    ;t0 = y+ x*24
-    ADDI_D main_sav, main_ret, main_levelMap
-    ADD_D main_tmp, main_arg+2, main_sav
+    jsr main_MultiplyBy24
+    ADDI_D main_ret, main_ret, main_levelMap
+    ADD_D main_tmp, main_arg+2, main_ret
     lda main_arg+4
     ldy #0
-    sta (main_tmp),y
+    sta (main_tmp),y ;store updated tile into map
     
+    ;update nametables
+    lda shr_doTile
+    beq .noWait
+    jsr synchronize
+.noWait:
+    lda main_arg+4
+    sta shr_tileMeta ;store tile for nametable update
+    MOVI_D shr_tileAddr, [$2000+TOP_OFFSET]
+    lda main_arg+2
+    cmp #9
+    bcc .upperTable
+    MOVI_D shr_tileAddr, $2800
+    SUBI_D main_arg+2, main_arg+2, 9
+.upperTable:
     
-    MOV_D main_tmp, main_arg
-    ASL_D main_tmp
-    lda main_tmp
+    REPEAT 6
+    ASL_D main_arg+2
+    REPEND
+    ADD_D shr_tileAddr, shr_tileAddr, main_arg+2
+    
+    ASL_D main_arg
+    lda main_arg
     and #31
     clc
-    adc #33
-    and #30
-    sta main_sav+2
+    adc shr_tileAddr
+    sta shr_tileAddr
+    lda #0
+    adc shr_tileAddr+1
+    sta shr_tileAddr+1
     
-    MOV_D main_arg, main_sav
-    MOV main_arg+2, main_sav+2
-    jsr main_EvenColumn
-    inc shr_doTileCol
-    jsr synchronize
-    
-    MOV_D main_arg, main_sav
-    MOV main_arg+2, main_sav+2
-    inc main_arg+2
-    jsr main_OddColumn
-    inc shr_doTileCol
-    jsr synchronize
-.no_match:
-    POP_D main_sav+2
-    POP_D main_sav
+    inc shr_doTile
     rts
 ;------------------------------------------------------------------------------
 main_MultiplyBy24: ;arg0..arg1 is factor, ret0..ret1 is result

@@ -3,7 +3,6 @@
 ;------------------------------------------------------------------------------
 
 ;lasers should only fire if player is within y range and is onscreen
-;lasers lagging game?
 
 ;door updates
 ;individual enemy hit boxes?
@@ -760,6 +759,7 @@ main_doExit:
     iny
     sta (main_tmp),y
     
+.notVisible:
     inc main_sav
     jmp .updateTile
 .switch:
