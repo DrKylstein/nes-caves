@@ -18,24 +18,59 @@
     ORG 16 + 0*$4000
     RORG $8000
     include bank0.asm
+    ECHO "PRGROM Bank 0 left:",$C000-.-6
+    IF . > $C000
+    ECHO "Exceeded PRGROM Bank 0 size!"
+    ERR
+    ENDIF
     
     ORG 16 + 1*$4000
     RORG $8000
+    ECHO "PRGROM Bank 0 left:",$C000-.-6
+    IF . > $C000
+    ECHO "Exceeded PRGROM Bank 0 size!"
+    ERR
+    ENDIF
     
     ORG 16 + 2*$4000
     RORG $8000
+    ECHO "PRGROM Bank 1 left:",$C000-.
+    IF . > $C000-6
+    ECHO "Exceeded PRGROM Bank 0 size!"
+    ERR
+    ENDIF
     
     ORG 16 + 3*$4000
     RORG $8000
+    ECHO "PRGROM Bank 2 left:",$C000-.
+    IF . > $C000-6
+    ECHO "Exceeded PRGROM Bank 0 size!"
+    ERR
+    ENDIF
     
     ORG 16 + 4*$4000
     RORG $8000
+    ECHO "PRGROM Bank 3 left:",$C000-.
+    IF . > $C000-6
+    ECHO "Exceeded PRGROM Bank 0 size!"
+    ERR
+    ENDIF
     
     ORG 16 + 5*$4000
     RORG $8000
+    ECHO "PRGROM Bank 4 left:",$C000-.
+    IF . > $C000-6
+    ECHO "Exceeded PRGROM Bank 0 size!"
+    ERR
+    ENDIF
     
     ORG 16 + 6*$4000
     RORG $8000
+    ECHO "PRGROM Bank 5 left:",$C000-.
+    IF . > $C000-6
+    ECHO "Exceeded PRGROM Bank 0 size!"
+    ERR
+    ENDIF
     
     ORG 16 + 7*$4000
     RORG $C000
@@ -48,9 +83,9 @@ irq subroutine
 banktable:
     .byte $00, $01, $02, $03, $04, $05, $06
     
-    ECHO "PRGROM left:",$10000-.-6
+    ECHO "PRGROM Bank 6 left:",$10000-.-6
     IF . > $10000-6
-    ECHO "Exceeded PRGROM size!"
+    ECHO "Exceeded PRGROM Bank 6 size!"
     ERR
     ENDIF
 ;interrupt vectors

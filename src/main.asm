@@ -550,6 +550,10 @@ main_CheckInput subroutine
 main_CheckInput_end:
 
 main_TileInteraction subroutine
+    lda main_playerFlags
+    and #~PLY_ISBEHIND
+    sta main_playerFlags
+
     ;a0 = x in tiles
     ADDI_D main_arg, main_playerX, 7
     REPEAT 4
@@ -577,14 +581,85 @@ main_TileInteraction subroutine
     sta main_sav
     tay
     lda prgdata_metatiles+256*4,y
-    REPEAT 2
     lsr
-    REPEND
+    lsr
     sta main_sav+3
-    cmp #TB_POINTS
-    bcc .key
-    cmp #TB_POINTS+8
-    bcs .key
+    asl
+    tay
+    lda main_TileCollision,y
+    sta main_tmp
+    lda main_TileCollision+1,y
+    sta main_tmp+1
+    jmp (main_tmp)
+    
+main_TileCollision:
+    .word main_TC_Nop;main_TC_Empty
+    .word main_TC_Nop;main_TC_Solid
+    .word main_TC_Nop;main_TC_Platform
+    .word main_TC_Exit
+    .word main_TC_Nop;main_TC_Hazard
+    .word main_TC_Nop;main_TC_Death
+    .word main_TC_Nop;main_TC_LightsOn
+    .word main_TC_Nop;main_TC_LightsOff
+    .word main_TC_Nop;main_TC_WeakBlock
+    .word main_TC_Ammo
+    .word main_TC_Nop;main_TC_Strength
+    .word main_TC_Powershot
+    .word main_TC_Gravity
+    .word main_TC_Key
+    .word main_TC_Nop;main_TC_Stop
+    .word main_TC_Chest
+    .word main_TC_Points ;crystal
+    .word main_TC_Points ;egg
+    .word main_TC_Points ;800
+    .word main_TC_Points ;1000
+    .word main_TC_Points ;5000
+    .word main_TC_Points ;bonus
+    .word main_TC_Nop
+    .word main_TC_Nop
+    .word main_TC_Nop
+    .word main_TC_Nop
+    .word main_TC_Nop
+    .word main_TC_Lock
+    .word main_TC_Lock
+    .word main_TC_Lock
+    .word main_TC_Nop
+    .word main_TC_Nop
+    .word main_TC_Nop ;air
+    .word main_TC_Foreground
+    .word main_TC_Nop
+    .word main_TC_Nop
+    .word main_TC_Nop
+    .word main_TC_Nop
+    .word main_TC_Nop
+    .word main_TC_Nop
+    .word main_TC_Entrance
+    .word main_TC_Entrance
+    .word main_TC_Entrance
+    .word main_TC_Entrance
+    .word main_TC_Entrance
+    .word main_TC_Entrance
+    .word main_TC_Entrance
+    .word main_TC_Entrance
+    .word main_TC_Entrance
+    .word main_TC_Entrance
+    .word main_TC_Entrance
+    .word main_TC_Entrance
+    .word main_TC_Entrance
+    .word main_TC_Entrance
+    .word main_TC_Entrance
+    .word main_TC_Entrance
+    .word main_TC_Off
+    .word main_TC_Off
+    .word main_TC_Off
+    .word main_TC_Off
+    .word main_TC_On
+    .word main_TC_On
+    .word main_TC_On
+    .word main_TC_On
+    
+main_TC_Points:
+    lda main_sav+3
     sec
     sbc #TB_POINTS
     asl
@@ -624,10 +699,10 @@ main_TileInteraction subroutine
     
     lda #0
     sta main_sav
-    jmp .updateTile
-.key:
-    cmp #TB_KEY
-    bne .chest
+    jmp main_TC_UpdateTile
+main_TC_Points_end:
+
+main_TC_Key:
     lda #SFX_CRYSTAL
     sta shr_doSfx
     lda main_playerFlags
@@ -635,13 +710,13 @@ main_TileInteraction subroutine
     sta main_playerFlags
     lda #0
     sta main_sav
-    jmp .updateTile
-.chest:
-    cmp #TB_CHEST
-    bne .ammo
+    jmp main_TC_UpdateTile
+main_TC_Key_end:
+
+main_TC_Chest:
     lda #PLY_HASKEY
     bit main_playerFlags
-    beq .ammo
+    BEQ_L main_TC_Return
     lda #SFX_CRYSTAL
     sta shr_doSfx
     
@@ -652,12 +727,11 @@ main_TileInteraction subroutine
     sta main_arg+2
     jsr main_AddScore
     
-    
     inc main_sav
-    jmp .updateTile
-.ammo:
-    cmp #TB_AMMO
-    bne .powershot
+    jmp main_TC_UpdateTile
+main_TC_Chest_end:
+
+main_TC_Ammo:
     lda #SFX_CRYSTAL
     sta shr_doSfx
     lda shr_ammo
@@ -666,10 +740,10 @@ main_TileInteraction subroutine
     sta shr_ammo
     lda #0
     sta main_sav
-    jmp .updateTile
-.powershot:
-    cmp #TB_POWERSHOT
-    bne .gravity
+    jmp main_TC_UpdateTile
+main_TC_Ammo_end:
+
+main_TC_Powershot:
     lda #SFX_CRYSTAL
     sta shr_doSfx
     lda #10
@@ -681,10 +755,10 @@ main_TileInteraction subroutine
     sta main_playerFlags
     lda #0
     sta main_sav
-    jmp .updateTile
-.gravity:
-    cmp #TB_GRAVITY
-    bne .foreground
+    jmp main_TC_UpdateTile
+main_TC_Powershot_end:
+
+main_TC_Gravity:
     lda #SFX_CRYSTAL
     sta shr_doSfx
     lda #10
@@ -696,23 +770,19 @@ main_TileInteraction subroutine
     sta main_playerFlags
     lda #0
     sta main_sav
-    jmp .updateTile
-.foreground:
-    lda main_playerFlags
-    and #~PLY_ISBEHIND
-    sta main_playerFlags
-    lda main_sav+3
-    cmp #TB_FOREGROUND
-    bne .exit
+    jmp main_TC_UpdateTile
+main_TC_Gravity_end:
+
+main_TC_Foreground:
     lda main_playerFlags
     ora #PLY_ISBEHIND
     sta main_playerFlags
-    jmp .not_door
-.exit:
-    cmp #TB_EXIT
-    bne .not_exit
+    jmp main_TC_Return
+main_TC_Foreground_end:
+
+main_TC_Exit:
     lda main_crystalsLeft
-    bne .not_exit
+    BNE_L main_TC_Return
     ldy main_currLevel
     cpy #16
     bcs .upperLevels
@@ -732,15 +802,10 @@ main_doExit:
     sta main_currLevel
     MOVI_D main_arg, prgdata_mainMap
     jmp main_EnterLevel
-.not_exit:
-    cmp #TB_MAPDOOR+16
-    bcc .maybe_door
-    jmp .not_door
-.maybe_door:
-    cmp #TB_MAPDOOR-1
-    bcs .still_maybe_door
-    jmp .not_door
-.still_maybe_door:
+main_TC_Exit_end:
+
+main_TC_Entrance:
+    lda main_sav+3
     sec
     sbc #TB_MAPDOOR
     cmp #16
@@ -750,7 +815,7 @@ main_doExit:
     and main_cleared
     beq .uncleared
     lda main_sav+3
-    jmp .not_door
+    jmp main_TC_Return
 .enterUpperLevel:
     sec
     sbc #8
@@ -759,7 +824,7 @@ main_doExit:
     and main_cleared+1
     beq .uncleared
     lda main_sav+3
-    jmp .not_door
+    jmp main_TC_Return
 .uncleared:
     lda main_sav+3
     sec
@@ -778,17 +843,14 @@ main_doExit:
     lda shr_cameraYMod
     sta main_mapCamYMod
     jmp main_EnterLevel
-.not_door:
+main_TC_Entrance_end:
+    
+main_TC_Lock:
     lda #JOY_B_MASK
     and main_pressed
-    BEQ_L main_TileInteraction_end
+    BEQ_L main_TC_Return
+    
     lda main_sav+3
-    
-    cmp #TB_LOCK+3
-    bcs .switch
-    cmp #TB_LOCK
-    bcc .switch
-    
     sec
     sbc #TB_LOCK
     tay
@@ -802,38 +864,51 @@ main_doExit:
     sta (main_tmp),y
     iny
     sta (main_tmp),y
-    
-.notVisible:
     inc main_sav
-    jmp .updateTile
-.switch:
-    cmp #TB_ON
-    bcc .not_switchon
+    jmp main_TC_UpdateTile
+main_TC_Lock_end:
+
+main_TC_On:
+    lda #JOY_B_MASK
+    and main_pressed
+    BEQ_L main_TC_Return
+    lda main_sav+3
     sec
     sbc #TB_ON
-    tax
-    lda prgdata_bits,x
+    tay
+    lda prgdata_bits,y
     eor main_switches
     sta main_switches
     dec main_sav
-    jmp .updateTile
-.not_switchon:
-    cmp #TB_OFF
-    bcc .shoot
+    jmp main_TC_UpdateTile
+main_TC_On_end:
+
+main_TC_Off:
+    lda #JOY_B_MASK
+    and main_pressed
+    BEQ_L main_TC_Return
+    lda main_sav+3
     sec
     sbc #TB_OFF
-    tax
-    lda prgdata_bits,x
+    tay
+    lda prgdata_bits,y
     eor main_switches
     sta main_switches
     inc main_sav
-    jmp .updateTile
-.shoot:
+    jmp main_TC_UpdateTile
+main_TC_Off_end:
+
+    
+main_TC_Return:
+main_TC_Nop:
+    lda #JOY_B_MASK
+    and main_pressed
+    BEQ_L main_TileInteraction_end
     bit main_entityXHi
     BPL_L main_TileInteraction_end
-    ;lda shr_ammo
-    ;beq main_TileInteraction_end
-    ;dec shr_ammo
+    lda shr_ammo
+    BEQ_L main_TileInteraction_end
+    dec shr_ammo
     lda main_playerX
     sta main_entityXLo
     lda main_playerX+1
@@ -884,7 +959,7 @@ main_doExit:
     sta main_entityXHi
     jmp main_TileInteraction_end
     
-.updateTile:
+main_TC_UpdateTile:
     lda main_sav+1
     sta main_arg
     lda main_sav+2

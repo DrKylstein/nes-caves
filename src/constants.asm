@@ -132,7 +132,9 @@ TB_5000:       ds 1
 TB_BONUS:      ds 1
                ds 1
                ds 1
-TB_DOOR:       ds 3
+               ds 1
+               ds 1
+               ds 1
 TB_LOCK:       ds 3
                ds 1
                ds 1
