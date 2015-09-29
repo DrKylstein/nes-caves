@@ -170,6 +170,10 @@ prgdata_bits:
     .byte 2
     .byte 4
     .byte 8
+    .byte 16
+    .byte 32
+    .byte 64
+    .byte 128
 
 prgdata_points:
     .byte 00,00,00,05;0

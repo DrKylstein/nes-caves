@@ -19,6 +19,8 @@ SPRITE_PAL = $10
 
 MAX_ENTITIES = 24
 
+MAP_LEVEL = $FF
+
 ;nametable info
 TOP_HEIGHT = 18
 BOTTOM_HEIGHT = 30

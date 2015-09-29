@@ -273,6 +273,8 @@ main_InitSprites subroutine
 ;------------------------------------------------------------------------------
     lda #5
     sta shr_ammo
+    ;lda #MAP_LEVEL
+    ;sta main_currLevel
     
     MOVI_D main_arg, prgdata_mainMap
 ;------------------------------------------------------------------------------
@@ -350,6 +352,23 @@ main_InitEntities subroutine
     cpy #MAX_ENTITIES
     bne .loop
 main_InitEntities_end:
+
+main_LoadMapState subroutine
+    lda main_currLevel
+    bpl main_LoadMapState_end
+    MOV_D main_playerX, main_mapPX
+    MOV_D main_playerY, main_mapPY
+    MOV_D shr_cameraX, main_mapCamX
+    MOV_D shr_cameraY, main_mapCamY
+    lda main_mapCamYMod
+    sta shr_cameraYMod
+    CMPI_D shr_cameraY, 240
+    lda #0
+    bcc .nt0
+    lda #8
+.nt0:
+    sta shr_nameTable
+main_LoadMapState_end:
 
 main_InitNametables subroutine
     MOV_D main_arg, shr_cameraX
@@ -694,20 +713,24 @@ main_TileInteraction subroutine
     bne .not_exit
     lda main_crystalsLeft
     bne .not_exit
+    ldy main_currLevel
+    cpy #16
+    bcs .upperLevels
+    lda prgdata_bits,y
+    ora main_cleared
+    sta main_cleared
+    jmp main_doExit
+.upperLevels:
+    tya
+    sec
+    sbc #8
+    lda prgdata_bits,y
+    ora main_cleared+1
+    sta main_cleared+1
 main_doExit:
+    lda #MAP_LEVEL
+    sta main_currLevel
     MOVI_D main_arg, prgdata_mainMap
-    MOV_D main_playerX, main_mapPX
-    MOV_D main_playerY, main_mapPY
-    MOV_D shr_cameraX, main_mapCamX
-    MOV_D shr_cameraY, main_mapCamY
-    lda main_mapCamYMod
-    sta shr_cameraYMod
-    CMPI_D shr_cameraY, 240
-    lda #0
-    bcc .nt0
-    lda #8
-.nt0:
-    sta shr_nameTable
     jmp main_EnterLevel
 .not_exit:
     cmp #TB_MAPDOOR+16
@@ -718,6 +741,27 @@ main_doExit:
     bcs .still_maybe_door
     jmp .not_door
 .still_maybe_door:
+    sec
+    sbc #TB_MAPDOOR
+    cmp #16
+    bcs .enterUpperLevel
+    tay
+    lda prgdata_bits,y
+    and main_cleared
+    beq .uncleared
+    lda main_sav+3
+    jmp .not_door
+.enterUpperLevel:
+    sec
+    sbc #8
+    tay
+    lda prgdata_bits,y
+    and main_cleared+1
+    beq .uncleared
+    lda main_sav+3
+    jmp .not_door
+.uncleared:
+    lda main_sav+3
     sec
     sbc #TB_MAPDOOR
     sta main_currLevel
