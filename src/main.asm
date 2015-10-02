@@ -530,6 +530,11 @@ main_CheckInput subroutine
     and #~PLY_ISFLIPPED
     sta main_playerFlags
 .right_end:
+    lda main_pressed
+    and #JOY_SELECT_MASK
+    beq .jump
+    lda #0
+    sta main_crystalsLeft
 .jump:
     lda main_ctrl
     and #JOY_A_MASK
@@ -839,6 +844,9 @@ main_TC_Entrance:
     MOV_D main_mapPX, main_playerX
     MOV_D main_mapPY, main_playerY
     MOV_D main_mapCamX, shr_cameraX
+    lda main_mapCamX
+    and #$E0
+    sta main_mapCamX
     MOV_D main_mapCamY, shr_cameraY
     lda shr_cameraYMod
     sta main_mapCamYMod
