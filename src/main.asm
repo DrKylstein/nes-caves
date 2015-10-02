@@ -2321,9 +2321,8 @@ main_UpdateEntitySprites subroutine
     tya
     clc
     adc #[OAM_SIZE*2]
+    beq main_UpdateEntitySprites_end
     tay
-    cpy #[$300-shr_entitySprites]
-    bcs main_UpdateEntitySprites_end
     lda main_sav
     bne .bar
     dex
