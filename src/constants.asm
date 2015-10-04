@@ -13,6 +13,7 @@ PX_MT_HEIGHT = 16
 HEXFONT_BASE = $D9
 
 BONUS_TILES = 235
+HIDDEN_TILE = $26
 
 BG_PAL = 0
 SPRITE_PAL = $10
@@ -113,8 +114,8 @@ TB_PLATFORM:   ds 1
 TB_EXIT:       ds 1
 TB_HAZARD:     ds 1
 TB_DEATH:      ds 1
-TB_LIGHTSON:   ds 1
-TB_LIGHTSOFF:  ds 1
+               ds 1
+               ds 1
 TB_WEAKBLOCK:  ds 1
 TB_AMMO:       ds 1
 TB_STRENGTH:   ds 1
@@ -140,7 +141,7 @@ TB_LOCK:       ds 3
                ds 1
 TB_AIR:        ds 1
 TB_FOREGROUND  ds 1
-TB_BACKGROUND  ds 1
+               ds 1
                ds 1
                ds 1
                ds 1

@@ -622,7 +622,7 @@ main_TileCollision:
     .word main_TC_Points ;bonus
     .word main_TC_Nop
     .word main_TC_Nop
-    .word main_TC_Nop
+    .word main_TC_Hidden
     .word main_TC_Nop
     .word main_TC_Nop
     .word main_TC_Lock
@@ -852,6 +852,12 @@ main_TC_Entrance:
     sta main_mapCamYMod
     jmp main_EnterLevel
 main_TC_Entrance_end:
+    
+main_TC_Hidden:
+    lda #HIDDEN_TILE
+    sta main_sav
+    jmp main_TC_UpdateTile
+main_TC_Hidden_end:
     
 main_TC_Lock:
     lda #JOY_B_MASK
