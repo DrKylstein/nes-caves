@@ -3,3 +3,5 @@ A sidescrolling platformer for NES.
 Currently, an unauthorized port/clone of the first epsiode 3DRealms/Apogee's 
 Crystal Caves. If they or creator Frank Maddin turn out not to be cool with 
 that, expect a hasty makeover.
+
+Builds with DASM and DrKylstein/gfx-tools
