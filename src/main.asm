@@ -2,11 +2,25 @@
 ; MAIN THREAD
 ;------------------------------------------------------------------------------
 
-;lasers should only fire if player is within y range and is onscreen
-
-;door updates
-;individual enemy hit boxes?
+;lasers should only fire if player is within y range
+;opened doors need to be updated if in nametable
 ;enemy points table
+;large enemies - triceratops, t-rex, stalk-eye
+;explosions
+;corner collisions with solids
+;edge collisions with special tiles
+;better hidden block collision
+;flame traps
+;rolling enemy
+;strength mushrooms
+;infinite ammo w/ powershot
+;sound effects
+;air generator death
+;fix intermittent color corruption
+;reset in-level score on death or quit
+;transitions
+;unique level tiles?
+;death animation
 
 ;------------------------------------------------------------------------------
 ;Initial Boot
@@ -602,8 +616,8 @@ main_TileCollision:
     .word main_TC_Nop;main_TC_Solid
     .word main_TC_Nop;main_TC_Platform
     .word main_TC_Exit
-    .word main_TC_Nop;main_TC_Hazard
-    .word main_TC_Nop;main_TC_Death
+    .word main_TC_Harmful
+    .word main_TC_Deadly
     .word main_TC_Nop;main_TC_LightsOn
     .word main_TC_Nop;main_TC_LightsOff
     .word main_TC_Nop;main_TC_WeakBlock
@@ -663,6 +677,17 @@ main_TileCollision:
     .word main_TC_On
     .word main_TC_On
     
+    
+main_TC_Harmful:
+    jsr main_DamagePlayer
+    jmp main_TC_Nop
+    
+main_TC_Deadly:
+    jsr main_KillPlayer
+    lda #0
+    sta main_sav
+    jmp main_TC_UpdateTile
+
 main_TC_Points:
     lda main_sav+3
     sec
@@ -1289,20 +1314,7 @@ main_CheckHurt subroutine
     CMP_D main_tmp, main_playerY
     bpl .longLoop
     
-    lda shr_hp
-    bne .hurt
-    lda main_currLevel
-    asl
-    tay
-    lda prgdata_levelTable,y
-    sta main_arg
-    lda prgdata_levelTable+1,y
-    sta main_arg+1
-    jmp main_EnterLevel
-.hurt:
-    dec shr_hp
-    lda #60
-    sta main_mercyTime
+    jsr main_DamagePlayer
     jmp main_CheckHurt_end
 .longLoop:
     jmp .loop

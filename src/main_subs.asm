@@ -1,4 +1,26 @@
 ;------------------------------------------------------------------------------
+main_KillPlayer subroutine
+    lda main_currLevel
+    asl
+    tay
+    lda prgdata_levelTable,y
+    sta main_arg
+    lda prgdata_levelTable+1,y
+    sta main_arg+1
+    pla
+    pla
+    jmp main_EnterLevel
+;------------------------------------------------------------------------------
+main_DamagePlayer subroutine
+    lda shr_hp
+    bne .hurt
+    jmp main_KillPlayer
+.hurt:
+    dec shr_hp
+    lda #60
+    sta main_mercyTime
+    rts
+;------------------------------------------------------------------------------
 main_LoadTilesOnMoveRight subroutine
     ;get tile column on screen
     MOV_D main_tmp, shr_cameraX
