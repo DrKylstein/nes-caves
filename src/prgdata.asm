@@ -71,7 +71,7 @@ prgdata_entityTiles:
     .byte 96 ; horizontal platform
     .byte 152 ; spider
     .byte 128 ; bat
-    .byte 164 ; power shot
+    .byte 156 ; power shot
     .byte 140 ; rock
     .byte 176 ; cart
     .byte 120 ; caterpillar head
@@ -164,6 +164,404 @@ prgdata_entitySpeeds:
     .byte 2 ; right laser
     .byte 0 ; left cannon
     .byte -2 ; left laser
+
+prgdata_entityAnims:
+    .byte ANIM_SMALL_LONG ; bullet
+    .byte ANIM_SMALL_LONG ; vertical platform
+    .byte ANIM_SMALL_LONG ; horizontal platform
+    .byte ANIM_SPIDER ; spider
+    .byte ANIM_SMALL_OSCILLATE ; bat
+    .byte ANIM_SMALL_OSCILLATE ; power shot
+    .byte ANIM_SMALL_OSCILLATE ; rock
+    .byte ANIM_SMALL_LONG ; cart
+    .byte ANIM_CATERPILLAR ; caterpillar head
+    .byte ANIM_CATERPILLAR_2 ; caterpillar front
+    .byte ANIM_CATERPILLAR ; caterpillar back
+    .byte ANIM_CATERPILLAR_2 ; caterpillar tail
+    .byte ANIM_SMALL_OSCILLATE ; slime horizontal
+    .byte ANIM_SMALL_OSCILLATE ; slime vertical
+    .byte ANIM_SMALL_NONE ; hammer
+    .byte ANIM_SMALL_NONE ; faucet
+    .byte ANIM_SMALL_NONE ; water
+    .byte ANIM_SMALL_LONG ; vertical platform
+    .byte ANIM_SMALL_LONG ; horizontal platform
+    .byte ANIM_SMALL_NONE ; right cannon
+    .byte ANIM_SMALL_NONE ; right laser
+    .byte ANIM_SMALL_HFLIP_NONE ; left cannon
+    .byte ANIM_SMALL_NONE ; left laser
+
+prgdata_animations:
+    .word prgdata_anim_null
+    .word prgdata_anim_smallNone
+    .word prgdata_anim_smallHFlipNone
+    .word prgdata_anim_smallOscillate
+    .word prgdata_anim_smallHFlipOscillate
+    .word prgdata_anim_smallVFlipOscillate
+    .word prgdata_anim_smallLong
+    .word prgdata_anim_smallHFlipLong
+    .word prgdata_anim_caterpillar
+    .word prgdata_anim_caterpillarHFlip
+    .word prgdata_anim_caterpillar2
+    .word prgdata_anim_caterpillarHFlip2
+    .word prgdata_anim_spider
+    .word prgdata_anim_spiderVFlip
+    
+prgdata_frame_small1:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 0
+    .byte 0
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 2
+    .byte 0
+    .byte 16
+
+prgdata_frame_smallHFlip1:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 2
+    .byte $40
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 0
+    .byte $40
+    .byte 16
+
+
+prgdata_frame_small2:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 4
+    .byte 0
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 6
+    .byte 0
+    .byte 16
+
+prgdata_frame_smallHFlip2:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 6
+    .byte $40
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 4
+    .byte $40
+    .byte 16
+
+prgdata_frame_small3:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 8
+    .byte 0
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 10
+    .byte 0
+    .byte 16
+
+prgdata_frame_smallHFlip3:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 10
+    .byte $40
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 8
+    .byte $40
+    .byte 16
+
+prgdata_anim_null subroutine
+    .byte 0
+    .word .frame1
+.frame1:
+    .byte 0
+
+prgdata_anim_smallNone subroutine
+    .byte 0
+    .word prgdata_frame_small1
+
+prgdata_anim_smallHFlipNone subroutine
+    .byte 0
+    .word prgdata_frame_smallHFlip1
+
+prgdata_anim_smallOscillate subroutine
+    .byte 3
+    .word prgdata_frame_small1
+    .word prgdata_frame_small2
+    .word prgdata_frame_small3
+    .word prgdata_frame_small2
+
+prgdata_anim_smallHFlipOscillate subroutine
+    .byte 3
+    .word prgdata_frame_smallHFlip1
+    .word prgdata_frame_smallHFlip2
+    .word prgdata_frame_smallHFlip3
+    .word prgdata_frame_smallHFlip2
+
+prgdata_anim_smallVFlipOscillate subroutine
+    .byte 3
+    .word .frame1
+    .word .frame2
+    .word .frame3
+    .word .frame2
+.frame1:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 0
+    .byte $80
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 2
+    .byte $80
+    .byte 16
+.frame2:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 4
+    .byte $80
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 6
+    .byte $80
+    .byte 16
+.frame3:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 8
+    .byte $80
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 10
+    .byte $80
+    .byte 16
+
+
+prgdata_anim_smallLong subroutine
+    .byte 3
+    .word prgdata_frame_small1
+    .word prgdata_frame_small2
+    .word prgdata_frame_small3
+    .word .frame4
+.frame4:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 12
+    .byte 0
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 14
+    .byte 0
+    .byte 16
+    
+prgdata_anim_smallHFlipLong subroutine
+    .byte 3
+    .word prgdata_frame_smallHFlip1
+    .word prgdata_frame_smallHFlip2
+    .word prgdata_frame_smallHFlip3
+    .word .frame4
+.frame4:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 14
+    .byte $40
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 12
+    .byte $40
+    .byte 16
+    
+    
+prgdata_frame_caterpillar1:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 0
+    .byte 0
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 2
+    .byte 0
+    .byte 16
+prgdata_frame_caterpillar2:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET-1
+    .byte 0
+    .byte 0
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET-1
+    .byte 2
+    .byte 0
+    .byte 16
+prgdata_frame_caterpillar3:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET-2
+    .byte 0
+    .byte 0
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET-2
+    .byte 2
+    .byte 0
+    .byte 16
+    
+prgdata_frame_caterpillarHFlip1:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 2
+    .byte $40
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 0
+    .byte $40
+    .byte 16
+prgdata_frame_caterpillarHFlip2:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET-1
+    .byte 2
+    .byte $40
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET-1
+    .byte 0
+    .byte $40
+    .byte 16
+prgdata_frame_caterpillarHFlip3:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET-2
+    .byte 2
+    .byte $40
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET-2
+    .byte 0
+    .byte $40
+    .byte 16
+    
+prgdata_anim_caterpillar subroutine
+    .byte 3
+    .word prgdata_frame_caterpillar1
+    .word prgdata_frame_caterpillar2
+    .word prgdata_frame_caterpillar3
+    .word prgdata_frame_caterpillar2
+    
+prgdata_anim_caterpillarHFlip subroutine
+    .byte 3
+    .word prgdata_frame_caterpillarHFlip1
+    .word prgdata_frame_caterpillarHFlip2
+    .word prgdata_frame_caterpillarHFlip3
+    .word prgdata_frame_caterpillarHFlip2
+    
+prgdata_anim_caterpillar2 subroutine
+    .byte 3
+    .word prgdata_frame_caterpillar3
+    .word prgdata_frame_caterpillar2
+    .word prgdata_frame_caterpillar1
+    .word prgdata_frame_caterpillar2
+    
+prgdata_anim_caterpillarHFlip2 subroutine
+    .byte 3
+    .word prgdata_frame_caterpillarHFlip3
+    .word prgdata_frame_caterpillarHFlip2
+    .word prgdata_frame_caterpillarHFlip1
+    .word prgdata_frame_caterpillarHFlip2
+
+prgdata_anim_spider subroutine
+    .byte 3
+    .word prgdata_frame_small1
+    .word .frame2
+    .word prgdata_frame_smallHFlip1
+    .word .frame2
+.frame2:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 2
+    .byte $40
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 2
+    .byte 0
+    .byte 16
+
+prgdata_anim_spiderVFlip subroutine
+    .byte 3
+    .word .frame1
+    .word .frame2
+    .word .frame3
+    .word .frame2
+    
+.frame1:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 0
+    .byte $80
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 2
+    .byte $80
+    .byte 16
+    
+.frame2:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 2
+    .byte $C0
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 2
+    .byte $80
+    .byte 16
+    
+.frame3:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 2
+    .byte $C0
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 0
+    .byte $C0
+    .byte 16
     
 prgdata_bits:
     .byte 1

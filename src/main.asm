@@ -362,6 +362,8 @@ main_InitEntities subroutine
     tax
     lda prgdata_entitySpeeds,x
     sta main_entityXVel,y
+    lda prgdata_entityAnims,x
+    sta main_entityAnim,y
     iny
     cpy #MAX_ENTITIES
     bne .loop
@@ -677,7 +679,6 @@ main_TileCollision:
     .word main_TC_On
     .word main_TC_On
     
-    
 main_TC_Harmful:
     jsr main_DamagePlayer
     jmp main_TC_Nop
@@ -687,7 +688,7 @@ main_TC_Deadly:
     lda #0
     sta main_sav
     jmp main_TC_UpdateTile
-
+    
 main_TC_Points:
     lda main_sav+3
     sec
@@ -958,6 +959,8 @@ main_TC_Nop:
     lda main_playerY+1
     and #ENT_Y_POS
     sta main_entityYHi
+    lda #ANIM_SMALL_LONG
+    sta main_entityAnim
     lda shr_powerTime+1
     beq .notPowerShot
     lda #PLY_ISUPSIDEDOWN
@@ -966,6 +969,8 @@ main_TC_Nop:
     lda #POWERSHOT_ID<<1
     ora main_entityYHi
     sta main_entityYHi
+    lda #ANIM_SMALL_OSCILLATE
+    sta main_entityAnim
 .notPowerShot
     lda #SFX_ROCKET
     sta shr_doSfx
@@ -996,6 +1001,7 @@ main_TC_Nop:
     sbc #0
     and #ENT_X_POS
     sta main_entityXHi
+    inc main_entityAnim
     jmp main_TileInteraction_end
     
 main_TC_UpdateTile:
@@ -1339,12 +1345,67 @@ main_updateEntities subroutine
 .loop:
     lda main_entityXHi,y
     bpl .active
-    jmp .inactive
+    jmp main_ER_Return
 .active:   
     lda main_entityYHi,y
+    and #ENT_Y_INDEX
+    tax
+    lda main_entityRoutine,x
+    sta main_tmp
+    lda main_entityRoutine+1,x
+    sta main_tmp+1
+    txa
     lsr
     tax
+    jmp (main_tmp)
     
+main_entityRoutine:
+    .word main_ER_Default
+    .word main_ER_Default
+    .word main_ER_Default
+    .word main_ER_Default
+    .word main_ER_Default
+    .word main_ER_Default
+    .word main_ER_Mimrock
+    .word main_ER_Default
+    .word main_ER_Default
+    .word main_ER_Default
+    .word main_ER_Default
+    .word main_ER_Default
+    .word main_ER_Default
+    .word main_ER_Default
+    .word main_ER_Default
+    .word main_ER_Default
+    .word main_ER_Default
+    .word main_ER_Default
+    .word main_ER_Default
+    .word main_ER_Default
+    .word main_ER_Default
+    .word main_ER_Default
+    .word main_ER_Default
+    .word main_ER_NOP
+    
+main_ER_Mimrock:
+    lda main_entityYLo,y
+    sta main_tmp
+    lda main_entityYHi,y
+    and #ENT_Y_POS
+    sta main_tmp+1
+    lda main_tmp
+    cmp main_playerY
+    bne hiding$
+    lda main_tmp+1
+    cmp main_playerY+1
+    bne hiding$
+    lda main_entityXVel,y
+    bne hiding$
+    lda #2
+    sta main_entityXVel,y
+hiding$:
+    jmp main_ER_Default
+
+    
+main_ER_Default:
     cpx #CATERPILLAR_ID
     bcc .noSkipHTest
     cpx #CATERPILLAR_ID+4
@@ -1390,26 +1451,6 @@ main_updateEntities subroutine
 .normal:
     jmp .inactive
 .persistent:
-
-    cpx #ROCK_ID
-    bne .notRock
-    lda main_entityYLo,y
-    sta main_tmp
-    lda main_entityYHi,y
-    and #ENT_Y_POS
-    sta main_tmp+1
-    lda main_tmp
-    cmp main_playerY
-    bne .notRock
-    lda main_tmp+1
-    cmp main_playerY+1
-    bne .notRock
-    lda main_entityXVel,y
-    bne .notRock
-    lda #2
-    sta main_entityXVel,y
-.notRock:
-
 
     lda prgdata_entityFlags2,x
     and #ENT_F2_ISGROUNDED
@@ -1897,6 +1938,8 @@ main_updateEntities subroutine
     cpy main_currPlatform
     bne .inactive
     ADD_D main_playerY, main_playerY, main_tmp+2
+main_ER_NOP:
+main_ER_Return:
 .inactive:
     dey
     bmi main_updateEntities_end
@@ -2162,204 +2205,139 @@ main_UpdatePlayerSprite subroutine
 main_UpdatePlayerSprite_end:
 
 main_UpdateEntitySprites subroutine
-    lda main_frame
-    and #1
-    sta main_sav
-    ldy #[shr_entitySprites-shr_oamShadow]
-    ldx #[MAX_ENTITIES-1]
-    lda main_sav
-    beq .loop
-    ldx #0
+    lda #[shr_entitySprites-shr_oamShadow]
+    sta main_startSprite
+    ldy #[MAX_ENTITIES-1]
 .loop:
-    lda main_entityYHi,x
-    stx main_tmp
+    lda main_entityXHi,y
+    bpl .active
+    jmp .skip
+.active:
+
+
+    lda main_entityYLo,y
+    sta main_tmp
+    lda main_entityYHi,y
+    and #ENT_Y_POS
+    sta main_tmp+1
+    SUB_D main_sav, main_tmp, shr_cameraY
+    lda main_sav+1
+    beq .y_ok
+    jmp .skip
+.y_ok:
+    
+    lda main_entityXLo,y
+    sta main_tmp
+    lda main_entityXHi,y
+    and #ENT_X_POS
+    sta main_tmp+1
+    SUB_D main_sav+3, main_tmp, shr_cameraX
+    lda main_sav+4
+    beq .x_ok
+    jmp .skip
+.x_ok:
+    
+    lda main_entityYHi,y
     lsr
     tax
     lda prgdata_entityTiles,x
-    sta main_sav+2
-    lda prgdata_entityFlags2,x
     sta main_sav+1
-    lda prgdata_entityFlags,x
-    ldx main_tmp
-    sta main_sav+3
     
+    lda prgdata_entityFlags,x
     and #ENT_F_COLOR
     lsr
-    sta shr_spriteFlags,y
-    sta shr_spriteFlags+OAM_SIZE,y
-
-    lda main_sav+1
-    and #ENT_F2_NOANIM
-    bne .notmoving
-    lda main_entityXHi,x
-    and #ENT_X_COUNT
-    bne .notmoving
-    lda main_entityXVel,x
-    bne .moving
-    lda main_sav+3
-    and #ENT_F_ISFACING
-    beq .moving
-.notmoving:
-    lda main_sav+2
-    sta shr_spriteIndex,y
-    clc
-    adc #2
-    sta shr_spriteIndex+OAM_SIZE,y
-    jmp .facing
-.moving:
-    lda main_sav+1
-    and #ENT_F2_SHORTANIM
-    beq .longanim
-    lda main_frame
-    and #12
-    cmp #12
-    bne .longanim
-    lda #4
-    jmp .anim
-.longanim:
-    lda main_frame
-    and #12
-.anim:
-    clc
-    adc main_sav+2
-    sta shr_spriteIndex,y
-    clc
-    adc #2
-    sta shr_spriteIndex+OAM_SIZE,y
-
-.facing:
-    lda main_sav+1
-    and #ENT_F2_ISXFLIPPED
-    bne .xflip
-    lda main_sav+3
-    and #ENT_F_ISFACING
-    beq .noFacing
-    lda main_entityXVel,x
-    bpl .noFacing
-    lda main_sav+3
-    and #ENT_F_ISVERTICAL
-    bne .vflip
-.xflip:
-    lda #$40
-    ora shr_spriteFlags,y
-    sta shr_spriteFlags,y
-    sta shr_spriteFlags+OAM_SIZE,y
-    lda shr_spriteIndex+OAM_SIZE,y
+    sta main_sav+2
+        
+    lda main_startSprite 
     sta main_tmp
-    lda shr_spriteIndex,y
-    sta shr_spriteIndex+OAM_SIZE,y
-    lda main_tmp
-    sta shr_spriteIndex,y
-    jmp .noFacing
-.vflip:
-    lda #$80
-    ora shr_spriteFlags,y
-    sta shr_spriteFlags,y
-    sta shr_spriteFlags+OAM_SIZE,y
-    
-.noFacing:
-    
-    lda #$FF
-    sta shr_spriteX,y
-    sta shr_spriteX+OAM_SIZE,y
-    sta shr_spriteY,y
-    sta shr_spriteY+OAM_SIZE,y
-    
-    lda main_sav+3
-    and #ENT_F_ISPROJECTILE
-    beq .notHidden
-    lda main_entityXHi,x
-    and #ENT_X_COUNT
-    beq .notHidden
-    jmp .out_of_range
-.notHidden:
-
-    lda main_entityXLo,x
-    sec
-    sbc shr_cameraX
-    sta main_tmp
-    lda main_entityXHi,x
-    and #ENT_X_POS
-    sbc shr_cameraX+1
+    lda #$02
     sta main_tmp+1
     
-    ;move origin to center
-    ADDI_D main_tmp, main_tmp, 8
-
-    lda main_entityXHi,x
-    bpl .foo
-    jmp .out_of_range
-.foo:
-    
-    CMPI_D main_tmp, $FF
-    bcs .out_of_range
-    lda main_tmp
-    sta shr_spriteX,y
-
-    ;move to pos of next sprite half
-    clc
-    lda main_tmp
-    adc #8
-    sta main_tmp;ADDI_D main_tmp, main_tmp, 8
-    
-    CMPI_D main_tmp, $FF
-    bcs .out_of_range
-
-    lda main_tmp
-    sta shr_spriteX+OAM_SIZE,y
-    
-    sec
-    lda main_entityYLo,x
-    sbc shr_cameraY
-    sta main_tmp
-    lda main_entityYHi,x
-    and #$1 ;remove flags
-    sbc shr_cameraY+1
-    sta main_tmp+1
-    ADDI_D main_tmp, main_tmp, 31
-    CMPI_D main_tmp, 240
-    bcs .out_of_range
-    CMPI_D main_tmp, 2*8
-    bcc .out_of_range
-    lda main_entityYHi,x
+    lda main_entityAnim,y
+    asl
+    tax
+    lda prgdata_animations,x
+    sta main_tmp+6
+    lda prgdata_animations+1,x
+    sta main_tmp+7
+    sty main_tmp+2
+    lda main_frame
     lsr
-    cmp #ROCK_ID
-    bne .notRock
-    lda main_entityXVel,x
-    bne .notRock
+    lsr
+    ldy #0
+    and (main_tmp+6),y
+    asl
+    tay
+    iny
+    lda (main_tmp+6),y
+    sta main_tmp+4
+    iny
+    lda (main_tmp+6),y
+    sta main_tmp+5
+    
+    ldy #0
+    lda (main_tmp+4),y
+    sta main_tmp+6
+    INC_D main_tmp+4
+    
+    ldx #0
+.copyLoop:
+    cpx main_tmp+6
+    bcs .done
+    ldy #0
+    
+.innerLoop:
+    lda (main_tmp+4),y
+    clc
+    adc main_sav,y
+    bcs .abort
+    sta (main_tmp),y
+    iny
+    inx
+    cpy #4
+    bne .innerLoop
+    
     lda #4
+    clc
     adc main_tmp
     sta main_tmp
-    lda shr_spriteFlags,y
-    ora #$20
-    sta shr_spriteFlags,y
-    lda shr_spriteFlags+OAM_SIZE,y
-    ora #$20
-    sta shr_spriteFlags+OAM_SIZE,y
-.notRock:
-    lda main_tmp
-    sta shr_spriteY,y
-    sta shr_spriteY+OAM_SIZE,y
-        
-
-        
-.out_of_range:
-    tya
+    
+    ADDI_D main_tmp+4, main_tmp+4, 4
+    
+    jmp .copyLoop
+.abort:
+    sty main_tmp+3
+    lda #4
+    sec
+    sbc main_tmp+3
+    sta main_tmp+3
+    txa
     clc
-    adc #[OAM_SIZE*2]
-    beq main_UpdateEntitySprites_end
-    tay
-    lda main_sav
-    bne .bar
-    dex
+    adc main_tmp+3
+    tax
+    ADDI_D main_tmp+4, main_tmp+4, 4
+    jmp .copyLoop
+.done:
+    lda main_tmp
+    sta main_startSprite
+    
+    ldy main_tmp+2
+.skip:
+    dey
     bmi main_UpdateEntitySprites_end
     jmp .loop
-.bar:
-    inx
-    cpx #MAX_ENTITIES
-    beq main_UpdateEntitySprites_end
-    jmp .loop
 main_UpdateEntitySprites_end
+
+main_ClearSprites subroutine
+    lda #$FF
+    ldy main_startSprite
+.loop:
+    beq main_ClearSprites_end
+    sta shr_oamShadow,y
+    iny
+    jmp .loop
+main_ClearSprites_end:
+
 
     inc main_frame
     inc shr_doDma

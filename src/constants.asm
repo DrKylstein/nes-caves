@@ -10,6 +10,8 @@ MT_VSCROLL_MARGIN = 5
 PX_MT_WIDTH = 16
 PX_MT_HEIGHT = 16
 
+PX_VIEWPORT_OFFSET = [MT_NAMETABLE_HEIGHT - MT_VIEWPORT_HEIGHT]*PX_MT_HEIGHT
+
 HEXFONT_BASE = $D9
 
 BONUS_TILES = 235
@@ -70,22 +72,6 @@ ROCK_ID = 6
 CATERPILLAR_ID = 8
 SLIME_ID = 12
 HAMMER_ID = 14
-
-;ENT2_SHOOTSDOWN
-;ENT2_SHOOTSRIGHT
-;ENT2_SHOOTSLEFT
-;ENT2_THINKS
-;laser
-;egg
-;web
-;eyeball
-;ball
-;biped bullet
-;stalactite
-;water
-;1-6 normal shots
-;power shot
-;switch to lookup? 5 bits table index, 2 bits hp?
 
 OAM_SIZE = 4
 SPR_Y = 0
@@ -150,3 +136,20 @@ TB_FOREGROUND  ds 1
 TB_MAPDOOR     ds 16
 TB_OFF:        ds 4
 TB_ON:         ds 4
+
+    SEG.U ANIMS
+    ORG $0000
+ANIM_NULL:                  ds 1
+ANIM_SMALL_NONE:            ds 1
+ANIM_SMALL_HFLIP_NONE:      ds 1
+ANIM_SMALL_OSCILLATE:       ds 1
+ANIM_SMALL_HFLIP_OSCILLATE: ds 1
+ANIM_SMALL_VFLIP_OSCILLATE: ds 1
+ANIM_SMALL_LONG:            ds 1
+ANIM_SMALL_HFLIP_LONG:      ds 1
+ANIM_CATERPILLAR:           ds 1
+ANIM_CATERPILLAR_HFLIP:     ds 1
+ANIM_CATERPILLAR_2:         ds 1
+ANIM_CATERPILLAR_HFLIP_2:   ds 1
+ANIM_SPIDER:                ds 1
+ANIM_SPIDER_VFLIP:          ds 1

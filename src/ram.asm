@@ -85,6 +85,7 @@ main_currLevel      ds 1
 main_cleared        ds 2
 main_currPlatform   ds 1
 main_paused         ds 1
+main_startSprite    ds 2
 
 main_entityBlock:
 main_entityXLo        ds MAX_ENTITIES
@@ -93,6 +94,7 @@ main_entityYLo        ds MAX_ENTITIES
 main_entityYHi        ds MAX_ENTITIES ; bottom bit
 main_entityBlockEnd:
 main_entityXVel       ds MAX_ENTITIES ; 
+main_entityAnim       ds MAX_ENTITIES
     ECHO $400-.," bytes left in page $300"
 
     ORG $0400
