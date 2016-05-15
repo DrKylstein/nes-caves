@@ -232,41 +232,41 @@ nmi_doStatus subroutine
     bvs .wait
     
 ;update sound during wait
-    lda shr_doSfx
-    beq .check
-    tay
-    lda prgdata_sfx,y
-    sta nmi_sfxPtr
-    iny
-    lda prgdata_sfx,y
-    sta nmi_sfxPtr+1
+    ; lda shr_doSfx
+    ; beq .check
+    ; tay
+    ; lda prgdata_sfx,y
+    ; sta nmi_sfxPtr
+    ; iny
+    ; lda prgdata_sfx,y
+    ; sta nmi_sfxPtr+1
     
-    ldy #0
-    lda (nmi_sfxPtr),y
-    sta nmi_sfxPeriod
-    INC_D nmi_sfxPtr
-    lda (nmi_sfxPtr),y
-    sta nmi_sfxPeriod+1
-    INC_D nmi_sfxPtr
-    sty shr_doSfx
-.check:
-    lda nmi_sfxPeriod+1
-    bpl .play
-    lda #0
-    sta APU_SQ1_VOL
-    jmp .wait2
-.play:
-    MOV_D APU_SQ1_LO, nmi_sfxPeriod
-    lda #%10111111
-    sta APU_SQ1_VOL
+    ; ldy #0
+    ; lda (nmi_sfxPtr),y
+    ; sta nmi_sfxPeriod
+    ; INC_D nmi_sfxPtr
+    ; lda (nmi_sfxPtr),y
+    ; sta nmi_sfxPeriod+1
+    ; INC_D nmi_sfxPtr
+    ; sty shr_doSfx
+; .check:
+    ; lda nmi_sfxPeriod+1
+    ; bpl .play
+    ; lda #0
+    ; sta APU_SQ1_VOL
+    ; jmp .wait2
+; .play:
+    ; MOV_D APU_SQ1_LO, nmi_sfxPeriod
+    ; lda #%10111111
+    ; sta APU_SQ1_VOL
     
-    ldy #0
-    lda (nmi_sfxPtr),y
-    sta nmi_sfxPeriod
-    INC_D nmi_sfxPtr
-    lda (nmi_sfxPtr),y
-    sta nmi_sfxPeriod+1
-    INC_D nmi_sfxPtr
+    ; ldy #0
+    ; lda (nmi_sfxPtr),y
+    ; sta nmi_sfxPeriod
+    ; INC_D nmi_sfxPtr
+    ; lda (nmi_sfxPtr),y
+    ; sta nmi_sfxPeriod+1
+    ; INC_D nmi_sfxPtr
 
 
 .wait2: ;wait for sprite 0 to be set again

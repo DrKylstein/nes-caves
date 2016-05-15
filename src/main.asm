@@ -1383,6 +1383,7 @@ main_entityRoutine:
     .word main_ER_Default
     .word main_ER_Default
     .word main_ER_Default
+    .word main_ER_Default
     .word main_ER_NOP
     
 main_ER_Mimrock:
@@ -1957,7 +1958,17 @@ main_ApplyVelocity subroutine
     lda #$FF
 .continueY:
     sta main_tmp+2
-    ADD_24 main_playerYFrac, main_tmp, main_playerYFrac
+    clc
+    lda main_tmp
+    adc main_playerYFrac
+    sta main_playerYFrac
+    lda main_tmp+1
+    adc main_playerY
+    sta main_playerY
+    lda main_tmp+2
+    adc main_playerY+1
+    sta main_playerY+1
+
     
     lda main_playerXVel
     sta main_tmp
