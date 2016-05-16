@@ -511,7 +511,8 @@ main_CheckInput subroutine
     eor main_ctrl
     sta main_pressed
     
-    MOVI main_playerXVel, 0
+    lda #0
+    sta main_playerXVel
 .start:
     lda main_pressed
     and #JOY_START_MASK
@@ -1060,7 +1061,8 @@ main_CheckLeft subroutine
     beq .hit
     jmp main_CheckLeft_end
 .hit:
-    MOVI main_playerXVel, 0
+    lda #0
+    sta main_playerXVel
 main_CheckLeft_end:
 
 main_CheckRight subroutine
@@ -1096,7 +1098,8 @@ main_CheckRight subroutine
     lda main_crystalsLeft
     beq main_CheckRight_end
 .hit:
-    MOVI main_playerXVel, 0
+    lda #0
+    sta main_playerXVel
 main_CheckRight_end:
 
 main_CheckGround subroutine
@@ -1198,8 +1201,8 @@ main_CheckGround subroutine
     ADDI_D main_playerY, main_tmp, 1
     sty main_currPlatform
 .hit_ground: ;stop if moving down
-    MOVI_D main_playerYVel, 0
     lda #0
+    sta main_playerYVel
     sta main_playerYFrac
     lda main_playerFlags
     and #PLY_ISUPSIDEDOWN
@@ -1321,6 +1324,12 @@ main_CheckHurt subroutine
     bpl .longLoop
     
     jsr main_DamagePlayer
+    lda prgdata_entityFlags,x
+    and #ENT_F_ISPROJECTILE
+    beq main_CheckHurt_end
+    lda #$80
+    sta main_entityXHi,y
+    
     jmp main_CheckHurt_end
 .longLoop:
     jmp .loop
@@ -1349,72 +1358,16 @@ main_updateEntities subroutine
 .active:   
     lda main_entityYHi,y
     and #ENT_Y_INDEX
-    tax
-    lda main_entityRoutine,x
-    sta main_tmp
-    lda main_entityRoutine+1,x
-    sta main_tmp+1
-    txa
     lsr
     tax
-    jmp (main_tmp)
-    
-main_entityRoutine:
-    .word main_ER_Default
-    .word main_ER_Default
-    .word main_ER_Default
-    .word main_ER_Default
-    .word main_ER_Default
-    .word main_ER_Default
-    .word main_ER_Mimrock
-    .word main_ER_Default
-    .word main_ER_Default
-    .word main_ER_Default
-    .word main_ER_Default
-    .word main_ER_Default
-    .word main_ER_Default
-    .word main_ER_Default
-    .word main_ER_Default
-    .word main_ER_Default
-    .word main_ER_Default
-    .word main_ER_Default
-    .word main_ER_Default
-    .word main_ER_Default
-    .word main_ER_Default
-    .word main_ER_Default
-    .word main_ER_Default
-    .word main_ER_Default
-    .word main_ER_NOP
-    
-main_ER_Mimrock:
-    lda main_entityYLo,y
-    sta main_tmp
-    lda main_entityYHi,y
-    and #ENT_Y_POS
-    sta main_tmp+1
-    lda main_tmp
-    cmp main_playerY
-    bne hiding$
-    lda main_tmp+1
-    cmp main_playerY+1
-    bne hiding$
-    lda main_entityXVel,y
-    bne hiding$
-    lda #2
-    sta main_entityXVel,y
-hiding$:
-    jmp main_ER_Default
 
-    
-main_ER_Default:
+;check offscreen
     cpx #CATERPILLAR_ID
     bcc .noSkipHTest
     cpx #CATERPILLAR_ID+4
     bcs .noSkipHTest
     jmp .vtest
 .noSkipHTest:
-    
-    
     lda prgdata_entityFlags,x
     and #ENT_F_ISPLATFORM
     bne .persistent
@@ -1448,10 +1401,149 @@ main_ER_Default:
     lda prgdata_entityFlags,x
     and #ENT_F_ISPROJECTILE
     beq .normal
-    jmp .die
+    lda #$80
+    sta main_entityXHi,y
 .normal:
-    jmp .inactive
+    jmp main_ER_Return
 .persistent:
+    txa
+    asl
+    tax
+    lda main_entityRoutine,x
+    sta main_tmp
+    lda main_entityRoutine+1,x
+    sta main_tmp+1
+    txa
+    lsr
+    tax
+    MOV_D shr_debugReg, main_tmp
+    jmp (main_tmp)
+main_ER_Return:
+    dey
+    BMI_L main_updateEntities_end
+    jmp .loop
+    
+main_entityRoutine:
+    .word main_ER_Bullet
+    .word main_ER_VerticalPlatform
+    .word main_ER_HorizontalPlatform
+    .word main_ER_Spider
+    .word main_ER_Bat
+    .word main_ER_PowerShot
+    .word main_ER_Mimrock
+    .word main_ER_Cart
+    .word main_ER_CaterpillarHead
+    .word main_ER_CaterpillarFront
+    .word main_ER_CaterpillarBack
+    .word main_ER_CaterpillarTail
+    .word main_ER_SlimeHorizontal
+    .word main_ER_SlimeVertical
+    .word main_ER_Hammer
+    .word main_ER_Faucet
+    .word main_ER_Water
+    .word main_ER_VerticalPlatformIdle
+    .word main_ER_HorizontalPlatformIdle
+    .word main_ER_RightCannon
+    .word main_ER_RightLaser
+    .word main_ER_LeftCannon
+    .word main_ER_LeftLaser
+    .word main_ER_Rex
+    
+IsNearPlayerY subroutine
+    lda main_entityYLo,y
+    sta main_tmp
+    lda main_entityYHi,y
+    and #ENT_Y_POS
+    sta main_tmp+1
+    ADDI_D main_tmp+2,main_playerY,8
+    REPEAT 4
+    LSR_D main_tmp
+    LSR_D main_tmp+2
+    REPEND
+    CMP_D main_tmp, main_tmp+2
+    rts
+
+ApplyXVel subroutine
+    lda main_entityXVel,y
+    ASR
+    sta main_tmp
+    lda #0
+    sta main_tmp+1
+    lda main_tmp
+    bpl .positive
+    lda #$FF
+    sta main_tmp+1
+.positive:
+    clc
+    lda main_entityXLo,y
+    adc main_tmp
+    sta main_entityXLo,y
+    lda main_entityXHi,y
+    adc main_tmp+1
+    and #ENT_X_POS
+    sta main_tmp
+    lda main_entityXHi,y
+    and #~ENT_X_POS
+    ora main_tmp
+    sta main_entityXHi,y
+    rts
+    
+main_ER_Mimrock:
+    jsr IsNearPlayerY
+    bne hiding$
+    lda main_entityXVel,y
+    bne hiding$
+    lda #2
+    sta main_entityXVel,y
+hiding$:
+    jmp main_ER_Default
+
+main_ER_RightCannon:
+main_ER_LeftCannon:
+    jsr IsNearPlayerY
+    bne return$
+    lda main_entityXHi+1,y
+    bpl return$
+    lda main_entityXHi,y
+    sta main_entityXHi+1,y
+    lda main_entityXLo,y
+    sta main_entityXLo+1,y
+    lda main_entityYHi,y
+    and #~ENT_Y_INDEX
+    ora #40
+    sta main_entityYHi+1,y
+    lda main_entityYLo,y
+    sta main_entityYLo+1,y
+return$:
+    jmp main_ER_Return
+    
+    
+
+main_ER_Bullet:
+main_ER_VerticalPlatform:
+main_ER_HorizontalPlatform:
+main_ER_Spider:
+main_ER_Bat:
+main_ER_PowerShot:
+main_ER_Cart:
+main_ER_CaterpillarHead:
+main_ER_CaterpillarFront:
+main_ER_CaterpillarBack:
+main_ER_CaterpillarTail:
+main_ER_SlimeHorizontal:
+main_ER_SlimeVertical:
+main_ER_Hammer:
+main_ER_Faucet:
+main_ER_Water:
+main_ER_VerticalPlatformIdle:
+main_ER_HorizontalPlatformIdle:
+main_ER_RightLaser:
+main_ER_LeftLaser:
+main_ER_Rex:
+    jmp main_ER_Default
+
+    
+main_ER_Default:
 
     lda prgdata_entityFlags2,x
     and #ENT_F2_ISGROUNDED
@@ -1616,39 +1708,11 @@ main_ER_Default:
     lda main_entityXVel,y
     bmi .longCheckDone
 .die:
-    cpy #0
-    beq .playerShot
-    lda main_entityXLo-1,y
-    sta main_entityXLo,y
-    lda main_entityYLo-1,y
-    sta main_entityYLo,y
-    
-    lda main_entityXHi,y
-    and #~ENT_X_POS
-    sta main_entityXHi,y
-    lda main_entityXHi-1,y
-    and #ENT_X_POS
-    ora main_entityXHi,y
-    sta main_entityXHi,y
-    
-    lda main_entityYHi,y
-    and #~ENT_Y_POS
-    sta main_entityYHi,y
-    lda main_entityYHi-1,y
-    and #ENT_Y_POS
-    ora main_entityYHi,y
-    sta main_entityYHi,y
-    
-    lda main_entityXHi,y
-    and #~ENT_X_COUNT
-    ora prgdata_entityCounts,x
-    sta main_entityXHi,y
-.noPause:
-
-    jmp .inactive
-.playerShot:
     lda #$80
     sta main_entityXHi,y
+    jmp .inactive
+.noPause:
+
     jmp .inactive
 
 
@@ -1939,12 +2003,8 @@ main_ER_Default:
     cpy main_currPlatform
     bne .inactive
     ADD_D main_playerY, main_playerY, main_tmp+2
-main_ER_NOP:
-main_ER_Return:
 .inactive:
-    dey
-    bmi main_updateEntities_end
-    jmp .loop
+    jmp main_ER_Return
 main_updateEntities_end:
 
 
