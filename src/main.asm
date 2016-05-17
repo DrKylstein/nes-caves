@@ -2,7 +2,6 @@
 ; MAIN THREAD
 ;------------------------------------------------------------------------------
 
-;lasers should only fire if player is within y range
 ;opened doors need to be updated if in nametable
 ;enemy points table
 ;large enemies - triceratops, t-rex, stalk-eye
@@ -818,7 +817,7 @@ main_TC_Exit:
     ldy main_currLevel
     cpy #16
     bcs .upperLevels
-    lda prgdata_bits,y
+    lda prgdata_bits+1,y
     ora main_cleared
     sta main_cleared
     jmp main_doExit
@@ -826,7 +825,7 @@ main_TC_Exit:
     tya
     sec
     sbc #8
-    lda prgdata_bits,y
+    lda prgdata_bits+1,y
     ora main_cleared+1
     sta main_cleared+1
 main_doExit:
@@ -843,7 +842,7 @@ main_TC_Entrance:
     cmp #16
     bcs .enterUpperLevel
     tay
-    lda prgdata_bits,y
+    lda prgdata_bits+1,y
     and main_cleared
     beq .uncleared
     lda main_sav+3
@@ -852,7 +851,7 @@ main_TC_Entrance:
     sec
     sbc #8
     tay
-    lda prgdata_bits,y
+    lda prgdata_bits+1,y
     and main_cleared+1
     beq .uncleared
     lda main_sav+3
@@ -917,7 +916,7 @@ main_TC_On:
     sec
     sbc #TB_ON
     tay
-    lda prgdata_bits,y
+    lda prgdata_bits+1,y
     eor main_switches
     sta main_switches
     dec main_sav
@@ -932,7 +931,7 @@ main_TC_Off:
     sec
     sbc #TB_OFF
     tay
-    lda prgdata_bits,y
+    lda prgdata_bits+1,y
     eor main_switches
     sta main_switches
     inc main_sav
@@ -1465,7 +1464,7 @@ IsNearPlayerY subroutine
 
 ApplyXVel subroutine
     lda main_entityXVel,y
-    ASR
+    ASR_
     sta main_tmp
     lda #0
     sta main_tmp+1
@@ -1500,6 +1499,9 @@ hiding$:
 
 main_ER_RightCannon:
 main_ER_LeftCannon:
+    lda #SWITCH_TURRETS
+    bit main_switches
+    beq return$
     jsr IsNearPlayerY
     bne return$
     lda main_entityXHi+1,y
@@ -1898,7 +1900,7 @@ main_ER_Default:
     beq .notSwitchable
     stx main_tmp
     tax
-    lda prgdata_bits-1,x
+    lda prgdata_bits,x
     ldx main_tmp
     and main_switches
     bne .notSwitchable

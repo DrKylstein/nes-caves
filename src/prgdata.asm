@@ -667,6 +667,7 @@ prgdata_anim_rex subroutine
 
     
 prgdata_bits:
+    .byte 0
     .byte 1
     .byte 2
     .byte 4

@@ -155,7 +155,7 @@
 .not:
 	ENDM
 
-    MAC ASR
+    MAC ASR_
     clc
     bpl .positive
     sec
