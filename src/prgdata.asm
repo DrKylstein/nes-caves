@@ -165,9 +165,9 @@ entitySpeeds:
     .byte 1 ; vertical platform
     .byte 1 ; horizontal platform
     .byte 0 ; right cannon
-    .byte 2 ; right laser
+    .byte 4 ; right laser
     .byte 0 ; left cannon
-    .byte -2 ; left laser
+    .byte -4 ; left laser
     .byte 1 ; rex
 
 entityAnims:

@@ -215,7 +215,7 @@ LoadPatterns subroutine
     bne .loop
 LoadPatterns_end:
 
-initNametables subroutine
+InitNametables subroutine
     ldy #$A0
     bit PPU_STATUS
     lda #$20
@@ -387,7 +387,7 @@ LoadMapState subroutine
     sta shr_nameTable
 LoadMapState_end:
 
-InitNametables subroutine
+LoadNametables subroutine
     MOV_D arg, shr_cameraX
     REPEAT 4
     LSR_D arg
@@ -449,7 +449,7 @@ InitNametables subroutine
     ADDI_D sav, sav, 23
     cpy #16
     bne .loop
-InitNametables_end:
+LoadNametables_end:
 
 InitAttributes subroutine
     MOV_D arg, shr_cameraX
@@ -1462,7 +1462,8 @@ IsNearPlayerY subroutine
     LSR_D tmp
     LSR_D tmp+2
     REPEND
-    CMP_D tmp, tmp+2
+    lda tmp
+    cmp tmp+2
     rts
 
 ApplyXVel subroutine
@@ -1555,6 +1556,14 @@ ER_LeftCannon subroutine
     bne return$
     lda entityXHi+1,y
     bpl return$
+    lda entityCount,y
+    clc
+    adc #1
+    sta entityCount,y
+    cmp #$10
+    bne return$
+    lda #0
+    sta entityCount,y
     lda entityXHi,y
     sta entityXHi+1,y
     lda entityXLo,y
