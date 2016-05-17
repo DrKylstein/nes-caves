@@ -1577,6 +1577,29 @@ ER_LeftCannon subroutine
 return$:
     jmp ER_Return
     
+ER_Faucet subroutine
+    lda entityXHi+1,y
+    bpl return$
+    lda entityCount,y
+    clc
+    adc #1
+    sta entityCount,y
+    cmp #$30
+    bne return$
+    lda #0
+    sta entityCount,y
+    lda entityXHi,y
+    sta entityXHi+1,y
+    lda entityXLo,y
+    sta entityXLo+1,y
+    lda entityYHi,y
+    and #~ENT_Y_INDEX
+    ora #32
+    sta entityYHi+1,y
+    lda entityYLo,y
+    sta entityYLo+1,y
+return$:
+    jmp ER_Return
     
 
 ER_Bullet subroutine
@@ -1657,7 +1680,6 @@ ER_CaterpillarTail:
 ER_SlimeHorizontal:
 ER_SlimeVertical:
 ER_Hammer:
-ER_Faucet:
 ER_Water:
 ER_VerticalPlatformIdle:
 ER_HorizontalPlatformIdle:
