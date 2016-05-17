@@ -53,9 +53,9 @@ nmi_OneTileCopy subroutine
     lda shr_tileAddr
     sta PPU_ADDR
     ldy shr_tileMeta
-    lda prgdata_metatiles,y
+    lda metatiles,y
     sta PPU_DATA
-    lda prgdata_metatiles+256,y
+    lda metatiles+256,y
     sta PPU_DATA
     ADDI_D shr_tileAddr, shr_tileAddr, 32
     lda shr_tileAddr+1
@@ -63,9 +63,9 @@ nmi_OneTileCopy subroutine
     lda shr_tileAddr
     sta PPU_ADDR
     ldy shr_tileMeta
-    lda prgdata_metatiles+512,y
+    lda metatiles+512,y
     sta PPU_DATA
-    lda prgdata_metatiles+768,y
+    lda metatiles+768,y
     sta PPU_DATA
     dec shr_doTile
 nmi_OneTileCopy_end:
@@ -235,10 +235,10 @@ nmi_doStatus subroutine
     ; lda shr_doSfx
     ; beq .check
     ; tay
-    ; lda prgdata_sfx,y
+    ; lda sfx,y
     ; sta nmi_sfxPtr
     ; iny
-    ; lda prgdata_sfx,y
+    ; lda sfx,y
     ; sta nmi_sfxPtr+1
     
     ; ldy #0

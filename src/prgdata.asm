@@ -2,7 +2,7 @@
 ; PRG ROM DATA
 ;------------------------------------------------------------------------------
 
-prgdata_playerWalk:
+playerWalk:
     .byte $00
     .byte $04
     .byte $08
@@ -14,7 +14,7 @@ prgdata_playerWalk:
     .byte $14
     .byte $08
     
-prgdata_entityFlags:
+entityFlags:
     .byte $92 ; bullet
     .byte $62 ; vertical platform
     .byte $42 ; horizontal platform
@@ -40,7 +40,7 @@ prgdata_entityFlags:
     .byte ENT_F_ISPROJECTILE | ENT_F_ISDEADLY | $00 ; left laser
     .byte ENT_F_ISMORTAL | ENT_F_ISDEADLY | $04 ; rex
     
-prgdata_entityFlags2:
+entityFlags2:
     .byte 0 ; bullet
     .byte 0 ; vertical platform
     .byte 0 ; horizontal platform
@@ -66,7 +66,7 @@ prgdata_entityFlags2:
     .byte 3 ; left laser
     .byte ENT_F2_ISHITTABLE | ENT_F2_ISGROUNDED ; rex
     
-prgdata_entityTiles:
+entityTiles:
     .byte 64 ; bullet
     .byte 80 ; vertical platform
     .byte 80 ; horizontal platform
@@ -92,7 +92,7 @@ prgdata_entityTiles:
     .byte 228 ; left laser
     .byte 168 ; rex
     
-prgdata_entityHPs:
+entityHPs:
     .byte 0 ; bullet
     .byte 0 ; vertical platform
     .byte 0 ; horizontal platform
@@ -118,7 +118,7 @@ prgdata_entityHPs:
     .byte 0 ; left laser
     .byte 4 ; rex
     
-prgdata_entityCounts:
+entityCounts:
     .byte 0 ; bullet
     .byte 0 ; vertical platform
     .byte 0 ; horizontal platform
@@ -144,7 +144,7 @@ prgdata_entityCounts:
     .byte $20 ; left laser
     .byte 0 ; rex
     
-prgdata_entitySpeeds:
+entitySpeeds:
     .byte 4 ; bullet
     .byte 1 ; vertical platform
     .byte 1 ; horizontal platform
@@ -170,7 +170,7 @@ prgdata_entitySpeeds:
     .byte -2 ; left laser
     .byte 1 ; rex
 
-prgdata_entityAnims:
+entityAnims:
     .byte ANIM_SMALL_LONG ; bullet
     .byte ANIM_SPIDER ; vertical platform
     .byte ANIM_SPIDER ; horizontal platform
@@ -196,24 +196,24 @@ prgdata_entityAnims:
     .byte ANIM_SMALL_NONE ; left laser
     .byte ANIM_REX ;rex
 
-prgdata_animations:
-    .word prgdata_anim_null
-    .word prgdata_anim_smallNone
-    .word prgdata_anim_smallHFlipNone
-    .word prgdata_anim_smallOscillate
-    .word prgdata_anim_smallHFlipOscillate
-    .word prgdata_anim_smallVFlipOscillate
-    .word prgdata_anim_smallLong
-    .word prgdata_anim_smallHFlipLong
-    .word prgdata_anim_caterpillar
-    .word prgdata_anim_caterpillarHFlip
-    .word prgdata_anim_caterpillar2
-    .word prgdata_anim_caterpillarHFlip2
-    .word prgdata_anim_spider
-    .word prgdata_anim_spiderVFlip
-    .word prgdata_anim_rex
+animations:
+    .word anim_null
+    .word anim_smallNone
+    .word anim_smallHFlipNone
+    .word anim_smallOscillate
+    .word anim_smallHFlipOscillate
+    .word anim_smallVFlipOscillate
+    .word anim_smallLong
+    .word anim_smallHFlipLong
+    .word anim_caterpillar
+    .word anim_caterpillarHFlip
+    .word anim_caterpillar2
+    .word anim_caterpillarHFlip2
+    .word anim_spider
+    .word anim_spiderVFlip
+    .word anim_rex
     
-prgdata_frame_small1:
+frame_small1:
     .byte 8
     
     .byte PX_VIEWPORT_OFFSET
@@ -226,7 +226,7 @@ prgdata_frame_small1:
     .byte 0
     .byte 16
 
-prgdata_frame_smallHFlip1:
+frame_smallHFlip1:
     .byte 8
     
     .byte PX_VIEWPORT_OFFSET
@@ -240,7 +240,7 @@ prgdata_frame_smallHFlip1:
     .byte 16
 
 
-prgdata_frame_small2:
+frame_small2:
     .byte 8
     
     .byte PX_VIEWPORT_OFFSET
@@ -253,7 +253,7 @@ prgdata_frame_small2:
     .byte 0
     .byte 16
 
-prgdata_frame_smallHFlip2:
+frame_smallHFlip2:
     .byte 8
     
     .byte PX_VIEWPORT_OFFSET
@@ -266,7 +266,7 @@ prgdata_frame_smallHFlip2:
     .byte $40
     .byte 16
 
-prgdata_frame_small3:
+frame_small3:
     .byte 8
     
     .byte PX_VIEWPORT_OFFSET
@@ -279,7 +279,7 @@ prgdata_frame_small3:
     .byte 0
     .byte 16
 
-prgdata_frame_smallHFlip3:
+frame_smallHFlip3:
     .byte 8
     
     .byte PX_VIEWPORT_OFFSET
@@ -292,35 +292,35 @@ prgdata_frame_smallHFlip3:
     .byte $40
     .byte 16
 
-prgdata_anim_null subroutine
+anim_null subroutine
     .byte 0
     .word .frame1
 .frame1:
     .byte 0
 
-prgdata_anim_smallNone subroutine
+anim_smallNone subroutine
     .byte 0
-    .word prgdata_frame_small1
+    .word frame_small1
 
-prgdata_anim_smallHFlipNone subroutine
+anim_smallHFlipNone subroutine
     .byte 0
-    .word prgdata_frame_smallHFlip1
+    .word frame_smallHFlip1
 
-prgdata_anim_smallOscillate subroutine
+anim_smallOscillate subroutine
     .byte 3
-    .word prgdata_frame_small1
-    .word prgdata_frame_small2
-    .word prgdata_frame_small3
-    .word prgdata_frame_small2
+    .word frame_small1
+    .word frame_small2
+    .word frame_small3
+    .word frame_small2
 
-prgdata_anim_smallHFlipOscillate subroutine
+anim_smallHFlipOscillate subroutine
     .byte 3
-    .word prgdata_frame_smallHFlip1
-    .word prgdata_frame_smallHFlip2
-    .word prgdata_frame_smallHFlip3
-    .word prgdata_frame_smallHFlip2
+    .word frame_smallHFlip1
+    .word frame_smallHFlip2
+    .word frame_smallHFlip3
+    .word frame_smallHFlip2
 
-prgdata_anim_smallVFlipOscillate subroutine
+anim_smallVFlipOscillate subroutine
     .byte 3
     .word .frame1
     .word .frame2
@@ -364,11 +364,11 @@ prgdata_anim_smallVFlipOscillate subroutine
     .byte 16
 
 
-prgdata_anim_smallLong subroutine
+anim_smallLong subroutine
     .byte 3
-    .word prgdata_frame_small1
-    .word prgdata_frame_small2
-    .word prgdata_frame_small3
+    .word frame_small1
+    .word frame_small2
+    .word frame_small3
     .word .frame4
 .frame4:
     .byte 8
@@ -383,11 +383,11 @@ prgdata_anim_smallLong subroutine
     .byte 0
     .byte 16
     
-prgdata_anim_smallHFlipLong subroutine
+anim_smallHFlipLong subroutine
     .byte 3
-    .word prgdata_frame_smallHFlip1
-    .word prgdata_frame_smallHFlip2
-    .word prgdata_frame_smallHFlip3
+    .word frame_smallHFlip1
+    .word frame_smallHFlip2
+    .word frame_smallHFlip3
     .word .frame4
 .frame4:
     .byte 8
@@ -403,7 +403,7 @@ prgdata_anim_smallHFlipLong subroutine
     .byte 16
     
     
-prgdata_frame_caterpillar1:
+frame_caterpillar1:
     .byte 8
     
     .byte PX_VIEWPORT_OFFSET
@@ -415,7 +415,7 @@ prgdata_frame_caterpillar1:
     .byte 2
     .byte 0
     .byte 16
-prgdata_frame_caterpillar2:
+frame_caterpillar2:
     .byte 8
     
     .byte PX_VIEWPORT_OFFSET-1
@@ -427,7 +427,7 @@ prgdata_frame_caterpillar2:
     .byte 2
     .byte 0
     .byte 16
-prgdata_frame_caterpillar3:
+frame_caterpillar3:
     .byte 8
     
     .byte PX_VIEWPORT_OFFSET-2
@@ -440,7 +440,7 @@ prgdata_frame_caterpillar3:
     .byte 0
     .byte 16
     
-prgdata_frame_caterpillarHFlip1:
+frame_caterpillarHFlip1:
     .byte 8
     
     .byte PX_VIEWPORT_OFFSET
@@ -452,7 +452,7 @@ prgdata_frame_caterpillarHFlip1:
     .byte 0
     .byte $40
     .byte 16
-prgdata_frame_caterpillarHFlip2:
+frame_caterpillarHFlip2:
     .byte 8
     
     .byte PX_VIEWPORT_OFFSET-1
@@ -464,7 +464,7 @@ prgdata_frame_caterpillarHFlip2:
     .byte 0
     .byte $40
     .byte 16
-prgdata_frame_caterpillarHFlip3:
+frame_caterpillarHFlip3:
     .byte 8
     
     .byte PX_VIEWPORT_OFFSET-2
@@ -477,39 +477,39 @@ prgdata_frame_caterpillarHFlip3:
     .byte $40
     .byte 16
     
-prgdata_anim_caterpillar subroutine
+anim_caterpillar subroutine
     .byte 3
-    .word prgdata_frame_caterpillar1
-    .word prgdata_frame_caterpillar2
-    .word prgdata_frame_caterpillar3
-    .word prgdata_frame_caterpillar2
+    .word frame_caterpillar1
+    .word frame_caterpillar2
+    .word frame_caterpillar3
+    .word frame_caterpillar2
     
-prgdata_anim_caterpillarHFlip subroutine
+anim_caterpillarHFlip subroutine
     .byte 3
-    .word prgdata_frame_caterpillarHFlip1
-    .word prgdata_frame_caterpillarHFlip2
-    .word prgdata_frame_caterpillarHFlip3
-    .word prgdata_frame_caterpillarHFlip2
+    .word frame_caterpillarHFlip1
+    .word frame_caterpillarHFlip2
+    .word frame_caterpillarHFlip3
+    .word frame_caterpillarHFlip2
     
-prgdata_anim_caterpillar2 subroutine
+anim_caterpillar2 subroutine
     .byte 3
-    .word prgdata_frame_caterpillar3
-    .word prgdata_frame_caterpillar2
-    .word prgdata_frame_caterpillar1
-    .word prgdata_frame_caterpillar2
+    .word frame_caterpillar3
+    .word frame_caterpillar2
+    .word frame_caterpillar1
+    .word frame_caterpillar2
     
-prgdata_anim_caterpillarHFlip2 subroutine
+anim_caterpillarHFlip2 subroutine
     .byte 3
-    .word prgdata_frame_caterpillarHFlip3
-    .word prgdata_frame_caterpillarHFlip2
-    .word prgdata_frame_caterpillarHFlip1
-    .word prgdata_frame_caterpillarHFlip2
+    .word frame_caterpillarHFlip3
+    .word frame_caterpillarHFlip2
+    .word frame_caterpillarHFlip1
+    .word frame_caterpillarHFlip2
 
-prgdata_anim_spider subroutine
+anim_spider subroutine
     .byte 3
-    .word prgdata_frame_small1
+    .word frame_small1
     .word .frame2
-    .word prgdata_frame_smallHFlip1
+    .word frame_smallHFlip1
     .word .frame2
 .frame2:
     .byte 8
@@ -524,7 +524,7 @@ prgdata_anim_spider subroutine
     .byte 0
     .byte 16
 
-prgdata_anim_spiderVFlip subroutine
+anim_spiderVFlip subroutine
     .byte 3
     .word .frame1
     .word .frame2
@@ -570,7 +570,7 @@ prgdata_anim_spiderVFlip subroutine
     .byte $C0
     .byte 16
     
-prgdata_anim_rex subroutine
+anim_rex subroutine
     .byte 3
     .word .frame1
     .word .frame2
@@ -666,7 +666,7 @@ prgdata_anim_rex subroutine
     .byte 16
 
     
-prgdata_bits:
+bits:
     .byte 0
     .byte 1
     .byte 2
@@ -677,7 +677,7 @@ prgdata_bits:
     .byte 64
     .byte 128
 
-prgdata_points:
+points:
     .byte 00,00,00,05;0
     .byte 00,00,01,00;0
     .byte 00,00,00,80;0
@@ -686,22 +686,22 @@ prgdata_points:
     .byte 00,00,00,10;0
     .byte 00,00,10,00;0
 
-prgdata_palettes:
+palettes:
 ;global
     incbin palsp.pal
 
-prgdata_hud:
+hud:
 	incbin hud.bin
-prgdata_metatiles:
+metatiles:
     incbin metatiles.bin
 
-prgdata_sfx:
-    .word prgdata_nullSound
-    .word prgdata_jumpSound
-    .word prgdata_crystalSound
-    .word prgdata_crystalSound
+sfx:
+    .word nullSound
+    .word jumpSound
+    .word crystalSound
+    .word crystalSound
 
-prgdata_jumpSound:
+jumpSound:
     .word 50
     .word 48
     .word 45
@@ -731,10 +731,10 @@ prgdata_jumpSound:
     .word 131
     .word 144
     .word 215
-prgdata_nullSound:
+nullSound:
     .word $FFFF
     
-prgdata_crystalSound:
+crystalSound:
     .word 101
     .word 98
     .word 98
@@ -787,39 +787,39 @@ prgdata_crystalSound:
     .word 0
     .word $FFFF
     
-prgdata_titleNames:
+titleNames:
     incbin title-names.bin
     incbin title-attr.bin
-prgdata_titlePalette:
+titlePalette:
     incbin paltl.pal
     
-prgdata_levelTable
-    dc.w  prgdata_level01
-    dc.w  prgdata_level02
-    dc.w  prgdata_level03
-    dc.w  prgdata_level01
-    dc.w  prgdata_level01
-    dc.w  prgdata_level01
-    dc.w  prgdata_level01
-    dc.w  prgdata_level01
-    dc.w  prgdata_level01
-    dc.w  prgdata_level01
-    dc.w  prgdata_level01
-    dc.w  prgdata_level01
-    dc.w  prgdata_level01
-    dc.w  prgdata_level01
-    dc.w  prgdata_level01
-    dc.w  prgdata_level01
+levelTable
+    dc.w  level01
+    dc.w  level02
+    dc.w  level03
+    dc.w  level01
+    dc.w  level01
+    dc.w  level01
+    dc.w  level01
+    dc.w  level01
+    dc.w  level01
+    dc.w  level01
+    dc.w  level01
+    dc.w  level01
+    dc.w  level01
+    dc.w  level01
+    dc.w  level01
+    dc.w  level01
     
-prgdata_mainMap:
+mainMap:
     incbin main_map.bin
     incbin pal00.pal
-prgdata_level01:
+level01:
     incbin level01.bin
     incbin pal01.pal
-prgdata_level02:
+level02:
     incbin level02.bin
     incbin pal02.pal
-prgdata_level03:
+level03:
     incbin level03.bin
     incbin pal00.pal

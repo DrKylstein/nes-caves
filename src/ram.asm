@@ -3,15 +3,15 @@
 ;------------------------------------------------------------------------------
     SEG.U RAM
     ORG $0000
-main_tmp            ds 8 ;MIPS-style $t#
+tmp            ds 8 ;MIPS-style $t#
 
-main_arg            ds 6 ;MIPS-style $a#
+arg            ds 6 ;MIPS-style $a#
 
-main_sav            ds 2 ;MIPS-style $s#
-main_dst            ds 2
-main_src            ds 2
+sav            ds 2 ;MIPS-style $s#
+dst            ds 2
+src            ds 2
 
-main_ret            ds 2 ;MIPS-style $p#
+ret            ds 2 ;MIPS-style $p#
 
 nmi_tmp             ds 1
 nmi_len             ds 1
@@ -60,56 +60,56 @@ shr_entitySprites:
     ORG $0300
 shr_debugReg        ds 2
 nmi_frame           ds 1
-main_frame           ds 1
-main_ctrl           ds 1
-main_oldCtrl        ds 1
-main_pressed        ds 1
-main_switches       ds 1
-main_playerFlags    ds 1 ;jumping,flipped,in air,behind,reverse gravity,000
-main_playerFrame    ds 1
-main_playerXVel     ds 1
-main_playerYVel     ds 2
-main_mercyTime      ds 1
-main_bonusCount     ds 1
+frame           ds 1
+ctrl           ds 1
+oldCtrl        ds 1
+pressed        ds 1
+switches       ds 1
+playerFlags    ds 1 ;jumping,flipped,in air,behind,reverse gravity,000
+playerFrame    ds 1
+playerXVel     ds 1
+playerYVel     ds 2
+mercyTime      ds 1
+bonusCount     ds 1
 shr_ammo            ds 1
 shr_powerTime       ds 2
 shr_hp              ds 1
 shr_score           ds 3
-main_caterpillarNext ds 1
-main_mapPX          ds 2
-main_mapPY          ds 2
-main_mapCamX        ds 2
-main_mapCamY        ds 2
-main_mapCamYMod     ds 1
-main_currLevel      ds 1
-main_cleared        ds 2
-main_currPlatform   ds 1
-main_paused         ds 1
-main_startSprite    ds 2
+caterpillarNext ds 1
+mapPX          ds 2
+mapPY          ds 2
+mapCamX        ds 2
+mapCamY        ds 2
+mapCamYMod     ds 1
+currLevel      ds 1
+cleared        ds 2
+currPlatform   ds 1
+paused         ds 1
+startSprite    ds 2
 
-main_entityBlock:
-main_entityXLo        ds MAX_ENTITIES
-main_entityXHi        ds MAX_ENTITIES
-main_entityYLo        ds MAX_ENTITIES
-main_entityYHi        ds MAX_ENTITIES ; bottom bit
-main_entityBlockEnd:
-main_entityXVel       ds MAX_ENTITIES ; 
-main_entityAnim       ds MAX_ENTITIES
+entityBlock:
+entityXLo        ds MAX_ENTITIES
+entityXHi        ds MAX_ENTITIES
+entityYLo        ds MAX_ENTITIES
+entityYHi        ds MAX_ENTITIES ; bottom bit
+entityBlockEnd:
+entityXVel       ds MAX_ENTITIES ; 
+entityAnim       ds MAX_ENTITIES
     ECHO $400-.," bytes left in page $300"
 
     ORG $0400
-main_levelMap       ds 960
-main_playerYFrac    ds 1 
-main_playerY        ds 2 
-main_playerX        ds 2 
+levelMap       ds 960
+playerYFrac    ds 1 
+playerY        ds 2 
+playerX        ds 2 
 shr_cameraX         ds 2 
 shr_cameraY         ds 2 
 shr_cameraYMod      ds 1 
 shr_nameTable       ds 1 
-main_crystalsLeft   ds 1
-main_doorsLo        ds 3
-main_doorsHi        ds 3
-main_levelDataEnd:
+crystalsLeft   ds 1
+doorsLo        ds 3
+doorsHi        ds 3
+levelDataEnd:
 
     ECHO $800-.,"bytes left in pages $400-$700"
 

@@ -78,7 +78,7 @@ init_apu subroutine
     iny
     cpy #$18
     bne .loop
-    MOVI_D nmi_sfxPtr, prgdata_nullSound
+    MOVI_D nmi_sfxPtr, nullSound
     jmp init_apu_end
 .regs:
     .byte $30,$08,$00,$00
@@ -89,14 +89,14 @@ init_apu subroutine
     .byte $00,$0F,$00,$40
 init_apu_end:
 
-main_clearOAM subroutine
+clearOAM subroutine
     lda #$FF
     ldy #0
 .loop:
     dey
     sta shr_oamShadow,y
     bne .loop
-main_clearOAM_end: 
+clearOAM_end: 
  
     ;; Other things you can do between vblank waits are set up audio
     ;; or set up other mapper registers.
@@ -113,11 +113,11 @@ main_clearOAM_end:
     lda #0
     sta PPU_MASK
 
-main_LoadTitlePatterns subroutine
+LoadTitlePatterns subroutine
     lda #<bank0_titleTiles
-    sta main_tmp
+    sta tmp
     lda #>bank0_titleTiles
-    sta main_tmp+1
+    sta tmp+1
     ldy #0
     lda banktable,y
     sta banktable,y
@@ -128,19 +128,19 @@ main_LoadTitlePatterns subroutine
     sta PPU_ADDR
     ldx #16
 .loop:
-    lda (main_tmp),y
+    lda (tmp),y
     sta PPU_DATA
     iny
     bne .loop
-    inc main_tmp+1
+    inc tmp+1
     dex
     bne .loop
-main_LoadTitlePatterns_end:
-main_LoadTitleNames subroutine
-    lda #<prgdata_titleNames
-    sta main_tmp
-    lda #>prgdata_titleNames
-    sta main_tmp+1
+LoadTitlePatterns_end:
+LoadTitleNames subroutine
+    lda #<titleNames
+    sta tmp
+    lda #>titleNames
+    sta tmp+1
     bit PPU_STATUS
     lda #$20
     sta PPU_ADDR
@@ -148,16 +148,16 @@ main_LoadTitleNames subroutine
     sta PPU_ADDR
     ldx #4
 .loop:
-    lda (main_tmp),y
+    lda (tmp),y
     sta PPU_DATA
     iny
     bne .loop
-    inc main_tmp+1
+    inc tmp+1
     dex
     bne .loop
-main_LoadTitleNames_end:
+LoadTitleNames_end:
 
-main_LoadTitlePalette subroutine
+LoadTitlePalette subroutine
     ldy #16
     bit PPU_STATUS
     lda #$3F
@@ -165,13 +165,13 @@ main_LoadTitlePalette subroutine
     lda #$00
     sta PPU_ADDR
 .loop:
-    lda prgdata_titlePalette,y
+    lda titlePalette,y
     sta PPU_DATA
     dey
     bpl .loop
-main_LoadTitlePalette_end:
+LoadTitlePalette_end:
 
-main_DoTitleScreen subroutine
+DoTitleScreen subroutine
     lda #0
     bit PPU_STATUS
     sta PPU_SCROLL
@@ -191,13 +191,13 @@ main_DoTitleScreen subroutine
     sta PPU_CTRL
     lda #0
     sta PPU_MASK
-main_DoTitleScreen_end:
+DoTitleScreen_end:
 
-main_LoadPatterns subroutine
+LoadPatterns subroutine
     lda #<bank0_defaultTiles
-    sta main_tmp
+    sta tmp
     lda #>bank0_defaultTiles
-    sta main_tmp+1
+    sta tmp+1
     ldy #0
     lda banktable,y
     sta banktable,y
@@ -206,16 +206,16 @@ main_LoadPatterns subroutine
     sty PPU_ADDR
     ldx #32
 .loop:
-    lda (main_tmp),y
+    lda (tmp),y
     sta PPU_DATA
     iny
     bne .loop
-    inc main_tmp+1
+    inc tmp+1
     dex
     bne .loop
-main_LoadPatterns_end:
+LoadPatterns_end:
 
-main_initNametables subroutine
+initNametables subroutine
     ldy #$A0
     bit PPU_STATUS
     lda #$20
@@ -234,7 +234,7 @@ main_initNametables subroutine
     lda #$00
     sta PPU_ADDR
 .load_hud
-    lda prgdata_hud,y
+    lda hud,y
     sta PPU_DATA
     iny
     cpy #$80
@@ -246,14 +246,14 @@ main_initNametables subroutine
     lda #$C0
     sta PPU_ADDR
 .load_hud_attr
-    lda prgdata_hud,y
+    lda hud,y
     sta PPU_DATA
     iny
     cpy #$88
     bne .load_hud_attr
     
     ;set sprite 0 for status bar
-main_InitSprites subroutine
+InitSprites subroutine
     ldy #0
 .loop:
     lda #15
@@ -270,7 +270,7 @@ main_InitSprites subroutine
     cpy #8*OAM_SIZE
     bne .loop
 
-    MOVI_D shr_palAddr, prgdata_palettes
+    MOVI_D shr_palAddr, palettes
     lda #SPRITE_PAL
     sta shr_palDest
     inc shr_doPalCopy
@@ -287,95 +287,95 @@ main_InitSprites subroutine
     lda #5
     sta shr_ammo
     ;lda #MAP_LEVEL
-    ;sta main_currLevel
+    ;sta currLevel
     
-    MOVI_D main_arg, prgdata_mainMap
+    MOVI_D arg, mainMap
 ;------------------------------------------------------------------------------
 ;Start of Level
 ;------------------------------------------------------------------------------
-main_EnterLevel:
-main_DisableDisplay subroutine
+EnterLevel:
+DisableDisplay subroutine
     lda #%00000000 ;disable nmi
     sta shr_ppuCtrl
     sta PPU_CTRL
     sta shr_ppuMask
     sta PPU_MASK
-main_DisableDisplay_end:
+DisableDisplay_end:
 
-main_ResetStats subroutine
+ResetStats subroutine
     lda #4
-    sta main_switches
+    sta switches
     lda #3
     sta shr_hp
     lda #MAX_ENTITIES
-    sta main_currPlatform
+    sta currPlatform
     lda #0
-    sta main_paused
+    sta paused
     sta shr_powerTime
     sta shr_powerTime+1
-    sta main_bonusCount
-    lda main_playerFlags
+    sta bonusCount
+    lda playerFlags
     and #~PLY_HASKEY
-    sta main_playerFlags
+    sta playerFlags
     lda #CATERPILLAR_ID+1
-    sta main_caterpillarNext
-main_ResetStats_end:
+    sta caterpillarNext
+ResetStats_end:
 
-    ADDI_D shr_palAddr, main_arg, [main_levelDataEnd-main_levelMap+main_entityBlockEnd-main_entityBlock]
+    ADDI_D shr_palAddr, arg, [levelDataEnd-levelMap+entityBlockEnd-entityBlock]
     lda #BG_PAL
     sta shr_palDest
     inc shr_doPalCopy
 
 
-main_LoadLevel subroutine
-    MOV_D main_tmp+2, main_arg
-    MOVI_D main_tmp, main_levelMap
+LoadLevel subroutine
+    MOV_D tmp+2, arg
+    MOVI_D tmp, levelMap
     ldy #0
     ldx #4
 .loop:
-    lda (main_tmp+2),y
-    sta (main_tmp),y
+    lda (tmp+2),y
+    sta (tmp),y
     iny
     bne .loop
-    ADDI_D main_tmp+2, main_tmp+2, 256
-    ADDI_D main_tmp, main_tmp, 256
+    ADDI_D tmp+2, tmp+2, 256
+    ADDI_D tmp, tmp, 256
     dex
     bne .loop
     
-    ADDI_D main_tmp+2, main_arg, [main_levelDataEnd-main_levelMap]
-    MOVI_D main_tmp, main_entityBlock
+    ADDI_D tmp+2, arg, [levelDataEnd-levelMap]
+    MOVI_D tmp, entityBlock
     ldy #0
 .copyEntities:
-    lda (main_tmp+2),y
-    sta (main_tmp),y
+    lda (tmp+2),y
+    sta (tmp),y
     iny
-    cpy #[main_entityBlockEnd-main_entityBlock]
+    cpy #[entityBlockEnd-entityBlock]
     bne .copyEntities
-main_LoadLevel_end:
+LoadLevel_end:
 
-main_InitEntities subroutine
+InitEntities subroutine
     ldy #0
 .loop:
-    lda main_entityYHi,y
+    lda entityYHi,y
     lsr
     tax
-    lda prgdata_entitySpeeds,x
-    sta main_entityXVel,y
-    lda prgdata_entityAnims,x
-    sta main_entityAnim,y
+    lda entitySpeeds,x
+    sta entityXVel,y
+    lda entityAnims,x
+    sta entityAnim,y
     iny
     cpy #MAX_ENTITIES
     bne .loop
-main_InitEntities_end:
+InitEntities_end:
 
-main_LoadMapState subroutine
-    lda main_currLevel
-    bpl main_LoadMapState_end
-    MOV_D main_playerX, main_mapPX
-    MOV_D main_playerY, main_mapPY
-    MOV_D shr_cameraX, main_mapCamX
-    MOV_D shr_cameraY, main_mapCamY
-    lda main_mapCamYMod
+LoadMapState subroutine
+    lda currLevel
+    bpl LoadMapState_end
+    MOV_D playerX, mapPX
+    MOV_D playerY, mapPY
+    MOV_D shr_cameraX, mapCamX
+    MOV_D shr_cameraY, mapCamY
+    lda mapCamYMod
     sta shr_cameraYMod
     CMPI_D shr_cameraY, 240
     lda #0
@@ -383,328 +383,328 @@ main_LoadMapState subroutine
     lda #8
 .nt0:
     sta shr_nameTable
-main_LoadMapState_end:
+LoadMapState_end:
 
-main_InitNametables subroutine
-    MOV_D main_arg, shr_cameraX
+InitNametables subroutine
+    MOV_D arg, shr_cameraX
     REPEAT 4
-    LSR_D main_arg
+    LSR_D arg
     REPEND
-    jsr main_MultiplyBy24
-    ADDI_D main_sav, main_ret, main_levelMap
+    jsr MultiplyBy24
+    ADDI_D sav, ret, levelMap
     ldy #0
-    MOV_D main_sav+2, shr_cameraX
+    MOV_D sav+2, shr_cameraX
     REPEAT 3
-    LSR_D main_sav+2
+    LSR_D sav+2
     REPEND
         
 .loop:
     ;args to buffer column    
-    MOV_D main_arg, main_sav
+    MOV_D arg, sav
     tya
     clc
-    adc main_arg
-    sta main_arg
+    adc arg
+    sta arg
     lda #0
-    adc main_arg+1
-    sta main_arg+1
+    adc arg+1
+    sta arg+1
     tya
     asl
     clc
-    adc main_sav+2
+    adc sav+2
     and #$1F
-    sta main_arg+2
+    sta arg+2
     tya
     pha
-    jsr main_EvenColumn
+    jsr EvenColumn
     jsr nmi_CopyTileCol     ;terribly unsafe
     pla
     tay
     
-    MOV_D main_arg, main_sav
+    MOV_D arg, sav
     tya
     clc
-    adc main_arg
-    sta main_arg
+    adc arg
+    sta arg
     lda #0
-    adc main_arg+1
-    sta main_arg+1
+    adc arg+1
+    sta arg+1
     tya
     asl
     sec
     adc #0
-    adc main_sav+2
+    adc sav+2
     and #$1F
-    sta main_arg+2
+    sta arg+2
     tya
     pha
-    jsr main_OddColumn
+    jsr OddColumn
     jsr nmi_CopyTileCol     ;ditto
     pla
     tay
     
     iny
-    ADDI_D main_sav, main_sav, 23
+    ADDI_D sav, sav, 23
     cpy #16
     bne .loop
-main_InitNametables_end:
+InitNametables_end:
 
-main_InitAttributes subroutine
-    MOV_D main_arg, shr_cameraX
+InitAttributes subroutine
+    MOV_D arg, shr_cameraX
     REPEAT 4
-    LSR_D main_arg
+    LSR_D arg
     REPEND
-    jsr main_MultiplyBy24
-    ADDI_D main_arg, main_ret, main_levelMap
+    jsr MultiplyBy24
+    ADDI_D arg, ret, levelMap
     lda shr_cameraX
     REPEAT 5
     lsr
     REPEND
-    sta main_sav+3
+    sta sav+3
     ldy #0
 .loop:
     tya
     clc
-    adc main_sav+3
+    adc sav+3
     and #7
     asl
     asl
     sta shr_tileCol
-    sty main_sav+2
-    jsr main_ColorColumn
+    sty sav+2
+    jsr ColorColumn
     jsr nmi_CopyAttrCol
-    ldy main_sav+2
-    lda main_arg
+    ldy sav+2
+    lda arg
     clc
     adc #MT_MAP_HEIGHT*2
-    sta main_arg
-    lda main_arg+1
+    sta arg
+    lda arg+1
     adc #0
-    sta main_arg+1
+    sta arg+1
     iny
     cpy #8
     bne .loop
-main_InitAttributes_end:
+InitAttributes_end:
 
-    jsr main_LoadTilesOnMoveLeft
+    jsr LoadTilesOnMoveLeft
 
-main_ReenableDisplay subroutine
+ReenableDisplay subroutine
     lda #%10110000 ;enable nmi
     sta shr_ppuCtrl
     sta PPU_CTRL
     lda #%00011000
     sta shr_ppuMask
     inc shr_doRegCopy
-main_ReenableDisplay_end:
+ReenableDisplay_end:
 
 ;------------------------------------------------------------------------------
 ;Every Frame
 ;------------------------------------------------------------------------------
-main_loop:
-main_CheckInput subroutine
-    lda main_ctrl
-    sta main_oldCtrl
+loop:
+CheckInput subroutine
+    lda ctrl
+    sta oldCtrl
     jsr read_joy
-    sta main_ctrl
-    and main_oldCtrl
-    eor main_ctrl
-    sta main_pressed
+    sta ctrl
+    and oldCtrl
+    eor ctrl
+    sta pressed
     
     lda #0
-    sta main_playerXVel
+    sta playerXVel
 .start:
-    lda main_pressed
+    lda pressed
     and #JOY_START_MASK
     beq .foo
     lda #1
-    eor main_paused
-    sta main_paused
+    eor paused
+    sta paused
 .foo    
-    lda main_paused
+    lda paused
     beq .left
-    lda main_pressed
+    lda pressed
     and #JOY_SELECT_MASK
-    beq main_CheckInput
-    jmp main_doExit
+    beq CheckInput
+    jmp doExit
 .left:
-    lda main_ctrl
+    lda ctrl
     and #JOY_LEFT_MASK
     beq .left_end
     lda #<-1
-    sta main_playerXVel
-    lda main_playerFlags
+    sta playerXVel
+    lda playerFlags
     ora #PLY_ISFLIPPED
-    sta main_playerFlags
+    sta playerFlags
 .left_end:
 .right:
-    lda main_ctrl
+    lda ctrl
     and #JOY_RIGHT_MASK
     beq .right_end
     lda #1
-    sta main_playerXVel
-    lda main_playerFlags
+    sta playerXVel
+    lda playerFlags
     and #~PLY_ISFLIPPED
-    sta main_playerFlags
+    sta playerFlags
 .right_end:
-    lda main_pressed
+    lda pressed
     and #JOY_SELECT_MASK
     beq .jump
     lda #0
-    sta main_crystalsLeft
+    sta crystalsLeft
 .jump:
-    lda main_ctrl
+    lda ctrl
     and #JOY_A_MASK
-    beq main_CheckInput_end
-    bit main_playerFlags
-    bmi main_CheckInput_end
-    MOVI_D main_playerYVel, JUMP_VELOCITY
-    lda main_playerFlags
+    beq CheckInput_end
+    bit playerFlags
+    bmi CheckInput_end
+    MOVI_D playerYVel, JUMP_VELOCITY
+    lda playerFlags
     and #PLY_ISUPSIDEDOWN
     beq .notUpsideDown
-    MOVI_D main_playerYVel, -JUMP_VELOCITY
+    MOVI_D playerYVel, -JUMP_VELOCITY
 .notUpsideDown:
-    lda main_playerFlags
+    lda playerFlags
     ora #PLY_ISJUMPING
-    sta main_playerFlags
+    sta playerFlags
     lda #SFX_JUMP
     sta shr_doSfx
-main_CheckInput_end:
+CheckInput_end:
 
-main_TileInteraction subroutine
-    lda main_playerFlags
+TileInteraction subroutine
+    lda playerFlags
     and #~PLY_ISBEHIND
-    sta main_playerFlags
+    sta playerFlags
 
     ;a0 = x in tiles
-    ADDI_D main_arg, main_playerX, 7
+    ADDI_D arg, playerX, 7
     REPEAT 4
-    LSR_D main_arg
+    LSR_D arg
     REPEND
-    lda main_arg
-    sta main_sav+1
+    lda arg
+    sta sav+1
     ;a2 = y in tiles
-    ADDI_D main_arg+2, main_playerY, 7
+    ADDI_D arg+2, playerY, 7
     REPEAT 4
-    LSR_D main_arg+2
+    LSR_D arg+2
     REPEND
-    lda main_arg+2
-    sta main_sav+2
+    lda arg+2
+    sta sav+2
     
-    jsr main_MultiplyBy24 ;takes arg0, which we no longer care about after this
+    jsr MultiplyBy24 ;takes arg0, which we no longer care about after this
                           ;returns
     ;t0 = y+ x*24
-    ADD_D main_tmp, main_arg+2, main_ret
+    ADD_D tmp, arg+2, ret
     
     ;lookup tile, get behavior
-    ADDI_D main_tmp, main_tmp, main_levelMap
+    ADDI_D tmp, tmp, levelMap
     ldy #0
-    lda (main_tmp),y
-    sta main_sav
+    lda (tmp),y
+    sta sav
     tay
-    lda prgdata_metatiles+256*4,y
+    lda metatiles+256*4,y
     lsr
     lsr
-    sta main_sav+3
+    sta sav+3
     asl
     tay
-    lda main_TileCollision,y
-    sta main_tmp
-    lda main_TileCollision+1,y
-    sta main_tmp+1
-    jmp (main_tmp)
+    lda TileCollision,y
+    sta tmp
+    lda TileCollision+1,y
+    sta tmp+1
+    jmp (tmp)
     
-main_TileCollision:
-    .word main_TC_Nop;main_TC_Empty
-    .word main_TC_Nop;main_TC_Solid
-    .word main_TC_Nop;main_TC_Platform
-    .word main_TC_Exit
-    .word main_TC_Harmful
-    .word main_TC_Deadly
-    .word main_TC_Nop;main_TC_LightsOn
-    .word main_TC_Nop;main_TC_LightsOff
-    .word main_TC_Nop;main_TC_WeakBlock
-    .word main_TC_Ammo
-    .word main_TC_Nop;main_TC_Strength
-    .word main_TC_Powershot
-    .word main_TC_Gravity
-    .word main_TC_Key
-    .word main_TC_Nop;main_TC_Stop
-    .word main_TC_Chest
-    .word main_TC_Points ;crystal
-    .word main_TC_Points ;egg
-    .word main_TC_Points ;800
-    .word main_TC_Points ;1000
-    .word main_TC_Points ;5000
-    .word main_TC_Points ;bonus
-    .word main_TC_Nop
-    .word main_TC_Nop
-    .word main_TC_Hidden
-    .word main_TC_Nop
-    .word main_TC_Nop
-    .word main_TC_Lock
-    .word main_TC_Lock
-    .word main_TC_Lock
-    .word main_TC_Nop
-    .word main_TC_Nop
-    .word main_TC_Nop ;air
-    .word main_TC_Foreground
-    .word main_TC_Nop
-    .word main_TC_Nop
-    .word main_TC_Nop
-    .word main_TC_Nop
-    .word main_TC_Nop
-    .word main_TC_Nop
-    .word main_TC_Entrance
-    .word main_TC_Entrance
-    .word main_TC_Entrance
-    .word main_TC_Entrance
-    .word main_TC_Entrance
-    .word main_TC_Entrance
-    .word main_TC_Entrance
-    .word main_TC_Entrance
-    .word main_TC_Entrance
-    .word main_TC_Entrance
-    .word main_TC_Entrance
-    .word main_TC_Entrance
-    .word main_TC_Entrance
-    .word main_TC_Entrance
-    .word main_TC_Entrance
-    .word main_TC_Entrance
-    .word main_TC_Off
-    .word main_TC_Off
-    .word main_TC_Off
-    .word main_TC_Off
-    .word main_TC_On
-    .word main_TC_On
-    .word main_TC_On
-    .word main_TC_On
+TileCollision:
+    .word TC_Nop;TC_Empty
+    .word TC_Nop;TC_Solid
+    .word TC_Nop;TC_Platform
+    .word TC_Exit
+    .word TC_Harmful
+    .word TC_Deadly
+    .word TC_Nop;TC_LightsOn
+    .word TC_Nop;TC_LightsOff
+    .word TC_Nop;TC_WeakBlock
+    .word TC_Ammo
+    .word TC_Nop;TC_Strength
+    .word TC_Powershot
+    .word TC_Gravity
+    .word TC_Key
+    .word TC_Nop;TC_Stop
+    .word TC_Chest
+    .word TC_Points ;crystal
+    .word TC_Points ;egg
+    .word TC_Points ;800
+    .word TC_Points ;1000
+    .word TC_Points ;5000
+    .word TC_Points ;bonus
+    .word TC_Nop
+    .word TC_Nop
+    .word TC_Hidden
+    .word TC_Nop
+    .word TC_Nop
+    .word TC_Lock
+    .word TC_Lock
+    .word TC_Lock
+    .word TC_Nop
+    .word TC_Nop
+    .word TC_Nop ;air
+    .word TC_Foreground
+    .word TC_Nop
+    .word TC_Nop
+    .word TC_Nop
+    .word TC_Nop
+    .word TC_Nop
+    .word TC_Nop
+    .word TC_Entrance
+    .word TC_Entrance
+    .word TC_Entrance
+    .word TC_Entrance
+    .word TC_Entrance
+    .word TC_Entrance
+    .word TC_Entrance
+    .word TC_Entrance
+    .word TC_Entrance
+    .word TC_Entrance
+    .word TC_Entrance
+    .word TC_Entrance
+    .word TC_Entrance
+    .word TC_Entrance
+    .word TC_Entrance
+    .word TC_Entrance
+    .word TC_Off
+    .word TC_Off
+    .word TC_Off
+    .word TC_Off
+    .word TC_On
+    .word TC_On
+    .word TC_On
+    .word TC_On
     
-main_TC_Harmful:
-    jsr main_DamagePlayer
-    jmp main_TC_Nop
+TC_Harmful:
+    jsr DamagePlayer
+    jmp TC_Nop
     
-main_TC_Deadly:
-    jsr main_KillPlayer
+TC_Deadly:
+    jsr KillPlayer
     lda #0
-    sta main_sav
-    jmp main_TC_UpdateTile
+    sta sav
+    jmp TC_UpdateTile
     
-main_TC_Points:
-    lda main_sav+3
+TC_Points:
+    lda sav+3
     sec
     sbc #TB_POINTS
     asl
     asl
     tax
-    lda prgdata_points+1,x
-    sta main_arg+2
-    lda prgdata_points+2,x
-    sta main_arg+1
-    lda prgdata_points+3,x
-    sta main_arg
+    lda points+1,x
+    sta arg+2
+    lda points+2,x
+    sta arg+1
+    lda points+3,x
+    sta arg
     cpx #0
     bne .notCrystal
-    dec main_crystalsLeft
+    dec crystalsLeft
     bne .notCrystal
     inc shr_flashBg
 .notCrystal:
@@ -712,57 +712,57 @@ main_TC_Points:
     bne .notBonus
     lda #8
     clc
-    adc main_bonusCount
-    sta main_bonusCount
+    adc bonusCount
+    sta bonusCount
     cmp #5<<3
     bcc .notBonus
     ldx #6<<2
-    lda prgdata_points+1,x
-    sta main_arg+2
-    lda prgdata_points+2,x
-    sta main_arg+1
-    lda prgdata_points+3,x
-    sta main_arg
+    lda points+1,x
+    sta arg+2
+    lda points+2,x
+    sta arg+1
+    lda points+3,x
+    sta arg
 .notBonus:
-    jsr main_AddScore
+    jsr AddScore
     lda #SFX_CRYSTAL
     sta shr_doSfx
     
     lda #0
-    sta main_sav
-    jmp main_TC_UpdateTile
-main_TC_Points_end:
+    sta sav
+    jmp TC_UpdateTile
+TC_Points_end:
 
-main_TC_Key:
+TC_Key:
     lda #SFX_CRYSTAL
     sta shr_doSfx
-    lda main_playerFlags
+    lda playerFlags
     ora #PLY_HASKEY
-    sta main_playerFlags
+    sta playerFlags
     lda #0
-    sta main_sav
-    jmp main_TC_UpdateTile
-main_TC_Key_end:
+    sta sav
+    jmp TC_UpdateTile
+TC_Key_end:
 
-main_TC_Chest:
+TC_Chest:
     lda #PLY_HASKEY
-    bit main_playerFlags
-    BEQ_L main_TC_Return
+    bit playerFlags
+    BEQ_L TC_Return
     lda #SFX_CRYSTAL
     sta shr_doSfx
     
     lda #2
-    sta main_arg+1
+    sta arg+1
     lda #0
-    sta main_arg
-    sta main_arg+2
-    jsr main_AddScore
+    sta arg
+    sta arg+2
+    jsr AddScore
     
-    inc main_sav
-    jmp main_TC_UpdateTile
-main_TC_Chest_end:
+    inc sav
+    jmp TC_UpdateTile
+TC_Chest_end:
 
-main_TC_Ammo:
+TC_Ammo:
     lda #SFX_CRYSTAL
     sta shr_doSfx
     lda shr_ammo
@@ -770,11 +770,11 @@ main_TC_Ammo:
     adc #5
     sta shr_ammo
     lda #0
-    sta main_sav
-    jmp main_TC_UpdateTile
-main_TC_Ammo_end:
+    sta sav
+    jmp TC_UpdateTile
+TC_Ammo_end:
 
-main_TC_Powershot:
+TC_Powershot:
     lda #SFX_CRYSTAL
     sta shr_doSfx
     lda #10
@@ -782,14 +782,14 @@ main_TC_Powershot:
     lda #60
     sta shr_powerTime
     lda #~PLY_ISUPSIDEDOWN
-    and main_playerFlags
-    sta main_playerFlags
+    and playerFlags
+    sta playerFlags
     lda #0
-    sta main_sav
-    jmp main_TC_UpdateTile
-main_TC_Powershot_end:
+    sta sav
+    jmp TC_UpdateTile
+TC_Powershot_end:
 
-main_TC_Gravity:
+TC_Gravity:
     lda #SFX_CRYSTAL
     sta shr_doSfx
     lda #10
@@ -797,342 +797,342 @@ main_TC_Gravity:
     lda #60
     sta shr_powerTime
     lda #PLY_ISUPSIDEDOWN
-    ora main_playerFlags
-    sta main_playerFlags
+    ora playerFlags
+    sta playerFlags
     lda #0
-    sta main_sav
-    jmp main_TC_UpdateTile
-main_TC_Gravity_end:
+    sta sav
+    jmp TC_UpdateTile
+TC_Gravity_end:
 
-main_TC_Foreground:
-    lda main_playerFlags
+TC_Foreground:
+    lda playerFlags
     ora #PLY_ISBEHIND
-    sta main_playerFlags
-    jmp main_TC_Return
-main_TC_Foreground_end:
+    sta playerFlags
+    jmp TC_Return
+TC_Foreground_end:
 
-main_TC_Exit:
-    lda main_crystalsLeft
-    BNE_L main_TC_Return
-    ldy main_currLevel
+TC_Exit:
+    lda crystalsLeft
+    BNE_L TC_Return
+    ldy currLevel
     cpy #16
     bcs .upperLevels
-    lda prgdata_bits+1,y
-    ora main_cleared
-    sta main_cleared
-    jmp main_doExit
+    lda bits+1,y
+    ora cleared
+    sta cleared
+    jmp doExit
 .upperLevels:
     tya
     sec
     sbc #8
-    lda prgdata_bits+1,y
-    ora main_cleared+1
-    sta main_cleared+1
-main_doExit:
+    lda bits+1,y
+    ora cleared+1
+    sta cleared+1
+doExit:
     lda #MAP_LEVEL
-    sta main_currLevel
-    MOVI_D main_arg, prgdata_mainMap
-    jmp main_EnterLevel
-main_TC_Exit_end:
+    sta currLevel
+    MOVI_D arg, mainMap
+    jmp EnterLevel
+TC_Exit_end:
 
-main_TC_Entrance:
-    lda main_sav+3
+TC_Entrance:
+    lda sav+3
     sec
     sbc #TB_MAPDOOR
     cmp #16
     bcs .enterUpperLevel
     tay
-    lda prgdata_bits+1,y
-    and main_cleared
+    lda bits+1,y
+    and cleared
     beq .uncleared
-    lda main_sav+3
-    jmp main_TC_Return
+    lda sav+3
+    jmp TC_Return
 .enterUpperLevel:
     sec
     sbc #8
     tay
-    lda prgdata_bits+1,y
-    and main_cleared+1
+    lda bits+1,y
+    and cleared+1
     beq .uncleared
-    lda main_sav+3
-    jmp main_TC_Return
+    lda sav+3
+    jmp TC_Return
 .uncleared:
-    lda main_sav+3
+    lda sav+3
     sec
     sbc #TB_MAPDOOR
-    sta main_currLevel
+    sta currLevel
     asl
     tay
-    lda prgdata_levelTable,y
-    sta main_arg
-    lda prgdata_levelTable+1,y
-    sta main_arg+1
-    MOV_D main_mapPX, main_playerX
-    MOV_D main_mapPY, main_playerY
-    MOV_D main_mapCamX, shr_cameraX
-    lda main_mapCamX
+    lda levelTable,y
+    sta arg
+    lda levelTable+1,y
+    sta arg+1
+    MOV_D mapPX, playerX
+    MOV_D mapPY, playerY
+    MOV_D mapCamX, shr_cameraX
+    lda mapCamX
     and #$E0
-    sta main_mapCamX
-    MOV_D main_mapCamY, shr_cameraY
+    sta mapCamX
+    MOV_D mapCamY, shr_cameraY
     lda shr_cameraYMod
-    sta main_mapCamYMod
-    jmp main_EnterLevel
-main_TC_Entrance_end:
+    sta mapCamYMod
+    jmp EnterLevel
+TC_Entrance_end:
     
-main_TC_Hidden:
+TC_Hidden:
     lda #HIDDEN_TILE
-    sta main_sav
-    jmp main_TC_UpdateTile
-main_TC_Hidden_end:
+    sta sav
+    jmp TC_UpdateTile
+TC_Hidden_end:
     
-main_TC_Lock:
+TC_Lock:
     lda #JOY_B_MASK
-    and main_pressed
-    BEQ_L main_TC_Return
+    and pressed
+    BEQ_L TC_Return
     
-    lda main_sav+3
+    lda sav+3
     sec
     sbc #TB_LOCK
     tay
-    lda main_doorsLo,y
-    sta main_tmp
-    lda main_doorsHi,y
-    sta main_tmp+1
-    ADDI_D main_tmp, main_tmp, main_levelMap
+    lda doorsLo,y
+    sta tmp
+    lda doorsHi,y
+    sta tmp+1
+    ADDI_D tmp, tmp, levelMap
     ldy #0
     lda #0
-    sta (main_tmp),y
+    sta (tmp),y
     iny
-    sta (main_tmp),y
-    inc main_sav
-    jmp main_TC_UpdateTile
-main_TC_Lock_end:
+    sta (tmp),y
+    inc sav
+    jmp TC_UpdateTile
+TC_Lock_end:
 
-main_TC_On:
+TC_On:
     lda #JOY_B_MASK
-    and main_pressed
-    BEQ_L main_TC_Return
-    lda main_sav+3
+    and pressed
+    BEQ_L TC_Return
+    lda sav+3
     sec
     sbc #TB_ON
     tay
-    lda prgdata_bits+1,y
-    eor main_switches
-    sta main_switches
-    dec main_sav
-    jmp main_TC_UpdateTile
-main_TC_On_end:
+    lda bits+1,y
+    eor switches
+    sta switches
+    dec sav
+    jmp TC_UpdateTile
+TC_On_end:
 
-main_TC_Off:
+TC_Off:
     lda #JOY_B_MASK
-    and main_pressed
-    BEQ_L main_TC_Return
-    lda main_sav+3
+    and pressed
+    BEQ_L TC_Return
+    lda sav+3
     sec
     sbc #TB_OFF
     tay
-    lda prgdata_bits+1,y
-    eor main_switches
-    sta main_switches
-    inc main_sav
-    jmp main_TC_UpdateTile
-main_TC_Off_end:
+    lda bits+1,y
+    eor switches
+    sta switches
+    inc sav
+    jmp TC_UpdateTile
+TC_Off_end:
 
     
-main_TC_Return:
-main_TC_Nop:
+TC_Return:
+TC_Nop:
     lda #JOY_B_MASK
-    and main_pressed
-    BEQ_L main_TileInteraction_end
-    bit main_entityXHi
-    BPL_L main_TileInteraction_end
+    and pressed
+    BEQ_L TileInteraction_end
+    bit entityXHi
+    BPL_L TileInteraction_end
     lda shr_ammo
-    BEQ_L main_TileInteraction_end
+    BEQ_L TileInteraction_end
     dec shr_ammo
-    lda main_playerX
-    sta main_entityXLo
-    lda main_playerX+1
+    lda playerX
+    sta entityXLo
+    lda playerX+1
     and #ENT_X_POS
-    sta main_entityXHi
-    lda main_playerY
-    sta main_entityYLo
-    lda main_playerY+1
+    sta entityXHi
+    lda playerY
+    sta entityYLo
+    lda playerY+1
     and #ENT_Y_POS
-    sta main_entityYHi
+    sta entityYHi
     lda #ANIM_SMALL_LONG
-    sta main_entityAnim
+    sta entityAnim
     lda shr_powerTime+1
     beq .notPowerShot
     lda #PLY_ISUPSIDEDOWN
-    and main_playerFlags
+    and playerFlags
     bne .notPowerShot
     lda #POWERSHOT_ID<<1
-    ora main_entityYHi
-    sta main_entityYHi
+    ora entityYHi
+    sta entityYHi
     lda #ANIM_SMALL_OSCILLATE
-    sta main_entityAnim
+    sta entityAnim
 .notPowerShot
     lda #SFX_ROCKET
     sta shr_doSfx
     
-    bit main_playerFlags
+    bit playerFlags
     bvs .shootLeft
 .shootRight:
     lda #3
-    sta main_entityXVel
+    sta entityXVel
     clc
     lda #8
-    adc main_entityXLo
-    sta main_entityXLo
+    adc entityXLo
+    sta entityXLo
     lda #0
-    adc main_entityXHi
+    adc entityXHi
     and #ENT_X_POS
-    sta main_entityXHi
+    sta entityXHi
     
-    jmp main_TileInteraction_end
+    jmp TileInteraction_end
 .shootLeft:
     lda #<-3
-    sta main_entityXVel
-    lda main_entityXLo
+    sta entityXVel
+    lda entityXLo
     sec
     sbc #8
-    sta main_entityXLo
-    lda main_entityXHi
+    sta entityXLo
+    lda entityXHi
     sbc #0
     and #ENT_X_POS
-    sta main_entityXHi
-    inc main_entityAnim
-    jmp main_TileInteraction_end
+    sta entityXHi
+    inc entityAnim
+    jmp TileInteraction_end
     
-main_TC_UpdateTile:
-    lda main_sav+1
-    sta main_arg
-    lda main_sav+2
-    sta main_arg+2
+TC_UpdateTile:
+    lda sav+1
+    sta arg
+    lda sav+2
+    sta arg+2
     lda #0
-    sta main_arg+1
-    sta main_arg+3
-    lda main_sav
-    sta main_arg+4
-    jsr main_SetTile
-main_TileInteraction_end:
+    sta arg+1
+    sta arg+3
+    lda sav
+    sta arg+4
+    jsr SetTile
+TileInteraction_end:
 
-main_ApplyGravity subroutine
-    lda main_playerFlags
+ApplyGravity subroutine
+    lda playerFlags
     and #PLY_ISUPSIDEDOWN
     bne .reverseGravity
-    CMPI_D main_playerYVel, $0400
-    bpl main_ApplyGravity_end
-    ADDI_D main_playerYVel, main_playerYVel, GRAVITY
-    jmp main_ApplyGravity_end
+    CMPI_D playerYVel, $0400
+    bpl ApplyGravity_end
+    ADDI_D playerYVel, playerYVel, GRAVITY
+    jmp ApplyGravity_end
 .reverseGravity:
-    CMPI_D main_playerYVel, -$0400
-    bmi main_ApplyGravity_end
-    SUBI_D main_playerYVel, main_playerYVel, GRAVITY
-main_ApplyGravity_end:
+    CMPI_D playerYVel, -$0400
+    bmi ApplyGravity_end
+    SUBI_D playerYVel, playerYVel, GRAVITY
+ApplyGravity_end:
 
 
-main_CheckLeft subroutine
+CheckLeft subroutine
     ;skip if not moving left (>= 0)
-    lda main_playerXVel
+    lda playerXVel
     cmp #0
-    bpl main_CheckLeft_end
+    bpl CheckLeft_end
 
-    CMPI_D main_playerX, 1
+    CMPI_D playerX, 1
     bcc .hit
     
-    ;main_arg = x in tiles
-    MOV_D main_arg, main_playerX
+    ;arg = x in tiles
+    MOV_D arg, playerX
     REPEAT 4
-    LSR_D main_arg
+    LSR_D arg
     REPEND
-    ;main_arg+2 = y in tiles
-    ADDI_D main_arg+2, main_playerY, 7
+    ;arg+2 = y in tiles
+    ADDI_D arg+2, playerY, 7
     REPEAT 4
-    LSR_D main_arg+2
+    LSR_D arg+2
     REPEND
     
-    jsr main_GetTileBehavior
-    lda main_ret
+    jsr GetTileBehavior
+    lda ret
     cmp #TB_SOLID
     beq .hit
     cmp #TB_WEAKBLOCK
     beq .hit
-    jmp main_CheckLeft_end
+    jmp CheckLeft_end
 .hit:
     lda #0
-    sta main_playerXVel
-main_CheckLeft_end:
+    sta playerXVel
+CheckLeft_end:
 
-main_CheckRight subroutine
+CheckRight subroutine
     ;skip if not moving right (<= 0)
-    lda main_playerXVel
+    lda playerXVel
     cmp #0
-    bmi main_CheckRight_end
-    beq main_CheckRight_end
+    bmi CheckRight_end
+    beq CheckRight_end
 
-    CMPI_D main_playerX, [MT_MAP_WIDTH*PX_MT_WIDTH - 16]
+    CMPI_D playerX, [MT_MAP_WIDTH*PX_MT_WIDTH - 16]
     bcs .hit
 
-    ;main_arg = x in tiles
-    MOV_D main_arg, main_playerX
+    ;arg = x in tiles
+    MOV_D arg, playerX
     REPEAT 4
-    LSR_D main_arg
+    LSR_D arg
     REPEND
-    INC_D main_arg
-    ;main_arg+2 = y in tiles
-    ADDI_D main_arg+2, main_playerY, 7
+    INC_D arg
+    ;arg+2 = y in tiles
+    ADDI_D arg+2, playerY, 7
     REPEAT 4
-    LSR_D main_arg+2
+    LSR_D arg+2
     REPEND
     
-    jsr main_GetTileBehavior
-    lda main_ret
+    jsr GetTileBehavior
+    lda ret
     cmp #TB_SOLID
     beq .hit
     cmp #TB_WEAKBLOCK
     beq .hit
     cmp #TB_EXIT
-    bne main_CheckRight_end
-    lda main_crystalsLeft
-    beq main_CheckRight_end
+    bne CheckRight_end
+    lda crystalsLeft
+    beq CheckRight_end
 .hit:
     lda #0
-    sta main_playerXVel
-main_CheckRight_end:
+    sta playerXVel
+CheckRight_end:
 
-main_CheckGround subroutine
+CheckGround subroutine
     ;skip if not moving down (< 0)
-    CMPI_D main_playerYVel, 0
-    BMI_L main_CheckGround_end
+    CMPI_D playerYVel, 0
+    BMI_L CheckGround_end
 
-    lda main_playerFlags
+    lda playerFlags
     and #PLY_ISUPSIDEDOWN
     bne .upsideDown
-    lda main_playerFlags
+    lda playerFlags
     ora #PLY_ISJUMPING
-    sta main_playerFlags
+    sta playerFlags
 .upsideDown:
 
     ;a0 = x in tiles
-    ADDI_D main_arg, main_playerX, 8
+    ADDI_D arg, playerX, 8
     REPEAT 4
-    LSR_D main_arg
+    LSR_D arg
     REPEND
     ;t0 = y in tiles
-    MOV_D main_arg+2, main_playerY
+    MOV_D arg+2, playerY
     REPEAT 4
-    LSR_D main_arg+2
+    LSR_D arg+2
     REPEND
-    INC_D main_arg+2; get tile at feet
+    INC_D arg+2; get tile at feet
     
-    jsr main_GetTileBehavior
-    lda main_ret
+    jsr GetTileBehavior
+    lda ret
     cmp #TB_SOLID
     beq .hitGroundTile
     cmp #TB_PLATFORM
     bne .notPlatform
-    lda main_playerY
+    lda playerY
     and #$F
     cmp #8
     bcc .hitGroundTile
@@ -1144,52 +1144,52 @@ main_CheckGround subroutine
     jmp .checkSpriteHit
 .hitGroundTile:
     lda #$F0
-    and main_playerY
-    sta main_playerY
+    and playerY
+    sta playerY
     jmp .hit_ground
 
 .checkSpriteHit:
     ldy #MAX_ENTITIES
-    sty main_currPlatform
+    sty currPlatform
 .loop:
     dey
-    BMI_L main_CheckGround_end
+    BMI_L CheckGround_end
     
-    lda main_entityYHi,y
+    lda entityYHi,y
     lsr
     tax
-    lda prgdata_entityFlags,x
+    lda entityFlags,x
     and #ENT_F_ISPLATFORM
     beq .loop
     
-    lda main_entityXLo,y
-    sta main_tmp
-    lda main_entityXHi,y
+    lda entityXLo,y
+    sta tmp
+    lda entityXHi,y
     and #ENT_X_POS
-    sta main_tmp+1
+    sta tmp+1
     
-    ADDI_D main_tmp+2, main_playerX, 4
-    SUBI_D main_tmp, main_tmp, 8
-    CMP_D main_tmp, main_tmp+2
+    ADDI_D tmp+2, playerX, 4
+    SUBI_D tmp, tmp, 8
+    CMP_D tmp, tmp+2
     bpl .loop
     
-    SUBI_D main_tmp+2, main_playerX, 4
-    ADDI_D main_tmp, main_tmp, 16
-    CMP_D main_tmp, main_tmp+2
+    SUBI_D tmp+2, playerX, 4
+    ADDI_D tmp, tmp, 16
+    CMP_D tmp, tmp+2
     bmi .loop
     
-    lda main_entityYLo,y
-    sta main_tmp
-    lda main_entityYHi,y
+    lda entityYLo,y
+    sta tmp
+    lda entityYHi,y
     and #ENT_Y_POS
-    sta main_tmp+1
+    sta tmp+1
     
-    SUBI_D main_tmp, main_tmp, 15
-    CMP_D main_tmp, main_playerY
+    SUBI_D tmp, tmp, 15
+    CMP_D tmp, playerY
     bmi .longLoop
 
-    SUBI_D main_tmp, main_tmp, 2
-    CMP_D main_tmp, main_playerY
+    SUBI_D tmp, tmp, 2
+    CMP_D tmp, playerY
     bpl .longLoop
     
     jmp .hitSprite
@@ -1197,165 +1197,165 @@ main_CheckGround subroutine
     jmp .loop
 .hitSprite:
     
-    ADDI_D main_playerY, main_tmp, 1
-    sty main_currPlatform
+    ADDI_D playerY, tmp, 1
+    sty currPlatform
 .hit_ground: ;stop if moving down
     lda #0
-    sta main_playerYVel
-    sta main_playerYFrac
-    lda main_playerFlags
+    sta playerYVel
+    sta playerYFrac
+    lda playerFlags
     and #PLY_ISUPSIDEDOWN
-    bne main_CheckGround_end
-    lda main_playerFlags
+    bne CheckGround_end
+    lda playerFlags
     and #~PLY_ISJUMPING
-    sta main_playerFlags
-main_CheckGround_end:
+    sta playerFlags
+CheckGround_end:
 
-main_CheckCieling subroutine
+CheckCieling subroutine
 
     ;skip if not moving up (>= 0)
-    CMPI_D main_playerYVel, 0
-    BPL_L main_CheckCieling_end
+    CMPI_D playerYVel, 0
+    BPL_L CheckCieling_end
 
-    lda main_playerFlags
+    lda playerFlags
     and #PLY_ISUPSIDEDOWN
     beq .notUpsideDown
-    lda main_playerFlags
+    lda playerFlags
     ora #PLY_ISJUMPING
-    sta main_playerFlags
+    sta playerFlags
 .notUpsideDown:
 
 
     ;hit head on top of screen
-    CMPI_D main_playerY, 8
+    CMPI_D playerY, 8
     bcc .hit_cieling
     
     ;a0 = x in tiles
-    ADDI_D main_arg, main_playerX, 8
+    ADDI_D arg, playerX, 8
     REPEAT 4
-    LSR_D main_arg
+    LSR_D arg
     REPEND
     ;t0 = y in tiles
-    SUBI_D main_arg+2, main_playerY, 1
+    SUBI_D arg+2, playerY, 1
     REPEAT 4
-    LSR_D main_arg+2
+    LSR_D arg+2
     REPEND
     
-    jsr main_GetTileBehavior
-    lda main_ret
+    jsr GetTileBehavior
+    lda ret
     cmp #TB_SOLID
     beq  .hit_cieling
     cmp #TB_WEAKBLOCK
     beq  .hit_cieling
-    jmp main_CheckCieling_end
+    jmp CheckCieling_end
     
 .hit_cieling:
-    MOVI_D main_playerYVel, 0
+    MOVI_D playerYVel, 0
     lda #0
-    sta main_playerYFrac
-    lda main_playerFlags
+    sta playerYFrac
+    lda playerFlags
     and #PLY_ISUPSIDEDOWN
-    beq main_CheckCieling_end
-    lda main_playerFlags
+    beq CheckCieling_end
+    lda playerFlags
     and #~PLY_ISJUMPING
-    sta main_playerFlags
-main_CheckCieling_end:
+    sta playerFlags
+CheckCieling_end:
     
-main_CheckHurt subroutine
-    lda main_mercyTime
+CheckHurt subroutine
+    lda mercyTime
     beq .findEnemy
-    dec main_mercyTime
-    jmp main_CheckHurt_end
+    dec mercyTime
+    jmp CheckHurt_end
 .findEnemy:
     ldy #MAX_ENTITIES
 .loop:
     dey
-    BMI_L main_CheckHurt_end
+    BMI_L CheckHurt_end
     
-    lda main_entityXHi,y
+    lda entityXHi,y
     bmi .loop
         
-    lda main_entityYHi,y
+    lda entityYHi,y
     lsr
     tax
-    lda prgdata_entityFlags,x
+    lda entityFlags,x
     and #ENT_F_ISDEADLY
     beq .loop
     
-    lda main_entityXHi,y
+    lda entityXHi,y
     and #ENT_X_COUNT
     beq .notHidden
-    lda prgdata_entityFlags,x
+    lda entityFlags,x
     and #ENT_F_ISPROJECTILE
     beq .notHidden
     jmp .loop
 .notHidden:
 
     
-    lda main_entityXLo,y
-    sta main_tmp
-    lda main_entityXHi,y
+    lda entityXLo,y
+    sta tmp
+    lda entityXHi,y
     and #ENT_X_POS
-    sta main_tmp+1
+    sta tmp+1
     
-    ADDI_D main_tmp+2, main_playerX, 4
-    SUBI_D main_tmp, main_tmp, 7
-    CMP_D main_tmp, main_tmp+2
+    ADDI_D tmp+2, playerX, 4
+    SUBI_D tmp, tmp, 7
+    CMP_D tmp, tmp+2
     bpl .loop
     
-    SUBI_D main_tmp+2, main_playerX, 4
-    ADDI_D main_tmp, main_tmp, 16
-    CMP_D main_tmp, main_tmp+2
+    SUBI_D tmp+2, playerX, 4
+    ADDI_D tmp, tmp, 16
+    CMP_D tmp, tmp+2
     bmi .loop
     
-    lda main_entityYLo,y
-    sta main_tmp
-    lda main_entityYHi,y
+    lda entityYLo,y
+    sta tmp
+    lda entityYHi,y
     and #ENT_Y_POS
-    sta main_tmp+1
+    sta tmp+1
     
-    SUBI_D main_tmp+2, main_playerY, 15
-    CMP_D main_tmp, main_tmp+2
+    SUBI_D tmp+2, playerY, 15
+    CMP_D tmp, tmp+2
     bmi .longLoop
 
-    SUBI_D main_tmp, main_tmp, 15
-    CMP_D main_tmp, main_playerY
+    SUBI_D tmp, tmp, 15
+    CMP_D tmp, playerY
     bpl .longLoop
     
-    jsr main_DamagePlayer
-    lda prgdata_entityFlags,x
+    jsr DamagePlayer
+    lda entityFlags,x
     and #ENT_F_ISPROJECTILE
-    beq main_CheckHurt_end
+    beq CheckHurt_end
     lda #$80
-    sta main_entityXHi,y
+    sta entityXHi,y
     
-    jmp main_CheckHurt_end
+    jmp CheckHurt_end
 .longLoop:
     jmp .loop
-main_CheckHurt_end:
+CheckHurt_end:
 
-main_UpdatePower subroutine
+UpdatePower subroutine
     lda shr_powerTime+1
-    beq main_UpdatePower_end
+    beq UpdatePower_end
     dec shr_powerTime
-    bne main_UpdatePower_end
+    bne UpdatePower_end
     lda #60
     sta shr_powerTime
     dec shr_powerTime+1
-    bne main_UpdatePower_end
+    bne UpdatePower_end
     lda #~PLY_ISUPSIDEDOWN
-    and main_playerFlags
-    sta main_playerFlags
-main_UpdatePower_end:
+    and playerFlags
+    sta playerFlags
+UpdatePower_end:
 
-main_updateEntities subroutine
+updateEntities subroutine
     ldy #[MAX_ENTITIES-1]
 .loop:
-    lda main_entityXHi,y
+    lda entityXHi,y
     bpl .active
-    jmp main_ER_Return
+    jmp ER_Return
 .active:   
-    lda main_entityYHi,y
+    lda entityYHi,y
     and #ENT_Y_INDEX
     lsr
     tax
@@ -1367,235 +1367,235 @@ main_updateEntities subroutine
     bcs .noSkipHTest
     jmp .vtest
 .noSkipHTest:
-    lda prgdata_entityFlags,x
+    lda entityFlags,x
     and #ENT_F_ISPLATFORM
     bne .persistent
-    lda main_entityXLo,y
+    lda entityXLo,y
     sec
     sbc shr_cameraX
-    sta main_tmp
-    lda main_entityXHi,y
+    sta tmp
+    lda entityXHi,y
     and #ENT_X_POS
     sbc shr_cameraX+1
-    sta main_tmp+1
-    CMPI_D main_tmp, [MT_VIEWPORT_WIDTH*PX_MT_WIDTH + PX_MT_WIDTH]
+    sta tmp+1
+    CMPI_D tmp, [MT_VIEWPORT_WIDTH*PX_MT_WIDTH + PX_MT_WIDTH]
     bpl .offScreen
-    CMPI_D main_tmp, -PX_MT_WIDTH
+    CMPI_D tmp, -PX_MT_WIDTH
     bmi .offScreen
 .vtest:
-    lda main_entityYLo,y
+    lda entityYLo,y
     sec
     sbc shr_cameraY
-    sta main_tmp
-    lda main_entityYHi,y
+    sta tmp
+    lda entityYHi,y
     and #ENT_Y_POS
     sbc shr_cameraY+1
-    sta main_tmp+1
-    CMPI_D main_tmp, [MT_VIEWPORT_HEIGHT*PX_MT_HEIGHT + PX_MT_HEIGHT]
+    sta tmp+1
+    CMPI_D tmp, [MT_VIEWPORT_HEIGHT*PX_MT_HEIGHT + PX_MT_HEIGHT]
     bpl .offScreen
-    CMPI_D main_tmp, -PX_MT_HEIGHT
+    CMPI_D tmp, -PX_MT_HEIGHT
     bmi .offScreen
     jmp .persistent
 .offScreen:
-    lda prgdata_entityFlags,x
+    lda entityFlags,x
     and #ENT_F_ISPROJECTILE
     beq .normal
     lda #$80
-    sta main_entityXHi,y
+    sta entityXHi,y
 .normal:
-    jmp main_ER_Return
+    jmp ER_Return
 .persistent:
     txa
     asl
     tax
-    lda main_entityRoutine,x
-    sta main_tmp
-    lda main_entityRoutine+1,x
-    sta main_tmp+1
+    lda entityRoutine,x
+    sta tmp
+    lda entityRoutine+1,x
+    sta tmp+1
     txa
     lsr
     tax
-    MOV_D shr_debugReg, main_tmp
-    jmp (main_tmp)
-main_ER_Return:
+    MOV_D shr_debugReg, tmp
+    jmp (tmp)
+ER_Return:
     dey
-    BMI_L main_updateEntities_end
+    BMI_L updateEntities_end
     jmp .loop
     
-main_entityRoutine:
-    .word main_ER_Bullet
-    .word main_ER_VerticalPlatform
-    .word main_ER_HorizontalPlatform
-    .word main_ER_Spider
-    .word main_ER_Bat
-    .word main_ER_PowerShot
-    .word main_ER_Mimrock
-    .word main_ER_Cart
-    .word main_ER_CaterpillarHead
-    .word main_ER_CaterpillarFront
-    .word main_ER_CaterpillarBack
-    .word main_ER_CaterpillarTail
-    .word main_ER_SlimeHorizontal
-    .word main_ER_SlimeVertical
-    .word main_ER_Hammer
-    .word main_ER_Faucet
-    .word main_ER_Water
-    .word main_ER_VerticalPlatformIdle
-    .word main_ER_HorizontalPlatformIdle
-    .word main_ER_RightCannon
-    .word main_ER_RightLaser
-    .word main_ER_LeftCannon
-    .word main_ER_LeftLaser
-    .word main_ER_Rex
+entityRoutine:
+    .word ER_Bullet
+    .word ER_VerticalPlatform
+    .word ER_HorizontalPlatform
+    .word ER_Spider
+    .word ER_Bat
+    .word ER_PowerShot
+    .word ER_Mimrock
+    .word ER_Cart
+    .word ER_CaterpillarHead
+    .word ER_CaterpillarFront
+    .word ER_CaterpillarBack
+    .word ER_CaterpillarTail
+    .word ER_SlimeHorizontal
+    .word ER_SlimeVertical
+    .word ER_Hammer
+    .word ER_Faucet
+    .word ER_Water
+    .word ER_VerticalPlatformIdle
+    .word ER_HorizontalPlatformIdle
+    .word ER_RightCannon
+    .word ER_RightLaser
+    .word ER_LeftCannon
+    .word ER_LeftLaser
+    .word ER_Rex
     
 IsNearPlayerY subroutine
-    lda main_entityYLo,y
-    sta main_tmp
-    lda main_entityYHi,y
+    lda entityYLo,y
+    sta tmp
+    lda entityYHi,y
     and #ENT_Y_POS
-    sta main_tmp+1
-    ADDI_D main_tmp+2,main_playerY,8
+    sta tmp+1
+    ADDI_D tmp+2,playerY,8
     REPEAT 4
-    LSR_D main_tmp
-    LSR_D main_tmp+2
+    LSR_D tmp
+    LSR_D tmp+2
     REPEND
-    CMP_D main_tmp, main_tmp+2
+    CMP_D tmp, tmp+2
     rts
 
 ApplyXVel subroutine
-    lda main_entityXVel,y
+    lda entityXVel,y
     M_ASR
-    sta main_tmp
+    sta tmp
     lda #0
-    sta main_tmp+1
-    lda main_tmp
+    sta tmp+1
+    lda tmp
     bpl .positive
     lda #$FF
-    sta main_tmp+1
+    sta tmp+1
 .positive:
     clc
-    lda main_entityXLo,y
-    adc main_tmp
-    sta main_entityXLo,y
-    lda main_entityXHi,y
-    adc main_tmp+1
+    lda entityXLo,y
+    adc tmp
+    sta entityXLo,y
+    lda entityXHi,y
+    adc tmp+1
     and #ENT_X_POS
-    sta main_tmp
-    lda main_entityXHi,y
+    sta tmp
+    lda entityXHi,y
     and #~ENT_X_POS
-    ora main_tmp
-    sta main_entityXHi,y
+    ora tmp
+    sta entityXHi,y
     rts
     
-main_ER_Mimrock:
+ER_Mimrock:
     jsr IsNearPlayerY
     bne hiding$
-    lda main_entityXVel,y
+    lda entityXVel,y
     bne hiding$
     lda #2
-    sta main_entityXVel,y
+    sta entityXVel,y
 hiding$:
-    jmp main_ER_Default
+    jmp ER_Default
 
-main_ER_RightCannon:
-main_ER_LeftCannon:
+ER_RightCannon:
+ER_LeftCannon:
     lda #SWITCH_TURRETS
-    bit main_switches
+    bit switches
     beq return$
     jsr IsNearPlayerY
     bne return$
-    lda main_entityXHi+1,y
+    lda entityXHi+1,y
     bpl return$
-    lda main_entityXHi,y
-    sta main_entityXHi+1,y
-    lda main_entityXLo,y
-    sta main_entityXLo+1,y
-    lda main_entityYHi,y
+    lda entityXHi,y
+    sta entityXHi+1,y
+    lda entityXLo,y
+    sta entityXLo+1,y
+    lda entityYHi,y
     and #~ENT_Y_INDEX
     ora #40
-    sta main_entityYHi+1,y
-    lda main_entityYLo,y
-    sta main_entityYLo+1,y
+    sta entityYHi+1,y
+    lda entityYLo,y
+    sta entityYLo+1,y
 return$:
-    jmp main_ER_Return
+    jmp ER_Return
     
     
 
-main_ER_Bullet:
-    lda main_entityXVel,y
-    sta main_tmp
-    EXTEND main_tmp, main_tmp
+ER_Bullet:
+    lda entityXVel,y
+    sta tmp
+    EXTEND tmp, tmp
     clc
-    lda main_entityXLo,y
-    adc main_tmp
-    sta main_entityXLo,y
-    lda main_entityXHi,y
-    adc main_tmp+1
-    sta main_entityXHi,y
-    jmp main_ER_Return
+    lda entityXLo,y
+    adc tmp
+    sta entityXLo,y
+    lda entityXHi,y
+    adc tmp+1
+    sta entityXHi,y
+    jmp ER_Return
 
-main_ER_VerticalPlatform:
-main_ER_HorizontalPlatform:
-main_ER_Spider:
-main_ER_Bat:
-main_ER_PowerShot:
-main_ER_Cart:
-main_ER_CaterpillarHead:
-main_ER_CaterpillarFront:
-main_ER_CaterpillarBack:
-main_ER_CaterpillarTail:
-main_ER_SlimeHorizontal:
-main_ER_SlimeVertical:
-main_ER_Hammer:
-main_ER_Faucet:
-main_ER_Water:
-main_ER_VerticalPlatformIdle:
-main_ER_HorizontalPlatformIdle:
-main_ER_RightLaser:
-main_ER_LeftLaser:
-main_ER_Rex:
-    jmp main_ER_Default
+ER_VerticalPlatform:
+ER_HorizontalPlatform:
+ER_Spider:
+ER_Bat:
+ER_PowerShot:
+ER_Cart:
+ER_CaterpillarHead:
+ER_CaterpillarFront:
+ER_CaterpillarBack:
+ER_CaterpillarTail:
+ER_SlimeHorizontal:
+ER_SlimeVertical:
+ER_Hammer:
+ER_Faucet:
+ER_Water:
+ER_VerticalPlatformIdle:
+ER_HorizontalPlatformIdle:
+ER_RightLaser:
+ER_LeftLaser:
+ER_Rex:
+    jmp ER_Default
 
     
-main_ER_Default:
+ER_Default:
 
-    lda prgdata_entityFlags2,x
+    lda entityFlags2,x
     and #ENT_F2_ISGROUNDED
     bne .checkfloor
     jmp .hitwall
 .checkfloor:
     ;calculate map tile
-    lda main_entityXLo,y
-    sta main_arg
-    lda main_entityXHi,y
+    lda entityXLo,y
+    sta arg
+    lda entityXHi,y
     and #ENT_X_POS
-    sta main_arg+1
+    sta arg+1
     
-    lda main_entityXVel,y
+    lda entityXVel,y
     bmi .shift2
-    ADDI_D main_arg, main_arg, 15
+    ADDI_D arg, arg, 15
 .shift2:
     REPEAT 4
-    LSR_D main_arg
+    LSR_D arg
     REPEND
-    jsr main_MultiplyBy24
-    lda main_entityYLo,y
-    sta main_tmp
-    lda main_entityYHi,y
+    jsr MultiplyBy24
+    lda entityYLo,y
+    sta tmp
+    lda entityYHi,y
     and #ENT_Y_POS
-    sta main_tmp+1
-    ADDI_D main_tmp, main_tmp, 16
+    sta tmp+1
+    ADDI_D tmp, tmp, 16
     REPEAT 4
-    LSR_D main_tmp
+    LSR_D tmp
     REPEND
-    ADD_D main_tmp, main_tmp, main_ret
-    ADDI_D main_tmp, main_tmp, main_levelMap
-    sty main_tmp+2
+    ADD_D tmp, tmp, ret
+    ADDI_D tmp, tmp, levelMap
+    sty tmp+2
     ldy #0
-    lda (main_tmp),y
+    lda (tmp),y
     tay
-    lda prgdata_metatiles+256*4,y
-    ldy main_tmp+2
+    lda metatiles+256*4,y
+    ldy tmp+2
     lsr
     lsr
     cmp #TB_SOLID
@@ -1607,85 +1607,85 @@ main_ER_Default:
 
 .hitwall:
     ;calculate map tile
-    lda main_entityXLo,y
-    sta main_arg
-    lda main_entityXHi,y
+    lda entityXLo,y
+    sta arg
+    lda entityXHi,y
     and #ENT_X_POS
-    sta main_arg+1
-    lda main_entityXVel,y
+    sta arg+1
+    lda entityXVel,y
     bmi .shift
-    ADDI_D main_arg, main_arg, 15
+    ADDI_D arg, arg, 15
 .shift:
     REPEAT 4
-    LSR_D main_arg
+    LSR_D arg
     REPEND
-    lda main_arg
-    sta main_sav+1
-    jsr main_MultiplyBy24
+    lda arg
+    sta sav+1
+    jsr MultiplyBy24
     
-    lda main_entityYLo,y
-    sta main_tmp
-    lda main_entityYHi,y
+    lda entityYLo,y
+    sta tmp
+    lda entityYHi,y
     and #ENT_Y_POS
-    sta main_tmp+1
+    sta tmp+1
     
-    lda prgdata_entityFlags,x
+    lda entityFlags,x
     and #ENT_F_ISVERTICAL
     beq .shiftY
-    lda prgdata_entityFlags,x
+    lda entityFlags,x
     and #ENT_F_ISPLATFORM
     beq .notPlatform
-    lda main_entityXVel,y
+    lda entityXVel,y
     bpl .notPlatform
-    SUBI_D main_tmp, main_tmp, 15
+    SUBI_D tmp, tmp, 15
     
 .notPlatform:
-    lda main_entityXVel,y
+    lda entityXVel,y
     bmi .shiftY
-    ADDI_D main_tmp, main_tmp, 15
+    ADDI_D tmp, tmp, 15
 .shiftY:
     REPEAT 4
-    LSR_D main_tmp
+    LSR_D tmp
     REPEND
-    ADD_D main_tmp, main_tmp, main_ret
-    ADDI_D main_tmp, main_tmp, main_levelMap
-    sty main_tmp+2
+    ADD_D tmp, tmp, ret
+    ADDI_D tmp, tmp, levelMap
+    sty tmp+2
     ldy #0
-    lda (main_tmp),y
-    sta main_sav
+    lda (tmp),y
+    sta sav
     tay
-    lda prgdata_metatiles+256*4,y
-    ldy main_tmp+2
+    lda metatiles+256*4,y
+    ldy tmp+2
     lsr
     lsr
-    sta main_sav+3
+    sta sav+3
     
     ;react to map tile
-    lda prgdata_entityFlags,x
+    lda entityFlags,x
     and #ENT_F_ISPROJECTILE
     bne .checkImpact
     jmp .checkObstacle
     
 .checkImpact:
-    lda main_sav+3
+    lda sav+3
     cmp #TB_SOLID
     beq .die
     cpy #0
     bne .notEgg
     cmp #TB_WEAKBLOCK
     bne .notWeakBlock
-    lda main_sav+1
-    sta main_arg
-    lda main_sav+2
-    sta main_arg+2
+    lda sav+1
+    sta arg
+    lda sav+2
+    sta arg+2
     lda #0
-    sta main_arg+1
-    sta main_arg+3
+    sta arg+1
+    sta arg+3
     lda #0
-    sta main_arg+4
+    sta arg+4
     tya
     pha
-    jsr main_SetTile
+    jsr SetTile
     pla
     tay
     jmp .die
@@ -1694,36 +1694,36 @@ main_ER_Default:
 .notWeakBlock:
     cmp #TB_EGG
     bne .notEgg
-    lda main_sav+1
-    sta main_arg
-    lda main_sav+2
-    sta main_arg+2
+    lda sav+1
+    sta arg
+    lda sav+2
+    sta arg+2
     lda #0
-    sta main_arg+1
-    sta main_arg+3
-    lda main_bonusCount
+    sta arg+1
+    sta arg+3
+    lda bonusCount
     and #7
     clc
     adc #BONUS_TILES
-    sta main_arg+4
-    inc main_bonusCount
+    sta arg+4
+    inc bonusCount
     tya
     pha
-    jsr main_SetTile
+    jsr SetTile
     pla
     tay
     jmp .die
 .notEgg:
     cmp #TB_PLATFORM
     bne .longCheckDone
-    lda prgdata_entityFlags,x
+    lda entityFlags,x
     and #ENT_F_ISVERTICAL
     beq .longCheckDone
-    lda main_entityXVel,y
+    lda entityXVel,y
     bmi .longCheckDone
 .die:
     lda #$80
-    sta main_entityXHi,y
+    sta entityXHi,y
     jmp .inactive
 .noPause:
 
@@ -1731,7 +1731,7 @@ main_ER_Default:
 
 
 .checkObstacle:    
-    lda main_sav+3
+    lda sav+3
     cmp #TB_SOLID
     beq .reverse
     cmp #TB_WEAKBLOCK
@@ -1742,11 +1742,11 @@ main_ER_Default:
     ; cpx #SLIME_ID+1
     ; bne .tileCheckDone
 ; .random:
-    ; lda main_frame
+    ; lda frame
     ; and #63
     ; bne .tileCheckDone
 .reverse:
-    lda main_frame
+    lda frame
     and #2
     bne .noSwitch
     cpx #SLIME_ID
@@ -1755,16 +1755,16 @@ main_ER_Default:
     beq .goHorizontal
     jmp .noSwitch
 .goVertical:
-    lda main_entityYHi,y
+    lda entityYHi,y
     clc
     adc #%10
-    sta main_entityYHi,y
+    sta entityYHi,y
     jmp .noSwitch
 .goHorizontal:
-    lda main_entityYHi,y
+    lda entityYHi,y
     sec
     sbc #%10
-    sta main_entityYHi,y
+    sta entityYHi,y
 .noSwitch:
     lda #0
     cpx #HAMMER_ID
@@ -1772,35 +1772,35 @@ main_ER_Default:
     lda #5
 .notHammer:
     sec
-    sbc main_entityXVel,y
-    sta main_entityXVel,y
-    lda main_entityXHi,y
+    sbc entityXVel,y
+    sta entityXVel,y
+    lda entityXHi,y
     and #~ENT_X_COUNT
-    ora prgdata_entityCounts,x
-    sta main_entityXHi,y
+    ora entityCounts,x
+    sta entityXHi,y
 
 .tileCheckDone:
     cpy #0
     beq .longimmortal
 
-    lda main_entityXLo
-    sta main_tmp
-    lda main_entityXHi
+    lda entityXLo
+    sta tmp
+    lda entityXHi
     bmi .longimmortal
     and #ENT_X_POS
-    sta main_tmp+1
-    lda main_entityXLo,y
-    sta main_tmp+2
-    lda main_entityXHi,y
+    sta tmp+1
+    lda entityXLo,y
+    sta tmp+2
+    lda entityXHi,y
     and #ENT_X_POS
-    sta main_tmp+3
-    SUBI_D main_tmp, main_tmp, 8
-    ADDI_D main_tmp+2, main_tmp+2, 8
-    CMP_D main_tmp, main_tmp+2
+    sta tmp+3
+    SUBI_D tmp, tmp, 8
+    ADDI_D tmp+2, tmp+2, 8
+    CMP_D tmp, tmp+2
     bcs .longimmortal
-    ADDI_D main_tmp, main_tmp, 16
-    SUBI_D main_tmp+2, main_tmp+2, 16
-    CMP_D main_tmp, main_tmp+2
+    ADDI_D tmp, tmp, 16
+    SUBI_D tmp+2, tmp+2, 16
+    CMP_D tmp, tmp+2
     bcc .longimmortal
     
     jmp .spam
@@ -1808,119 +1808,119 @@ main_ER_Default:
     jmp .immortal
 .spam:
 
-    lda main_entityYLo
-    sta main_tmp
-    lda main_entityYHi
+    lda entityYLo
+    sta tmp
+    lda entityYHi
     and #ENT_Y_POS
-    sta main_tmp+1
-    lda main_entityYLo,y
-    sta main_tmp+2
-    lda main_entityYHi,y
+    sta tmp+1
+    lda entityYLo,y
+    sta tmp+2
+    lda entityYHi,y
     and #ENT_Y_POS
-    sta main_tmp+3
-    SUBI_D main_tmp, main_tmp, 16
-    ;ADDI_D main_tmp+2, main_tmp+2, 8
-    CMP_D main_tmp, main_tmp+2
+    sta tmp+3
+    SUBI_D tmp, tmp, 16
+    ;ADDI_D tmp+2, tmp+2, 8
+    CMP_D tmp, tmp+2
     bcs .longimmortal
-    ADDI_D main_tmp, main_tmp, 16
-    SUBI_D main_tmp+2, main_tmp+2, 16
-    CMP_D main_tmp, main_tmp+2
+    ADDI_D tmp, tmp, 16
+    SUBI_D tmp+2, tmp+2, 16
+    CMP_D tmp, tmp+2
     bcc .longimmortal
     
     ;destroy bullet
-    lda prgdata_entityFlags2,x
+    lda entityFlags2,x
     and #ENT_F2_ISHITTABLE
     beq .longimmortal
     lda #$80
-    sta main_entityXHi
+    sta entityXHi
     
-    lda prgdata_entityFlags,x
+    lda entityFlags,x
     and #ENT_F_ISMORTAL
     beq .longimmortal
     
-    lda main_entityYHi
+    lda entityYHi
     lsr
     cmp #POWERSHOT_ID
     beq .reallyDead
 
-    lda prgdata_entityFlags2,x
+    lda entityFlags2,x
     and #ENT_F2_NEEDPOWERSHOT
     bne .immortal
 
-    lda prgdata_entityHPs,x
-    sta main_tmp
-    lda main_entityXHi,y
+    lda entityHPs,x
+    sta tmp
+    lda entityXHi,y
     and #~ENT_X_HP
-    sta main_tmp+1
-    lda main_entityXHi,y
+    sta tmp+1
+    lda entityXHi,y
     and #ENT_X_HP
     lsr
     lsr
     clc
     adc #1
-    cmp main_tmp
+    cmp tmp
     bcc .notDead
 .reallyDead:
     lda #$80
-    sta main_entityXHi,y
+    sta entityXHi,y
     lda #10
-    sta main_arg
+    sta arg
     lda #0
-    sta main_arg+1
-    sta main_arg+2
-    stx main_sav
-    jsr main_AddScore
-    ldx main_sav
+    sta arg+1
+    sta arg+2
+    stx sav
+    jsr AddScore
+    ldx sav
     cpx #CATERPILLAR_ID
     beq .caterpillar
     jmp .inactive
 .caterpillar:  
-    lda main_caterpillarNext
+    lda caterpillarNext
     cmp #CATERPILLAR_ID+4
     bcc .segmentsleft 
     jmp .inactive
 .segmentsleft:
-    sty main_tmp
+    sty tmp
     ldy #0
 .caterpillarLoop:
-    lda main_entityYHi,y
+    lda entityYHi,y
     lsr
-    cmp main_caterpillarNext
+    cmp caterpillarNext
     bne .nodice
-    lda main_entityYHi,y
+    lda entityYHi,y
     and #~ENT_Y_INDEX
     ora #CATERPILLAR_ID<<1
-    sta main_entityYHi,y
-    inc main_caterpillarNext
+    sta entityYHi,y
+    inc caterpillarNext
     jmp .inactive
 .nodice:
     iny
     cpy #MAX_ENTITIES
     bne .caterpillarLoop
-    ldy main_tmp
+    ldy tmp
     jmp .inactive
 .notDead:
     asl
     asl
     and #ENT_X_HP
-    ora main_tmp+1
-    sta main_entityXHi,y
+    ora tmp+1
+    sta entityXHi,y
 .immortal:
 .updateVel:
-    lda prgdata_entityFlags2,x
+    lda entityFlags2,x
     and #ENT_F2_SWITCHID
     beq .notSwitchable
-    stx main_tmp
+    stx tmp
     tax
-    lda prgdata_bits,x
-    ldx main_tmp
-    and main_switches
+    lda bits,x
+    ldx tmp
+    and switches
     bne .notSwitchable
-    lda main_entityXHi,y
+    lda entityXHi,y
     ora #$10
-    sta main_entityXHi,y
+    sta entityXHi,y
 .notSwitchable:
-    lda main_entityXHi,y
+    lda entityXHi,y
     REPEAT 4
     lsr
     REPEND
@@ -1930,46 +1930,46 @@ main_ER_Default:
     REPEAT 4
     asl
     REPEND
-    sta main_tmp
-    lda main_frame
+    sta tmp
+    lda frame
     and #31
     beq .updateCount
     jmp .inactive
 .updateCount:
-    lda main_entityXHi,y
+    lda entityXHi,y
     and #~ENT_X_COUNT
-    ora main_tmp
-    sta main_entityXHi,y
+    ora tmp
+    sta entityXHi,y
     jmp .inactive
 .notPaused:
-    lda main_entityXLo,y
-    sta main_tmp
-    lda main_entityXHi,y
+    lda entityXLo,y
+    sta tmp
+    lda entityXHi,y
     and #ENT_X_POS
-    sta main_tmp+1
-    lda prgdata_entityFlags,x
+    sta tmp+1
+    lda entityFlags,x
     and #ENT_F_ISVERTICAL
     beq .horizontal
     
-    lda main_entityYLo,y
-    sta main_tmp
-    lda main_entityYHi,y
+    lda entityYLo,y
+    sta tmp
+    lda entityYHi,y
     and #ENT_Y_POS
-    sta main_tmp+1
+    sta tmp+1
 .horizontal:
-    lda main_entityXVel,y
+    lda entityXVel,y
     and #1
     bne .extra
-    lda main_entityXVel,y
+    lda entityXVel,y
     jmp .noExtra
 .extra:
-    lda main_frame
+    lda frame
     and #1
     bne .leapFrame
-    lda main_entityXVel,y
+    lda entityXVel,y
     jmp .noExtra
 .leapFrame:
-    lda main_entityXVel,y
+    lda entityXVel,y
     bmi .negativeLeap
     clc
     adc #1
@@ -1984,68 +1984,68 @@ main_ER_Default:
 .noRotateError:
     cmp #80
     ror
-    sta main_tmp+2
+    sta tmp+2
     bmi .negative
     lda #0
-    sta main_tmp+3
+    sta tmp+3
     jmp .continue
 .negative:
     lda #$FF
-    sta main_tmp+3
+    sta tmp+3
 .continue:
-    ADD_D main_tmp, main_tmp, main_tmp+2
-    lda prgdata_entityFlags,x
+    ADD_D tmp, tmp, tmp+2
+    lda entityFlags,x
     and #ENT_F_ISVERTICAL
     bne .vertical
-    lda main_tmp
-    sta main_entityXLo,y
-    lda main_entityXHi,y
+    lda tmp
+    sta entityXLo,y
+    lda entityXHi,y
     and #~ENT_X_POS
-    ora main_tmp+1
-    sta main_entityXHi,y
-    cpy main_currPlatform
+    ora tmp+1
+    sta entityXHi,y
+    cpy currPlatform
     bne .inactive
-    ADD_D main_playerX, main_playerX, main_tmp+2
+    ADD_D playerX, playerX, tmp+2
     jmp .inactive
 .vertical:
-    lda main_tmp
-    sta main_entityYLo,y
-    lda main_entityYHi,y
+    lda tmp
+    sta entityYLo,y
+    lda entityYHi,y
     and #~ENT_Y_POS
-    ora main_tmp+1 ; just assuming that calculated y will never be out of bounds
-    sta main_entityYHi,y
-    cpy main_currPlatform
+    ora tmp+1 ; just assuming that calculated y will never be out of bounds
+    sta entityYHi,y
+    cpy currPlatform
     bne .inactive
-    ADD_D main_playerY, main_playerY, main_tmp+2
+    ADD_D playerY, playerY, tmp+2
 .inactive:
-    jmp main_ER_Return
-main_updateEntities_end:
+    jmp ER_Return
+updateEntities_end:
 
 
-main_ApplyVelocity subroutine
-    MOV_D main_tmp, main_playerYVel
-    lda main_playerYVel+1
+ApplyVelocity subroutine
+    MOV_D tmp, playerYVel
+    lda playerYVel+1
     bmi .negativeY
     lda #0
     jmp .continueY
 .negativeY:
     lda #$FF
 .continueY:
-    sta main_tmp+2
+    sta tmp+2
     clc
-    lda main_tmp
-    adc main_playerYFrac
-    sta main_playerYFrac
-    lda main_tmp+1
-    adc main_playerY
-    sta main_playerY
-    lda main_tmp+2
-    adc main_playerY+1
-    sta main_playerY+1
+    lda tmp
+    adc playerYFrac
+    sta playerYFrac
+    lda tmp+1
+    adc playerY
+    sta playerY
+    lda tmp+2
+    adc playerY+1
+    sta playerY+1
 
     
-    lda main_playerXVel
-    sta main_tmp
+    lda playerXVel
+    sta tmp
     cmp #0
     bmi .negativeX
     lda #0
@@ -2053,16 +2053,16 @@ main_ApplyVelocity subroutine
 .negativeX:
     lda #$FF
 .continueX:
-    sta main_tmp+1
+    sta tmp+1
     
-    ADD_D main_playerX, main_playerX, main_tmp
-main_ApplyVelocity_end:
+    ADD_D playerX, playerX, tmp
+ApplyVelocity_end:
 
-main_UpdateCameraX subroutine
+UpdateCameraX subroutine
 .Scroll_Left:
     ;no scrolling because player is not close to screen edge
-    SUB_D main_sav, main_playerX, shr_cameraX
-    lda main_sav ;player's on-screen x
+    SUB_D sav, playerX, shr_cameraX
+    lda sav ;player's on-screen x
     cmp #[MT_HSCROLL_MARGIN*PX_MT_WIDTH]
     bcs .Scroll_Left_end
     
@@ -2073,13 +2073,13 @@ main_UpdateCameraX subroutine
     
     ;scroll left one pixel
     DEC_D shr_cameraX
-    inc main_sav
+    inc sav
     
     ;no loading tiles if not at tile boundary
     lda shr_cameraX
     and #7
     bne .noTiles
-    jsr main_LoadTilesOnMoveLeft
+    jsr LoadTilesOnMoveLeft
 .noTiles:
     
     ;no loading attributes if not at attributes boundary
@@ -2088,12 +2088,12 @@ main_UpdateCameraX subroutine
     cmp #15
     bne .Scroll_Left_end
     
-    jsr main_LoadColorsOnMoveLeft
+    jsr LoadColorsOnMoveLeft
 .Scroll_Left_end:
 
 .Scroll_Right:
     ;no scrolling right because player not near screen edge
-    lda main_sav ;player's on-screen x
+    lda sav ;player's on-screen x
     cmp #[[MT_VIEWPORT_WIDTH - MT_HSCROLL_MARGIN]*PX_MT_WIDTH]
     bcc .Scroll_Right_end
     
@@ -2103,7 +2103,7 @@ main_UpdateCameraX subroutine
     
     ;scroll right 1 pixel
     INC_D shr_cameraX
-    dec main_sav
+    dec sav
     
     ;no loading tiles if not at tile boundary
     lda shr_cameraX
@@ -2111,7 +2111,7 @@ main_UpdateCameraX subroutine
     cmp #1
     bne .Scroll_Right_end
     
-    jsr main_LoadTilesOnMoveRight
+    jsr LoadTilesOnMoveRight
     
     ;no loading tiles if not at tile boundary
     lda shr_cameraX
@@ -2119,15 +2119,15 @@ main_UpdateCameraX subroutine
     cmp #1
     bne .Scroll_Right_end
 
-    jsr main_LoadColorsOnMoveRight
+    jsr LoadColorsOnMoveRight
 .Scroll_Right_end:
-main_UpdateCameraX_end:
+UpdateCameraX_end:
 
-main_UpdateCameraY subroutine
+UpdateCameraY subroutine
 .Scroll_Up:
-    SUB_D main_sav, main_playerY, shr_cameraY
+    SUB_D sav, playerY, shr_cameraY
     ;no scrolling because player not near screen edge
-    lda main_sav ;player's on-screen y
+    lda sav ;player's on-screen y
     cmp #[MT_VSCROLL_MARGIN*PX_MT_HEIGHT]
     bcs .Scroll_Up_end
     
@@ -2138,15 +2138,15 @@ main_UpdateCameraY subroutine
     
     lda #[MT_VSCROLL_MARGIN*PX_MT_HEIGHT]
     sec
-    sbc main_sav
-    sta main_tmp
+    sbc sav
+    sta tmp
     lda #0
-    sta main_tmp+1
-    SUB_D shr_cameraY, shr_cameraY, main_tmp
+    sta tmp+1
+    SUB_D shr_cameraY, shr_cameraY, tmp
     
     ;handle nametable boundary
     lda shr_cameraYMod
-    cmp main_tmp
+    cmp tmp
     bcs .noModUp
     clc
     adc #240
@@ -2158,14 +2158,14 @@ main_UpdateCameraY subroutine
 
 	lda shr_cameraYMod
     sec
-	sbc main_tmp
+	sbc tmp
     sta shr_cameraYMod
 .Scroll_Up_end:
     
 .Scroll_Down:
     ;no scrolling because player not near screen edge
-    SUB_D main_sav, main_playerY, shr_cameraY
-    lda main_sav
+    SUB_D sav, playerY, shr_cameraY
+    lda sav
     cmp #[[MT_VIEWPORT_HEIGHT - MT_VSCROLL_MARGIN]*PX_MT_HEIGHT]
     bcc .Scroll_Down_end
     
@@ -2174,16 +2174,16 @@ main_UpdateCameraY subroutine
     bcs .Scroll_Down_end
     
     ;scroll down one pixel
-    lda main_sav ;player's on-screen y
+    lda sav ;player's on-screen y
     sec
     sbc #[[MT_VIEWPORT_HEIGHT - MT_VSCROLL_MARGIN]*PX_MT_HEIGHT]
-    sta main_tmp
+    sta tmp
     lda #0
-    sta main_tmp+1
-    ADD_D shr_cameraY, shr_cameraY, main_tmp
+    sta tmp+1
+    ADD_D shr_cameraY, shr_cameraY, tmp
     lda shr_cameraYMod
     clc
-    adc main_tmp
+    adc tmp
     sta shr_cameraYMod
     
     ;handle nametable boundary
@@ -2196,12 +2196,12 @@ main_UpdateCameraY subroutine
 	eor shr_nameTable
 	sta shr_nameTable
 .Scroll_Down_end:
-main_UpdateCameraY_end:
+UpdateCameraY_end:
 
-main_UpdatePlayerSprite subroutine
+UpdatePlayerSprite subroutine
     ;update position
-    SUB_D main_sav, main_playerX, shr_cameraX
-    lda main_sav
+    SUB_D sav, playerX, shr_cameraX
+    lda sav
     clc
     adc #8
     sta shr_playerSprites+SPR_X
@@ -2209,59 +2209,59 @@ main_UpdatePlayerSprite subroutine
     adc #8
     sta shr_playerSprites+OAM_SIZE+SPR_X
     
-    SUB_D main_sav, main_playerY, shr_cameraY
-    lda main_sav
+    SUB_D sav, playerY, shr_cameraY
+    lda sav
     clc
     adc #31
     sta shr_playerSprites+SPR_Y
     sta shr_playerSprites+OAM_SIZE+SPR_Y
 
     ;update tiles
-    lda main_playerFrame
+    lda playerFrame
     clc
-    adc main_playerXVel
+    adc playerXVel
     and #%00011111
-    sta main_playerFrame
+    sta playerFrame
 
-    lda main_playerFrame
+    lda playerFrame
     lsr
     lsr
     tax
 
-    bit main_playerFlags
+    bit playerFlags
     bpl .walk_anim
     ldx #9
     jmp .do_anim
 
 .walk_anim:
     lda #0
-    cmp main_playerXVel
+    cmp playerXVel
     bne .do_anim
     ldx #8
 
 .do_anim:
-    lda main_playerFlags
+    lda playerFlags
     and #PLY_ISFLIPPED
     sta shr_playerSprites+SPR_FLAGS
     sta shr_playerSprites+OAM_SIZE+SPR_FLAGS
-    bit main_playerFlags
+    bit playerFlags
     bvs .left
 .right:
-    lda prgdata_playerWalk,x
+    lda playerWalk,x
     sta shr_playerSprites+SPR_INDEX
     clc
     adc #2
     sta shr_playerSprites+OAM_SIZE+SPR_INDEX
     jmp .animEnd
 .left:
-    lda prgdata_playerWalk,x
+    lda playerWalk,x
     sta shr_playerSprites+OAM_SIZE+SPR_INDEX
     clc
     adc #2
     sta shr_playerSprites+SPR_INDEX
 .animEnd:
 
-    lda main_mercyTime
+    lda mercyTime
     beq .notFlashing
     lda #$01
     ora shr_playerSprites+SPR_FLAGS
@@ -2269,7 +2269,7 @@ main_UpdatePlayerSprite subroutine
     sta shr_playerSprites+OAM_SIZE+SPR_FLAGS
 .notFlashing:
 
-    lda main_playerFlags
+    lda playerFlags
     and #PLY_ISBEHIND
     beq .notBehind
     lda #$20
@@ -2278,7 +2278,7 @@ main_UpdatePlayerSprite subroutine
     sta shr_playerSprites+OAM_SIZE+SPR_FLAGS
 .notBehind:
     
-    lda main_playerFlags
+    lda playerFlags
     and #PLY_ISUPSIDEDOWN
     beq .notUpsideDown
     lda #$80
@@ -2287,96 +2287,96 @@ main_UpdatePlayerSprite subroutine
     sta shr_playerSprites+OAM_SIZE+SPR_FLAGS
 .notUpsideDown:
 
-main_UpdatePlayerSprite_end:
+UpdatePlayerSprite_end:
 
-main_UpdateEntitySprites subroutine
+UpdateEntitySprites subroutine
     lda #[shr_entitySprites-shr_oamShadow]
-    sta main_startSprite
+    sta startSprite
     ldy #[MAX_ENTITIES-1]
 .loop:
-    lda main_entityXHi,y
+    lda entityXHi,y
     bpl .active
     jmp .skip
 .active:
 
 
-    lda main_entityYLo,y
-    sta main_tmp
-    lda main_entityYHi,y
+    lda entityYLo,y
+    sta tmp
+    lda entityYHi,y
     and #ENT_Y_POS
-    sta main_tmp+1
-    SUB_D main_sav, main_tmp, shr_cameraY
-    lda main_sav+1
+    sta tmp+1
+    SUB_D sav, tmp, shr_cameraY
+    lda sav+1
     beq .y_ok
     jmp .skip
 .y_ok:
     
-    lda main_entityXLo,y
-    sta main_tmp
-    lda main_entityXHi,y
+    lda entityXLo,y
+    sta tmp
+    lda entityXHi,y
     and #ENT_X_POS
-    sta main_tmp+1
-    SUB_D main_sav+3, main_tmp, shr_cameraX
-    lda main_sav+4
+    sta tmp+1
+    SUB_D sav+3, tmp, shr_cameraX
+    lda sav+4
     beq .x_ok
     jmp .skip
 .x_ok:
     
-    lda main_entityYHi,y
+    lda entityYHi,y
     lsr
     tax
-    lda prgdata_entityTiles,x
-    sta main_sav+1
+    lda entityTiles,x
+    sta sav+1
     
-    lda prgdata_entityFlags,x
+    lda entityFlags,x
     and #ENT_F_COLOR
     lsr
-    sta main_sav+2
+    sta sav+2
         
-    lda main_startSprite 
-    sta main_tmp
+    lda startSprite 
+    sta tmp
     lda #$02
-    sta main_tmp+1
+    sta tmp+1
     
-    lda main_entityAnim,y
+    lda entityAnim,y
     asl
     tax
-    lda prgdata_animations,x
-    sta main_tmp+6
-    lda prgdata_animations+1,x
-    sta main_tmp+7
-    sty main_tmp+2
-    lda main_frame
+    lda animations,x
+    sta tmp+6
+    lda animations+1,x
+    sta tmp+7
+    sty tmp+2
+    lda frame
     lsr
     lsr
     ldy #0
-    and (main_tmp+6),y
+    and (tmp+6),y
     asl
     tay
     iny
-    lda (main_tmp+6),y
-    sta main_tmp+4
+    lda (tmp+6),y
+    sta tmp+4
     iny
-    lda (main_tmp+6),y
-    sta main_tmp+5
+    lda (tmp+6),y
+    sta tmp+5
     
     ldy #0
-    lda (main_tmp+4),y
-    sta main_tmp+6
-    INC_D main_tmp+4
+    lda (tmp+4),y
+    sta tmp+6
+    INC_D tmp+4
     
     ldx #0
 .copyLoop:
-    cpx main_tmp+6
+    cpx tmp+6
     bcs .done
     ldy #0
     
 .innerLoop:
-    lda (main_tmp+4),y
+    lda (tmp+4),y
     clc
-    adc main_sav,y
+    adc sav,y
     bcs .abort
-    sta (main_tmp),y
+    sta (tmp),y
     iny
     inx
     cpy #4
@@ -2384,50 +2384,585 @@ main_UpdateEntitySprites subroutine
     
     lda #4
     clc
-    adc main_tmp
-    sta main_tmp
+    adc tmp
+    sta tmp
     
-    ADDI_D main_tmp+4, main_tmp+4, 4
+    ADDI_D tmp+4, tmp+4, 4
     
     jmp .copyLoop
 .abort:
-    sty main_tmp+3
+    sty tmp+3
     lda #4
     sec
-    sbc main_tmp+3
-    sta main_tmp+3
+    sbc tmp+3
+    sta tmp+3
     txa
     clc
-    adc main_tmp+3
+    adc tmp+3
     tax
-    ADDI_D main_tmp+4, main_tmp+4, 4
+    ADDI_D tmp+4, tmp+4, 4
     jmp .copyLoop
 .done:
-    lda main_tmp
-    sta main_startSprite
+    lda tmp
+    sta startSprite
     
-    ldy main_tmp+2
+    ldy tmp+2
 .skip:
     dey
-    bmi main_UpdateEntitySprites_end
+    bmi UpdateEntitySprites_end
     jmp .loop
-main_UpdateEntitySprites_end
+UpdateEntitySprites_end
 
-main_ClearSprites subroutine
+ClearSprites subroutine
     lda #$FF
-    ldy main_startSprite
+    ldy startSprite
 .loop:
-    beq main_ClearSprites_end
+    beq ClearSprites_end
     sta shr_oamShadow,y
     iny
     jmp .loop
-main_ClearSprites_end:
+ClearSprites_end:
 
 
-    inc main_frame
+    inc frame
     inc shr_doDma
     inc shr_doRegCopy
     jsr synchronize
-    jmp main_loop
+    jmp loop
 
-    include main_subs.asm
+;------------------------------------------------------------------------------
+KillPlayer subroutine
+    lda currLevel
+    asl
+    tay
+    lda levelTable,y
+    sta arg
+    lda levelTable+1,y
+    sta arg+1
+    pla
+    pla
+    jmp EnterLevel
+;------------------------------------------------------------------------------
+DamagePlayer subroutine
+    lda shr_hp
+    bne .hurt
+    jmp KillPlayer
+.hurt:
+    dec shr_hp
+    lda #60
+    sta mercyTime
+    rts
+;------------------------------------------------------------------------------
+LoadTilesOnMoveRight subroutine
+    ;get tile column on screen
+    MOV_D tmp, shr_cameraX
+    REPEAT 3
+    LSR_D tmp
+    REPEND
+    lda tmp
+    and #31
+    clc
+    adc #31
+    and #31
+    sta arg+2
+    
+    ;get map index
+    ADDI_D tmp, tmp, 1
+    LSR_D tmp
+    ADDI_D tmp, tmp, 15
+    MOV_D arg, tmp
+    jsr MultiplyBy24 ;uses only arg 0..1
+    ;keeping ret value for later
+        
+    MOVI_D arg, levelMap
+    
+    ADD_D arg, arg, ret
+    
+    lda shr_cameraX
+    and #%00001000
+    beq .odd
+    jsr EvenColumn
+    jmp .return
+.odd:
+    jsr OddColumn
+.return:
+    inc shr_doTileCol
+    rts
+;------------------------------------------------------------------------------
+LoadTilesOnMoveLeft subroutine
+    ;get tile column on screen
+    MOV_D tmp, shr_cameraX
+    REPEAT 3
+    LSR_D tmp
+    REPEND
+    lda tmp
+    and #31
+    clc
+    adc #31
+    and #31
+    sta arg+2
+    
+    ;get map index
+    ADDI_D tmp, tmp, 1
+    LSR_D tmp
+    SUBI_D tmp, tmp, 1
+    MOV_D arg, tmp
+    jsr MultiplyBy24 ;uses only arg 0..1
+    ;keeping ret value for later
+        
+    MOVI_D arg, levelMap
+    
+    ADD_D arg, arg, ret
+    
+    lda shr_cameraX
+    and #%00001000
+    beq .odd
+    jsr EvenColumn
+    jmp .return
+.odd:
+    jsr OddColumn
+.return:
+    inc shr_doTileCol
+    rts
+;------------------------------------------------------------------------------
+LoadColorsOnMoveRight subroutine
+    ;get tile column on screen
+    MOV_D tmp, shr_cameraX
+    REPEAT 4
+    LSR_D tmp
+    REPEND
+    ADDI_D tmp, tmp, 15
+    
+    ;get index to attribute table
+    lda tmp
+    lsr
+    and #7
+    clc
+    adc #7
+    and #7
+    sta arg+2
+    
+    ;get map index
+    MOV_D arg, tmp
+    jsr MultiplyBy24 ;uses only arg 0..1, keeping ret value for later
+    ADDI_D arg, ret, levelMap
+    
+    lda shr_cameraX
+    and #$10
+    bne .unaligned
+    SUBI_D arg, arg, [1*MT_MAP_HEIGHT]
+    jsr ColorColumn
+    inc shr_doAttrCol
+    rts
+.unaligned:
+    jsr ColorWrappedColumn
+    inc shr_doAttrCol
+    rts
+;------------------------------------------------------------------------------
+LoadColorsOnMoveLeft subroutine
+    ;get tile column on screen
+    MOV_D tmp, shr_cameraX
+    REPEAT 4
+    LSR_D tmp
+    REPEND
+    
+    ;get index to attribute table
+    lda tmp
+    lsr
+    clc
+    adc #7
+    and #7
+    sta arg+2
+    
+    ;get map index
+    MOV_D arg, tmp
+    jsr MultiplyBy24 ;uses only arg 0..1
+    ADDI_D arg, ret, levelMap
+    
+    lda shr_cameraX
+    and #$10
+    bne .unaligned
+    ;ADDI_D arg, arg, [3*MT_MAP_HEIGHT]
+    jsr ColorColumn
+    inc shr_doAttrCol
+    rts
+.unaligned:
+    ADDI_D arg, arg, [15*MT_MAP_HEIGHT]
+    jsr ColorWrappedColumn
+    inc shr_doAttrCol
+    rts
+;------------------------------------------------------------------------------
+GetTileBehavior ;arg0..1 = mt_x arg2..3 = mt_y ret0 = value
+    jsr MultiplyBy24 ;takes arg0, which we no longer care about after this
+                          ;returns
+    ;t0 = y+ x*24
+    ADD_D tmp, arg+2, ret
+    
+    ;lookup tile, get behavior
+    ADDI_D tmp, tmp, levelMap
+    ldy #0
+    lda (tmp),y
+    tay
+    lda metatiles+256*4,y
+    REPEAT 2
+    lsr
+    REPEND
+    sta ret
+    rts
+;------------------------------------------------------------------------------
+GetTile ;arg0..1 = mt_x arg2..3 = mt_y ret0 = value
+    jsr MultiplyBy24 ;takes arg0, which we no longer care about after this
+                          ;returns
+    ;t0 = y+ x*24
+    ADD_D tmp, arg+2, ret
+    
+    ;lookup tile, get behavior
+    ADDI_D tmp, tmp, levelMap
+    ldy #0
+    lda (tmp),y
+    sta ret
+    rts
+;------------------------------------------------------------------------------
+SetTile ;arg0..1 = mt_x arg2..3 = mt_y, arg4 = value
+    jsr MultiplyBy24
+    ADDI_D ret, ret, levelMap
+    ADD_D tmp, arg+2, ret
+    lda arg+4
+    ldy #0
+    sta (tmp),y ;store updated tile into map
+    
+    ;update nametables
+    lda shr_doTile
+    beq .noWait
+    jsr synchronize
+.noWait:
+    lda arg+4
+    sta shr_tileMeta ;store tile for nametable update
+    MOVI_D shr_tileAddr, [$2000+TOP_OFFSET]
+    lda arg+2
+    cmp #9
+    bcc .upperTable
+    MOVI_D shr_tileAddr, $2800
+    SUBI_D arg+2, arg+2, 9
+.upperTable:
+    
+    REPEAT 6
+    ASL_D arg+2
+    REPEND
+    ADD_D shr_tileAddr, shr_tileAddr, arg+2
+    
+    ASL_D arg
+    lda arg
+    and #31
+    clc
+    adc shr_tileAddr
+    sta shr_tileAddr
+    lda #0
+    adc shr_tileAddr+1
+    sta shr_tileAddr+1
+    
+    inc shr_doTile
+    rts
+;------------------------------------------------------------------------------
+MultiplyBy24: ;arg0..arg1 is factor, ret0..ret1 is result
+    MOV_D ret, arg ; 1
+    ASL_D ret
+    ADD_D ret, ret, arg ;1
+    ASL_D ret ;0
+    ASL_D ret ;0
+    ASL_D ret ;0
+    rts
+;------------------------------------------------------------------------------
+synchronize subroutine
+    lda #1
+    sta shr_sleeping
+.loop
+    lda shr_sleeping
+    bne .loop
+rts
+;------------------------------------------------------------------------------
+;arg 0..1 -> rom address
+;arg 2 -> nametable column
+EvenColumn subroutine    
+    ldy #0
+    ldx #0
+.first_loop
+    sty tmp
+    lda (arg),y
+    tay
+    lda metatiles,y
+    sta shr_tileBuffer,x
+    inx
+    lda metatiles+512,y
+    sta shr_tileBuffer,x
+    inx
+    ldy tmp
+    iny
+    cpx #TOP_HEIGHT
+    bne .first_loop
+    
+    ADDI_D arg, arg, TOP_HEIGHT/2
+    
+    ldy #0
+    ldx #0
+.third_loop
+    sty tmp
+    lda (arg),y
+    tay
+    lda metatiles,y
+    sta shr_tileBuffer+TOP_HEIGHT,x
+    inx
+    lda metatiles+512,y
+    sta shr_tileBuffer+TOP_HEIGHT,x
+    inx
+    ldy tmp
+    iny
+    cpx #BOTTOM_HEIGHT
+    bne .third_loop
+    
+    lda arg+2
+    sta shr_tileCol
+    rts
+;------------------------------------------------------------------------------
+;arg 0..1 -> rom address
+;arg 2 -> nametable column
+; 20 top 30 bottom, x2 right and left
+OddColumn subroutine    
+    ldy #0
+    ldx #0
+.second_loop
+    sty tmp
+    lda (arg),y
+    tay
+    lda metatiles+256,y
+    sta shr_tileBuffer,x
+    inx
+    lda metatiles+768,y
+    sta shr_tileBuffer,x
+    inx
+    ldy tmp
+    iny
+    cpx #TOP_HEIGHT
+    bne .second_loop  
+    
+    ADDI_D arg, arg, TOP_HEIGHT/2
+    
+    ldy #0
+    ldx #0
+.fourth_loop
+    sty tmp
+    lda (arg),y
+    tay
+    lda metatiles+256,y
+    sta shr_tileBuffer+TOP_HEIGHT,x
+    inx
+    lda metatiles+768,y
+    sta shr_tileBuffer+TOP_HEIGHT,x
+    inx
+    ldy tmp
+    iny
+    cpx #BOTTOM_HEIGHT
+    bne .fourth_loop 
+    lda arg+2
+    sta shr_tileCol
+    
+    rts
+;------------------------------------------------------------------------------
+;for revealing aligned columns - subtract 1 for moving viewport right
+ColorColumn subroutine
+    ldy #0
+    ldx #0
+.loop:
+    cpx #TOP_ATTR_HEIGHT
+    bne .no_partial
+    dey
+.no_partial:
+    sty tmp
+    
+    lda (arg),y
+    tay
+    lda metatiles+256*4,y
+    and #%00000011
+    sta tmp+1
+    
+    
+    ldy tmp
+    iny
+    sty tmp
+    
+    lda (arg),y
+    tay
+    lda metatiles+256*4,y
+    and #%00000011
+    REPEAT 4
+    asl
+    REPEND
+    ora tmp+1
+    sta tmp+1
+    
+    
+    lda tmp
+    clc
+    adc #MT_MAP_HEIGHT-1
+    tay
+    sty tmp
+    
+    lda (arg),y
+    tay
+    lda metatiles+256*4,y
+    and #%00000011
+    REPEAT 2
+    asl
+    REPEND
+    ora tmp+1
+    sta tmp+1
+    
+    
+    ldy tmp
+    iny
+    sty tmp
+    
+    lda (arg),y
+    tay
+    lda metatiles+256*4,y
+    and #%00000011
+    REPEAT 6
+    asl
+    REPEND
+    ora tmp+1
+    
+    ;lda #%10101010
+    sta shr_attrBuffer,x
+    inx
+    
+    lda tmp
+    sec
+    sbc #MT_MAP_HEIGHT-1
+    tay
+    
+    cpx #TOP_ATTR_HEIGHT+BOTTOM_ATTR_HEIGHT
+    bne .loop
+    rts
+;------------------------------------------------------------------------------
+;for revealing unaligned columns - add 15 for moving viewport left
+ColorWrappedColumn subroutine
+    ldy #0
+    ldx #0
+.loop:
+    cpx #TOP_ATTR_HEIGHT
+    bne .no_partial
+    dey
+.no_partial:
+    sty tmp
+    
+    lda (arg),y
+    tay
+    lda metatiles+256*4,y
+    and #%00000011
+    sta tmp+1
+    
+    
+    ldy tmp
+    iny
+    sty tmp
+    
+    lda (arg),y
+    tay
+    lda metatiles+256*4,y
+    and #%00000011
+    REPEAT 4
+    asl
+    REPEND
+    ora tmp+1
+    sta tmp+1
+    
+    
+    ldy tmp
+    dey
+    sty tmp
+    
+    SUBI_D tmp+2, arg, [15*MT_MAP_HEIGHT]
+    
+    lda (tmp+2),y
+    tay
+    lda metatiles+256*4,y
+    and #%00000011
+    REPEAT 2
+    asl
+    REPEND
+    ora tmp+1
+    sta tmp+1
+    
+    
+    ldy tmp
+    iny
+    sty tmp
+    
+    lda (tmp+2),y
+    tay
+    lda metatiles+256*4,y
+    and #%00000011
+    REPEAT 6
+    asl
+    REPEND
+    ora tmp+1
+    
+    ;lda #%10101010
+    sta shr_attrBuffer,x
+    inx
+    
+    ldy tmp
+    iny
+    
+    cpx #TOP_ATTR_HEIGHT+BOTTOM_ATTR_HEIGHT
+    bne .loop
+    rts
+;------------------------------------------------------------------------------
+; Reads controller
+; Out: A=buttons pressed, where bit 0 is A button
+read_joy subroutine
+   ;; Strobe controller
+   lda #1
+   sta $4016
+   lda #0
+   sta $4016
+    
+   ;; Read all 8 buttons
+   ldx #8
+.loop:
+   pha
+    
+   ;; Read next button state and mask off low 2 bits.
+   ;; Compare with $01, which will set carry flag if
+   ;; either or both bits are set.
+   lda $4016
+   and #$03
+   cmp #$01
+    
+   ;; Now, rotate the carry flag into the top of A,
+   ;; land shift all the other buttons to the right
+   pla
+   ror
+    
+   dex
+   bne .loop
+    
+   rts
+;------------------------------------------------------------------------------
+AddScore subroutine ; arg 3 bytes value to add, A and X trashed
+    ldx #0
+.loop:
+    lda arg,x
+    clc
+    adc shr_score,x
+    cmp #100
+    bcc .foo
+    sbc #100
+    inc shr_score+1,x
+.foo
+    sta shr_score,x
+    inx
+    cpx #3
+    bne .loop
+    rts
+AddScore_end:
