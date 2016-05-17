@@ -1464,7 +1464,7 @@ IsNearPlayerY subroutine
 
 ApplyXVel subroutine
     lda main_entityXVel,y
-    ASR_
+    M_ASR
     sta main_tmp
     lda #0
     sta main_tmp+1
@@ -1522,6 +1522,18 @@ return$:
     
 
 main_ER_Bullet:
+    lda main_entityXVel,y
+    sta main_tmp
+    EXTEND main_tmp, main_tmp
+    clc
+    lda main_entityXLo,y
+    adc main_tmp
+    sta main_entityXLo,y
+    lda main_entityXHi,y
+    adc main_tmp+1
+    sta main_entityXHi,y
+    jmp main_ER_Return
+
 main_ER_VerticalPlatform:
 main_ER_HorizontalPlatform:
 main_ER_Spider:

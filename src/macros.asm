@@ -155,10 +155,21 @@
 .not:
 	ENDM
 
-    MAC ASR_
+    MAC M_ASR
     clc
     bpl .positive
     sec
 .positive:
     ror
     ENDM    
+    
+    MAC EXTEND ;<16bit result> <8bit input>
+    lda #0
+    sta {1}+1
+    lda {2}
+    sta {1}
+    bpl .end
+    lda #$FF
+    sta {1}+1
+.end:
+    ENDM
