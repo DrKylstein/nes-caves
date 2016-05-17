@@ -11,7 +11,7 @@ sav            ds 2 ;MIPS-style $s#
 dst            ds 2
 src            ds 2
 
-ret            ds 2 ;MIPS-style $p#
+ret            ds 4 ;MIPS-style $p#
 
 nmi_tmp             ds 1
 nmi_len             ds 1

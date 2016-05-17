@@ -1470,7 +1470,6 @@ ApplyXVel subroutine
     M_ASR
     sta tmp
     EXTEND tmp, tmp
-    
     lda frame
     and #1
     beq .noExtra
@@ -1481,7 +1480,6 @@ ApplyXVel subroutine
 .positive:
     INC_D tmp
 .noExtra:
-    
     clc
     lda entityXLo,y
     adc tmp
@@ -1495,6 +1493,48 @@ ApplyXVel subroutine
     ora tmp
     sta entityXHi,y
     rts
+    
+HitWall subroutine
+    ;calculate map tile
+    lda entityXLo,y
+    sta arg
+    lda entityXHi,y
+    and #ENT_X_POS
+    sta arg+1
+    lda entityVelocity,y
+    bmi .shift
+    ADDI_D arg, arg, 15
+.shift:
+    REPEAT 4
+    LSR_D arg
+    REPEND
+    lda arg
+    sta ret+2 ;metatile x
+    jsr MultiplyBy24
+    lda entityYLo,y
+    sta tmp
+    lda entityYHi,y
+    and #ENT_Y_POS
+    sta tmp+1
+    REPEAT 4
+    LSR_D tmp
+    REPEND
+    lda tmp
+    sta ret+3 ;metatile y
+    ADD_D tmp, tmp, ret
+    ADDI_D tmp, tmp, levelMap
+    sty tmp+2
+    ldy #0
+    lda (tmp),y
+    sta ret+1 ; metatile index
+    tay
+    lda metatiles+256*4,y
+    ldy tmp+2
+    lsr
+    lsr
+    sta ret ; behavior
+    rts
+
     
 ER_Mimrock subroutine
     jsr IsNearPlayerY
@@ -1531,6 +1571,49 @@ return$:
     
 
 ER_Bullet subroutine
+    jsr HitWall
+    lda ret
+    cmp #TB_SOLID
+    beq .die
+    cmp #TB_WEAKBLOCK
+    bne .notWeakBlock
+    lda ret+2
+    sta arg
+    lda ret+3
+    sta arg+2
+    lda #0
+    sta arg+1
+    sta arg+3
+    sta arg+4
+    sty sav
+    jsr SetTile
+    ldy sav
+    jmp .die
+.notWeakBlock:
+    cmp #TB_EGG
+    bne .notEgg
+    lda ret+2
+    sta arg
+    lda ret+3
+    sta arg+2
+    lda #0
+    sta arg+1
+    sta arg+3
+    lda bonusCount
+    and #7
+    clc
+    adc #BONUS_TILES
+    sta arg+4
+    inc bonusCount
+    sty sav
+    jsr SetTile
+    ldy sav
+.die:
+    lda #$80
+    sta entityXHi,y
+    jmp ER_Return
+.notEgg:
+
     jsr ApplyXVel
     lda entityCount,y
     clc
