@@ -360,9 +360,11 @@ InitEntities subroutine
     lsr
     tax
     lda entitySpeeds,x
-    sta entityXVel,y
+    sta entityVelocity,y
     lda entityAnims,x
     sta entityAnim,y
+    lda #0
+    sta entityCount,y
     iny
     cpy #MAX_ENTITIES
     bne .loop
@@ -500,7 +502,7 @@ ReenableDisplay_end:
 ;------------------------------------------------------------------------------
 ;Every Frame
 ;------------------------------------------------------------------------------
-loop:
+MainLoop:
 CheckInput subroutine
     lda ctrl
     sta oldCtrl
@@ -961,6 +963,8 @@ TC_Nop:
     sta entityYHi
     lda #ANIM_SMALL_LONG
     sta entityAnim
+    lda #0
+    sta entityCount
     lda shr_powerTime+1
     beq .notPowerShot
     lda #PLY_ISUPSIDEDOWN
@@ -978,8 +982,8 @@ TC_Nop:
     bit playerFlags
     bvs .shootLeft
 .shootRight:
-    lda #3
-    sta entityXVel
+    lda #2
+    sta entityVelocity
     clc
     lda #8
     adc entityXLo
@@ -991,8 +995,8 @@ TC_Nop:
     
     jmp TileInteraction_end
 .shootLeft:
-    lda #<-3
-    sta entityXVel
+    lda #<-2
+    sta entityVelocity
     lda entityXLo
     sec
     sbc #8
@@ -1415,7 +1419,6 @@ updateEntities subroutine
     txa
     lsr
     tax
-    MOV_D shr_debugReg, tmp
     jmp (tmp)
 ER_Return:
     dey
@@ -1463,16 +1466,22 @@ IsNearPlayerY subroutine
     rts
 
 ApplyXVel subroutine
-    lda entityXVel,y
+    lda entityVelocity,y
     M_ASR
     sta tmp
-    lda #0
-    sta tmp+1
-    lda tmp
+    EXTEND tmp, tmp
+    
+    lda frame
+    and #1
+    beq .noExtra
+    lda entityVelocity,y
     bpl .positive
-    lda #$FF
-    sta tmp+1
+    DEC_D tmp
+    jmp .noExtra
 .positive:
+    INC_D tmp
+.noExtra:
+    
     clc
     lda entityXLo,y
     adc tmp
@@ -1487,18 +1496,18 @@ ApplyXVel subroutine
     sta entityXHi,y
     rts
     
-ER_Mimrock:
+ER_Mimrock subroutine
     jsr IsNearPlayerY
     bne hiding$
-    lda entityXVel,y
+    lda entityVelocity,y
     bne hiding$
     lda #2
-    sta entityXVel,y
+    sta entityVelocity,y
 hiding$:
     jmp ER_Default
 
-ER_RightCannon:
-ER_LeftCannon:
+ER_RightCannon subroutine
+ER_LeftCannon subroutine
     lda #SWITCH_TURRETS
     bit switches
     beq return$
@@ -1521,17 +1530,26 @@ return$:
     
     
 
-ER_Bullet:
-    lda entityXVel,y
-    sta tmp
-    EXTEND tmp, tmp
+ER_Bullet subroutine
+    jsr ApplyXVel
+    lda entityCount,y
     clc
-    lda entityXLo,y
-    adc tmp
-    sta entityXLo,y
-    lda entityXHi,y
-    adc tmp+1
-    sta entityXHi,y
+    adc #1
+    sta entityCount,y
+    cmp #$28
+    bne done$
+    
+    lda entityVelocity,y
+    bmi negative$
+    clc
+    adc #3
+    sta entityVelocity,y
+    jmp ER_Return
+negative$:
+    sec
+    sbc #3
+    sta entityVelocity,y
+done$:
     jmp ER_Return
 
 ER_VerticalPlatform:
@@ -1557,7 +1575,7 @@ ER_Rex:
     jmp ER_Default
 
     
-ER_Default:
+ER_Default subroutine
 
     lda entityFlags2,x
     and #ENT_F2_ISGROUNDED
@@ -1571,7 +1589,7 @@ ER_Default:
     and #ENT_X_POS
     sta arg+1
     
-    lda entityXVel,y
+    lda entityVelocity,y
     bmi .shift2
     ADDI_D arg, arg, 15
 .shift2:
@@ -1612,7 +1630,7 @@ ER_Default:
     lda entityXHi,y
     and #ENT_X_POS
     sta arg+1
-    lda entityXVel,y
+    lda entityVelocity,y
     bmi .shift
     ADDI_D arg, arg, 15
 .shift:
@@ -1635,12 +1653,12 @@ ER_Default:
     lda entityFlags,x
     and #ENT_F_ISPLATFORM
     beq .notPlatform
-    lda entityXVel,y
+    lda entityVelocity,y
     bpl .notPlatform
     SUBI_D tmp, tmp, 15
     
 .notPlatform:
-    lda entityXVel,y
+    lda entityVelocity,y
     bmi .shiftY
     ADDI_D tmp, tmp, 15
 .shiftY:
@@ -1719,7 +1737,7 @@ ER_Default:
     lda entityFlags,x
     and #ENT_F_ISVERTICAL
     beq .longCheckDone
-    lda entityXVel,y
+    lda entityVelocity,y
     bmi .longCheckDone
 .die:
     lda #$80
@@ -1772,8 +1790,8 @@ ER_Default:
     lda #5
 .notHammer:
     sec
-    sbc entityXVel,y
-    sta entityXVel,y
+    sbc entityVelocity,y
+    sta entityVelocity,y
     lda entityXHi,y
     and #~ENT_X_COUNT
     ora entityCounts,x
@@ -1957,19 +1975,19 @@ ER_Default:
     and #ENT_Y_POS
     sta tmp+1
 .horizontal:
-    lda entityXVel,y
+    lda entityVelocity,y
     and #1
     bne .extra
-    lda entityXVel,y
+    lda entityVelocity,y
     jmp .noExtra
 .extra:
     lda frame
     and #1
     bne .leapFrame
-    lda entityXVel,y
+    lda entityVelocity,y
     jmp .noExtra
 .leapFrame:
-    lda entityXVel,y
+    lda entityVelocity,y
     bmi .negativeLeap
     clc
     adc #1
@@ -2428,7 +2446,7 @@ ClearSprites_end:
     inc shr_doDma
     inc shr_doRegCopy
     jsr synchronize
-    jmp loop
+    jmp MainLoop
 
 ;------------------------------------------------------------------------------
 KillPlayer subroutine

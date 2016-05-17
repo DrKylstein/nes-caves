@@ -93,8 +93,9 @@ entityXHi        ds MAX_ENTITIES
 entityYLo        ds MAX_ENTITIES
 entityYHi        ds MAX_ENTITIES ; bottom bit
 entityBlockEnd:
-entityXVel       ds MAX_ENTITIES ; 
+entityVelocity   ds MAX_ENTITIES ; 
 entityAnim       ds MAX_ENTITIES
+entityCount      ds MAX_ENTITIES
     ECHO $400-.," bytes left in page $300"
 
     ORG $0400

@@ -156,10 +156,11 @@
 	ENDM
 
     MAC M_ASR
-    clc
-    bpl .positive
-    sec
-.positive:
+    cmp #$FF
+    bne .noTruncate
+    lda #0
+.noTruncate:
+    cmp #$80
     ror
     ENDM    
     
