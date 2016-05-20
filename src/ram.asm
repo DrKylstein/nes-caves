@@ -58,23 +58,25 @@ shr_playerSprites   ds OAM_SIZE*2
 shr_entitySprites:
 
     ORG $0300
-shr_debugReg        ds 2
-nmi_frame           ds 1
-frame           ds 1
+shr_debugReg   ds 2
+nmi_frame      ds 1
+frame          ds 1
 ctrl           ds 1
 oldCtrl        ds 1
 pressed        ds 1
 switches       ds 1
-playerFlags    ds 1 ;jumping,flipped,in air,behind,reverse gravity,000
+playerFlags    ds 1
 playerFrame    ds 1
 playerXVel     ds 1
 playerYVel     ds 2
 mercyTime      ds 1
 bonusCount     ds 1
-shr_ammo            ds 1
-shr_powerTime       ds 2
-shr_hp              ds 1
-shr_score           ds 3
+shr_ammo       ds 1
+powerType      ds 1
+powerFrames    ds 1
+shr_powerSeconds ds 1
+shr_hp         ds 1
+shr_score      ds 3
 caterpillarNext ds 1
 mapPX          ds 2
 mapPY          ds 2

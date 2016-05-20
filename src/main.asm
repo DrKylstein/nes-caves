@@ -12,7 +12,6 @@
 ;flame traps
 ;rolling enemy
 ;strength mushrooms
-;infinite ammo w/ powershot
 ;sound effects
 ;air generator death
 ;fix intermittent color corruption
@@ -311,8 +310,9 @@ ResetStats subroutine
     sta currPlatform
     lda #0
     sta paused
-    sta shr_powerTime
-    sta shr_powerTime+1
+    sta powerFrames
+    sta shr_powerSeconds
+    sta powerType
     sta bonusCount
     lda playerFlags
     and #~PLY_HASKEY
@@ -560,9 +560,9 @@ CheckInput subroutine
     bit playerFlags
     bmi CheckInput_end
     MOVI_D playerYVel, JUMP_VELOCITY
-    lda playerFlags
-    and #PLY_ISUPSIDEDOWN
-    beq .notUpsideDown
+    lda powerType
+    cmp #POWER_GRAVITY
+    bne .notUpsideDown
     MOVI_D playerYVel, -JUMP_VELOCITY
 .notUpsideDown:
     lda playerFlags
@@ -780,12 +780,11 @@ TC_Powershot:
     lda #SFX_CRYSTAL
     sta shr_doSfx
     lda #10
-    sta shr_powerTime+1
+    sta shr_powerSeconds
     lda #60
-    sta shr_powerTime
-    lda #~PLY_ISUPSIDEDOWN
-    and playerFlags
-    sta playerFlags
+    sta powerFrames
+    lda #POWER_SHOT
+    sta powerType
     lda #0
     sta sav
     jmp TC_UpdateTile
@@ -795,12 +794,11 @@ TC_Gravity:
     lda #SFX_CRYSTAL
     sta shr_doSfx
     lda #10
-    sta shr_powerTime+1
+    sta shr_powerSeconds
     lda #60
-    sta shr_powerTime
-    lda #PLY_ISUPSIDEDOWN
-    ora playerFlags
-    sta playerFlags
+    sta powerFrames
+    lda #POWER_GRAVITY
+    sta powerType
     lda #0
     sta sav
     jmp TC_UpdateTile
@@ -948,9 +946,13 @@ TC_Nop:
     BEQ_L TileInteraction_end
     bit entityXHi
     BPL_L TileInteraction_end
+    lda powerType
+    cmp #POWER_SHOT
+    beq .InfiniteAmmo
     lda shr_ammo
     BEQ_L TileInteraction_end
     dec shr_ammo
+.InfiniteAmmo
     lda playerX
     sta entityXLo
     lda playerX+1
@@ -965,10 +967,8 @@ TC_Nop:
     sta entityAnim
     lda #0
     sta entityCount
-    lda shr_powerTime+1
-    beq .notPowerShot
-    lda #PLY_ISUPSIDEDOWN
-    and playerFlags
+    lda powerType
+    cmp #POWER_SHOT
     bne .notPowerShot
     lda #POWERSHOT_ID<<1
     ora entityYHi
@@ -1022,9 +1022,9 @@ TC_UpdateTile:
 TileInteraction_end:
 
 ApplyGravity subroutine
-    lda playerFlags
-    and #PLY_ISUPSIDEDOWN
-    bne .reverseGravity
+    lda powerType
+    cmp #POWER_GRAVITY
+    beq .reverseGravity
     CMPI_D playerYVel, $0400
     bpl ApplyGravity_end
     ADDI_D playerYVel, playerYVel, GRAVITY
@@ -1110,9 +1110,9 @@ CheckGround subroutine
     CMPI_D playerYVel, 0
     BMI_L CheckGround_end
 
-    lda playerFlags
-    and #PLY_ISUPSIDEDOWN
-    bne .upsideDown
+    lda powerType
+    cmp #POWER_GRAVITY
+    beq .upsideDown
     lda playerFlags
     ora #PLY_ISJUMPING
     sta playerFlags
@@ -1207,9 +1207,9 @@ CheckGround subroutine
     lda #0
     sta playerYVel
     sta playerYFrac
-    lda playerFlags
-    and #PLY_ISUPSIDEDOWN
-    bne CheckGround_end
+    lda powerType
+    cmp #POWER_GRAVITY
+    beq CheckGround_end
     lda playerFlags
     and #~PLY_ISJUMPING
     sta playerFlags
@@ -1221,8 +1221,8 @@ CheckCieling subroutine
     CMPI_D playerYVel, 0
     BPL_L CheckCieling_end
 
-    lda playerFlags
-    and #PLY_ISUPSIDEDOWN
+    lda powerType
+    cmp #POWER_GRAVITY
     beq .notUpsideDown
     lda playerFlags
     ora #PLY_ISJUMPING
@@ -1257,9 +1257,9 @@ CheckCieling subroutine
     MOVI_D playerYVel, 0
     lda #0
     sta playerYFrac
-    lda playerFlags
-    and #PLY_ISUPSIDEDOWN
-    beq CheckCieling_end
+    lda powerType
+    cmp #POWER_GRAVITY
+    bne CheckCieling_end
     lda playerFlags
     and #~PLY_ISJUMPING
     sta playerFlags
@@ -1339,17 +1339,16 @@ CheckHurt subroutine
 CheckHurt_end:
 
 UpdatePower subroutine
-    lda shr_powerTime+1
+    lda shr_powerSeconds
     beq UpdatePower_end
-    dec shr_powerTime
+    dec powerFrames
     bne UpdatePower_end
     lda #60
-    sta shr_powerTime
-    dec shr_powerTime+1
+    sta powerFrames
+    dec shr_powerSeconds
     bne UpdatePower_end
-    lda #~PLY_ISUPSIDEDOWN
-    and playerFlags
-    sta playerFlags
+    lda #0
+    sta powerType
 UpdatePower_end:
 
 updateEntities subroutine
@@ -2410,9 +2409,9 @@ UpdatePlayerSprite subroutine
     sta shr_playerSprites+OAM_SIZE+SPR_FLAGS
 .notBehind:
     
-    lda playerFlags
-    and #PLY_ISUPSIDEDOWN
-    beq .notUpsideDown
+    lda powerType
+    cmp #POWER_GRAVITY
+    bne .notUpsideDown
     lda #$80
     ora shr_playerSprites+SPR_FLAGS
     sta shr_playerSprites+SPR_FLAGS

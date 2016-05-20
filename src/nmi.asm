@@ -137,7 +137,7 @@ nmi_UpdatePower subroutine
     sta PPU_ADDR
     lda #$7A
     sta PPU_ADDR
-    lda shr_powerTime+1
+    lda shr_powerSeconds
     beq .none
     jsr nmi_CentToDec
     sty PPU_DATA
