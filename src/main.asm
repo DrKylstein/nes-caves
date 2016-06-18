@@ -154,7 +154,7 @@ LoadTitleNames subroutine
 LoadTitleNames_end:
 
 LoadTitlePalette subroutine
-    ldy #16
+    ldy #15
     bit PPU_STATUS
     lda #$3F
     sta PPU_ADDR
@@ -271,19 +271,19 @@ InitSpritePalette subroutine
 
     ldx shr_copyIndex
     
-    ldy #16
+    ldy #15
 .loop
     lda palettes,y
     PHXA
     dey
-    bne .loop
+    bpl .loop
 
     lda #>[nmi_Copy16-1]
     PHXA
     lda #<[nmi_Copy16-1]
     PHXA
     
-    lda #$11
+    lda #$10
     PHXA
     lda #$3F
     PHXA
@@ -346,19 +346,19 @@ LoadLevelPal subroutine
     
     ADDI_D tmp, arg, [levelDataEnd-levelMap+entityBlockEnd-entityBlock]
     
-    ldy #16
+    ldy #15
 .loop
     lda (tmp),y
     PHXA
     dey
-    bne .loop
+    bpl .loop
 
     lda #>[nmi_Copy16-1]
     PHXA
     lda #<[nmi_Copy16-1]
     PHXA
     
-    lda #$01
+    lda #$00
     PHXA
     lda #$3F
     PHXA
