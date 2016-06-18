@@ -110,9 +110,9 @@ clearOAM_end:
     sta PPU_MASK
 
 LoadTitlePatterns subroutine
-    lda #<bank0_titleTiles
+    lda #<titleTiles
     sta tmp
-    lda #>bank0_titleTiles
+    lda #>titleTiles
     sta tmp+1
     ldy #0
     lda banktable,y
@@ -188,9 +188,9 @@ DoTitleScreen subroutine
 DoTitleScreen_end:
 
 LoadPatterns subroutine
-    lda #<bank0_defaultTiles
+    lda #<defaultTiles
     sta tmp
-    lda #>bank0_defaultTiles
+    lda #>defaultTiles
     sta tmp+1
     ldy #0
     lda banktable,y
@@ -340,6 +340,10 @@ ResetStats subroutine
     lda #CATERPILLAR_ID+1
     sta caterpillarNext
 ResetStats_end:
+
+    ldy #1
+    lda banktable,y
+    sta banktable,y
 
 LoadLevelPal subroutine
     ldx shr_copyIndex
