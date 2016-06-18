@@ -21,16 +21,12 @@ nmi_scrollY         ds 1
 nmi_nametable       ds 1
 nmi_scrollX         ds 1
 nmi_sfxPtr          ds 2
+nmi_sp              ds 1
 
 shr_doSfx           ds 1
 shr_sleeping        ds 1
 shr_doDma           ds 1
 shr_doRegCopy       ds 1
-shr_ppuMask         ds 1
-shr_ppuCtrl         ds 1
-shr_doPalCopy       ds 1
-shr_palAddr         ds 2
-shr_palDest         ds 1
 shr_doTileCol       ds 1
 shr_doAttrCol       ds 1
 shr_tileCol         ds 1
@@ -39,12 +35,17 @@ shr_flashBg         ds 1
 shr_doTile          ds 1
 shr_tileAddr        ds 2
 shr_tileMeta        ds 1
+shr_copyIndex       ds 1
     ECHO $100-.," bytes left in page $000"
 
     ORG $0100
+BUFFER_SEG:
 shr_tileBuffer      ds TOP_HEIGHT+BOTTOM_HEIGHT           ;18+30 = 48 : 48
 shr_attrBuffer      ds TOP_ATTR_HEIGHT+BOTTOM_ATTR_HEIGHT ; 5+ 8 = 13 : 61
-shr_stack:
+shr_copyBuffer: ;163 bytes
+    ORG $1E0
+shr_copyBufferEnd:
+shr_stack: ;32 bytes
     ECHO $200-.," bytes left in page $100"
     
     ORG $0200

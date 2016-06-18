@@ -20,22 +20,29 @@ nmi_SpriteDma subroutine
     dec shr_doDma
 nmi_SpriteDma_end:
 
-nmi_PalCopy subroutine
-    lda shr_doPalCopy
-    beq nmi_PalCopy_end
+nmi_genericCopy subroutine
+    lda #PPU_CTRL_SETTING
+    sta PPU_CTRL
+
+    lda shr_sleeping
+    beq nmi_genericCopy_end
+    tsx
+    stx nmi_sp
+    ldx shr_copyIndex
+    txs
     bit PPU_STATUS
-    lda #$3F
+    pla
     sta PPU_ADDR
-    lda shr_palDest
+    pla
     sta PPU_ADDR
-    ldy #16
-.loop:
-    lda (shr_palAddr),y
-    sta PPU_DATA
-    dey
-    bne .loop
-    sty shr_doPalCopy
-nmi_PalCopy_end:
+END_COPY:
+    rts ; jump to update routine
+;rts with END_COPY on stack will arrive here
+    ldx nmi_sp
+    txs
+    lda #<shr_copyBufferEnd
+    sta shr_copyIndex
+nmi_genericCopy_end:
 
 nmi_TileCopy subroutine
     lda shr_doTileCol
@@ -77,10 +84,6 @@ nmi_AttrCopy subroutine
     dec shr_doAttrCol
 nmi_AttrCopy_end:
 
-    lda shr_earlyExit
-    beq nmi_FlashBg
-    jmp nmi_Exit
-
 nmi_FlashBg subroutine
     lda shr_flashBg
     beq nmi_FlashBg_end
@@ -94,10 +97,25 @@ nmi_FlashBg subroutine
     dec shr_flashBg
 nmi_FlashBg_end:
 
-    lda shr_ppuCtrl
-    and %11111011
-    sta PPU_CTRL
+nmi_updateReg subroutine
+    lda shr_doRegCopy
+    beq nmi_updateReg_end
+    
+    SUBI_D nmi_tmp, shr_cameraX, 8
+    lda nmi_tmp
+    sta nmi_scrollX
+    
+    lda shr_cameraYMod
+    sta nmi_scrollY
+    lda shr_nameTable
+    sta nmi_nametable
+    dec shr_doRegCopy
+nmi_updateReg_end:
+
 nmi_DebugCounter subroutine
+    lda #PPU_CTRL_SETTING
+    sta PPU_CTRL
+
     bit PPU_STATUS
     lda #$20
     sta PPU_ADDR
@@ -120,95 +138,15 @@ nmi_DebugCounter subroutine
     and #$0F
     sta PPU_DATA
 nmi_DebugCounter_end:
-nmi_UpdateAmmo subroutine
-    bit PPU_STATUS
-    lda #$20
-    sta PPU_ADDR
-    lda #$71
-    sta PPU_ADDR
-    lda shr_ammo
-    jsr nmi_CentToDec
-    sty PPU_DATA
-    sta PPU_DATA
-nmi_UpdateAmmo_end:
-nmi_UpdatePower subroutine
-    bit PPU_STATUS
-    lda #$20
-    sta PPU_ADDR
-    lda #$7A
-    sta PPU_ADDR
-    lda shr_powerSeconds
-    beq .none
-    jsr nmi_CentToDec
-    sty PPU_DATA
-    sta PPU_DATA
-    jmp nmi_UpdatePower_end
-.none:
-    lda #$10
-    sta PPU_DATA
-    sta PPU_DATA
-nmi_UpdatePower_end:
-nmi_UpdateScore subroutine
-    bit PPU_STATUS
-    lda #$20
-    sta PPU_ADDR
-    lda #$65
-    sta PPU_ADDR
-    ldx #3
-.loop:
-    lda shr_score-1,x
-    jsr nmi_CentToDec
-    sty PPU_DATA
-    sta PPU_DATA
-    dex
-    bne .loop
-nmi_UpdateScore_end:
 
-nmi_UpdateHearts subroutine
-    lda #$20
-    sta PPU_ADDR
-    lda #$76
-    sta PPU_ADDR
-    lda #$10
-    ldy #3
-.clear_hearts:
-    sta PPU_DATA
-    dey
-    bne .clear_hearts
+    lda shr_earlyExit
+    beq continue$
+    jmp nmi_Exit
+continue$:
 
-    lda #$20
-    sta PPU_ADDR
-    lda #$76
-    sta PPU_ADDR
-    lda #$11
-    ldy shr_hp
-    beq nmi_UpdateHearts_end
-.fill_hearts:
-    sta PPU_DATA
-    dey
-    bne .fill_hearts
-nmi_UpdateHearts_end:
-
-nmi_updateReg subroutine
-    lda shr_doRegCopy
-    beq nmi_updateReg_end
-    lda shr_ppuMask
-    sta PPU_MASK 
-    
-    SUBI_D nmi_tmp, shr_cameraX, 8
-    lda nmi_tmp
-    sta nmi_scrollX
-    
-    lda shr_cameraYMod
-    sta nmi_scrollY
-    lda shr_nameTable
-    sta nmi_nametable
-    dec shr_doRegCopy
-nmi_updateReg_end:
 
 nmi_doStatus subroutine
-    lda shr_ppuCtrl
-    and #$FE
+    lda #PPU_CTRL_SETTING
     sta PPU_CTRL
     bit PPU_STATUS
     lda #0
@@ -355,8 +293,7 @@ nmi_CopyAttrCol subroutine
 ;------------------------------------------------------------------------------
 nmi_CopyTileCol subroutine
     ;vertical mode
-    lda #%00000100
-    ora shr_ppuCtrl
+    lda #[PPU_CTRL_SETTING | %00000100]
     sta PPU_CTRL
 
 ;top nametable
@@ -385,8 +322,7 @@ nmi_CopyTileCol subroutine
     iny
     REPEND
 
-    lda #%11111011
-    and shr_ppuCtrl
+    lda #PPU_CTRL_SETTING
     sta PPU_CTRL
    rts
 ;------------------------------------------------------------------------------
@@ -401,4 +337,106 @@ nmi_CentToDec subroutine ;input in A, output ones to A, tens to Y
 .end:
     rts
 nmi_CentToDec_end:
-
+;------------------------------------------------------------------------------
+nmi_Copy32:
+    pla
+    sta PPU_DATA
+nmi_Copy31:
+    pla
+    sta PPU_DATA
+nmi_Copy30:
+    pla
+    sta PPU_DATA
+nmi_Copy29:
+    pla
+    sta PPU_DATA
+nmi_Copy28:
+    pla
+    sta PPU_DATA
+nmi_Copy27:
+    pla
+    sta PPU_DATA
+nmi_Copy26:
+    pla
+    sta PPU_DATA
+nmi_Copy25:
+    pla
+    sta PPU_DATA
+nmi_Copy24:
+    pla
+    sta PPU_DATA
+nmi_Copy23:
+    pla
+    sta PPU_DATA
+nmi_Copy22:
+    pla
+    sta PPU_DATA
+nmi_Copy21:
+    pla
+    sta PPU_DATA
+nmi_Copy20:
+    pla
+    sta PPU_DATA
+nmi_Copy19:
+    pla
+    sta PPU_DATA
+nmi_Copy18:
+    pla
+    sta PPU_DATA
+nmi_Copy17:
+    pla
+    sta PPU_DATA
+nmi_Copy16:
+    pla
+    sta PPU_DATA
+nmi_Copy15:
+    pla
+    sta PPU_DATA
+nmi_Copy14:
+    pla
+    sta PPU_DATA
+nmi_Copy13:
+    pla
+    sta PPU_DATA
+nmi_Copy12:
+    pla
+    sta PPU_DATA
+nmi_Copy11:
+    pla
+    sta PPU_DATA
+nmi_Copy10:
+    pla
+    sta PPU_DATA
+nmi_Copy9:
+    pla
+    sta PPU_DATA
+nmi_Copy8:
+    pla
+    sta PPU_DATA
+nmi_Copy7:
+    pla
+    sta PPU_DATA
+nmi_Copy6:
+    pla
+    sta PPU_DATA
+nmi_Copy5:
+    pla
+    sta PPU_DATA
+nmi_Copy4:
+    pla
+    sta PPU_DATA
+nmi_Copy3:
+    pla
+    sta PPU_DATA
+nmi_Copy2:
+    pla
+    sta PPU_DATA
+nmi_Copy1:
+    pla
+    sta PPU_DATA
+    
+    pla
+    sta PPU_ADDR
+    pla
+    sta PPU_ADDR
+    rts

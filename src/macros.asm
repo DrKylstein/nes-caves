@@ -174,3 +174,8 @@
     sta {1}+1
 .end:
     ENDM
+    
+    MAC PHXA
+    sta $100,x
+    dex
+    ENDM

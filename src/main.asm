@@ -62,10 +62,8 @@ reset subroutine
     sta $500,x
     sta $600,x
     sta $700,x  ;; Remove this if you're storing reset-persistent data
-  
     inx
     bne .clrmem
- 
  
 init_apu subroutine
     lda #$0F
@@ -109,7 +107,6 @@ clearOAM_end:
 
     lda #0
     sta PPU_CTRL
-    lda #0
     sta PPU_MASK
 
 LoadTitlePatterns subroutine
@@ -186,8 +183,6 @@ DoTitleScreen subroutine
     cmp #0
     beq .waitForPress
     
-    lda #0
-    sta PPU_CTRL
     lda #0
     sta PPU_MASK
 DoTitleScreen_end:
@@ -269,14 +264,36 @@ InitSprites subroutine
     cpy #8*OAM_SIZE
     bne .loop
 
-    MOVI_D shr_palAddr, palettes
-    lda #SPRITE_PAL
-    sta shr_palDest
-    inc shr_doPalCopy
+InitSpritePalette subroutine
+    lda #<shr_copyBufferEnd
+    sta shr_copyIndex
+    jsr StartQueue
+
+    ldx shr_copyIndex
+    
+    ldy #16
+.loop
+    lda palettes,y
+    PHXA
+    dey
+    bne .loop
+
+    lda #>[nmi_Copy16-1]
+    PHXA
+    lda #<[nmi_Copy16-1]
+    PHXA
+    
+    lda #$11
+    PHXA
+    lda #$3F
+    PHXA
+    
+    stx shr_copyIndex
+
     inc shr_earlyExit
-    lda #%10110000 ;enable nmi
+    lda #PPU_CTRL_SETTING ;enable nmi
     sta PPU_CTRL
-    jsr synchronize
+    jsr Synchronize
     lda #0
     sta PPU_CTRL
     dec shr_earlyExit
@@ -285,8 +302,12 @@ InitSprites subroutine
 ;------------------------------------------------------------------------------
     lda #5
     sta shr_ammo
-    ;lda #MAP_LEVEL
-    ;sta currLevel
+    jsr UpdateAmmoDisplay
+    lda #0
+    sta shr_score
+    sta shr_score+1
+    sta shr_score+2
+    jsr UpdateScoreDisplay
     
     MOVI_D arg, mainMap
 ;------------------------------------------------------------------------------
@@ -294,10 +315,8 @@ InitSprites subroutine
 ;------------------------------------------------------------------------------
 EnterLevel:
 DisableDisplay subroutine
-    lda #%00000000 ;disable nmi
-    sta shr_ppuCtrl
+    lda #0 ;disable nmi
     sta PPU_CTRL
-    sta shr_ppuMask
     sta PPU_MASK
 DisableDisplay_end:
 
@@ -306,6 +325,7 @@ ResetStats subroutine
     sta switches
     lda #3
     sta shr_hp
+    jsr UpdateHeartsDisplay
     lda #MAX_ENTITIES
     sta currPlatform
     lda #0
@@ -321,11 +341,29 @@ ResetStats subroutine
     sta caterpillarNext
 ResetStats_end:
 
-    ADDI_D shr_palAddr, arg, [levelDataEnd-levelMap+entityBlockEnd-entityBlock]
-    lda #BG_PAL
-    sta shr_palDest
-    inc shr_doPalCopy
+LoadLevelPal subroutine
+    ldx shr_copyIndex
+    
+    ADDI_D tmp, arg, [levelDataEnd-levelMap+entityBlockEnd-entityBlock]
+    
+    ldy #16
+.loop
+    lda (tmp),y
+    PHXA
+    dey
+    bne .loop
 
+    lda #>[nmi_Copy16-1]
+    PHXA
+    lda #<[nmi_Copy16-1]
+    PHXA
+    
+    lda #$01
+    PHXA
+    lda #$3F
+    PHXA
+    
+    stx shr_copyIndex
 
 LoadLevel subroutine
     MOV_D tmp+2, arg
@@ -419,7 +457,7 @@ LoadNametables subroutine
     tya
     pha
     jsr EvenColumn
-    jsr nmi_CopyTileCol     ;terribly unsafe
+    jsr CopyTileCol     ;terribly unsafe
     pla
     tay
     
@@ -441,7 +479,7 @@ LoadNametables subroutine
     tya
     pha
     jsr OddColumn
-    jsr nmi_CopyTileCol     ;ditto
+    jsr CopyTileCol     ;ditto
     pla
     tay
     
@@ -474,7 +512,7 @@ InitAttributes subroutine
     sta shr_tileCol
     sty sav+2
     jsr ColorColumn
-    jsr nmi_CopyAttrCol
+    jsr CopyAttrCol
     ldy sav+2
     lda arg
     clc
@@ -491,12 +529,11 @@ InitAttributes_end:
     jsr LoadTilesOnMoveLeft
 
 ReenableDisplay subroutine
-    lda #%10110000 ;enable nmi
-    sta shr_ppuCtrl
-    sta PPU_CTRL
     lda #%00011000
-    sta shr_ppuMask
-    inc shr_doRegCopy
+    sta PPU_MASK
+    lda #PPU_CTRL_SETTING ;enable nmi
+    bit PPU_STATUS
+    sta PPU_CTRL
 ReenableDisplay_end:
 
 ;------------------------------------------------------------------------------
@@ -771,6 +808,7 @@ TC_Ammo:
     clc
     adc #5
     sta shr_ammo
+    jsr UpdateAmmoDisplay
     lda #0
     sta sav
     jmp TC_UpdateTile
@@ -787,6 +825,7 @@ TC_Powershot:
     sta powerType
     lda #0
     sta sav
+    jsr UpdatePowerDisplay
     jmp TC_UpdateTile
 TC_Powershot_end:
 
@@ -801,6 +840,7 @@ TC_Gravity:
     sta powerType
     lda #0
     sta sav
+    jsr UpdatePowerDisplay
     jmp TC_UpdateTile
 TC_Gravity_end:
 
@@ -952,6 +992,7 @@ TC_Nop:
     lda shr_ammo
     BEQ_L TileInteraction_end
     dec shr_ammo
+    jsr UpdateAmmoDisplay
 .InfiniteAmmo
     lda playerX
     sta entityXLo
@@ -1346,9 +1387,11 @@ UpdatePower subroutine
     lda #60
     sta powerFrames
     dec shr_powerSeconds
-    bne UpdatePower_end
+    bne .display
     lda #0
     sta powerType
+.display:
+    jsr UpdatePowerDisplay
 UpdatePower_end:
 
 updateEntities subroutine
@@ -2558,7 +2601,7 @@ ClearSprites_end:
     inc frame
     inc shr_doDma
     inc shr_doRegCopy
-    jsr synchronize
+    jsr Synchronize
     jmp MainLoop
 
 ;------------------------------------------------------------------------------
@@ -2580,6 +2623,7 @@ DamagePlayer subroutine
     jmp KillPlayer
 .hurt:
     dec shr_hp
+    jsr UpdateHeartsDisplay
     lda #60
     sta mercyTime
     rts
@@ -2765,7 +2809,7 @@ SetTile ;arg0..1 = mt_x arg2..3 = mt_y, arg4 = value
     ;update nametables
     lda shr_doTile
     beq .noWait
-    jsr synchronize
+    jsr Synchronize
 .noWait:
     lda arg+4
     sta shr_tileMeta ;store tile for nametable update
@@ -2804,13 +2848,22 @@ MultiplyBy24: ;arg0..arg1 is factor, ret0..ret1 is result
     ASL_D ret ;0
     rts
 ;------------------------------------------------------------------------------
-synchronize subroutine
-    lda #1
-    sta shr_sleeping
+Synchronize subroutine  
+    inc shr_sleeping
 .loop
     lda shr_sleeping
     bne .loop
-rts
+StartQueue subroutine
+    ldx shr_copyIndex
+    lda #>END_COPY
+    PHXA
+    lda #<END_COPY
+    PHXA
+    lda #0
+    PHXA
+    PHXA
+    stx shr_copyIndex
+    rts
 ;------------------------------------------------------------------------------
 ;arg 0..1 -> rom address
 ;arg 2 -> nametable column
@@ -3080,6 +3133,17 @@ read_joy subroutine
     
    rts
 ;------------------------------------------------------------------------------
+CentToDec subroutine ;input in A, output ones to A, tens to Y
+    ldy #0
+.loop:
+    cmp #10
+    bcc .end
+    sbc #10
+    iny
+    jmp .loop
+.end:
+    rts
+;------------------------------------------------------------------------------
 AddScore subroutine ; arg 3 bytes value to add, A and X trashed
     ldx #0
 .loop:
@@ -3095,5 +3159,217 @@ AddScore subroutine ; arg 3 bytes value to add, A and X trashed
     inx
     cpx #3
     bne .loop
+    
+UpdateScoreDisplay subroutine
+    ldx shr_copyIndex
+    
+    lda shr_score
+    jsr CentToDec
+    PHXA
+    tya
+    PHXA
+    lda shr_score+1
+    jsr CentToDec
+    PHXA
+    tya
+    PHXA
+    lda shr_score+2
+    jsr CentToDec
+    PHXA
+    tya
+    PHXA
+    
+    lda #>[nmi_Copy6-1]
+    PHXA
+    lda #<[nmi_Copy6-1]
+    PHXA
+    
+    lda #$65
+    PHXA
+    lda #$20
+    PHXA 
+    
+    stx shr_copyIndex
+    
+    
     rts
-AddScore_end:
+;------------------------------------------------------------------------------
+UpdateAmmoDisplay subroutine
+    ldx shr_copyIndex
+
+    lda shr_ammo
+    jsr CentToDec
+    PHXA
+    tya
+    PHXA
+    
+    lda #>[nmi_Copy2-1]
+    PHXA
+    lda #<[nmi_Copy2-1]
+    PHXA
+    
+    lda #$71
+    PHXA
+    lda #$20
+    PHXA 
+    
+    stx shr_copyIndex
+
+    rts
+;------------------------------------------------------------------------------
+UpdatePowerDisplay subroutine
+    ldx shr_copyIndex
+
+    lda shr_powerSeconds
+    beq .none
+    jsr CentToDec
+    PHXA
+    tya
+    PHXA
+    jmp .finish
+.none:
+    lda #$10
+    PHXA
+    PHXA
+.finish:
+
+    lda #>[nmi_Copy2-1]
+    PHXA
+    lda #<[nmi_Copy2-1]
+    PHXA
+    
+    lda #$7A
+    PHXA
+    lda #$20
+    PHXA 
+    
+    stx shr_copyIndex
+
+    rts
+;------------------------------------------------------------------------------
+UpdateHeartsDisplay subroutine
+    ldx shr_copyIndex
+    
+    ldy #3
+.loop:
+    cpy shr_hp
+    beq .heart
+    bcs .no_heart
+.heart:
+    lda #$11
+    PHXA
+    jmp .continue_loop
+.no_heart:
+    lda #$10
+    PHXA
+.continue_loop:
+    dey
+    bne .loop
+
+    
+    lda #>[nmi_Copy3-1]
+    PHXA
+    lda #<[nmi_Copy3-1]
+    PHXA
+    
+    lda #$76
+    PHXA
+    lda #$20
+    PHXA
+    
+    stx shr_copyIndex
+    
+    rts
+;------------------------------------------------------------------------------
+CopyAttrCol subroutine
+    lda shr_tileCol
+    lsr
+    lsr
+    sta tmp+2
+
+;top
+    lda #<TOP_ATTR_OFFSET
+    sta tmp
+    lda #>TOP_ATTR_OFFSET
+    sta tmp+1
+    clc
+    lda tmp
+    adc tmp+2
+    sta tmp
+    lda tmp+1
+    adc #0
+    sta tmp+1
+
+    ldy #0
+    bit PPU_STATUS
+    
+    REPEAT TOP_ATTR_HEIGHT
+    lda tmp+1
+    sta PPU_ADDR
+    lda tmp
+    sta PPU_ADDR
+    lda shr_attrBuffer,y
+    sta PPU_DATA
+    iny
+    ADDI_D tmp, tmp, 8
+    REPEND
+    
+;bottom    
+    lda #<BOTTOM_ATTR_OFFSET
+    sta tmp
+    lda #>BOTTOM_ATTR_OFFSET
+    sta tmp+1
+    clc
+    lda tmp
+    adc tmp+2
+    sta tmp
+    lda tmp+1
+    adc #0
+    sta tmp+1
+    
+    REPEAT BOTTOM_ATTR_HEIGHT
+    lda tmp+1
+    sta PPU_ADDR
+    lda tmp
+    sta PPU_ADDR
+    lda shr_attrBuffer,y
+    sta PPU_DATA
+    iny
+    ADDI_D tmp, tmp, 8
+    REPEND
+    rts
+;------------------------------------------------------------------------------
+CopyTileCol subroutine
+    ;vertical mode
+    lda #%00000100
+    sta PPU_CTRL
+
+;top nametable
+    bit PPU_STATUS
+    lda #>[$2000+TOP_OFFSET]
+    sta PPU_ADDR
+    lda shr_tileCol
+    clc
+    adc #<[$2000+TOP_OFFSET]
+    sta PPU_ADDR
+    ldy #0
+    REPEAT TOP_HEIGHT
+    lda shr_tileBuffer,y
+    sta PPU_DATA
+    iny
+    REPEND
+    
+    ;bottom nametable
+    lda #$28
+    sta PPU_ADDR
+    lda shr_tileCol
+    sta PPU_ADDR
+    REPEAT BOTTOM_HEIGHT
+    lda shr_tileBuffer,y
+    sta PPU_DATA
+    iny
+    REPEND
+
+    lda #0
+    sta PPU_CTRL
+   rts

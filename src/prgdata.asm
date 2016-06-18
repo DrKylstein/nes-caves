@@ -796,7 +796,7 @@ titlePalette:
 levelTable
     dc.w  level01
     dc.w  level02
-    dc.w  level03
+    dc.w  level01
     dc.w  level01
     dc.w  level01
     dc.w  level01
@@ -820,6 +820,6 @@ level01:
 level02:
     incbin level02.bin
     incbin pal02.pal
-level03:
-    incbin level03.bin
-    incbin pal00.pal
+; level03:
+    ; incbin level03.bin
+    ; incbin pal00.pal
