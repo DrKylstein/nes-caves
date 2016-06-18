@@ -35,6 +35,7 @@
     
     ORG 16 + 2*$4000
     RORG $8000
+    include bank2.asm
     ECHO "PRGROM Bank 2 left:",$C000-.
     IF . > $C000-6
     ECHO "Exceeded PRGROM Bank 0 size!"

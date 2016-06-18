@@ -4,7 +4,7 @@ titleNames:
 titlePalette:
     incbin paltl.pal
 titleTiles:
-    incbin title-patterns.bin
-    
-defaultTiles:
-    incbin chrrom.bin
+    incbin title-patterns.pat
+globalTiles:
+    incbin sprites.pat
+    incbin tiles.pat

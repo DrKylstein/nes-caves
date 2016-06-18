@@ -174,8 +174,36 @@
     sta {1}+1
 .end:
     ENDM
-    
+        
     MAC PHXA
     sta $100,x
     dex
+    ENDM
+    
+    MAC SET_PPU_ADDR
+    bit PPU_STATUS
+    lda #>{1}
+    sta PPU_ADDR
+    lda #<{1}
+    sta PPU_ADDR
+    ENDM
+
+    MAC SELECT_BANK
+    ldy #{1}
+    lda banktable,y
+    sta banktable,y
+    ENDM
+    
+    MAC ENQUEUE_PPU_ADDR
+    lda #<{1}
+    PHXA
+    lda #>{1}
+    PHXA
+    ENDM
+    
+    MAC ENQUEUE_ROUTINE
+    lda #>[{1}-1]
+    PHXA
+    lda #<[{1}-1]
+    PHXA
     ENDM

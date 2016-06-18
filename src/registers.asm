@@ -49,3 +49,19 @@ JOYPAD2         ds 1
 APU_CTRL        ds 1
                 ds 1
 APU_FRAME       ds 1
+
+    SEG.U VRAM
+    ORG #$0000
+VRAM_PATTERN_L   ds $1000
+VRAM_PATTERN_R   ds $1000
+VRAM_NAME_UL     ds $3C0
+VRAM_ATTRIB_UL   ds 64
+VRAM_NAME_UR     ds $3C0
+VRAM_ATTRIB_UR   ds 64
+VRAM_NAME_LL     ds $3C0
+VRAM_ATTRIB_LL   ds 64
+VRAM_NAME_LR     ds $3C0
+VRAM_ATTRIB_LR   ds 64
+                 ds $F00
+VRAM_PALETTE_BG  ds $10
+VRAM_PALETTE_SP  ds $10

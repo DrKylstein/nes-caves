@@ -19,7 +19,7 @@
 ;transitions
 ;unique level tiles?
 ;death animation
-
+    
 ;------------------------------------------------------------------------------
 ;Initial Boot
 ;------------------------------------------------------------------------------
@@ -109,57 +109,21 @@ clearOAM_end:
     sta PPU_CTRL
     sta PPU_MASK
 
-LoadTitlePatterns subroutine
-    lda #<titleTiles
-    sta tmp
-    lda #>titleTiles
-    sta tmp+1
-    ldy #0
-    lda banktable,y
-    sta banktable,y
-    bit PPU_STATUS
-    lda #$10
-    sta PPU_ADDR
-    lda #$00
-    sta PPU_ADDR
-    ldx #16
-.loop:
-    lda (tmp),y
-    sta PPU_DATA
-    iny
-    bne .loop
-    inc tmp+1
-    dex
-    bne .loop
-LoadTitlePatterns_end:
-LoadTitleNames subroutine
-    lda #<titleNames
-    sta tmp
-    lda #>titleNames
-    sta tmp+1
-    bit PPU_STATUS
-    lda #$20
-    sta PPU_ADDR
-    lda #$00
-    sta PPU_ADDR
-    ldx #4
-.loop:
-    lda (tmp),y
-    sta PPU_DATA
-    iny
-    bne .loop
-    inc tmp+1
-    dex
-    bne .loop
-LoadTitleNames_end:
 
-LoadTitlePalette subroutine
+    SELECT_BANK 0
+LoadTitle subroutine
+    MOVI_D arg, titleTiles
+    SET_PPU_ADDR VRAM_PATTERN_R
+    ldx #16
+    jsr PagesToPPU
+    
+    MOVI_D arg, titleNames
+    SET_PPU_ADDR VRAM_NAME_UL
+    ldx #4
+    jsr PagesToPPU
+    
     ldy #15
-    bit PPU_STATUS
-    lda #$3F
-    sta PPU_ADDR
-    lda #$00
-    sta PPU_ADDR
+    SET_PPU_ADDR VRAM_PALETTE_BG
 .loop:
     lda titlePalette,y
     sta PPU_DATA
@@ -188,45 +152,22 @@ DoTitleScreen subroutine
 DoTitleScreen_end:
 
 LoadPatterns subroutine
-    lda #<defaultTiles
-    sta tmp
-    lda #>defaultTiles
-    sta tmp+1
-    ldy #0
-    lda banktable,y
-    sta banktable,y
-    bit PPU_STATUS
-    sty PPU_ADDR
-    sty PPU_ADDR
-    ldx #32
-.loop:
-    lda (tmp),y
-    sta PPU_DATA
-    iny
-    bne .loop
-    inc tmp+1
-    dex
-    bne .loop
+    MOVI_D arg, globalTiles
+    SET_PPU_ADDR VRAM_PATTERN_L
+    ldx #24
+    jsr PagesToPPU
 LoadPatterns_end:
 
 InitNametables subroutine
     ldy #$A0
-    bit PPU_STATUS
-    lda #$20
-    sta PPU_ADDR
-    lda #$00
-    sta PPU_ADDR
+    SET_PPU_ADDR VRAM_NAME_UL
 .clear_upper
     sta PPU_DATA
     dey
     bne .clear_upper
 
     ldy #$00
-    bit PPU_STATUS
-    lda #$20
-    sta PPU_ADDR
-    lda #$00
-    sta PPU_ADDR
+    SET_PPU_ADDR VRAM_NAME_UL
 .load_hud
     lda hud,y
     sta PPU_DATA
@@ -234,11 +175,7 @@ InitNametables subroutine
     cpy #$80
     bne .load_hud
 
-    bit PPU_STATUS
-    lda #$23
-    sta PPU_ADDR
-    lda #$C0
-    sta PPU_ADDR
+    SET_PPU_ADDR VRAM_ATTRIB_UL
 .load_hud_attr
     lda hud,y
     sta PPU_DATA
@@ -278,15 +215,8 @@ InitSpritePalette subroutine
     dey
     bpl .loop
 
-    lda #>[nmi_Copy16-1]
-    PHXA
-    lda #<[nmi_Copy16-1]
-    PHXA
-    
-    lda #$10
-    PHXA
-    lda #$3F
-    PHXA
+    ENQUEUE_ROUTINE nmi_Copy16
+    ENQUEUE_PPU_ADDR VRAM_PALETTE_SP
     
     stx shr_copyIndex
 
@@ -341,10 +271,15 @@ ResetStats subroutine
     sta caterpillarNext
 ResetStats_end:
 
-    ldy #1
-    lda banktable,y
-    sta banktable,y
+    SELECT_BANK 2
+    PUSH_D arg
+    MOVI_D arg, tileset01
+    SET_PPU_ADDR [VRAM_PATTERN_R+2048]
+    ldx #8
+    jsr PagesToPPU
+    POP_D arg
 
+    SELECT_BANK 1
 LoadLevelPal subroutine
     ldx shr_copyIndex
     
@@ -3377,3 +3312,15 @@ CopyTileCol subroutine
     lda #0
     sta PPU_CTRL
    rts
+;------------------------------------------------------------------------------
+PagesToPPU subroutine ;PPU_ADDR set, x = number of 256 byte quantities, arg = address
+    ldy #0
+.innerloop:
+    lda (arg),y
+    sta PPU_DATA
+    iny
+    bne .innerloop
+    ADDI_D arg, arg, 256
+    dex
+    bne .innerloop
+    rts
