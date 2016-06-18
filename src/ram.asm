@@ -4,18 +4,11 @@
     SEG.U RAM
     ORG $0000
 tmp            ds 8 ;MIPS-style $t#
-
 arg            ds 6 ;MIPS-style $a#
-
-sav            ds 2 ;MIPS-style $s#
-dst            ds 2
-src            ds 2
-
+sav            ds 6 ;MIPS-style $s#
 ret            ds 4 ;MIPS-style $p#
 
-nmi_tmp             ds 1
-nmi_len             ds 1
-nmi_src             ds 2
+nmi_tmp             ds 4
 nmi_sfxPeriod       ds 2
 nmi_scrollY         ds 1
 nmi_nametable       ds 1
