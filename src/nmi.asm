@@ -64,7 +64,7 @@ nmi_OneTileCopy subroutine
     sta PPU_DATA
     lda metatiles+256,y
     sta PPU_DATA
-    ADDI_D shr_tileAddr, shr_tileAddr, 32
+    ADD16I shr_tileAddr, shr_tileAddr, 32
     lda shr_tileAddr+1
     sta PPU_ADDR
     lda shr_tileAddr
@@ -101,7 +101,7 @@ nmi_updateReg subroutine
     lda shr_doRegCopy
     beq nmi_updateReg_end
     
-    SUBI_D nmi_tmp, shr_cameraX, 8
+    SUB16I nmi_tmp, shr_cameraX, 8
     lda nmi_tmp
     sta nmi_scrollX
     
@@ -182,10 +182,10 @@ nmi_doStatus subroutine
     ; ldy #0
     ; lda (nmi_sfxPtr),y
     ; sta nmi_sfxPeriod
-    ; INC_D nmi_sfxPtr
+    ; INC16 nmi_sfxPtr
     ; lda (nmi_sfxPtr),y
     ; sta nmi_sfxPeriod+1
-    ; INC_D nmi_sfxPtr
+    ; INC16 nmi_sfxPtr
     ; sty shr_doSfx
 ; .check:
     ; lda nmi_sfxPeriod+1
@@ -201,10 +201,10 @@ nmi_doStatus subroutine
     ; ldy #0
     ; lda (nmi_sfxPtr),y
     ; sta nmi_sfxPeriod
-    ; INC_D nmi_sfxPtr
+    ; INC16 nmi_sfxPtr
     ; lda (nmi_sfxPtr),y
     ; sta nmi_sfxPeriod+1
-    ; INC_D nmi_sfxPtr
+    ; INC16 nmi_sfxPtr
 
 
 .wait2: ;wait for sprite 0 to be set again
@@ -263,7 +263,7 @@ nmi_CopyAttrCol subroutine
     lda shr_attrBuffer,y
     sta PPU_DATA
     iny
-    ADDI_D nmi_tmp, nmi_tmp, 8
+    ADD16I nmi_tmp, nmi_tmp, 8
     REPEND
     
 ;bottom    
@@ -287,7 +287,7 @@ nmi_CopyAttrCol subroutine
     lda shr_attrBuffer,y
     sta PPU_DATA
     iny
-    ADDI_D nmi_tmp, nmi_tmp, 8
+    ADD16I nmi_tmp, nmi_tmp, 8
     REPEND
     rts
 ;------------------------------------------------------------------------------

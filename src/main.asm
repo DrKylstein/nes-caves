@@ -75,7 +75,7 @@ init_apu subroutine
     iny
     cpy #$18
     bne .loop
-    MOVI_D nmi_sfxPtr, nullSound
+    MOV16I nmi_sfxPtr, nullSound
     jmp init_apu_end
 .regs:
     .byte $30,$08,$00,$00
@@ -98,7 +98,7 @@ clearOAM_end:
     ;; Other things you can do between vblank waits are set up audio
     ;; or set up other mapper registers.
     
-    MOVI_D shr_debugReg, $BEEF
+    MOV16I shr_debugReg, $BEEF
     
 .vblankwait2:
     bit PPU_STATUS
@@ -112,12 +112,12 @@ clearOAM_end:
 
     SELECT_BANK 0
 LoadTitle subroutine
-    MOVI_D arg, titleTiles
+    MOV16I arg, titleTiles
     SET_PPU_ADDR VRAM_PATTERN_R
     ldx #16
     jsr PagesToPPU
     
-    MOVI_D arg, titleNames
+    MOV16I arg, titleNames
     SET_PPU_ADDR VRAM_NAME_UL
     ldx #4
     jsr PagesToPPU
@@ -152,7 +152,7 @@ DoTitleScreen subroutine
 DoTitleScreen_end:
 
 LoadPatterns subroutine
-    MOVI_D arg, globalTiles
+    MOV16I arg, globalTiles
     SET_PPU_ADDR VRAM_PATTERN_L
     ldx #24
     jsr PagesToPPU
@@ -239,7 +239,7 @@ InitSpritePalette subroutine
     sta shr_score+2
     jsr UpdateScoreDisplay
     
-    MOVI_D arg, mainMap
+    MOV16I arg, mainMap
 ;------------------------------------------------------------------------------
 ;Start of Level
 ;------------------------------------------------------------------------------
@@ -272,18 +272,18 @@ ResetStats subroutine
 ResetStats_end:
 
     SELECT_BANK 2
-    PUSH_D arg
-    MOVI_D arg, tileset01
+    PUSH16 arg
+    MOV16I arg, tileset01
     SET_PPU_ADDR [VRAM_PATTERN_R+2048]
     ldx #8
     jsr PagesToPPU
-    POP_D arg
+    POP16 arg
 
     SELECT_BANK 1
 LoadLevelPal subroutine
     ldx shr_copyIndex
     
-    ADDI_D tmp, arg, [levelDataEnd-levelMap+entityBlockEnd-entityBlock]
+    ADD16I tmp, arg, [levelDataEnd-levelMap+entityBlockEnd-entityBlock]
     
     ldy #15
 .loop
@@ -305,8 +305,8 @@ LoadLevelPal subroutine
     stx shr_copyIndex
 
 LoadLevel subroutine
-    MOV_D tmp+2, arg
-    MOVI_D tmp, levelMap
+    MOV16 tmp+2, arg
+    MOV16I tmp, levelMap
     ldy #0
     ldx #4
 .loop:
@@ -314,13 +314,13 @@ LoadLevel subroutine
     sta (tmp),y
     iny
     bne .loop
-    ADDI_D tmp+2, tmp+2, 256
-    ADDI_D tmp, tmp, 256
+    ADD16I tmp+2, tmp+2, 256
+    ADD16I tmp, tmp, 256
     dex
     bne .loop
     
-    ADDI_D tmp+2, arg, [levelDataEnd-levelMap]
-    MOVI_D tmp, entityBlock
+    ADD16I tmp+2, arg, [levelDataEnd-levelMap]
+    MOV16I tmp, entityBlock
     ldy #0
 .copyEntities:
     lda (tmp+2),y
@@ -350,13 +350,13 @@ InitEntities_end:
 LoadMapState subroutine
     lda currLevel
     bpl LoadMapState_end
-    MOV_D playerX, mapPX
-    MOV_D playerY, mapPY
-    MOV_D shr_cameraX, mapCamX
-    MOV_D shr_cameraY, mapCamY
+    MOV16 playerX, mapPX
+    MOV16 playerY, mapPY
+    MOV16 shr_cameraX, mapCamX
+    MOV16 shr_cameraY, mapCamY
     lda mapCamYMod
     sta shr_cameraYMod
-    CMPI_D shr_cameraY, 240
+    CMP16I shr_cameraY, 240
     lda #0
     bcc .nt0
     lda #8
@@ -365,21 +365,21 @@ LoadMapState subroutine
 LoadMapState_end:
 
 LoadNametables subroutine
-    MOV_D arg, shr_cameraX
+    MOV16 arg, shr_cameraX
     REPEAT 4
-    LSR_D arg
+    LSR16 arg
     REPEND
     jsr MultiplyBy24
-    ADDI_D sav, ret, levelMap
+    ADD16I sav, ret, levelMap
     ldy #0
-    MOV_D sav+2, shr_cameraX
+    MOV16 sav+2, shr_cameraX
     REPEAT 3
-    LSR_D sav+2
+    LSR16 sav+2
     REPEND
         
 .loop:
     ;args to buffer column    
-    MOV_D arg, sav
+    MOV16 arg, sav
     tya
     clc
     adc arg
@@ -400,7 +400,7 @@ LoadNametables subroutine
     pla
     tay
     
-    MOV_D arg, sav
+    MOV16 arg, sav
     tya
     clc
     adc arg
@@ -423,18 +423,18 @@ LoadNametables subroutine
     tay
     
     iny
-    ADDI_D sav, sav, 23
+    ADD16I sav, sav, 23
     cpy #16
     bne .loop
 LoadNametables_end:
 
 InitAttributes subroutine
-    MOV_D arg, shr_cameraX
+    MOV16 arg, shr_cameraX
     REPEAT 4
-    LSR_D arg
+    LSR16 arg
     REPEND
     jsr MultiplyBy24
-    ADDI_D arg, ret, levelMap
+    ADD16I arg, ret, levelMap
     lda shr_cameraX
     REPEAT 5
     lsr
@@ -535,11 +535,11 @@ CheckInput subroutine
     beq CheckInput_end
     bit playerFlags
     bmi CheckInput_end
-    MOVI_D playerYVel, JUMP_VELOCITY
+    MOV16I playerYVel, JUMP_VELOCITY
     lda powerType
     cmp #POWER_GRAVITY
     bne .notUpsideDown
-    MOVI_D playerYVel, -JUMP_VELOCITY
+    MOV16I playerYVel, -JUMP_VELOCITY
 .notUpsideDown:
     lda playerFlags
     ora #PLY_ISJUMPING
@@ -554,16 +554,16 @@ TileInteraction subroutine
     sta playerFlags
 
     ;a0 = x in tiles
-    ADDI_D arg, playerX, 7
+    ADD16I arg, playerX, 7
     REPEAT 4
-    LSR_D arg
+    LSR16 arg
     REPEND
     lda arg
     sta sav+1
     ;a2 = y in tiles
-    ADDI_D arg+2, playerY, 7
+    ADD16I arg+2, playerY, 7
     REPEAT 4
-    LSR_D arg+2
+    LSR16 arg+2
     REPEND
     lda arg+2
     sta sav+2
@@ -571,10 +571,10 @@ TileInteraction subroutine
     jsr MultiplyBy24 ;takes arg0, which we no longer care about after this
                           ;returns
     ;t0 = y+ x*24
-    ADD_D tmp, arg+2, ret
+    ADD16 tmp, arg+2, ret
     
     ;lookup tile, get behavior
-    ADDI_D tmp, tmp, levelMap
+    ADD16I tmp, tmp, levelMap
     ldy #0
     lda (tmp),y
     sta sav
@@ -725,7 +725,7 @@ TC_Key_end:
 TC_Chest:
     lda #PLY_HASKEY
     bit playerFlags
-    BEQ_L TC_Return
+    JEQ TC_Return
     lda #SFX_CRYSTAL
     sta shr_doSfx
     
@@ -792,7 +792,7 @@ TC_Foreground_end:
 
 TC_Exit:
     lda crystalsLeft
-    BNE_L TC_Return
+    JNE TC_Return
     ldy currLevel
     cpy #16
     bcs .upperLevels
@@ -810,7 +810,7 @@ TC_Exit:
 doExit:
     lda #MAP_LEVEL
     sta currLevel
-    MOVI_D arg, mainMap
+    MOV16I arg, mainMap
     jmp EnterLevel
 TC_Exit_end:
 
@@ -846,13 +846,13 @@ TC_Entrance:
     sta arg
     lda levelTable+1,y
     sta arg+1
-    MOV_D mapPX, playerX
-    MOV_D mapPY, playerY
-    MOV_D mapCamX, shr_cameraX
+    MOV16 mapPX, playerX
+    MOV16 mapPY, playerY
+    MOV16 mapCamX, shr_cameraX
     lda mapCamX
     and #$E0
     sta mapCamX
-    MOV_D mapCamY, shr_cameraY
+    MOV16 mapCamY, shr_cameraY
     lda shr_cameraYMod
     sta mapCamYMod
     jmp EnterLevel
@@ -867,7 +867,7 @@ TC_Hidden_end:
 TC_Lock:
     lda #JOY_B_MASK
     and pressed
-    BEQ_L TC_Return
+    JEQ TC_Return
     
     lda sav+3
     sec
@@ -877,7 +877,7 @@ TC_Lock:
     sta tmp
     lda doorsHi,y
     sta tmp+1
-    ADDI_D tmp, tmp, levelMap
+    ADD16I tmp, tmp, levelMap
     ldy #0
     lda #0
     sta (tmp),y
@@ -890,7 +890,7 @@ TC_Lock_end:
 TC_On:
     lda #JOY_B_MASK
     and pressed
-    BEQ_L TC_Return
+    JEQ TC_Return
     lda sav+3
     sec
     sbc #TB_ON
@@ -905,7 +905,7 @@ TC_On_end:
 TC_Off:
     lda #JOY_B_MASK
     and pressed
-    BEQ_L TC_Return
+    JEQ TC_Return
     lda sav+3
     sec
     sbc #TB_OFF
@@ -922,14 +922,14 @@ TC_Return:
 TC_Nop:
     lda #JOY_B_MASK
     and pressed
-    BEQ_L TileInteraction_end
+    JEQ TileInteraction_end
     bit entityXHi
-    BPL_L TileInteraction_end
+    JPL TileInteraction_end
     lda powerType
     cmp #POWER_SHOT
     beq .InfiniteAmmo
     lda shr_ammo
-    BEQ_L TileInteraction_end
+    JEQ TileInteraction_end
     dec shr_ammo
     jsr UpdateAmmoDisplay
 .InfiniteAmmo
@@ -1005,14 +1005,14 @@ ApplyGravity subroutine
     lda powerType
     cmp #POWER_GRAVITY
     beq .reverseGravity
-    CMPI_D playerYVel, $0400
+    CMP16I playerYVel, $0400
     bpl ApplyGravity_end
-    ADDI_D playerYVel, playerYVel, GRAVITY
+    ADD16I playerYVel, playerYVel, GRAVITY
     jmp ApplyGravity_end
 .reverseGravity:
-    CMPI_D playerYVel, -$0400
+    CMP16I playerYVel, -$0400
     bmi ApplyGravity_end
-    SUBI_D playerYVel, playerYVel, GRAVITY
+    SUB16I playerYVel, playerYVel, GRAVITY
 ApplyGravity_end:
 
 
@@ -1022,18 +1022,18 @@ CheckLeft subroutine
     cmp #0
     bpl CheckLeft_end
 
-    CMPI_D playerX, 1
+    CMP16I playerX, 1
     bcc .hit
     
     ;arg = x in tiles
-    MOV_D arg, playerX
+    MOV16 arg, playerX
     REPEAT 4
-    LSR_D arg
+    LSR16 arg
     REPEND
     ;arg+2 = y in tiles
-    ADDI_D arg+2, playerY, 7
+    ADD16I arg+2, playerY, 7
     REPEAT 4
-    LSR_D arg+2
+    LSR16 arg+2
     REPEND
     
     jsr GetTileBehavior
@@ -1055,19 +1055,19 @@ CheckRight subroutine
     bmi CheckRight_end
     beq CheckRight_end
 
-    CMPI_D playerX, [MT_MAP_WIDTH*PX_MT_WIDTH - 16]
+    CMP16I playerX, [MT_MAP_WIDTH*PX_MT_WIDTH - 16]
     bcs .hit
 
     ;arg = x in tiles
-    MOV_D arg, playerX
+    MOV16 arg, playerX
     REPEAT 4
-    LSR_D arg
+    LSR16 arg
     REPEND
-    INC_D arg
+    INC16 arg
     ;arg+2 = y in tiles
-    ADDI_D arg+2, playerY, 7
+    ADD16I arg+2, playerY, 7
     REPEAT 4
-    LSR_D arg+2
+    LSR16 arg+2
     REPEND
     
     jsr GetTileBehavior
@@ -1087,8 +1087,8 @@ CheckRight_end:
 
 CheckGround subroutine
     ;skip if not moving down (< 0)
-    CMPI_D playerYVel, 0
-    BMI_L CheckGround_end
+    CMP16I playerYVel, 0
+    JMI CheckGround_end
 
     lda powerType
     cmp #POWER_GRAVITY
@@ -1099,16 +1099,16 @@ CheckGround subroutine
 .upsideDown:
 
     ;a0 = x in tiles
-    ADDI_D arg, playerX, 8
+    ADD16I arg, playerX, 8
     REPEAT 4
-    LSR_D arg
+    LSR16 arg
     REPEND
     ;t0 = y in tiles
-    MOV_D arg+2, playerY
+    MOV16 arg+2, playerY
     REPEAT 4
-    LSR_D arg+2
+    LSR16 arg+2
     REPEND
-    INC_D arg+2; get tile at feet
+    INC16 arg+2; get tile at feet
     
     jsr GetTileBehavior
     lda ret
@@ -1137,7 +1137,7 @@ CheckGround subroutine
     sty currPlatform
 .loop:
     dey
-    BMI_L CheckGround_end
+    JMI CheckGround_end
     
     lda entityYHi,y
     lsr
@@ -1152,14 +1152,14 @@ CheckGround subroutine
     and #ENT_X_POS
     sta tmp+1
     
-    ADDI_D tmp+2, playerX, 4
-    SUBI_D tmp, tmp, 8
-    CMP_D tmp, tmp+2
+    ADD16I tmp+2, playerX, 4
+    SUB16I tmp, tmp, 8
+    CMP16 tmp, tmp+2
     bpl .loop
     
-    SUBI_D tmp+2, playerX, 4
-    ADDI_D tmp, tmp, 16
-    CMP_D tmp, tmp+2
+    SUB16I tmp+2, playerX, 4
+    ADD16I tmp, tmp, 16
+    CMP16 tmp, tmp+2
     bmi .loop
     
     lda entityYLo,y
@@ -1168,12 +1168,12 @@ CheckGround subroutine
     and #ENT_Y_POS
     sta tmp+1
     
-    SUBI_D tmp, tmp, 15
-    CMP_D tmp, playerY
+    SUB16I tmp, tmp, 15
+    CMP16 tmp, playerY
     bmi .longLoop
 
-    SUBI_D tmp, tmp, 2
-    CMP_D tmp, playerY
+    SUB16I tmp, tmp, 2
+    CMP16 tmp, playerY
     bpl .longLoop
     
     jmp .hitSprite
@@ -1181,7 +1181,7 @@ CheckGround subroutine
     jmp .loop
 .hitSprite:
     
-    ADDI_D playerY, tmp, 1
+    ADD16I playerY, tmp, 1
     sty currPlatform
 .hit_ground: ;stop if moving down
     lda #0
@@ -1198,8 +1198,8 @@ CheckGround_end:
 CheckCieling subroutine
 
     ;skip if not moving up (>= 0)
-    CMPI_D playerYVel, 0
-    BPL_L CheckCieling_end
+    CMP16I playerYVel, 0
+    JPL CheckCieling_end
 
     lda powerType
     cmp #POWER_GRAVITY
@@ -1211,18 +1211,18 @@ CheckCieling subroutine
 
 
     ;hit head on top of screen
-    CMPI_D playerY, 8
+    CMP16I playerY, 8
     bcc .hit_cieling
     
     ;a0 = x in tiles
-    ADDI_D arg, playerX, 8
+    ADD16I arg, playerX, 8
     REPEAT 4
-    LSR_D arg
+    LSR16 arg
     REPEND
     ;t0 = y in tiles
-    SUBI_D arg+2, playerY, 1
+    SUB16I arg+2, playerY, 1
     REPEAT 4
-    LSR_D arg+2
+    LSR16 arg+2
     REPEND
     
     jsr GetTileBehavior
@@ -1234,7 +1234,7 @@ CheckCieling subroutine
     jmp CheckCieling_end
     
 .hit_cieling:
-    MOVI_D playerYVel, 0
+    MOV16I playerYVel, 0
     lda #0
     sta playerYFrac
     lda powerType
@@ -1254,7 +1254,7 @@ CheckHurt subroutine
     ldy #MAX_ENTITIES
 .loop:
     dey
-    BMI_L CheckHurt_end
+    JMI CheckHurt_end
     
     lda entityXHi,y
     bmi .loop
@@ -1282,14 +1282,14 @@ CheckHurt subroutine
     and #ENT_X_POS
     sta tmp+1
     
-    ADDI_D tmp+2, playerX, 4
-    SUBI_D tmp, tmp, 7
-    CMP_D tmp, tmp+2
+    ADD16I tmp+2, playerX, 4
+    SUB16I tmp, tmp, 7
+    CMP16 tmp, tmp+2
     bpl .loop
     
-    SUBI_D tmp+2, playerX, 4
-    ADDI_D tmp, tmp, 16
-    CMP_D tmp, tmp+2
+    SUB16I tmp+2, playerX, 4
+    ADD16I tmp, tmp, 16
+    CMP16 tmp, tmp+2
     bmi .loop
     
     lda entityYLo,y
@@ -1298,12 +1298,12 @@ CheckHurt subroutine
     and #ENT_Y_POS
     sta tmp+1
     
-    SUBI_D tmp+2, playerY, 15
-    CMP_D tmp, tmp+2
+    SUB16I tmp+2, playerY, 15
+    CMP16 tmp, tmp+2
     bmi .longLoop
 
-    SUBI_D tmp, tmp, 15
-    CMP_D tmp, playerY
+    SUB16I tmp, tmp, 15
+    CMP16 tmp, playerY
     bpl .longLoop
     
     jsr DamagePlayer
@@ -1363,9 +1363,9 @@ updateEntities subroutine
     and #ENT_X_POS
     sbc shr_cameraX+1
     sta tmp+1
-    CMPI_D tmp, [MT_VIEWPORT_WIDTH*PX_MT_WIDTH + PX_MT_WIDTH]
+    CMP16I tmp, [MT_VIEWPORT_WIDTH*PX_MT_WIDTH + PX_MT_WIDTH]
     bpl .offScreen
-    CMPI_D tmp, -PX_MT_WIDTH
+    CMP16I tmp, -PX_MT_WIDTH
     bmi .offScreen
 .vtest:
     lda entityYLo,y
@@ -1376,9 +1376,9 @@ updateEntities subroutine
     and #ENT_Y_POS
     sbc shr_cameraY+1
     sta tmp+1
-    CMPI_D tmp, [MT_VIEWPORT_HEIGHT*PX_MT_HEIGHT + PX_MT_HEIGHT]
+    CMP16I tmp, [MT_VIEWPORT_HEIGHT*PX_MT_HEIGHT + PX_MT_HEIGHT]
     bpl .offScreen
-    CMPI_D tmp, -PX_MT_HEIGHT
+    CMP16I tmp, -PX_MT_HEIGHT
     bmi .offScreen
     jmp .persistent
 .offScreen:
@@ -1403,7 +1403,7 @@ updateEntities subroutine
     jmp (tmp)
 ER_Return:
     dey
-    BMI_L updateEntities_end
+    JMI updateEntities_end
     jmp .loop
     
 entityRoutine:
@@ -1438,10 +1438,10 @@ IsNearPlayerY subroutine
     lda entityYHi,y
     and #ENT_Y_POS
     sta tmp+1
-    ADDI_D tmp+2,playerY,8
+    ADD16I tmp+2,playerY,8
     REPEAT 4
-    LSR_D tmp
-    LSR_D tmp+2
+    LSR16 tmp
+    LSR16 tmp+2
     REPEND
     lda tmp
     cmp tmp+2
@@ -1449,7 +1449,7 @@ IsNearPlayerY subroutine
 
 ApplyXVel subroutine
     lda entityVelocity,y
-    M_ASR
+    NMOS_ASR
     sta tmp
     EXTEND tmp, tmp
     lda frame
@@ -1457,10 +1457,10 @@ ApplyXVel subroutine
     beq .noExtra
     lda entityVelocity,y
     bpl .positive
-    DEC_D tmp
+    DEC16 tmp
     jmp .noExtra
 .positive:
-    INC_D tmp
+    INC16 tmp
 .noExtra:
     clc
     lda entityXLo,y
@@ -1485,10 +1485,10 @@ HitWall subroutine
     sta arg+1
     lda entityVelocity,y
     bmi .shift
-    ADDI_D arg, arg, 15
+    ADD16I arg, arg, 15
 .shift:
     REPEAT 4
-    LSR_D arg
+    LSR16 arg
     REPEND
     lda arg
     sta ret+2 ;metatile x
@@ -1499,12 +1499,12 @@ HitWall subroutine
     and #ENT_Y_POS
     sta tmp+1
     REPEAT 4
-    LSR_D tmp
+    LSR16 tmp
     REPEND
     lda tmp
     sta ret+3 ;metatile y
-    ADD_D tmp, tmp, ret
-    ADDI_D tmp, tmp, levelMap
+    ADD16 tmp, tmp, ret
+    ADD16I tmp, tmp, levelMap
     sty tmp+2
     ldy #0
     lda (tmp),y
@@ -1686,10 +1686,10 @@ ER_Default subroutine
     
     lda entityVelocity,y
     bmi .shift2
-    ADDI_D arg, arg, 15
+    ADD16I arg, arg, 15
 .shift2:
     REPEAT 4
-    LSR_D arg
+    LSR16 arg
     REPEND
     jsr MultiplyBy24
     lda entityYLo,y
@@ -1697,12 +1697,12 @@ ER_Default subroutine
     lda entityYHi,y
     and #ENT_Y_POS
     sta tmp+1
-    ADDI_D tmp, tmp, 16
+    ADD16I tmp, tmp, 16
     REPEAT 4
-    LSR_D tmp
+    LSR16 tmp
     REPEND
-    ADD_D tmp, tmp, ret
-    ADDI_D tmp, tmp, levelMap
+    ADD16 tmp, tmp, ret
+    ADD16I tmp, tmp, levelMap
     sty tmp+2
     ldy #0
     lda (tmp),y
@@ -1727,10 +1727,10 @@ ER_Default subroutine
     sta arg+1
     lda entityVelocity,y
     bmi .shift
-    ADDI_D arg, arg, 15
+    ADD16I arg, arg, 15
 .shift:
     REPEAT 4
-    LSR_D arg
+    LSR16 arg
     REPEND
     lda arg
     sta sav+1
@@ -1750,18 +1750,18 @@ ER_Default subroutine
     beq .notPlatform
     lda entityVelocity,y
     bpl .notPlatform
-    SUBI_D tmp, tmp, 15
+    SUB16I tmp, tmp, 15
     
 .notPlatform:
     lda entityVelocity,y
     bmi .shiftY
-    ADDI_D tmp, tmp, 15
+    ADD16I tmp, tmp, 15
 .shiftY:
     REPEAT 4
-    LSR_D tmp
+    LSR16 tmp
     REPEND
-    ADD_D tmp, tmp, ret
-    ADDI_D tmp, tmp, levelMap
+    ADD16 tmp, tmp, ret
+    ADD16I tmp, tmp, levelMap
     sty tmp+2
     ldy #0
     lda (tmp),y
@@ -1907,13 +1907,13 @@ ER_Default subroutine
     lda entityXHi,y
     and #ENT_X_POS
     sta tmp+3
-    SUBI_D tmp, tmp, 8
-    ADDI_D tmp+2, tmp+2, 8
-    CMP_D tmp, tmp+2
+    SUB16I tmp, tmp, 8
+    ADD16I tmp+2, tmp+2, 8
+    CMP16 tmp, tmp+2
     bcs .longimmortal
-    ADDI_D tmp, tmp, 16
-    SUBI_D tmp+2, tmp+2, 16
-    CMP_D tmp, tmp+2
+    ADD16I tmp, tmp, 16
+    SUB16I tmp+2, tmp+2, 16
+    CMP16 tmp, tmp+2
     bcc .longimmortal
     
     jmp .spam
@@ -1931,13 +1931,13 @@ ER_Default subroutine
     lda entityYHi,y
     and #ENT_Y_POS
     sta tmp+3
-    SUBI_D tmp, tmp, 16
-    ;ADDI_D tmp+2, tmp+2, 8
-    CMP_D tmp, tmp+2
+    SUB16I tmp, tmp, 16
+    ;ADD16I tmp+2, tmp+2, 8
+    CMP16 tmp, tmp+2
     bcs .longimmortal
-    ADDI_D tmp, tmp, 16
-    SUBI_D tmp+2, tmp+2, 16
-    CMP_D tmp, tmp+2
+    ADD16I tmp, tmp, 16
+    SUB16I tmp+2, tmp+2, 16
+    CMP16 tmp, tmp+2
     bcc .longimmortal
     
     ;destroy bullet
@@ -2106,7 +2106,7 @@ ER_Default subroutine
     lda #$FF
     sta tmp+3
 .continue:
-    ADD_D tmp, tmp, tmp+2
+    ADD16 tmp, tmp, tmp+2
     lda entityFlags,x
     and #ENT_F_ISVERTICAL
     bne .vertical
@@ -2118,7 +2118,7 @@ ER_Default subroutine
     sta entityXHi,y
     cpy currPlatform
     bne .inactive
-    ADD_D playerX, playerX, tmp+2
+    ADD16 playerX, playerX, tmp+2
     jmp .inactive
 .vertical:
     lda tmp
@@ -2129,14 +2129,14 @@ ER_Default subroutine
     sta entityYHi,y
     cpy currPlatform
     bne .inactive
-    ADD_D playerY, playerY, tmp+2
+    ADD16 playerY, playerY, tmp+2
 .inactive:
     jmp ER_Return
 updateEntities_end:
 
 
 ApplyVelocity subroutine
-    MOV_D tmp, playerYVel
+    MOV16 tmp, playerYVel
     lda playerYVel+1
     bmi .negativeY
     lda #0
@@ -2168,13 +2168,13 @@ ApplyVelocity subroutine
 .continueX:
     sta tmp+1
     
-    ADD_D playerX, playerX, tmp
+    ADD16 playerX, playerX, tmp
 ApplyVelocity_end:
 
 UpdateCameraX subroutine
 .Scroll_Left:
     ;no scrolling because player is not close to screen edge
-    SUB_D sav, playerX, shr_cameraX
+    SUB16 sav, playerX, shr_cameraX
     lda sav ;player's on-screen x
     cmp #[MT_HSCROLL_MARGIN*PX_MT_WIDTH]
     bcs .Scroll_Left_end
@@ -2185,7 +2185,7 @@ UpdateCameraX subroutine
     beq .Scroll_Left_end
     
     ;scroll left one pixel
-    DEC_D shr_cameraX
+    DEC16 shr_cameraX
     inc sav
     
     ;no loading tiles if not at tile boundary
@@ -2211,11 +2211,11 @@ UpdateCameraX subroutine
     bcc .Scroll_Right_end
     
     ;no scrolling becuse screen is at map edge
-    CMPI_D shr_cameraX, [[MT_MAP_WIDTH - MT_VIEWPORT_WIDTH]*PX_MT_WIDTH - 8]
+    CMP16I shr_cameraX, [[MT_MAP_WIDTH - MT_VIEWPORT_WIDTH]*PX_MT_WIDTH - 8]
     bcs .Scroll_Right_end
     
     ;scroll right 1 pixel
-    INC_D shr_cameraX
+    INC16 shr_cameraX
     dec sav
     
     ;no loading tiles if not at tile boundary
@@ -2238,7 +2238,7 @@ UpdateCameraX_end:
 
 UpdateCameraY subroutine
 .Scroll_Up:
-    SUB_D sav, playerY, shr_cameraY
+    SUB16 sav, playerY, shr_cameraY
     ;no scrolling because player not near screen edge
     lda sav ;player's on-screen y
     cmp #[MT_VSCROLL_MARGIN*PX_MT_HEIGHT]
@@ -2255,7 +2255,7 @@ UpdateCameraY subroutine
     sta tmp
     lda #0
     sta tmp+1
-    SUB_D shr_cameraY, shr_cameraY, tmp
+    SUB16 shr_cameraY, shr_cameraY, tmp
     
     ;handle nametable boundary
     lda shr_cameraYMod
@@ -2277,13 +2277,13 @@ UpdateCameraY subroutine
     
 .Scroll_Down:
     ;no scrolling because player not near screen edge
-    SUB_D sav, playerY, shr_cameraY
+    SUB16 sav, playerY, shr_cameraY
     lda sav
     cmp #[[MT_VIEWPORT_HEIGHT - MT_VSCROLL_MARGIN]*PX_MT_HEIGHT]
     bcc .Scroll_Down_end
     
     ;no scrolling becuse screen is at map edge
-    CMPI_D shr_cameraY, [[MT_MAP_HEIGHT - MT_VIEWPORT_HEIGHT]*PX_MT_HEIGHT]
+    CMP16I shr_cameraY, [[MT_MAP_HEIGHT - MT_VIEWPORT_HEIGHT]*PX_MT_HEIGHT]
     bcs .Scroll_Down_end
     
     ;scroll down one pixel
@@ -2293,7 +2293,7 @@ UpdateCameraY subroutine
     sta tmp
     lda #0
     sta tmp+1
-    ADD_D shr_cameraY, shr_cameraY, tmp
+    ADD16 shr_cameraY, shr_cameraY, tmp
     lda shr_cameraYMod
     clc
     adc tmp
@@ -2313,7 +2313,7 @@ UpdateCameraY_end:
 
 UpdatePlayerSprite subroutine
     ;update position
-    SUB_D sav, playerX, shr_cameraX
+    SUB16 sav, playerX, shr_cameraX
     lda sav
     clc
     adc #8
@@ -2322,7 +2322,7 @@ UpdatePlayerSprite subroutine
     adc #8
     sta shr_playerSprites+OAM_SIZE+SPR_X
     
-    SUB_D sav, playerY, shr_cameraY
+    SUB16 sav, playerY, shr_cameraY
     lda sav
     clc
     adc #31
@@ -2418,7 +2418,7 @@ UpdateEntitySprites subroutine
     lda entityYHi,y
     and #ENT_Y_POS
     sta tmp+1
-    SUB_D sav, tmp, shr_cameraY
+    SUB16 sav, tmp, shr_cameraY
     lda sav+1
     beq .y_ok
     jmp .skip
@@ -2429,7 +2429,7 @@ UpdateEntitySprites subroutine
     lda entityXHi,y
     and #ENT_X_POS
     sta tmp+1
-    SUB_D sav+3, tmp, shr_cameraX
+    SUB16 sav+3, tmp, shr_cameraX
     lda sav+4
     beq .x_ok
     jmp .skip
@@ -2476,7 +2476,7 @@ UpdateEntitySprites subroutine
     ldy #0
     lda (tmp+4),y
     sta tmp+6
-    INC_D tmp+4
+    INC16 tmp+4
     
     ldx #0
 .copyLoop:
@@ -2500,7 +2500,7 @@ UpdateEntitySprites subroutine
     adc tmp
     sta tmp
     
-    ADDI_D tmp+4, tmp+4, 4
+    ADD16I tmp+4, tmp+4, 4
     
     jmp .copyLoop
 .abort:
@@ -2513,7 +2513,7 @@ UpdateEntitySprites subroutine
     clc
     adc tmp+3
     tax
-    ADDI_D tmp+4, tmp+4, 4
+    ADD16I tmp+4, tmp+4, 4
     jmp .copyLoop
 .done:
     lda tmp
@@ -2569,9 +2569,9 @@ DamagePlayer subroutine
 ;------------------------------------------------------------------------------
 LoadTilesOnMoveRight subroutine
     ;get tile column on screen
-    MOV_D tmp, shr_cameraX
+    MOV16 tmp, shr_cameraX
     REPEAT 3
-    LSR_D tmp
+    LSR16 tmp
     REPEND
     lda tmp
     and #31
@@ -2581,16 +2581,16 @@ LoadTilesOnMoveRight subroutine
     sta arg+2
     
     ;get map index
-    ADDI_D tmp, tmp, 1
-    LSR_D tmp
-    ADDI_D tmp, tmp, 15
-    MOV_D arg, tmp
+    ADD16I tmp, tmp, 1
+    LSR16 tmp
+    ADD16I tmp, tmp, 15
+    MOV16 arg, tmp
     jsr MultiplyBy24 ;uses only arg 0..1
     ;keeping ret value for later
         
-    MOVI_D arg, levelMap
+    MOV16I arg, levelMap
     
-    ADD_D arg, arg, ret
+    ADD16 arg, arg, ret
     
     lda shr_cameraX
     and #%00001000
@@ -2605,9 +2605,9 @@ LoadTilesOnMoveRight subroutine
 ;------------------------------------------------------------------------------
 LoadTilesOnMoveLeft subroutine
     ;get tile column on screen
-    MOV_D tmp, shr_cameraX
+    MOV16 tmp, shr_cameraX
     REPEAT 3
-    LSR_D tmp
+    LSR16 tmp
     REPEND
     lda tmp
     and #31
@@ -2617,16 +2617,16 @@ LoadTilesOnMoveLeft subroutine
     sta arg+2
     
     ;get map index
-    ADDI_D tmp, tmp, 1
-    LSR_D tmp
-    SUBI_D tmp, tmp, 1
-    MOV_D arg, tmp
+    ADD16I tmp, tmp, 1
+    LSR16 tmp
+    SUB16I tmp, tmp, 1
+    MOV16 arg, tmp
     jsr MultiplyBy24 ;uses only arg 0..1
     ;keeping ret value for later
         
-    MOVI_D arg, levelMap
+    MOV16I arg, levelMap
     
-    ADD_D arg, arg, ret
+    ADD16 arg, arg, ret
     
     lda shr_cameraX
     and #%00001000
@@ -2641,11 +2641,11 @@ LoadTilesOnMoveLeft subroutine
 ;------------------------------------------------------------------------------
 LoadColorsOnMoveRight subroutine
     ;get tile column on screen
-    MOV_D tmp, shr_cameraX
+    MOV16 tmp, shr_cameraX
     REPEAT 4
-    LSR_D tmp
+    LSR16 tmp
     REPEND
-    ADDI_D tmp, tmp, 15
+    ADD16I tmp, tmp, 15
     
     ;get index to attribute table
     lda tmp
@@ -2657,14 +2657,14 @@ LoadColorsOnMoveRight subroutine
     sta arg+2
     
     ;get map index
-    MOV_D arg, tmp
+    MOV16 arg, tmp
     jsr MultiplyBy24 ;uses only arg 0..1, keeping ret value for later
-    ADDI_D arg, ret, levelMap
+    ADD16I arg, ret, levelMap
     
     lda shr_cameraX
     and #$10
     bne .unaligned
-    SUBI_D arg, arg, [1*MT_MAP_HEIGHT]
+    SUB16I arg, arg, [1*MT_MAP_HEIGHT]
     jsr ColorColumn
     inc shr_doAttrCol
     rts
@@ -2675,9 +2675,9 @@ LoadColorsOnMoveRight subroutine
 ;------------------------------------------------------------------------------
 LoadColorsOnMoveLeft subroutine
     ;get tile column on screen
-    MOV_D tmp, shr_cameraX
+    MOV16 tmp, shr_cameraX
     REPEAT 4
-    LSR_D tmp
+    LSR16 tmp
     REPEND
     
     ;get index to attribute table
@@ -2689,19 +2689,19 @@ LoadColorsOnMoveLeft subroutine
     sta arg+2
     
     ;get map index
-    MOV_D arg, tmp
+    MOV16 arg, tmp
     jsr MultiplyBy24 ;uses only arg 0..1
-    ADDI_D arg, ret, levelMap
+    ADD16I arg, ret, levelMap
     
     lda shr_cameraX
     and #$10
     bne .unaligned
-    ;ADDI_D arg, arg, [3*MT_MAP_HEIGHT]
+    ;ADD16I arg, arg, [3*MT_MAP_HEIGHT]
     jsr ColorColumn
     inc shr_doAttrCol
     rts
 .unaligned:
-    ADDI_D arg, arg, [15*MT_MAP_HEIGHT]
+    ADD16I arg, arg, [15*MT_MAP_HEIGHT]
     jsr ColorWrappedColumn
     inc shr_doAttrCol
     rts
@@ -2710,10 +2710,10 @@ GetTileBehavior ;arg0..1 = mt_x arg2..3 = mt_y ret0 = value
     jsr MultiplyBy24 ;takes arg0, which we no longer care about after this
                           ;returns
     ;t0 = y+ x*24
-    ADD_D tmp, arg+2, ret
+    ADD16 tmp, arg+2, ret
     
     ;lookup tile, get behavior
-    ADDI_D tmp, tmp, levelMap
+    ADD16I tmp, tmp, levelMap
     ldy #0
     lda (tmp),y
     tay
@@ -2728,10 +2728,10 @@ GetTile ;arg0..1 = mt_x arg2..3 = mt_y ret0 = value
     jsr MultiplyBy24 ;takes arg0, which we no longer care about after this
                           ;returns
     ;t0 = y+ x*24
-    ADD_D tmp, arg+2, ret
+    ADD16 tmp, arg+2, ret
     
     ;lookup tile, get behavior
-    ADDI_D tmp, tmp, levelMap
+    ADD16I tmp, tmp, levelMap
     ldy #0
     lda (tmp),y
     sta ret
@@ -2739,8 +2739,8 @@ GetTile ;arg0..1 = mt_x arg2..3 = mt_y ret0 = value
 ;------------------------------------------------------------------------------
 SetTile ;arg0..1 = mt_x arg2..3 = mt_y, arg4 = value
     jsr MultiplyBy24
-    ADDI_D ret, ret, levelMap
-    ADD_D tmp, arg+2, ret
+    ADD16I ret, ret, levelMap
+    ADD16 tmp, arg+2, ret
     lda arg+4
     ldy #0
     sta (tmp),y ;store updated tile into map
@@ -2752,20 +2752,20 @@ SetTile ;arg0..1 = mt_x arg2..3 = mt_y, arg4 = value
 .noWait:
     lda arg+4
     sta shr_tileMeta ;store tile for nametable update
-    MOVI_D shr_tileAddr, [$2000+TOP_OFFSET]
+    MOV16I shr_tileAddr, [$2000+TOP_OFFSET]
     lda arg+2
     cmp #9
     bcc .upperTable
-    MOVI_D shr_tileAddr, $2800
-    SUBI_D arg+2, arg+2, 9
+    MOV16I shr_tileAddr, $2800
+    SUB16I arg+2, arg+2, 9
 .upperTable:
     
     REPEAT 6
-    ASL_D arg+2
+    ASL16 arg+2
     REPEND
-    ADD_D shr_tileAddr, shr_tileAddr, arg+2
+    ADD16 shr_tileAddr, shr_tileAddr, arg+2
     
-    ASL_D arg
+    ASL16 arg
     lda arg
     and #31
     clc
@@ -2779,12 +2779,12 @@ SetTile ;arg0..1 = mt_x arg2..3 = mt_y, arg4 = value
     rts
 ;------------------------------------------------------------------------------
 MultiplyBy24: ;arg0..arg1 is factor, ret0..ret1 is result
-    MOV_D ret, arg ; 1
-    ASL_D ret
-    ADD_D ret, ret, arg ;1
-    ASL_D ret ;0
-    ASL_D ret ;0
-    ASL_D ret ;0
+    MOV16 ret, arg ; 1
+    ASL16 ret
+    ADD16 ret, ret, arg ;1
+    ASL16 ret ;0
+    ASL16 ret ;0
+    ASL16 ret ;0
     rts
 ;------------------------------------------------------------------------------
 Synchronize subroutine  
@@ -2824,7 +2824,7 @@ EvenColumn subroutine
     cpx #TOP_HEIGHT
     bne .first_loop
     
-    ADDI_D arg, arg, TOP_HEIGHT/2
+    ADD16I arg, arg, TOP_HEIGHT/2
     
     ldy #0
     ldx #0
@@ -2868,7 +2868,7 @@ OddColumn subroutine
     cpx #TOP_HEIGHT
     bne .second_loop  
     
-    ADDI_D arg, arg, TOP_HEIGHT/2
+    ADD16I arg, arg, TOP_HEIGHT/2
     
     ldy #0
     ldx #0
@@ -3004,7 +3004,7 @@ ColorWrappedColumn subroutine
     dey
     sty tmp
     
-    SUBI_D tmp+2, arg, [15*MT_MAP_HEIGHT]
+    SUB16I tmp+2, arg, [15*MT_MAP_HEIGHT]
     
     lda (tmp+2),y
     tay
@@ -3250,7 +3250,7 @@ CopyAttrCol subroutine
     lda shr_attrBuffer,y
     sta PPU_DATA
     iny
-    ADDI_D tmp, tmp, 8
+    ADD16I tmp, tmp, 8
     REPEND
     
 ;bottom    
@@ -3274,7 +3274,7 @@ CopyAttrCol subroutine
     lda shr_attrBuffer,y
     sta PPU_DATA
     iny
-    ADDI_D tmp, tmp, 8
+    ADD16I tmp, tmp, 8
     REPEND
     rts
 ;------------------------------------------------------------------------------
@@ -3320,7 +3320,7 @@ PagesToPPU subroutine ;PPU_ADDR set, x = number of 256 byte quantities, arg = ad
     sta PPU_DATA
     iny
     bne .innerloop
-    ADDI_D arg, arg, 256
+    ADD16I arg, arg, 256
     dex
     bne .innerloop
     rts
