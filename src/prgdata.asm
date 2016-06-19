@@ -787,24 +787,78 @@ crystalSound:
     .word 0
     .word $FFFF
     
-levelTable:
-    dc.w  level01
-    dc.w  level02
-    dc.w  level03
-    dc.w  level01
-    dc.w  level01
-    dc.w  level01
-    dc.w  level01
-    dc.w  level01
-    dc.w  level01
-    dc.w  level01
-    dc.w  level01
-    dc.w  level01
-    dc.w  level01
-    dc.w  level01
-    dc.w  level01
-    dc.w  level01
-    
-mainMap:
-    incbin main_map.bin
-    incbin pal00.pal
+levelBanks:
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+
+levelPointers:
+    .word level01
+    .word level02
+    .word level03
+    .word level01
+    .word level01
+    .word level01
+    .word level01
+    .word level01
+    .word level01
+    .word level01
+    .word level01
+    .word level01
+    .word level01
+    .word level01
+    .word level01
+    .word level01
+    .word mainMap
+
+levelTilesets:
+    .word mineTiles
+    .word techTiles
+    .word mineTiles
+    .word mineTiles
+    .word mineTiles
+    .word mineTiles
+    .word mineTiles
+    .word mineTiles
+    .word mineTiles
+    .word mineTiles
+    .word mineTiles
+    .word mineTiles
+    .word mineTiles
+    .word mineTiles
+    .word mineTiles
+    .word mineTiles
+    .word mineTiles
+
+levelPalettes:
+    .word volcanoPal
+    .word cobaltPal
+    .word minePal
+    .word minePal
+    .word minePal
+    .word minePal
+    .word minePal
+    .word minePal
+    .word minePal
+    .word minePal
+    .word minePal
+    .word minePal
+    .word minePal
+    .word minePal
+    .word minePal
+    .word minePal
+    .word minePal

@@ -8,3 +8,9 @@ titleTiles:
 globalTiles:
     incbin sprites.pat
     incbin tiles.pat
+minePal:
+    incbin pal00.pal
+volcanoPal:
+    incbin pal01.pal
+cobaltPal:
+    incbin pal02.pal

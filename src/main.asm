@@ -230,6 +230,8 @@ InitSpritePalette subroutine
 ;------------------------------------------------------------------------------
 ;New Game
 ;------------------------------------------------------------------------------
+    lda #MAP_LEVEL
+    sta currLevel
     lda #5
     sta shr_ammo
     jsr UpdateAmmoDisplay
@@ -271,20 +273,31 @@ ResetStats subroutine
     sta caterpillarNext
 ResetStats_end:
 
+LoadLevelTileset subroutine
     SELECT_BANK 2
-    PUSH16 arg
-    MOV16I arg, tileset01
+    lda currLevel
+    asl
+    tay
+    lda levelTilesets,y
+    sta arg
+    lda levelTilesets+1,y
+    sta arg+1
     SET_PPU_ADDR [VRAM_PATTERN_R+2048]
     ldx #8
     jsr PagesToPPU
-    POP16 arg
 
-    SELECT_BANK 1
+    
 LoadLevelPal subroutine
+    SELECT_BANK 0
     ldx shr_copyIndex
     
-    ADD16I tmp, arg, [levelDataEnd-levelMap+entityBlockEnd-entityBlock]
-    
+    lda currLevel
+    asl
+    tay
+    lda levelPalettes,y
+    sta tmp
+    lda levelPalettes+1,y
+    sta tmp+1
     ldy #15
 .loop
     lda (tmp),y
@@ -292,20 +305,28 @@ LoadLevelPal subroutine
     dey
     bpl .loop
 
-    lda #>[nmi_Copy16-1]
-    PHXA
-    lda #<[nmi_Copy16-1]
-    PHXA
-    
-    lda #$00
-    PHXA
-    lda #$3F
-    PHXA
+    ENQUEUE_ROUTINE nmi_Copy16
+    ENQUEUE_PPU_ADDR VRAM_PALETTE_BG
     
     stx shr_copyIndex
 
 LoadLevel subroutine
-    MOV16 tmp+2, arg
+    lda currLevel
+    tax
+    ldy levelBanks,x
+    lda banktable,y
+    sta banktable,y
+    
+    lda currLevel
+    asl
+    tay
+    
+    lda levelPointers,y
+    sta sav
+    lda levelPointers+1,y
+    sta sav+1
+
+    MOV16 tmp+2, sav
     MOV16I tmp, levelMap
     ldy #0
     ldx #4
@@ -319,7 +340,7 @@ LoadLevel subroutine
     dex
     bne .loop
     
-    ADD16I tmp+2, arg, [levelDataEnd-levelMap]
+    ADD16I tmp+2, sav, [levelDataEnd-levelMap]
     MOV16I tmp, entityBlock
     ldy #0
 .copyEntities:
@@ -810,7 +831,6 @@ TC_Exit:
 doExit:
     lda #MAP_LEVEL
     sta currLevel
-    MOV16I arg, mainMap
     jmp EnterLevel
 TC_Exit_end:
 
@@ -840,12 +860,6 @@ TC_Entrance:
     sec
     sbc #TB_MAPDOOR
     sta currLevel
-    asl
-    tay
-    lda levelTable,y
-    sta arg
-    lda levelTable+1,y
-    sta arg+1
     MOV16 mapPX, playerX
     MOV16 mapPY, playerY
     MOV16 mapCamX, shr_cameraX
@@ -2545,13 +2559,6 @@ ClearSprites_end:
 
 ;------------------------------------------------------------------------------
 KillPlayer subroutine
-    lda currLevel
-    asl
-    tay
-    lda levelTable,y
-    sta arg
-    lda levelTable+1,y
-    sta arg+1
     pla
     pla
     jmp EnterLevel
