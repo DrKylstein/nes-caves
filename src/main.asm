@@ -1203,11 +1203,11 @@ CheckCieling subroutine
     bcc .hit
     
     ADD16I arg, playerX, [PLAYER_HLEFT+1]
-    SUB16I arg+2, playerY, 1
+    SUB16I arg+2, playerY, 0
     jsr TestCollision
     bcs .hit
     ADD16I arg, playerX, [PLAYER_HRIGHT-1]
-    SUB16I arg+2, playerY, 1
+    SUB16I arg+2, playerY, 0
     jsr TestCollision
     bcs .hit
     jmp CheckCieling_end
@@ -1217,6 +1217,7 @@ CheckCieling subroutine
     sta playerYFrac
     lda playerY
     and #$F0
+    ora #$F
     sta playerY
     lda powerType
     cmp #POWER_GRAVITY
