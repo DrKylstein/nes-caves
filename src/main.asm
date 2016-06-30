@@ -1048,23 +1048,14 @@ CheckLeft subroutine
     CMP16I playerX, 1
     bcc .hit
     
-    ;arg = x in tiles
-    MOV16 arg, playerX
-    REPEAT 4
-    LSR16 arg
-    REPEND
-    ;arg+2 = y in tiles
-    ADD16I arg+2, playerY, 7
-    REPEAT 4
-    LSR16 arg+2
-    REPEND
-    
-    jsr GetTileBehavior
-    lda ret
-    cmp #TB_SOLID
-    beq .hit
-    cmp #TB_WEAKBLOCK
-    beq .hit
+    ADD16I arg, playerX, PLAYER_HLEFT
+    ADD16I arg+2, playerY, PLAYER_HTOP
+    jsr TestCollision
+    bcs .hit
+    ADD16I arg, playerX, PLAYER_HLEFT
+    ADD16I arg+2, playerY, PLAYER_HBOTTOM
+    jsr TestCollision
+    bcs .hit
     jmp CheckLeft_end
 .hit:
     lda #0
@@ -1081,28 +1072,15 @@ CheckRight subroutine
     CMP16I playerX, [MT_MAP_WIDTH*PX_MT_WIDTH - 16]
     bcs .hit
 
-    ;arg = x in tiles
-    MOV16 arg, playerX
-    REPEAT 4
-    LSR16 arg
-    REPEND
-    INC16 arg
-    ;arg+2 = y in tiles
-    ADD16I arg+2, playerY, 7
-    REPEAT 4
-    LSR16 arg+2
-    REPEND
-    
-    jsr GetTileBehavior
-    lda ret
-    cmp #TB_SOLID
-    beq .hit
-    cmp #TB_WEAKBLOCK
-    beq .hit
-    cmp #TB_EXIT
-    bne CheckRight_end
-    lda crystalsLeft
-    beq CheckRight_end
+    ADD16I arg, playerX, PLAYER_HRIGHT
+    ADD16I arg+2, playerY, PLAYER_HTOP
+    jsr TestCollision
+    bcs .hit
+    ADD16I arg, playerX, PLAYER_HRIGHT
+    ADD16I arg+2, playerY, PLAYER_HBOTTOM
+    jsr TestCollision
+    bcs .hit
+    jmp CheckRight_end
 .hit:
     lda #0
     sta playerXVel
@@ -1120,33 +1098,19 @@ CheckGround subroutine
     ora #PLY_ISJUMPING
     sta playerFlags
 .upsideDown:
-
-    ;a0 = x in tiles
-    ADD16I arg, playerX, 8
-    REPEAT 4
-    LSR16 arg
-    REPEND
-    ;t0 = y in tiles
-    MOV16 arg+2, playerY
-    REPEAT 4
-    LSR16 arg+2
-    REPEND
-    INC16 arg+2; get tile at feet
-    
-    jsr GetTileBehavior
-    lda ret
-    cmp #TB_SOLID
-    beq .hitGroundTile
-    cmp #TB_PLATFORM
-    bne .notPlatform
     lda playerY
     and #$F
     cmp #8
-    bcc .hitGroundTile
-    jmp .checkSpriteHit
-.notPlatform:
-    cmp #TB_WEAKBLOCK
-    beq .hitGroundTile
+    bcs .checkSpriteHit
+
+    ADD16I arg, playerX, [PLAYER_HRIGHT-1]
+    ADD16I arg+2, playerY, 16
+    jsr TestCollisionTop
+    bcs .hitGroundTile
+    ADD16I arg, playerX, [PLAYER_HLEFT+1]
+    ADD16I arg+2, playerY, 16
+    jsr TestCollisionTop
+    bcs .hitGroundTile
     
     jmp .checkSpriteHit
 .hitGroundTile:
@@ -1236,31 +1200,24 @@ CheckCieling subroutine
 
     ;hit head on top of screen
     CMP16I playerY, 8
-    bcc .hit_cieling
+    bcc .hit
     
-    ;a0 = x in tiles
-    ADD16I arg, playerX, 8
-    REPEAT 4
-    LSR16 arg
-    REPEND
-    ;t0 = y in tiles
+    ADD16I arg, playerX, [PLAYER_HLEFT+1]
     SUB16I arg+2, playerY, 1
-    REPEAT 4
-    LSR16 arg+2
-    REPEND
-    
-    jsr GetTileBehavior
-    lda ret
-    cmp #TB_SOLID
-    beq  .hit_cieling
-    cmp #TB_WEAKBLOCK
-    beq  .hit_cieling
+    jsr TestCollision
+    bcs .hit
+    ADD16I arg, playerX, [PLAYER_HRIGHT-1]
+    SUB16I arg+2, playerY, 1
+    jsr TestCollision
+    bcs .hit
     jmp CheckCieling_end
-    
-.hit_cieling:
+.hit:
     MOV16I playerYVel, 0
     lda #0
     sta playerYFrac
+    lda playerY
+    and #$F0
+    sta playerY
     lda powerType
     cmp #POWER_GRAVITY
     bne CheckCieling_end
@@ -3340,4 +3297,52 @@ PagesToPPU subroutine ;PPU_ADDR set, x = number of 256 byte quantities, arg = ad
     ADD16I arg, arg, 256
     dex
     bne .innerloop
+    rts
+;------------------------------------------------------------------------------
+TestCollisionTop subroutine
+    REPEAT 4
+    LSR16 arg
+    LSR16 arg+2
+    REPEND
+    
+    jsr GetTileBehavior
+    lda ret
+    cmp #TB_SOLID
+    beq .hit
+    cmp #TB_WEAKBLOCK
+    beq .hit
+    cmp #TB_PLATFORM
+    beq .hit
+    cmp #TB_EXIT
+    bne .nohit
+    lda crystalsLeft
+    bne .hit
+.nohit
+    clc
+    rts
+.hit:
+    sec
+    rts
+;------------------------------------------------------------------------------
+TestCollision subroutine
+    REPEAT 4
+    LSR16 arg
+    LSR16 arg+2
+    REPEND
+    
+    jsr GetTileBehavior
+    lda ret
+    cmp #TB_SOLID
+    beq .hit
+    cmp #TB_WEAKBLOCK
+    beq .hit
+    cmp #TB_EXIT 
+    bne .nohit
+    lda crystalsLeft
+    bne .hit
+.nohit
+    clc
+    rts
+.hit:
+    sec
     rts
