@@ -2712,6 +2712,10 @@ GetTile ;arg0..1 = mt_x arg2..3 = mt_y ret0 = value
     rts
 ;------------------------------------------------------------------------------
 SetTile ;arg0..1 = mt_x arg2..3 = mt_y, arg4 = value
+    lda sav
+    pha
+    lda sav+1
+    pha
     jsr MultiplyBy24
     ADD16I ret, ret, levelMap
     ADD16 tmp, arg+2, ret
@@ -2719,37 +2723,66 @@ SetTile ;arg0..1 = mt_x arg2..3 = mt_y, arg4 = value
     ldy #0
     sta (tmp),y ;store updated tile into map
     
-    ;update nametables
-    lda shr_doTile
-    beq .noWait
-    jsr Synchronize
 .noWait:
-    lda arg+4
-    sta shr_tileMeta ;store tile for nametable update
-    MOV16I shr_tileAddr, [$2000+TOP_OFFSET]
+    MOV16I sav, [$2000+TOP_OFFSET]
     lda arg+2
     cmp #9
     bcc .upperTable
-    MOV16I shr_tileAddr, $2800
+    MOV16I sav, $2800
     SUB16I arg+2, arg+2, 9
 .upperTable:
     
     REPEAT 6
     ASL16 arg+2
     REPEND
-    ADD16 shr_tileAddr, shr_tileAddr, arg+2
+    ADD16 sav, sav, arg+2
     
     ASL16 arg
     lda arg
     and #31
     clc
-    adc shr_tileAddr
-    sta shr_tileAddr
+    adc sav
+    sta sav
     lda #0
-    adc shr_tileAddr+1
-    sta shr_tileAddr+1
+    adc sav+1
+    sta sav+1
     
-    inc shr_doTile
+    ldx shr_copyIndex
+    ldy arg+4
+    
+    lda metatiles+256,y
+    PHXA
+    lda metatiles,y
+    PHXA
+    lda #>[nmi_Copy2-1]
+    PHXA
+    lda #<[nmi_Copy2-1]
+    PHXA
+    lda sav
+    PHXA
+    lda sav+1
+    PHXA
+    
+    lda metatiles+768,y
+    PHXA
+    lda metatiles+512,y
+    PHXA
+    ADD16I sav,sav,32
+    lda #>[nmi_Copy2-1]
+    PHXA
+    lda #<[nmi_Copy2-1]
+    PHXA
+    lda sav
+    PHXA
+    lda sav+1
+    PHXA
+    
+    stx shr_copyIndex
+    
+    pla
+    sta sav+1
+    pla
+    sta sav
     rts
 ;------------------------------------------------------------------------------
 MultiplyBy24: ;arg0..arg1 is factor, ret0..ret1 is result

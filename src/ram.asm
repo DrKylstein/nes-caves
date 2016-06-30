@@ -22,9 +22,6 @@ shr_doAttrCol       ds 1
 shr_tileCol         ds 1
 shr_earlyExit       ds 1
 shr_flashBg         ds 1
-shr_doTile          ds 1
-shr_tileAddr        ds 2
-shr_tileMeta        ds 1
 shr_copyIndex       ds 1
 
 nmi_sfxStream   ds 2 ; SSMMSSMM...

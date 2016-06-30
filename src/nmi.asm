@@ -50,32 +50,6 @@ nmi_TileCopy subroutine
     jsr nmi_CopyTileCol
     dec shr_doTileCol
 nmi_TileCopy_end:
-
-nmi_OneTileCopy subroutine
-    lda shr_doTile
-    beq nmi_OneTileCopy_end
-    bit PPU_STATUS
-    lda shr_tileAddr+1
-    sta PPU_ADDR
-    lda shr_tileAddr
-    sta PPU_ADDR
-    ldy shr_tileMeta
-    lda metatiles,y
-    sta PPU_DATA
-    lda metatiles+256,y
-    sta PPU_DATA
-    ADD16I shr_tileAddr, shr_tileAddr, 32
-    lda shr_tileAddr+1
-    sta PPU_ADDR
-    lda shr_tileAddr
-    sta PPU_ADDR
-    ldy shr_tileMeta
-    lda metatiles+512,y
-    sta PPU_DATA
-    lda metatiles+768,y
-    sta PPU_DATA
-    dec shr_doTile
-nmi_OneTileCopy_end:
     
 nmi_AttrCopy subroutine
     lda shr_doAttrCol
