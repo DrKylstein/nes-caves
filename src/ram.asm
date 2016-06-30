@@ -9,14 +9,11 @@ sav            ds 6 ;MIPS-style $s#
 ret            ds 4 ;MIPS-style $p#
 
 nmi_tmp             ds 4
-nmi_sfxPeriod       ds 2
 nmi_scrollY         ds 1
 nmi_nametable       ds 1
 nmi_scrollX         ds 1
-nmi_sfxPtr          ds 2
 nmi_sp              ds 1
 
-shr_doSfx           ds 1
 shr_sleeping        ds 1
 shr_doDma           ds 1
 shr_doRegCopy       ds 1
@@ -29,6 +26,15 @@ shr_doTile          ds 1
 shr_tileAddr        ds 2
 shr_tileMeta        ds 1
 shr_copyIndex       ds 1
+
+nmi_sfxStream   ds 2 ; SSMMSSMM...
+nmi_musicStream ds 14
+
+nmi_sfxBase     ds 1 ;SbStMbMtSbStMbMt...
+nmi_sfxTime     ds 1
+nmi_musicBase   ds 1
+nmi_musicTime   ds 13
+
     ECHO $100-.," bytes left in page $000"
 
     ORG $0100

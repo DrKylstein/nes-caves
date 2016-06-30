@@ -75,7 +75,6 @@ init_apu subroutine
     iny
     cpy #$18
     bne .loop
-    MOV16I nmi_sfxPtr, nullSound
     jmp init_apu_end
 .regs:
     .byte $30,$08,$00,$00
@@ -565,8 +564,6 @@ CheckInput subroutine
     lda playerFlags
     ora #PLY_ISJUMPING
     sta playerFlags
-    lda #SFX_JUMP
-    sta shr_doSfx
 CheckInput_end:
 
 TileInteraction subroutine
@@ -623,11 +620,11 @@ TileCollision:
     .word TC_Nop;TC_LightsOff
     .word TC_Nop;TC_WeakBlock
     .word TC_Ammo
-    .word TC_Nop;TC_Strength
+    .word TC_Strength
     .word TC_Powershot
     .word TC_Gravity
     .word TC_Key
-    .word TC_Nop;TC_Stop
+    .word TC_Stop
     .word TC_Chest
     .word TC_Points ;crystal
     .word TC_Points ;egg
@@ -724,8 +721,6 @@ TC_Points:
     sta arg
 .notBonus:
     jsr AddScore
-    lda #SFX_CRYSTAL
-    sta shr_doSfx
     
     lda #0
     sta sav
@@ -733,8 +728,6 @@ TC_Points:
 TC_Points_end:
 
 TC_Key:
-    lda #SFX_CRYSTAL
-    sta shr_doSfx
     lda playerFlags
     ora #PLY_HASKEY
     sta playerFlags
@@ -747,8 +740,6 @@ TC_Chest:
     lda #PLY_HASKEY
     bit playerFlags
     JEQ TC_Return
-    lda #SFX_CRYSTAL
-    sta shr_doSfx
     
     lda #2
     sta arg+1
@@ -762,8 +753,6 @@ TC_Chest:
 TC_Chest_end:
 
 TC_Ammo:
-    lda #SFX_CRYSTAL
-    sta shr_doSfx
     lda shr_ammo
     clc
     adc #5
@@ -775,8 +764,6 @@ TC_Ammo:
 TC_Ammo_end:
 
 TC_Powershot:
-    lda #SFX_CRYSTAL
-    sta shr_doSfx
     lda #10
     sta shr_powerSeconds
     lda #60
@@ -789,9 +776,20 @@ TC_Powershot:
     jmp TC_UpdateTile
 TC_Powershot_end:
 
+TC_Strength:
+    lda #10
+    sta shr_powerSeconds
+    lda #60
+    sta powerFrames
+    lda #POWER_STRENGTH
+    sta powerType
+    lda #0
+    sta sav
+    jsr UpdatePowerDisplay
+    jmp TC_UpdateTile
+TC_Strength_end:
+
 TC_Gravity:
-    lda #SFX_CRYSTAL
-    sta shr_doSfx
     lda #10
     sta shr_powerSeconds
     lda #60
@@ -803,6 +801,19 @@ TC_Gravity:
     jsr UpdatePowerDisplay
     jmp TC_UpdateTile
 TC_Gravity_end:
+
+TC_Stop:
+    lda #10
+    sta shr_powerSeconds
+    lda #60
+    sta powerFrames
+    lda #POWER_STOP
+    sta powerType
+    lda #0
+    sta sav
+    jsr UpdatePowerDisplay
+    jmp TC_UpdateTile
+TC_Stop_end:
 
 TC_Foreground:
     lda playerFlags
@@ -970,8 +981,6 @@ TC_Nop:
     lda #ANIM_SMALL_OSCILLATE
     sta entityAnim
 .notPowerShot
-    lda #SFX_ROCKET
-    sta shr_doSfx
     
     bit playerFlags
     bvs .shootLeft

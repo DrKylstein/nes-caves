@@ -88,13 +88,6 @@ POWER_SHOT      ds 1
 POWER_GRAVITY   ds 1
 POWER_STRENGTH  ds 1
 POWER_STOP      ds 1
-
-    SEG.U SOUNDS
-    ORG $0000
-SFX_NULL:       ds 2
-SFX_JUMP:       ds 2
-SFX_CRYSTAL:    ds 2
-SFX_ROCKET:     ds 2
     
     SEG.U BEHAVIORS
     ORG $0000

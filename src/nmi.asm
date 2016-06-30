@@ -170,42 +170,26 @@ nmi_doStatus subroutine
     bvs .wait
     
 ;update sound during wait
-    ; lda shr_doSfx
-    ; beq .check
-    ; tay
-    ; lda sfx,y
-    ; sta nmi_sfxPtr
-    ; iny
-    ; lda sfx,y
-    ; sta nmi_sfxPtr+1
-    
-    ; ldy #0
-    ; lda (nmi_sfxPtr),y
-    ; sta nmi_sfxPeriod
-    ; INC16 nmi_sfxPtr
-    ; lda (nmi_sfxPtr),y
-    ; sta nmi_sfxPeriod+1
-    ; INC16 nmi_sfxPtr
-    ; sty shr_doSfx
-; .check:
-    ; lda nmi_sfxPeriod+1
-    ; bpl .play
-    ; lda #0
-    ; sta APU_SQ1_VOL
-    ; jmp .wait2
-; .play:
-    ; MOV_D APU_SQ1_LO, nmi_sfxPeriod
-    ; lda #%10111111
-    ; sta APU_SQ1_VOL
-    
-    ; ldy #0
-    ; lda (nmi_sfxPtr),y
-    ; sta nmi_sfxPeriod
-    ; INC16 nmi_sfxPtr
-    ; lda (nmi_sfxPtr),y
-    ; sta nmi_sfxPeriod+1
-    ; INC16 nmi_sfxPtr
-
+    ; lda nmi_frame
+    ; and #31
+    ; bne skipMusic$
+    ; ldx #0
+; musicLoop$:
+    ; lda (nmi_musicStream,x)
+    ; and #$0F
+    ; clc
+    ; adc nmi_musicBase,x
+    ; tya
+    ; lda notesHi,y
+    ; sta APU_COUNTER_HI,x
+    ; lda notesLo,y
+    ; sta APU_COUNTER_LO,x
+    ; REPEAT 4
+    ; inx
+    ; REPEND
+    ; cpx #[4*4]
+    ; bne musicLoop$
+; skipMusic$:
 
 .wait2: ;wait for sprite 0 to be set again
     bit PPU_STATUS
