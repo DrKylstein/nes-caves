@@ -1150,8 +1150,8 @@ CheckGround subroutine
     
     jmp .checkSpriteHit
 .hitGroundTile:
-    lda #$F0
-    and playerY
+    lda playerY
+    and #$F0
     sta playerY
     jmp .hit_ground
 
@@ -1209,6 +1209,7 @@ CheckGround subroutine
 .hit_ground: ;stop if moving down
     lda #0
     sta playerYVel
+    sta playerYVel+1
     sta playerYFrac
     lda powerType
     cmp #POWER_GRAVITY
