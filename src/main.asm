@@ -884,9 +884,13 @@ TC_Entrance:
 TC_Entrance_end:
     
 TC_Hidden:
+    CMP16I playerYVel,0
+    bpl .notJumping
     lda #HIDDEN_TILE
     sta sav
     jmp TC_UpdateTile
+.notJumping:
+    jmp TC_Return
 TC_Hidden_end:
     
 TC_Lock:
