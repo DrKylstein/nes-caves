@@ -562,7 +562,6 @@ CheckInput subroutine
     ora #PLY_ISJUMPING
     sta playerFlags
     MOV16I arg, sfxJump
-    MOV16I arg+2, $00F0
     jsr PlaySound
 CheckInput_end:
 
@@ -963,7 +962,6 @@ TC_Nop:
     jsr UpdateAmmoDisplay
 .InfiniteAmmo
     MOV16I arg, sfxShoot
-    MOV16I arg+2, $230
     jsr PlaySound
     lda playerX
     sta entityXLo
@@ -3389,7 +3387,24 @@ TestCollision subroutine
     rts
 ;------------------------------------------------------------------------------
 PlaySound subroutine
-    MOV16 shr_sq1Patch, arg
-    MOV16 shr_sq1Freq, arg+2
-    inc shr_sq1Trigger
+    ldy #0
+.loop:
+    lda (arg),y
+    bmi .end
+    tax
+    lda bits+1,x
+    ora shr_keyOn
+    txa
+    asl
+    asl
+    tax
+    iny
+    REPEAT 4
+    lda (arg),y
+    sta shr_sfxBase,x
+    iny
+    inx
+    REPEND
+    jmp .loop
+.end:
     rts

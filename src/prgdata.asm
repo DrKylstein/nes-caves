@@ -695,7 +695,13 @@ hud:
 metatiles:
     incbin metatiles.bin
 
-sfxJump:
+sfxJump subroutine
+    .byte 0
+    .word .sqJump
+    .word $00F0
+    .byte $80
+    
+.sqJump:
     .byte DUTY_25 | $F, 0
     .byte DUTY_25 | $2, 1
     .byte DUTY_25 | $E, 1
@@ -728,7 +734,15 @@ sfxJump:
     .byte DUTY_25 | $0,15
     .byte 0
     
-sfxShoot:
+sfxShoot subroutine
+    .byte 0
+    .word .sqShoot
+    .word $230
+    .byte 3
+    .word .noiseShoot
+    .word $DEAD
+    .byte $80
+.sqShoot:
     .byte DUTY_25 | $F, 0
     .byte DUTY_25 | $2, 1
     .byte DUTY_25 | $E, 1
@@ -760,7 +774,24 @@ sfxShoot:
     .byte DUTY_25 | $1,14
     .byte DUTY_25 | $0,15
     .byte 0
-    
+.noiseShoot:
+    .byte $3F, $0F
+    .byte $3E, $0F
+    .byte $3D, $0F
+    .byte $3C, $0F
+    .byte $3B, $0F
+    .byte $3A, $0F
+    .byte $39, $0F
+    .byte $38, $0F
+    .byte $37, $0F
+    .byte $36, $0F
+    .byte $35, $0F
+    .byte $34, $0F
+    .byte $33, $0F
+    .byte $32, $0F
+    .byte $31, $0F
+    .byte $30, $0F
+    .byte 0
 levelBanks:
     .byte 1
     .byte 1

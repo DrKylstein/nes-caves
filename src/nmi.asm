@@ -142,8 +142,11 @@ nmi_doStatus subroutine
 .wait: ;wait for sprite 0 to be cleared from last frame
     bit PPU_STATUS
     bvs .wait
-    
+nmi_doStatus_end:
+
+nmi_DoSq1 subroutine
 ;update sound during wait
+
     ldy #0
     lda shr_sq1Patch+1 ;pointer can't be in zero page, no sound must be set
     beq .Sq1Ended
@@ -155,16 +158,38 @@ nmi_doStatus subroutine
     sec
     sbc (shr_sq1Patch),y
     sta APU_SQ1_LO
-    sta shr_debugReg
-    lda shr_sq1Trigger
+    lda shr_keyOn
+    and #1
     beq .noTrigger
     lda shr_sq1Freq+1
     sta APU_SQ1_HI
-    dec shr_sq1Trigger
+    lda shr_keyOn
+    and #~1
+    sta shr_keyOn
 .noTrigger
     ADD16I shr_sq1Patch, shr_sq1Patch, 2
 .Sq1Ended:
+nmi_DoSq1_end:
 
+nmi_DoNoise subroutine
+;update sound during wait
+
+    ldy #0
+    lda shr_noisePatch+1 ;pointer can't be in zero page, no sound must be set
+    beq .ended
+    lda (shr_noisePatch),y
+    beq .ended ;byte should always have %xx11xxxx, so sound has ended
+    sta APU_NOISE_VOL
+    iny
+    lda (shr_noisePatch),y
+    sta APU_NOISE_LO
+.noTrigger
+    ADD16I shr_noisePatch, shr_noisePatch, 2
+.ended:
+nmi_DoNoise_end:
+
+
+nmi_DoViewport
 .wait2: ;wait for sprite 0 to be set again
     bit PPU_STATUS
     bvc .wait2
@@ -177,7 +202,7 @@ nmi_doStatus subroutine
     sta PPU_SCROLL
     lda nmi_tmp
     sta PPU_ADDR
-nmi_doStatus_end:
+nmi_DoViewport_end:
 
 nmi_Exit:
     lda #0

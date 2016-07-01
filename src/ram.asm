@@ -24,12 +24,16 @@ shr_earlyExit       ds 1
 shr_flashBg         ds 1
 shr_copyIndex       ds 1
 
-shr_sq1Trigger   ds 1
+shr_keyOn   ds 1
+shr_sfxBase:
 shr_sq1Patch     ds 2
 shr_sq1Freq      ds 2
-shr_noiseTrigger ds 1
+shr_sq2Patch     ds 2
+shr_sq2Freq      ds 2
+shr_triPatch     ds 2
+shr_triFreq      ds 2
 shr_noisePatch   ds 2
-shr_noiseFreq    ds 1
+shr_noiseFreq    ds 2
 
     ECHO $100-.," bytes left in page $000"
 
