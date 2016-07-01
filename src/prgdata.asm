@@ -170,7 +170,7 @@ entitySpeeds:
     .byte -4 ; left laser
     .byte 1 ; rex
 
-entityAnims:
+entityInitialAnims:
     .byte ANIM_SMALL_LONG ; bullet
     .byte ANIM_SPIDER ; vertical platform
     .byte ANIM_SPIDER ; horizontal platform
@@ -212,6 +212,8 @@ animations:
     .word anim_spider
     .word anim_spiderVFlip
     .word anim_rex
+    .word anim_rex_hflip
+    .word anim_rock_hiding
     
 frame_small1:
     .byte 8
@@ -663,6 +665,117 @@ anim_rex subroutine
     .byte PX_VIEWPORT_OFFSET
     .byte 78
     .byte 0
+    .byte 16
+
+anim_rex_hflip subroutine
+    .byte 3
+    .word .frame1
+    .word .frame2
+    .word .frame3
+    .word .frame4
+.frame1:
+    .byte 16
+    
+    .byte PX_VIEWPORT_OFFSET-16
+    .byte 0
+    .byte $40
+    .byte 16
+    
+    .byte PX_VIEWPORT_OFFSET-16
+    .byte 2
+    .byte $40
+    .byte 8
+
+    .byte PX_VIEWPORT_OFFSET
+    .byte 64
+    .byte $40
+    .byte 16
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 66
+    .byte $40
+    .byte 8
+.frame2:
+    .byte 16
+    
+    .byte PX_VIEWPORT_OFFSET-16
+    .byte 4
+    .byte $40
+    .byte 16
+    
+    .byte PX_VIEWPORT_OFFSET-16
+    .byte 6
+    .byte $40
+    .byte 8
+
+    .byte PX_VIEWPORT_OFFSET
+    .byte 68
+    .byte $40
+    .byte 16
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 70
+    .byte $40
+    .byte 8
+.frame3:
+    .byte 16
+    
+    .byte PX_VIEWPORT_OFFSET-16
+    .byte 8
+    .byte $40
+    .byte 16
+    
+    .byte PX_VIEWPORT_OFFSET-16
+    .byte 10
+    .byte $40
+    .byte 8
+
+    .byte PX_VIEWPORT_OFFSET
+    .byte 72
+    .byte $40
+    .byte 16
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 74
+    .byte $40
+    .byte 8
+.frame4:
+    .byte 16
+    
+    .byte PX_VIEWPORT_OFFSET-16
+    .byte 12
+    .byte $40
+    .byte 16
+    
+    .byte PX_VIEWPORT_OFFSET-16
+    .byte 14
+    .byte $40
+    .byte 8
+
+    .byte PX_VIEWPORT_OFFSET
+    .byte 76
+    .byte $40
+    .byte 16
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 78
+    .byte $40
+    .byte 8
+    
+anim_rock_hiding subroutine
+    .byte 0
+    .word .frame1
+.frame1:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET+8
+    .byte 0
+    .byte $20
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET+8
+    .byte 2
+    .byte $20
     .byte 16
 
     

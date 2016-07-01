@@ -164,3 +164,5 @@ ANIM_CATERPILLAR_HFLIP_2:   ds 1
 ANIM_SPIDER:                ds 1
 ANIM_SPIDER_VFLIP:          ds 1
 ANIM_REX                    ds 1
+ANIM_REX_HFLIP              ds 1
+ANIM_ROCK_HIDING            ds 1

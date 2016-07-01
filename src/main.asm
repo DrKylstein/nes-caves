@@ -355,7 +355,7 @@ InitEntities subroutine
     tax
     lda entitySpeeds,x
     sta entityVelocity,y
-    lda entityAnims,x
+    lda entityInitialAnims,x
     sta entityAnim,y
     lda #0
     sta entityCount,y
@@ -1472,6 +1472,17 @@ ER_Mimrock subroutine
     lda #2
     sta entityVelocity,y
 hiding$:
+    lda #ANIM_ROCK_HIDING
+    sta entityAnim,y
+    lda entityVelocity,y
+    beq .end
+    lda #ANIM_SMALL_OSCILLATE
+    sta entityAnim,y
+    lda entityVelocity,y
+    bpl .end
+    lda #ANIM_SMALL_HFLIP_OSCILLATE
+    sta entityAnim,y
+.end:
     jmp ER_Default
 
 ER_RightCannon subroutine
@@ -1528,7 +1539,7 @@ ER_Faucet subroutine
 return$:
     jmp ER_Return
     
-
+ER_PowerShot:
 ER_Bullet subroutine
     lda entityXLo,y
     sta sav
@@ -1611,16 +1622,106 @@ done$:
     jmp ER_Return
 
 
+ER_Spider subroutine
+    lda #ANIM_SPIDER
+    sta entityAnim,y
+    lda entityVelocity,y
+    bpl .notUp
+    lda #ANIM_SPIDER_VFLIP
+    sta entityAnim,y
+.notUp:
+    jmp ER_Default
+
+ER_Rex subroutine
+    lda #ANIM_REX
+    sta entityAnim,y
+    lda entityVelocity,y
+    bpl .notRight
+    lda #ANIM_REX_HFLIP
+    sta entityAnim,y
+.notRight:
+    jmp ER_Default
+
+
+ER_CaterpillarHead:
+ER_CaterpillarBack subroutine
+    lda #ANIM_CATERPILLAR
+    sta entityAnim,y
+    lda entityVelocity,y
+    bpl .notRight
+    lda #ANIM_CATERPILLAR_HFLIP
+    sta entityAnim,y
+.notRight:
+    jmp ER_Default
+    
+ER_CaterpillarFront:
+ER_CaterpillarTail subroutine
+    lda #ANIM_CATERPILLAR_2
+    sta entityAnim,y
+    lda entityVelocity,y
+    bpl .notRight
+    lda #ANIM_CATERPILLAR_HFLIP_2
+    sta entityAnim,y
+.notRight:
+    jmp ER_Default
+
+ER_Cart subroutine
+    lda entityXLo,y
+    sta arg
+    lda entityXHi,y
+    and #ENT_X_POS
+    sta arg+1
+    lda entityYLo,y
+    sta arg+2
+    lda entityYHi,y
+    and #ENT_Y_POS
+    sta arg+3
+    ADD16I arg+2,arg+2, 8
+    lda #ANIM_SMALL_HFLIP_LONG
+    sta entityAnim,y
+    lda entityVelocity,y
+    bmi .notRight
+    ADD16I arg,arg,16
+    lda #ANIM_SMALL_LONG
+    sta entityAnim,y
+.notRight:
+    MOV16 sav,arg
+    MOV16 sav+2,arg+2
+    sty sav+4
+    jsr TestCollision
+    ldy sav+4
+    bcs .hit
+    ADD16I arg+2,sav+2,8
+    MOV16 arg,sav
+    sty sav+4
+    jsr TestCollision
+    ldy sav+4
+    bcc .hit
+    jmp .nohit
+.hit:
+    lda entityVelocity,y
+    eor #$FF
+    clc
+    adc #1
+    sta entityVelocity,y
+    lda #$60
+    sta entityCount,y
+.nohit:
+    lda entityCount,y
+    beq .nopause
+    sec
+    sbc #1
+    sta entityCount,y
+    lda #ANIM_SMALL_NONE
+    sta entityAnim,y
+    jmp ER_Return
+.nopause:
+    jsr ApplyXVel
+    jmp ER_Return
+
 ER_VerticalPlatform:
 ER_HorizontalPlatform:
-ER_Spider:
 ER_Bat:
-ER_PowerShot:
-ER_Cart:
-ER_CaterpillarHead:
-ER_CaterpillarFront:
-ER_CaterpillarBack:
-ER_CaterpillarTail:
 ER_SlimeHorizontal:
 ER_SlimeVertical:
 ER_Hammer:
@@ -1629,7 +1730,6 @@ ER_VerticalPlatformIdle:
 ER_HorizontalPlatformIdle:
 ER_RightLaser:
 ER_LeftLaser:
-ER_Rex:
     jmp ER_Default
 
     
