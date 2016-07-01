@@ -6,18 +6,15 @@
 ;enemy points table
 ;large enemies - triceratops, t-rex, stalk-eye
 ;explosions
-;corner collisions with solids
-;edge collisions with special tiles
-;better hidden block collision
 ;flame traps
 ;rolling enemy
-;strength mushrooms
+;strength mushroom effect
+;stop sign effect
 ;sound effects
 ;air generator death
 ;fix intermittent color corruption
 ;reset in-level score on death or quit
 ;transitions
-;unique level tiles?
 ;death animation
     
 ;------------------------------------------------------------------------------
@@ -564,6 +561,9 @@ CheckInput subroutine
     lda playerFlags
     ora #PLY_ISJUMPING
     sta playerFlags
+    MOV16I arg, sfxJump
+    MOV16I arg+2, $00F0
+    jsr PlaySound
 CheckInput_end:
 
 TileInteraction subroutine
@@ -962,6 +962,9 @@ TC_Nop:
     dec shr_ammo
     jsr UpdateAmmoDisplay
 .InfiniteAmmo
+    MOV16I arg, sfxShoot
+    MOV16I arg+2, $230
+    jsr PlaySound
     lda playerX
     sta entityXLo
     lda playerX+1
@@ -3383,4 +3386,10 @@ TestCollision subroutine
     rts
 .hit:
     sec
+    rts
+;------------------------------------------------------------------------------
+PlaySound subroutine
+    MOV16 shr_sq1Patch, arg
+    MOV16 shr_sq1Freq, arg+2
+    inc shr_sq1Trigger
     rts

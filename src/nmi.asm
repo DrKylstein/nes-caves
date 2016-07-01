@@ -144,26 +144,26 @@ nmi_doStatus subroutine
     bvs .wait
     
 ;update sound during wait
-    ; lda nmi_frame
-    ; and #31
-    ; bne skipMusic$
-    ; ldx #0
-; musicLoop$:
-    ; lda (nmi_musicStream,x)
-    ; and #$0F
-    ; clc
-    ; adc nmi_musicBase,x
-    ; tya
-    ; lda notesHi,y
-    ; sta APU_COUNTER_HI,x
-    ; lda notesLo,y
-    ; sta APU_COUNTER_LO,x
-    ; REPEAT 4
-    ; inx
-    ; REPEND
-    ; cpx #[4*4]
-    ; bne musicLoop$
-; skipMusic$:
+    ldy #0
+    lda shr_sq1Patch+1 ;pointer can't be in zero page, no sound must be set
+    beq .Sq1Ended
+    lda (shr_sq1Patch),y
+    beq .Sq1Ended ;byte should always have %xx11xxxx, so sound has ended
+    sta APU_SQ1_VOL
+    iny
+    lda shr_sq1Freq
+    sec
+    sbc (shr_sq1Patch),y
+    sta APU_SQ1_LO
+    sta shr_debugReg
+    lda shr_sq1Trigger
+    beq .noTrigger
+    lda shr_sq1Freq+1
+    sta APU_SQ1_HI
+    dec shr_sq1Trigger
+.noTrigger
+    ADD16I shr_sq1Patch, shr_sq1Patch, 2
+.Sq1Ended:
 
 .wait2: ;wait for sprite 0 to be set again
     bit PPU_STATUS

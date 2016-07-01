@@ -678,13 +678,13 @@ bits:
     .byte 128
 
 points:
-    .byte 00,00,00,05;0
-    .byte 00,00,01,00;0
-    .byte 00,00,00,80;0
-    .byte 00,00,01,00;0
-    .byte 00,00,05,00;0
-    .byte 00,00,00,10;0
-    .byte 00,00,10,00;0
+    .byte  0, 0, 0, 5;0
+    .byte  0, 0, 1, 0;0
+    .byte  0, 0, 0,80;0
+    .byte  0, 0, 1, 0;0
+    .byte  0, 0, 5, 0;0
+    .byte  0, 0, 0,10;0
+    .byte  0, 0,10, 0;0
 
 palettes:
 ;global
@@ -695,97 +695,71 @@ hud:
 metatiles:
     incbin metatiles.bin
 
-sfx:
-    .word nullSound
-    .word jumpSound
-    .word crystalSound
-    .word crystalSound
-
-jumpSound:
-    .word 50
-    .word 48
-    .word 45
-    .word 43
-    .word 40
-    .word 40
-    .word 37
-    .word 37
-    .word 37
-    .word 37
-    .word 37
-    .word 37
-    .word 40
-    .word 43
-    .word 50
-    .word 55
-    .word 58
-    .word 70
-    .word 75
-    .word 80
-    .word 86
-    .word 93
-    .word 98
-    .word 103
-    .word 113
-    .word 124
-    .word 131
-    .word 144
-    .word 215
-nullSound:
-    .word $FFFF
+sfxJump:
+    .byte DUTY_25 | $F, 0
+    .byte DUTY_25 | $2, 1
+    .byte DUTY_25 | $E, 1
+    .byte DUTY_25 | $2, 2
+    .byte DUTY_25 | $D, 2
+    .byte DUTY_25 | $2, 3
+    .byte DUTY_25 | $C, 3
+    .byte DUTY_25 | $2, 4
+    .byte DUTY_25 | $B, 4
+    .byte DUTY_25 | $2, 5
+    .byte DUTY_25 | $A, 5
+    .byte DUTY_25 | $2, 6
+    .byte DUTY_25 | $9, 6
+    .byte DUTY_25 | $2, 7
+    .byte DUTY_25 | $8, 7
+    .byte DUTY_25 | $2, 8
+    .byte DUTY_25 | $7, 8
+    .byte DUTY_25 | $2, 9
+    .byte DUTY_25 | $6, 9
+    .byte DUTY_25 | $2,10
+    .byte DUTY_25 | $5,10
+    .byte DUTY_25 | $2,11
+    .byte DUTY_25 | $4,11
+    .byte DUTY_25 | $2,12
+    .byte DUTY_25 | $3,12
+    .byte DUTY_25 | $2,13
+    .byte DUTY_25 | $2,13
+    .byte DUTY_25 | $2,14
+    .byte DUTY_25 | $1,14
+    .byte DUTY_25 | $0,15
+    .byte 0
     
-crystalSound:
-    .word 101
-    .word 98
-    .word 98
-    .word 96
-    .word 0
-    .word 0
-    .word 101
-    .word 101
-    .word 98
-    .word 91
-    .word 0
-    .word 88
-    .word 86
-    .word 80
-    .word 0
-    .word 75
-    .word 0
-    .word 70
-    .word 0
-    .word 65
-    .word 0
-    .word 0
-    .word 60
-    .word 0
-    .word 55
-    .word 0
-    .word 0
-    .word 50
-    .word 0
-    .word 45
-    .word 0
-    .word 0
-    .word 40
-    .word 0
-    .word 37
-    .word 0
-    .word 32
-    .word 0
-    .word 0
-    .word 27
-    .word 0
-    .word 25
-    .word 22
-    .word 0
-    .word 20
-    .word 0
-    .word 20
-    .word 17
-    .word 15
-    .word 0
-    .word $FFFF
+sfxShoot:
+    .byte DUTY_25 | $F, 0
+    .byte DUTY_25 | $2, 1
+    .byte DUTY_25 | $E, 1
+    .byte DUTY_25 | $2, 2
+    .byte DUTY_25 | $D, 2
+    .byte DUTY_25 | $2, 3
+    .byte DUTY_25 | $C, 3
+    .byte DUTY_25 | $2, 4
+    .byte DUTY_25 | $B, 4
+    .byte DUTY_25 | $2, 5
+    .byte DUTY_25 | $A, 5
+    .byte DUTY_25 | $2, 6
+    .byte DUTY_25 | $9, 6
+    .byte DUTY_25 | $2, 7
+    .byte DUTY_25 | $8, 7
+    .byte DUTY_25 | $2, 8
+    .byte DUTY_25 | $7, 8
+    .byte DUTY_25 | $2, 9
+    .byte DUTY_25 | $6, 9
+    .byte DUTY_25 | $2,10
+    .byte DUTY_25 | $5,10
+    .byte DUTY_25 | $2,11
+    .byte DUTY_25 | $4,11
+    .byte DUTY_25 | $2,12
+    .byte DUTY_25 | $3,12
+    .byte DUTY_25 | $2,13
+    .byte DUTY_25 | $2,13
+    .byte DUTY_25 | $2,14
+    .byte DUTY_25 | $1,14
+    .byte DUTY_25 | $0,15
+    .byte 0
     
 levelBanks:
     .byte 1
