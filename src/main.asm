@@ -1463,47 +1463,6 @@ ApplyXVel subroutine
     sta entityXHi,y
     rts
     
-HitWall subroutine
-    ;calculate map tile
-    lda entityXLo,y
-    sta arg
-    lda entityXHi,y
-    and #ENT_X_POS
-    sta arg+1
-    lda entityVelocity,y
-    bmi .shift
-    ADD16I arg, arg, 15
-.shift:
-    REPEAT 4
-    LSR16 arg
-    REPEND
-    lda arg
-    sta ret+2 ;metatile x
-    jsr MultiplyBy24
-    lda entityYLo,y
-    sta tmp
-    lda entityYHi,y
-    and #ENT_Y_POS
-    sta tmp+1
-    REPEAT 4
-    LSR16 tmp
-    REPEND
-    lda tmp
-    sta ret+3 ;metatile y
-    ADD16 tmp, tmp, ret
-    ADD16I tmp, tmp, levelMap
-    sty tmp+2
-    ldy #0
-    lda (tmp),y
-    sta ret+1 ; metatile index
-    tay
-    lda metatiles+256*4,y
-    ldy tmp+2
-    lsr
-    lsr
-    sta ret ; behavior
-    rts
-
     
 ER_Mimrock subroutine
     jsr IsNearPlayerY
@@ -1571,40 +1530,56 @@ return$:
     
 
 ER_Bullet subroutine
-    jsr HitWall
+    lda entityXLo,y
+    sta sav
+    lda entityXHi,y
+    and #ENT_X_POS
+    sta sav+1
+    ADD16I sav,sav,2
+    lda entityYLo,y
+    sta sav+2
+    lda entityYHi,y
+    and #ENT_Y_POS
+    sta sav+3
+    ADD16I sav+2,sav+2,8
+    lda entityVelocity,y
+    bmi .notRight
+    ADD16I sav,sav,12
+.notRight:
+    REPEAT 4
+    LSR16 sav
+    LSR16 sav+2
+    REPEND
+    ;sav = map cell x
+    ;sav+2 = map cell y
+
+    MOV16 arg,sav
+    MOV16 arg+2,sav+2
+    sty sav+4
+    jsr GetTileBehavior
+    ldy sav+4
     lda ret
     cmp #TB_SOLID
     beq .die
     cmp #TB_WEAKBLOCK
     bne .notWeakBlock
-    lda ret+2
-    sta arg
-    lda ret+3
-    sta arg+2
-    lda #0
-    sta arg+1
-    sta arg+3
+    MOV16 arg,sav
+    MOV16 arg+2,sav+2
+    lda #0 
     sta arg+4
-    sty sav
-    jsr SetTile
-    ldy sav
-    jmp .die
+    jmp .changeTile
 .notWeakBlock:
     cmp #TB_EGG
     bne .notEgg
-    lda ret+2
-    sta arg
-    lda ret+3
-    sta arg+2
-    lda #0
-    sta arg+1
-    sta arg+3
+    MOV16 arg,sav
+    MOV16 arg+2,sav+2
     lda bonusCount
     and #7
     clc
     adc #BONUS_TILES
     sta arg+4
     inc bonusCount
+.changeTile:
     sty sav
     jsr SetTile
     ldy sav
@@ -1634,6 +1609,7 @@ negative$:
     sta entityVelocity,y
 done$:
     jmp ER_Return
+
 
 ER_VerticalPlatform:
 ER_HorizontalPlatform:
@@ -2710,7 +2686,7 @@ GetTile ;arg0..1 = mt_x arg2..3 = mt_y ret0 = value
     ;t0 = y+ x*24
     ADD16 tmp, arg+2, ret
     
-    ;lookup tile, get behavior
+    ;lookup tile
     ADD16I tmp, tmp, levelMap
     ldy #0
     lda (tmp),y
@@ -3361,7 +3337,7 @@ TestCollisionTop subroutine
     rts
 .hit:
     sec
-    rts
+    rts    
 ;------------------------------------------------------------------------------
 TestCollision subroutine
     REPEAT 4
