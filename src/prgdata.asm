@@ -699,7 +699,7 @@ sfxJump subroutine
     .byte 0
     .word .sqJump
     .word $00F0
-    .byte $80
+    .byte <-1
     
 .sqJump:
     .byte DUTY_25 | $F, 0
@@ -737,11 +737,11 @@ sfxJump subroutine
 sfxShoot subroutine
     .byte 0
     .word .sqShoot
-    .word $230
+    .word $0230
     .byte 3
     .word .noiseShoot
     .word $DEAD
-    .byte $80
+    .byte <-1
 .sqShoot:
     .byte DUTY_25 | $F, 0
     .byte DUTY_25 | $2, 1

@@ -3387,24 +3387,5 @@ TestCollision subroutine
     rts
 ;------------------------------------------------------------------------------
 PlaySound subroutine
-    ldy #0
-.loop:
-    lda (arg),y
-    bmi .end
-    tax
-    lda bits+1,x
-    ora shr_keyOn
-    txa
-    asl
-    asl
-    tax
-    iny
-    REPEAT 4
-    lda (arg),y
-    sta shr_sfxBase,x
-    iny
-    inx
-    REPEND
-    jmp .loop
-.end:
+    MOV16 shr_sfxPtr,arg
     rts

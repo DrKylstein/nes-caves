@@ -118,6 +118,37 @@ nmi_DebugCounter_end:
     jmp nmi_Exit
 continue$:
 
+nmi_loadSfx subroutine
+    MOV16 nmi_tmp,shr_sfxPtr
+    lda nmi_tmp+1
+    beq nmi_loadSfx_end
+    ldy #0
+.loop:
+    lda (nmi_tmp),y
+    bmi .end
+    asl
+    asl
+    tax
+    iny
+    REPEAT 2
+    lda (nmi_tmp),y
+    sta nmi_sfxBase,x
+    iny
+    inx
+    REPEND
+
+    REPEAT 2
+    lda (nmi_tmp),y
+    sta nmi_sfxBase,x
+    sta APU_SQ1_VOL,x
+    iny
+    inx
+    REPEND
+    jmp .loop
+.end:
+    lda #0
+    sta shr_sfxPtr+1
+nmi_loadSfx_end:
 
 nmi_doStatus subroutine
     lda #PPU_CTRL_SETTING
@@ -148,43 +179,35 @@ nmi_DoSq1 subroutine
 ;update sound during wait
 
     ldy #0
-    lda shr_sq1Patch+1 ;pointer can't be in zero page, no sound must be set
-    beq .Sq1Ended
-    lda (shr_sq1Patch),y
-    beq .Sq1Ended ;byte should always have %xx11xxxx, so sound has ended
+    lda nmi_sq1Patch+1 ;pointer can't be in zero page, no sound must be set
+    beq .ended
+    lda (nmi_sq1Patch),y
+    beq .ended ;byte should always have %xx11xxxx, so sound has ended
     sta APU_SQ1_VOL
     iny
-    lda shr_sq1Freq
+    lda nmi_sq1Freq
     sec
-    sbc (shr_sq1Patch),y
+    sbc (nmi_sq1Patch),y
     sta APU_SQ1_LO
-    lda shr_keyOn
-    and #1
-    beq .noTrigger
-    lda shr_sq1Freq+1
-    sta APU_SQ1_HI
-    lda shr_keyOn
-    and #~1
-    sta shr_keyOn
 .noTrigger
-    ADD16I shr_sq1Patch, shr_sq1Patch, 2
-.Sq1Ended:
+    ADD16I nmi_sq1Patch, nmi_sq1Patch, 2
+.ended:
 nmi_DoSq1_end:
 
 nmi_DoNoise subroutine
 ;update sound during wait
 
     ldy #0
-    lda shr_noisePatch+1 ;pointer can't be in zero page, no sound must be set
+    lda nmi_noisePatch+1 ;pointer can't be in zero page, no sound must be set
     beq .ended
-    lda (shr_noisePatch),y
+    lda (nmi_noisePatch),y
     beq .ended ;byte should always have %xx11xxxx, so sound has ended
     sta APU_NOISE_VOL
     iny
-    lda (shr_noisePatch),y
+    lda (nmi_noisePatch),y
     sta APU_NOISE_LO
 .noTrigger
-    ADD16I shr_noisePatch, shr_noisePatch, 2
+    ADD16I nmi_noisePatch, nmi_noisePatch, 2
 .ended:
 nmi_DoNoise_end:
 
