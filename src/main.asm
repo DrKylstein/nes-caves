@@ -1463,6 +1463,35 @@ ApplyXVel subroutine
     sta entityXHi,y
     rts
     
+EntMoveVertically subroutine
+    lda entityVelocity,y
+    NMOS_ASR
+    sta tmp
+    EXTEND tmp, tmp
+    lda frame
+    and #1
+    beq .noExtra
+    lda entityVelocity,y
+    bpl .positive
+    DEC16 tmp
+    jmp .noExtra
+.positive:
+    INC16 tmp
+.noExtra:
+    clc
+    lda entityYLo,y
+    adc tmp
+    sta entityYLo,y
+    lda entityYHi,y
+    adc tmp+1
+    and #ENT_Y_POS
+    sta tmp
+    lda entityYHi,y
+    and #~ENT_Y_POS
+    ora tmp
+    sta entityYHi,y
+    rts
+    
     
 ER_Mimrock subroutine
     jsr IsNearPlayerY
@@ -1622,15 +1651,103 @@ done$:
     jmp ER_Return
 
 
+EntIsBulletNear subroutine
+    lda entityXHi
+    bpl .exists
+    clc
+    rts
+.exists
+    lda entityXLo,y
+    sta tmp
+    lda entityXHi,y
+    and #ENT_X_POS
+    sta tmp+1
+    lda entityXLo
+    sta tmp+2
+    lda entityXHi
+    and #ENT_X_POS
+    sta tmp+3
+    
+    SUB16 tmp, tmp, tmp+2
+    lda tmp+1
+    bpl .xpositive
+    NEG16 tmp
+.xpositive:
+    CMP16I tmp, 14
+    bcs .no
+    
+    
+    lda entityYLo,y
+    sta tmp
+    lda entityYHi,y
+    and #ENT_Y_POS
+    sta tmp+1
+    lda entityYLo
+    sta tmp+2
+    lda entityYHi
+    and #ENT_Y_POS
+    sta tmp+3
+    
+    SUB16 tmp, tmp, tmp+2
+    lda tmp+1
+    bpl .ypositive
+    NEG16 tmp
+.ypositive:
+    CMP16I tmp, 14
+    bcs .no
+    sec
+    rts
+    
+.no:
+    clc
+    rts
+
 ER_Spider subroutine
-    lda #ANIM_SPIDER
-    sta entityAnim,y
-    lda entityVelocity,y
-    bpl .notUp
+    lda entityXLo,y
+    sta arg
+    lda entityXHi,y
+    and #ENT_X_POS
+    sta arg+1
+    lda entityYLo,y
+    sta arg+2
+    lda entityYHi,y
+    and #ENT_Y_POS
+    sta arg+3
+    ADD16I arg,arg, 8
     lda #ANIM_SPIDER_VFLIP
     sta entityAnim,y
-.notUp:
-    jmp ER_Default
+    lda entityVelocity,y
+    bmi .notDown
+    ADD16I arg+2,arg+2,16
+    lda #ANIM_SPIDER
+    sta entityAnim,y
+.notDown:
+    sty sav
+    jsr TestCollision
+    ldy sav
+    bcs .hit
+    jmp .nohit
+.hit:
+    lda entityVelocity,y
+    eor #$FF
+    clc
+    adc #1
+    sta entityVelocity,y
+.nohit
+    jsr EntMoveVertically
+    jsr EntIsBulletNear
+    bcc .alive
+    lda #$80
+    sta entityXHi
+    sta entityXHi,y
+    lda #10
+    sta arg
+    lda #0
+    sta arg+1
+    sta arg+2
+    jsr AddScore
+.alive:
+    jmp ER_Return
 
 ER_Rex subroutine
     lda #ANIM_REX
