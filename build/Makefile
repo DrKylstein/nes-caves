@@ -19,8 +19,6 @@ $(romname)		:	$(sources) $(incbins) $(palettes) $(tilesets) Makefile
 
 sprites.pat		:	$(gfxdir)/sprites.png
 					tilestrip 8 16 <$< | planarbitmap 2 --interleave 8 >$@
-tiles.pat		:	$(gfxdir)/tiles.png
-					tilestrip 8 8 <$< | planarbitmap 2 --interleave 8 >$@
 
 $(tilesets)		:	%.pat:	$(gfxdir)/%.png
 					tilestrip 8 8 <$< | planarbitmap 2 --interleave 8 >$@

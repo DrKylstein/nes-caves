@@ -14,7 +14,7 @@
    eJwTZGBgEBzFgwYLA7EADsyIplYESsPkkeUEcIijYwCMuAhr
   </data>
  </layer>
- <layer name="Attributes" width="32" height="4" visible="0">
+ <layer name="Attributes" width="32" height="4">
   <data encoding="base64" compression="zlib">
    eJxjYBhYwMI4sPRAg4H2PwB8YACh
   </data>

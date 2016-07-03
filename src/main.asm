@@ -204,15 +204,15 @@ InitSpritePalette subroutine
 
     ldx shr_copyIndex
     
-    ldy #15
+    ldy #19
 .loop
     lda palettes,y
     PHXA
     dey
     bpl .loop
 
-    ENQUEUE_ROUTINE nmi_Copy16
-    ENQUEUE_PPU_ADDR VRAM_PALETTE_SP
+    ENQUEUE_ROUTINE nmi_Copy20
+    ENQUEUE_PPU_ADDR [VRAM_PALETTE_SP-4]
     
     stx shr_copyIndex
 
@@ -294,14 +294,14 @@ LoadLevelPal subroutine
     sta tmp
     lda levelPalettes+1,y
     sta tmp+1
-    ldy #15
+    ldy #11
 .loop
     lda (tmp),y
     PHXA
     dey
     bpl .loop
 
-    ENQUEUE_ROUTINE nmi_Copy16
+    ENQUEUE_ROUTINE nmi_Copy12
     ENQUEUE_PPU_ADDR VRAM_PALETTE_BG
     
     stx shr_copyIndex

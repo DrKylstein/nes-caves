@@ -7,7 +7,7 @@ titleTiles:
     incbin title-patterns.pat
 globalTiles:
     incbin sprites.pat
-    incbin tiles.pat
+    incbin tileset00.pat
 minePal:
     incbin pal00.pal
 volcanoPal:
