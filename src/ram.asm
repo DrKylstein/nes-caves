@@ -110,8 +110,8 @@ shr_cameraY         ds 2
 shr_cameraYMod      ds 1 
 shr_nameTable       ds 1 
 crystalsLeft   ds 1
-doorsLo        ds 3
-doorsHi        ds 3
+doorsX        ds 3
+doorsY        ds 3
 levelDataEnd:
 
     ECHO $800-.,"bytes left in pages $400-$700"

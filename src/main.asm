@@ -901,16 +901,27 @@ TC_Lock:
     sec
     sbc #TB_LOCK
     tay
-    lda doorsLo,y
-    sta tmp
-    lda doorsHi,y
-    sta tmp+1
-    ADD16I tmp, tmp, levelMap
-    ldy #0
+    lda doorsX,y
+    sta sav+4
+    sta arg
+    lda doorsY,y
+    sta sav+5
+    sta arg+2
     lda #0
-    sta (tmp),y
-    iny
-    sta (tmp),y
+    sta arg+1
+    sta arg+3
+    sta arg+4
+    jsr SetTile
+    lda sav+4
+    sta arg
+    lda sav+5
+    sta arg+2
+    inc arg+2
+    lda #0
+    sta arg+1
+    sta arg+3
+    sta arg+4
+    jsr SetTile
     inc sav
     jmp TC_UpdateTile
 TC_Lock_end:
@@ -2922,12 +2933,25 @@ SetTile ;arg0..1 = mt_x arg2..3 = mt_y, arg4 = value
     ldy #0
     sta (tmp),y ;store updated tile into map
     
-.noWait:
-    MOV16I sav, [$2000+TOP_OFFSET]
+    MOV16 tmp,shr_cameraX
+    REPEAT 4
+    LSR16 tmp
+    REPEND
+    CMP16 arg, tmp
+    bpl .notBefore
+    jmp .end
+.notBefore:
+    ADD16I tmp, tmp, MT_VIEWPORT_WIDTH
+    CMP16 arg, tmp
+    bmi .notAfter
+    jmp .end
+.notAfter:
+
+    MOV16I sav, [VRAM_NAME_UL+TOP_OFFSET]
     lda arg+2
     cmp #9
     bcc .upperTable
-    MOV16I sav, $2800
+    MOV16I sav, VRAM_NAME_LL
     SUB16I arg+2, arg+2, 9
 .upperTable:
     
@@ -2978,6 +3002,7 @@ SetTile ;arg0..1 = mt_x arg2..3 = mt_y, arg4 = value
     
     stx shr_copyIndex
     
+.end:
     pla
     sta sav+1
     pla

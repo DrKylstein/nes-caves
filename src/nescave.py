@@ -41,7 +41,7 @@ class NesCave(Plugin):
         tiles = None
         entities = None
         
-        doors = [0,0,0]
+        doors = [(0,0),(0,0),(0,0)]
         
         for i in range(m.layerCount()):
             layer = m.layerAt(i)
@@ -83,15 +83,15 @@ class NesCave(Plugin):
             for i in range(entities.objectCount()):
                 start = entities.objectAt(i)
                 if start.type() == 'door1':
-                    doors[0] = int((start.x()/16)*24 + start.y()/16)
+                    doors[0] = (int(start.x()/16), int(start.y()/16))
                 if start.type() == 'door2':
-                    doors[1] = int((start.x()/16)*24 + start.y()/16)
+                    doors[1] = (int(start.x()/16), int(start.y()/16))
                 if start.type() == 'door3':
-                    doors[2] = int((start.x()/16)*24 + start.y()/16)
+                    doors[2] = (int(start.x()/16), int(start.y()/16))
             for door in doors:
-                out.write(chr(door & 0xFF))
+                out.write(chr(door[0]))
             for door in doors:
-                out.write(chr(door >> 8))
+                out.write(chr(door[1]))
             writeColumn(out, entities, lambda e: int(e.x()), 0xFF)
             writeColumn(out, entities, lambda e: (int(e.x())) >> 8, 0x80)
             writeColumn(out, entities, lambda e: e.y(), 0)
