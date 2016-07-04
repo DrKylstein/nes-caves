@@ -1957,8 +1957,9 @@ ER_Rex subroutine
     
     lda #$80
     sta entityXHi
-    lda powerType
-    cmp #POWER_SHOT
+    lda entityYHi
+    asl
+    cmp #POWERSHOT_ID
     beq .dead
     lda entityCount,y
     cmp #5
@@ -2028,6 +2029,25 @@ ER_Cart subroutine
     sta entityCount,y
 .nohit:
     jsr EntTryMelee
+    jsr EntIsBulletNear
+    bcc .alive
+    lda #$80
+    sta entityXHi
+    
+    lda entityYHi
+    asl
+    cmp #POWERSHOT_ID
+    bne .alive
+    
+    lda #$80
+    sta entityXHi,y
+    lda #10
+    sta arg
+    lda #0
+    sta arg+1
+    sta arg+2
+    jsr AddScore
+.alive:
     lda entityCount,y
     beq .nopause
     sec
