@@ -1245,75 +1245,75 @@ CheckCieling_end:
     
 CheckHurt subroutine
     lda mercyTime
-    beq .findEnemy
+    beq CheckHurt_end
     dec mercyTime
     jmp CheckHurt_end
-.findEnemy:
-    ldy #MAX_ENTITIES
-.loop:
-    dey
-    JMI CheckHurt_end
+; .findEnemy:
+    ; ldy #MAX_ENTITIES
+; .loop:
+    ; dey
+    ; JMI CheckHurt_end
     
-    lda entityXHi,y
-    bmi .loop
+    ; lda entityXHi,y
+    ; bmi .loop
         
-    lda entityYHi,y
-    lsr
-    tax
-    lda entityFlags,x
-    and #ENT_F_ISDEADLY
-    beq .loop
+    ; lda entityYHi,y
+    ; lsr
+    ; tax
+    ; lda entityFlags,x
+    ; and #ENT_F_ISDEADLY
+    ; beq .loop
     
-    lda entityXHi,y
-    and #ENT_X_COUNT
-    beq .notHidden
-    lda entityFlags,x
-    and #ENT_F_ISPROJECTILE
-    beq .notHidden
-    jmp .loop
-.notHidden:
+    ; lda entityXHi,y
+    ; and #ENT_X_COUNT
+    ; beq .notHidden
+    ; lda entityFlags,x
+    ; and #ENT_F_ISPROJECTILE
+    ; beq .notHidden
+    ; jmp .loop
+; .notHidden:
 
     
-    lda entityXLo,y
-    sta tmp
-    lda entityXHi,y
-    and #ENT_X_POS
-    sta tmp+1
+    ; lda entityXLo,y
+    ; sta tmp
+    ; lda entityXHi,y
+    ; and #ENT_X_POS
+    ; sta tmp+1
     
-    ADD16I tmp+2, playerX, 4
-    SUB16I tmp, tmp, 7
-    CMP16 tmp, tmp+2
-    bpl .loop
+    ; ADD16I tmp+2, playerX, 4
+    ; SUB16I tmp, tmp, 7
+    ; CMP16 tmp, tmp+2
+    ; bpl .loop
     
-    SUB16I tmp+2, playerX, 4
-    ADD16I tmp, tmp, 16
-    CMP16 tmp, tmp+2
-    bmi .loop
+    ; SUB16I tmp+2, playerX, 4
+    ; ADD16I tmp, tmp, 16
+    ; CMP16 tmp, tmp+2
+    ; bmi .loop
     
-    lda entityYLo,y
-    sta tmp
-    lda entityYHi,y
-    and #ENT_Y_POS
-    sta tmp+1
+    ; lda entityYLo,y
+    ; sta tmp
+    ; lda entityYHi,y
+    ; and #ENT_Y_POS
+    ; sta tmp+1
     
-    SUB16I tmp+2, playerY, 15
-    CMP16 tmp, tmp+2
-    bmi .longLoop
+    ; SUB16I tmp+2, playerY, 15
+    ; CMP16 tmp, tmp+2
+    ; bmi .longLoop
 
-    SUB16I tmp, tmp, 15
-    CMP16 tmp, playerY
-    bpl .longLoop
+    ; SUB16I tmp, tmp, 15
+    ; CMP16 tmp, playerY
+    ; bpl .longLoop
     
-    jsr DamagePlayer
-    lda entityFlags,x
-    and #ENT_F_ISPROJECTILE
-    beq CheckHurt_end
-    lda #$80
-    sta entityXHi,y
+    ; jsr DamagePlayer
+    ; lda entityFlags,x
+    ; and #ENT_F_ISPROJECTILE
+    ; beq CheckHurt_end
+    ; lda #$80
+    ; sta entityXHi,y
     
-    jmp CheckHurt_end
-.longLoop:
-    jmp .loop
+    ; jmp CheckHurt_end
+; .longLoop:
+    ; jmp .loop
 CheckHurt_end:
 
 UpdatePower subroutine
@@ -1454,7 +1454,7 @@ IsNearPlayerY subroutine
     cmp tmp+2
     rts
 
-ApplyXVel subroutine
+EntMoveHorizontally subroutine
     lda entityVelocity,y
     NMOS_ASR
     sta tmp
@@ -1649,7 +1649,7 @@ ER_Bullet subroutine
     jmp ER_Return
 .notEgg:
 
-    jsr ApplyXVel
+    jsr EntMoveHorizontally
     lda entityCount,y
     clc
     adc #1
@@ -1689,10 +1689,7 @@ EntIsBulletNear subroutine
     sta tmp+3
     
     SUB16 tmp, tmp, tmp+2
-    lda tmp+1
-    bpl .xpositive
-    NEG16 tmp
-.xpositive:
+    ABS16 tmp
     CMP16I tmp, 14
     bcs .no
     
@@ -1709,16 +1706,78 @@ EntIsBulletNear subroutine
     sta tmp+3
     
     SUB16 tmp, tmp, tmp+2
-    lda tmp+1
-    bpl .ypositive
-    NEG16 tmp
-.ypositive:
+    ABS16 tmp
     CMP16I tmp, 14
     bcs .no
     sec
     rts
     
 .no:
+    clc
+    rts
+
+EntTryMelee subroutine
+    lda entityXLo,y
+    sta tmp
+    lda entityXHi,y
+    and #ENT_X_POS
+    sta tmp+1
+    lda entityYLo,y
+    sta tmp+2
+    lda entityYHi,y
+    and #ENT_Y_POS
+    sta tmp+3
+    
+    SUB16 tmp+4, tmp, playerX
+    ABS16 tmp+4
+    CMP16I tmp+4, 14
+    bcs .noMelee
+    
+    SUB16 tmp+4, tmp+2, playerY
+    ABS16 tmp+4
+    CMP16I tmp+4, 14
+    bcs .noMelee
+    
+    jsr DamagePlayer
+    
+.noMelee:
+    rts
+
+EntTestWalkingCollision subroutine
+    PUSH16 sav
+    PUSH16 sav+2
+    lda entityXLo,y
+    sta arg
+    lda entityXHi,y
+    and #ENT_X_POS
+    sta arg+1
+    lda entityYLo,y
+    sta arg+2
+    lda entityYHi,y
+    and #ENT_Y_POS
+    sta arg+3
+    ADD16I arg+2,arg+2, 8
+    lda entityVelocity,y
+    bmi .notRight
+    ADD16I arg,arg,16
+.notRight:
+    MOV16 sav,arg
+    MOV16 sav+2,arg+2
+    jsr TestCollision
+    bcs .hit
+    ADD16I arg+2,sav+2,8
+    MOV16 arg,sav
+    jsr TestCollision
+    bcc .hit
+    jmp .nohit
+.hit:
+    POP16 sav+2
+    POP16 sav
+    sec
+    rts
+.nohit:
+    POP16 sav+2
+    POP16 sav
     clc
     rts
 
@@ -1754,6 +1813,7 @@ ER_Spider subroutine
     adc #1
     sta entityVelocity,y
 .nohit
+    jsr EntTryMelee
     jsr EntMoveVertically
     jsr EntIsBulletNear
     bcc .alive
@@ -1769,7 +1829,62 @@ ER_Spider subroutine
 .alive:
     jmp ER_Return
 
+
+ER_Bat subroutine
+    lda entityXLo,y
+    sta arg
+    lda entityXHi,y
+    and #ENT_X_POS
+    sta arg+1
+    lda entityYLo,y
+    sta arg+2
+    lda entityYHi,y
+    and #ENT_Y_POS
+    sta arg+3
+.noMelee:
+    ADD16I arg+2,arg+2,8
+    lda entityVelocity,y
+    bmi .notDown
+    ADD16I arg,arg,16
+.notDown:
+    sty sav
+    jsr TestCollision
+    ldy sav
+    bcc .nohit
+    lda entityVelocity,y
+    eor #$FF
+    clc
+    adc #1
+    sta entityVelocity,y
+.nohit
+    jsr EntTryMelee
+    jsr EntMoveHorizontally
+    jsr EntIsBulletNear
+    bcc .alive
+    lda #$80
+    sta entityXHi
+    sta entityXHi,y
+    lda #10
+    sta arg
+    lda #0
+    sta arg+1
+    sta arg+2
+    jsr AddScore
+.alive:
+    jmp ER_Return
+
+
 ER_Rex subroutine
+    sty sav
+    jsr EntTestWalkingCollision
+    ldy sav
+    bcc .nohit
+    lda entityVelocity,y
+    eor #$FF
+    clc
+    adc #1
+    sta entityVelocity,y
+.nohit:
     lda #ANIM_REX
     sta entityAnim,y
     lda entityVelocity,y
@@ -1777,7 +1892,93 @@ ER_Rex subroutine
     lda #ANIM_REX_HFLIP
     sta entityAnim,y
 .notRight:
-    jmp ER_Default
+    jsr EntMoveHorizontally
+    
+    lda entityXLo,y
+    sta tmp
+    lda entityXHi,y
+    and #ENT_X_POS
+    sta tmp+1
+    lda entityYLo,y
+    sta tmp+2
+    lda entityYHi,y
+    and #ENT_Y_POS
+    sta tmp+3
+    SUB16I tmp+2,tmp+2,8
+    SUB16 tmp+4, tmp, playerX
+    ABS16 tmp+4
+    CMP16I tmp+4, 14
+    bcs .noMelee
+    SUB16 tmp+4, tmp+2, playerY
+    ABS16 tmp+4
+    CMP16I tmp+4, 24
+    bcs .noMelee
+    jsr DamagePlayer
+.noMelee:
+
+    lda entityXHi
+    bpl .exists
+    jmp .noBullet
+.exists
+    lda entityXLo,y
+    sta tmp
+    lda entityXHi,y
+    and #ENT_X_POS
+    sta tmp+1
+    lda entityXLo
+    sta tmp+2
+    lda entityXHi
+    and #ENT_X_POS
+    sta tmp+3
+    
+    SUB16 tmp, tmp, tmp+2
+    ABS16 tmp
+    CMP16I tmp, 14
+    bcc .maybeBullet
+    jmp .noBullet
+.maybeBullet:
+    
+    lda entityYLo,y
+    sta tmp
+    lda entityYHi,y
+    and #ENT_Y_POS
+    sta tmp+1
+    lda entityYLo
+    sta tmp+2
+    lda entityYHi
+    and #ENT_Y_POS
+    sta tmp+3
+    ADD16I tmp+2,tmp+2,8
+
+    SUB16 tmp, tmp, tmp+2
+    ABS16 tmp
+    CMP16I tmp, 24
+    bcs .noBullet
+    
+    lda #$80
+    sta entityXHi
+    lda powerType
+    cmp #POWER_SHOT
+    beq .dead
+    lda entityCount,y
+    cmp #5
+    beq .dead
+    clc
+    adc #1
+    sta entityCount,y
+    jmp .noBullet
+.dead
+    lda #$80
+    sta entityXHi,y
+    lda #0
+    sta arg
+    lda #5
+    sta arg+1
+    lda #0
+    sta arg+2
+    jsr AddScore
+.noBullet:    
+    jmp ER_Return
 
 
 ER_CaterpillarHead:
@@ -1789,6 +1990,7 @@ ER_CaterpillarBack subroutine
     lda #ANIM_CATERPILLAR_HFLIP
     sta entityAnim,y
 .notRight:
+    jsr EntTryMelee
     jmp ER_Default
     
 ER_CaterpillarFront:
@@ -1800,40 +2002,21 @@ ER_CaterpillarTail subroutine
     lda #ANIM_CATERPILLAR_HFLIP_2
     sta entityAnim,y
 .notRight:
+    jsr EntTryMelee
     jmp ER_Default
 
 ER_Cart subroutine
-    lda entityXLo,y
-    sta arg
-    lda entityXHi,y
-    and #ENT_X_POS
-    sta arg+1
-    lda entityYLo,y
-    sta arg+2
-    lda entityYHi,y
-    and #ENT_Y_POS
-    sta arg+3
-    ADD16I arg+2,arg+2, 8
     lda #ANIM_SMALL_HFLIP_LONG
     sta entityAnim,y
     lda entityVelocity,y
     bmi .notRight
-    ADD16I arg,arg,16
     lda #ANIM_SMALL_LONG
     sta entityAnim,y
 .notRight:
-    MOV16 sav,arg
-    MOV16 sav+2,arg+2
-    sty sav+4
-    jsr TestCollision
-    ldy sav+4
+    sty sav
+    jsr EntTestWalkingCollision
+    ldy sav
     bcs .hit
-    ADD16I arg+2,sav+2,8
-    MOV16 arg,sav
-    sty sav+4
-    jsr TestCollision
-    ldy sav+4
-    bcc .hit
     jmp .nohit
 .hit:
     lda entityVelocity,y
@@ -1844,6 +2027,7 @@ ER_Cart subroutine
     lda #$60
     sta entityCount,y
 .nohit:
+    jsr EntTryMelee
     lda entityCount,y
     beq .nopause
     sec
@@ -1853,23 +2037,21 @@ ER_Cart subroutine
     sta entityAnim,y
     jmp ER_Return
 .nopause:
-    jsr ApplyXVel
+    jsr EntMoveHorizontally
     jmp ER_Return
 
-ER_VerticalPlatform:
-ER_HorizontalPlatform:
-ER_Bat:
+
 ER_SlimeHorizontal:
 ER_SlimeVertical:
 ER_Hammer:
 ER_Water:
-ER_VerticalPlatformIdle:
-ER_HorizontalPlatformIdle:
 ER_RightLaser:
 ER_LeftLaser:
-    jmp ER_Default
-
-    
+    jsr EntTryMelee
+ER_VerticalPlatform:
+ER_HorizontalPlatform:
+ER_VerticalPlatformIdle:
+ER_HorizontalPlatformIdle:
 ER_Default subroutine
 
     lda entityFlags2,x
@@ -2760,6 +2942,11 @@ KillPlayer subroutine
     jmp EnterLevel
 ;------------------------------------------------------------------------------
 DamagePlayer subroutine
+    lda mercyTime
+    bne .invulnerable
+    lda powerType
+    cmp #POWER_STRENGTH
+    beq .invulnerable
     lda shr_hp
     bne .hurt
     jmp KillPlayer
@@ -2768,6 +2955,7 @@ DamagePlayer subroutine
     jsr UpdateHeartsDisplay
     lda #60
     sta mercyTime
+.invulnerable:
     rts
 ;------------------------------------------------------------------------------
 LoadTilesOnMoveRight subroutine
