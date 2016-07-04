@@ -622,7 +622,7 @@ TileCollision:
     .word TC_Key
     .word TC_Stop
     .word TC_Chest
-    .word TC_Points ;crystal
+    .word TC_Crystal ;crystal
     .word TC_Points ;egg
     .word TC_Points ;800
     .word TC_Points ;1000
@@ -681,9 +681,24 @@ TC_Deadly:
     sta sav
     jmp TC_UpdateTile
     
-TC_Points:
+TC_Crystal:
     MOV16I arg,sfxCrystal
     jsr PlaySound
+    dec crystalsLeft
+    bne .notDone
+    inc shr_flashBg
+.notDone:
+    lda #0
+    sta arg+2
+    sta arg+1
+    lda #5
+    sta arg
+    jsr AddScore
+    lda #0
+    sta sav
+    jmp TC_UpdateTile
+
+TC_Points:
     lda sav+3
     sec
     sbc #TB_POINTS
@@ -696,12 +711,6 @@ TC_Points:
     sta arg+1
     lda points+3,x
     sta arg
-    cpx #0
-    bne .notCrystal
-    dec crystalsLeft
-    bne .notCrystal
-    inc shr_flashBg
-.notCrystal:
     cpx #5<<2
     bne .notBonus
     lda #8
@@ -1247,72 +1256,6 @@ CheckHurt subroutine
     beq CheckHurt_end
     dec mercyTime
     jmp CheckHurt_end
-; .findEnemy:
-    ; ldy #MAX_ENTITIES
-; .loop:
-    ; dey
-    ; JMI CheckHurt_end
-    
-    ; lda entityXHi,y
-    ; bmi .loop
-        
-    ; lda entityYHi,y
-    ; lsr
-    ; tax
-    ; lda entityFlags,x
-    ; and #ENT_F_ISDEADLY
-    ; beq .loop
-    
-    ; lda entityXHi,y
-    ; and #ENT_X_COUNT
-    ; beq .notHidden
-    ; lda entityFlags,x
-    ; and #ENT_F_ISPROJECTILE
-    ; beq .notHidden
-    ; jmp .loop
-; .notHidden:
-
-    
-    ; lda entityXLo,y
-    ; sta tmp
-    ; lda entityXHi,y
-    ; and #ENT_X_POS
-    ; sta tmp+1
-    
-    ; ADD16I tmp+2, playerX, 4
-    ; SUB16I tmp, tmp, 7
-    ; CMP16 tmp, tmp+2
-    ; bpl .loop
-    
-    ; SUB16I tmp+2, playerX, 4
-    ; ADD16I tmp, tmp, 16
-    ; CMP16 tmp, tmp+2
-    ; bmi .loop
-    
-    ; lda entityYLo,y
-    ; sta tmp
-    ; lda entityYHi,y
-    ; and #ENT_Y_POS
-    ; sta tmp+1
-    
-    ; SUB16I tmp+2, playerY, 15
-    ; CMP16 tmp, tmp+2
-    ; bmi .longLoop
-
-    ; SUB16I tmp, tmp, 15
-    ; CMP16 tmp, playerY
-    ; bpl .longLoop
-    
-    ; jsr DamagePlayer
-    ; lda entityFlags,x
-    ; and #ENT_F_ISPROJECTILE
-    ; beq CheckHurt_end
-    ; lda #$80
-    ; sta entityXHi,y
-    
-    ; jmp CheckHurt_end
-; .longLoop:
-    ; jmp .loop
 CheckHurt_end:
 
 UpdatePower subroutine
@@ -1548,6 +1491,10 @@ ER_LeftCannon subroutine
     sta entityCount,y
     cmp #$10
     bne return$
+    
+    MOV16I arg, sfxLaser
+    jsr PlaySound
+    
     lda #0
     sta entityCount,y
     lda entityXHi,y

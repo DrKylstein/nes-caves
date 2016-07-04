@@ -808,30 +808,56 @@ hud:
 metatiles:
     incbin metatiles.bin
 
+sfxLaser subroutine
+    .byte 3
+    .word .noise
+    .word 0
+    .byte <-1
+.noise:
+    .byte $31, $8D
+    .byte $32, $8D
+    .byte $34, $8D
+    .byte $38, $8D
+    .byte $3F, $8D
+    .byte $3E, $8D
+    .byte $3D, $8C
+    .byte $3C, $8B
+    .byte $3B, $8A
+    .byte $3A, $89
+    .byte $39, $88
+    .byte $38, $87
+    .byte $37, $86
+    .byte $36, $85
+    .byte $30, $84
+    .byte 0
+    
 sfxCrystal subroutine
-    .byte 2
-    .word .tri
-    .word $0060
+    .byte 0
+    .word .sq
+    .word $060
     .byte <-1
 
-.tri:
-    .word -15
-    .word -4
-    .word -13
-    .word -2
-    .word -11
-    .word 0
-    .word -9
-    .word 2
-    .word -7
-    .word 4
-    .word -5
-    .word 6
-    .word -3
-    .word 8
-    .word -1
-    .word 0
-    .word TRI_END
+.sq:
+    .byte DUTY_50 | $8, 0
+    .byte DUTY_50 | $F, 0
+    .byte DUTY_50 | $F, 0
+    .byte DUTY_50 | $F, 0
+    .byte DUTY_50 | $F, 8
+    .byte DUTY_50 | $F, 8
+    .byte DUTY_50 | $F, 8
+    .byte DUTY_50 | $F, 8
+    .byte DUTY_50 | $F, 8
+    .byte DUTY_50 | $F, 8
+    .byte DUTY_50 | $D, 8
+    .byte DUTY_50 | $B, 8
+    .byte DUTY_50 | $9, 8
+    .byte DUTY_50 | $7, 8
+    .byte DUTY_50 | $5, 8
+    .byte DUTY_50 | $3, 8
+    .byte DUTY_50 | $2, 8
+    .byte DUTY_50 | $1, 8
+    .byte DUTY_50 | $0, 8
+    .byte 0
 
 sfxJump subroutine
     .byte 0
@@ -878,7 +904,7 @@ sfxShoot subroutine
     .word $0230
     .byte 3
     .word .noiseShoot
-    .word $DEAD
+    .word 0
     .byte <-1
 .sqShoot:
     .byte DUTY_25 | $F, 0

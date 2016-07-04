@@ -209,9 +209,7 @@ nmi_DoTri subroutine
     CMP16I nmi_tmp, TRI_END
     beq .ended
         
-    SUB16 nmi_tmp,nmi_triFreq,nmi_tmp
-    MOV16 shr_debugReg, nmi_tmp
-    MOV16 APU_TRI_LO, nmi_tmp
+    SUB16 APU_TRI_LO,nmi_triFreq,nmi_tmp
     
     lda #$C0
     sta APU_TRI_LINEAR
@@ -222,7 +220,6 @@ nmi_DoTri subroutine
 .ended:
     lda #$80
     sta APU_TRI_LINEAR
-    MOV16I shr_debugReg, $DEAD
     
 nmi_DoTri_end:
 
@@ -238,6 +235,7 @@ nmi_DoNoise subroutine
     sta APU_NOISE_VOL
     iny
     lda (nmi_noisePatch),y
+    eor #$0F
     sta APU_NOISE_LO
 .noTrigger
     ADD16I nmi_noisePatch, nmi_noisePatch, 2
