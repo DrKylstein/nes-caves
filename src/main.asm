@@ -2,17 +2,14 @@
 ; MAIN THREAD
 ;------------------------------------------------------------------------------
 
-;opened doors need to be updated if in nametable
-;enemy points table
-;large enemies - triceratops, t-rex, stalk-eye
+;triceratops and/or stalk-eye
+;rex chasing
 ;explosions
 ;flame traps
-;rolling enemy
-;strength mushroom effect
-;stop sign effect
-;sound effects
+;rolling enemy or robot?
+;strength mushroom melee
+;pickup sound
 ;air generator death
-;fix intermittent color corruption
 ;reset in-level score on death or quit
 ;transitions
 ;death animation
