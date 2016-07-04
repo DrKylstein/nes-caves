@@ -808,6 +808,31 @@ hud:
 metatiles:
     incbin metatiles.bin
 
+sfxCrystal subroutine
+    .byte 2
+    .word .tri
+    .word $0060
+    .byte <-1
+
+.tri:
+    .word -15
+    .word -4
+    .word -13
+    .word -2
+    .word -11
+    .word 0
+    .word -9
+    .word 2
+    .word -7
+    .word 4
+    .word -5
+    .word 6
+    .word -3
+    .word 8
+    .word -1
+    .word 0
+    .word TRI_END
+
 sfxJump subroutine
     .byte 0
     .word .sqJump

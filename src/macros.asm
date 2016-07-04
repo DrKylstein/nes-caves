@@ -129,19 +129,19 @@
     ENDM
     
     MAC NEG16
-    lda {1}
+    lda {2}
     eor #$FF
     sta {1}
-    lda {1}+1
+    lda {2}+1
     eor #$FF
     sta {1}+1
-    INC16 {1}
+    INC16 {2}
     ENDM
 
     MAC ABS16
-    lda {1}+1
+    lda {2}+1
     bpl .positive
-    NEG16 {1}
+    NEG16 {0}
 .positive:
     ENDM
 ;------------------------------------------------------------------------------

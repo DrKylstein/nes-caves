@@ -9,6 +9,7 @@ sav            ds 6 ;MIPS-style $s#
 ret            ds 4 ;MIPS-style $p#
 
 nmi_tmp             ds 4
+nmi_splitBits       ds 1
 nmi_scrollY         ds 1
 nmi_nametable       ds 1
 nmi_scrollX         ds 1

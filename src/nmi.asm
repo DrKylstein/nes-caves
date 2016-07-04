@@ -162,13 +162,13 @@ nmi_doStatus subroutine
     and #%00111000
     asl
     asl
-    sta nmi_tmp
+    sta nmi_splitBits
     lda nmi_scrollX
     lsr
     lsr
     lsr
-    ora nmi_tmp
-    sta nmi_tmp
+    ora nmi_splitBits
+    sta nmi_splitBits
 
 .wait: ;wait for sprite 0 to be cleared from last frame
     bit PPU_STATUS
@@ -194,6 +194,39 @@ nmi_DoSq1 subroutine
 .ended:
 nmi_DoSq1_end:
 
+nmi_DoTri subroutine
+;update sound during wait
+
+    ldy #0
+    lda nmi_triPatch+1 ;pointer can't be in zero page, no sound must be set
+    beq .ended
+    lda (nmi_triPatch),y
+    sta nmi_tmp
+    iny
+    lda (nmi_triPatch),y
+    sta nmi_tmp+1
+    
+    CMP16I nmi_tmp, TRI_END
+    beq .ended
+        
+    SUB16 nmi_tmp,nmi_triFreq,nmi_tmp
+    MOV16 shr_debugReg, nmi_tmp
+    MOV16 APU_TRI_LO, nmi_tmp
+    
+    lda #$C0
+    sta APU_TRI_LINEAR
+
+    
+    ADD16I nmi_triPatch, nmi_triPatch, 2
+    jmp nmi_DoTri_end
+.ended:
+    lda #$80
+    sta APU_TRI_LINEAR
+    MOV16I shr_debugReg, $DEAD
+    
+nmi_DoTri_end:
+
+
 nmi_DoNoise subroutine
 ;update sound during wait
 
@@ -211,6 +244,11 @@ nmi_DoNoise subroutine
 .ended:
 nmi_DoNoise_end:
 
+nmi_ClockAPU subroutine
+    lda #$C0
+    sta APU_FRAME
+nmi_ClockAPU_end:
+    
 
 nmi_DoViewport
 .wait2: ;wait for sprite 0 to be set again
@@ -223,7 +261,7 @@ nmi_DoViewport
     sta PPU_SCROLL
     lda nmi_scrollX
     sta PPU_SCROLL
-    lda nmi_tmp
+    lda nmi_splitBits
     sta PPU_ADDR
 nmi_DoViewport_end:
 

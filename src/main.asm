@@ -71,12 +71,12 @@ init_apu subroutine
     bne .loop
     jmp init_apu_end
 .regs:
-    .byte $30,$08,$00,$00
-    .byte $30,$08,$00,$00
-    .byte $80,$00,$00,$00
-    .byte $30,$00,$00,$00
-    .byte $00,$00,$00,$00
-    .byte $00,$0F,$00,$40
+    .byte $30,$08,$00,$00 ;sq1
+    .byte $30,$08,$00,$00 ;sq2
+    .byte $80,$00,$00,$00 ;tri
+    .byte $30,$00,$00,$00 ;noise
+    .byte $00,$00,$00,$00 ;dmc
+    .byte $00,$0F,$00,$40 ;ctrl
 init_apu_end:
 
 clearOAM subroutine
@@ -682,6 +682,8 @@ TC_Deadly:
     jmp TC_UpdateTile
     
 TC_Points:
+    MOV16I arg,sfxCrystal
+    jsr PlaySound
     lda sav+3
     sec
     sbc #TB_POINTS
@@ -1686,7 +1688,7 @@ EntIsBulletNear subroutine
     sta tmp+3
     
     SUB16 tmp, tmp, tmp+2
-    ABS16 tmp
+    ABS16 tmp, tmp
     CMP16I tmp, 14
     bcs .no
     
@@ -1703,7 +1705,7 @@ EntIsBulletNear subroutine
     sta tmp+3
     
     SUB16 tmp, tmp, tmp+2
-    ABS16 tmp
+    ABS16 tmp, tmp
     CMP16I tmp, 14
     bcs .no
     sec
@@ -1726,12 +1728,12 @@ EntTryMelee subroutine
     sta tmp+3
     
     SUB16 tmp+4, tmp, playerX
-    ABS16 tmp+4
+    ABS16 tmp+4, tmp+4
     CMP16I tmp+4, 14
     bcs .noMelee
     
     SUB16 tmp+4, tmp+2, playerY
-    ABS16 tmp+4
+    ABS16 tmp+4, tmp+4
     CMP16I tmp+4, 14
     bcs .noMelee
     
@@ -1903,11 +1905,11 @@ ER_Rex subroutine
     sta tmp+3
     SUB16I tmp+2,tmp+2,8
     SUB16 tmp+4, tmp, playerX
-    ABS16 tmp+4
+    ABS16 tmp+4, tmp+4
     CMP16I tmp+4, 14
     bcs .noMelee
     SUB16 tmp+4, tmp+2, playerY
-    ABS16 tmp+4
+    ABS16 tmp+4, tmp+4
     CMP16I tmp+4, 24
     bcs .noMelee
     jsr DamagePlayer
@@ -1929,7 +1931,7 @@ ER_Rex subroutine
     sta tmp+3
     
     SUB16 tmp, tmp, tmp+2
-    ABS16 tmp
+    ABS16 tmp, tmp
     CMP16I tmp, 14
     bcc .maybeBullet
     jmp .noBullet
@@ -1948,7 +1950,7 @@ ER_Rex subroutine
     ADD16I tmp+2,tmp+2,8
 
     SUB16 tmp, tmp, tmp+2
-    ABS16 tmp
+    ABS16 tmp,tmp
     CMP16I tmp, 24
     bcs .noBullet
     
