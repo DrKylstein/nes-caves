@@ -776,7 +776,7 @@ TC_Powershot:
 TC_Powershot_end:
 
 TC_Strength:
-    lda #10
+    lda #15
     sta shr_powerSeconds
     lda #60
     sta powerFrames
@@ -802,7 +802,7 @@ TC_Gravity:
 TC_Gravity_end:
 
 TC_Stop:
-    lda #10
+    lda #20
     sta shr_powerSeconds
     lda #60
     sta powerFrames
@@ -1343,12 +1343,21 @@ updateEntities subroutine
     lsr
     tax
 
-;check offscreen
+    cpy #0
+    beq .noStop
+    lda powerType
+    cmp #POWER_STOP
+    bne .noStop
+    jmp .offScreen
+.noStop:
+
+;caterpillar gets out of sync if skipped on x
     cpx #CATERPILLAR_ID
     bcc .noSkipHTest
     cpx #CATERPILLAR_ID+4
     bcs .noSkipHTest
     jmp .vtest
+;check offscreen
 .noSkipHTest:
     lda entityFlags,x
     and #ENT_F_ISPLATFORM
@@ -2650,9 +2659,19 @@ UpdateEntitySprites subroutine
     lda animations+1,x
     sta tmp+7
     sty tmp+2
+    
+    cpy #0
+    beq .noStop
+    lda powerType
+    cmp #POWER_STOP
+    bne .noStop
+    lda #0
+    jmp .getFrame
+.noStop:
     lda frame
     lsr
     lsr
+.getFrame:
     ldy #0
     and (tmp+6),y
     asl
