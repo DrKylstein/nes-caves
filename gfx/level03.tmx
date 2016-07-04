@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="24" tilewidth="16" tileheight="16" nextobjectid="33">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="24" tilewidth="16" tileheight="16" nextobjectid="41">
  <properties>
   <property name="__script__" value="nescave"/>
   <property name="crystals" value="46"/>
@@ -7,20 +7,51 @@
  <tileset firstgid="1" name="metatiles" tilewidth="16" tileheight="16">
   <image source="metatiles.png" width="256" height="256"/>
  </tileset>
- <tileset firstgid="257" name="Sprites" tilewidth="16" tileheight="16">
-  <tileoffset x="0" y="16"/>
-  <image source="../../../../Projects/nes caves/gfx/sprites.png" trans="000000" width="256" height="64"/>
- </tileset>
  <layer name="Names" width="40" height="24">
   <data encoding="base64" compression="zlib">
-   eJzNlstuwkAMRSdZFKndI1RljVi1/YKWkv/fFX4gqvrgJ5pRx6p1dW2cB4XFlQMzsc/4AVOnlOqAquC+c6gqWhTbwmdtm6IKtIc92uLeDuIyab4lcHm8jK1SPjy+HOuN5EWvM0Z2Ro+XCXOtv99DPIsj6yvAtyTxMfZrrxsli68N1FJ6Btk1XwM10u9i/ZFN87XKt7VXtAvmFXsl265wsR6X8x6DtT+lGnwhn3W+S0nqJXzWTF5KUgvk83plyLmzHkjcJvDcpb9+mzN/0qfi85nswdm0njF/U3ImMyh8H+B7bH3Plb9r7r/FDHX4j/w1I62Vvzn7b8zZsG6Yvzl6Rs/vFD/y+2LN2JQezH7fla/vkYyR/N32unN8sHVvPnaOr1Pzyxjvnfc3sH5Iv//vVv8dSZzVwPwho8eH6+weme+k+q4cvQPqOfPeG8L32OsJ+JBrU+yaCPu+BR/s7iXxPwN8L722Tn1ZfVjPiNgZr1U/YzIoww==
+   eJzNV1tOwzAQdPLR3ADxkW+UL+AEPOKTcASOikS5QIR49BLEwquOhrW9jdPSj9GmsbMez84mbuucaw1ojPOOgSaii9HTb4x9REPYxngRxzHy3InW1YD8JIenORpfjVsDOWSOj7GjNV8VXXBc49jR/ZcCXw2sNd7f0nopHgFfBn4pvnj/ccYGkOLnDbUUzzB35Ide6ehZrjNz2yhz2sxcwWjUlb0S4uT2HmdNZL87Y+1LaCkX88vt8dQYoY7CL9WT/wWpBfOr0RH3HXCtrNsbrie374c19ROfSs47ZQ73Zuqa9av1C/L7oNxL63ss/c7Vf/IOrK3DKfTrF8aUfmv6b8neuG6s3xqewf6tySPvl1SP1Xgw5H2HXN8LOVr0eyrk0MZz/TEW8uX8p3F8zjw/0Pib+/2+p/y3U9a5PFA/5pjjx+PaOTKcSfGsbD0DYp/lnjuE382MW+LHvIYYrxSg74MPPOXQzl6y/qeB3/2MB/f3/wCipN8A0PZ4rvgBBHsvZw==
   </data>
  </layer>
  <objectgroup name="Entities">
   <object id="3" name="start" type="start" x="16" y="16" width="16" height="16"/>
-  <object id="31" x="144" y="352" width="16" height="16">
+  <object id="31" name="Rex" x="176" y="352" width="16" height="16">
    <properties>
     <property name="index" value="23"/>
+   </properties>
+  </object>
+  <object id="33" name="Elevator" x="224" y="304" width="16" height="16">
+   <properties>
+    <property name="index" value="2"/>
+   </properties>
+  </object>
+  <object id="34" name="Minecart" x="384" y="352" width="16" height="16">
+   <properties>
+    <property name="index" value="7"/>
+   </properties>
+  </object>
+  <object id="36" name="Bat" x="96" y="192" width="16" height="16">
+   <properties>
+    <property name="index" value="4"/>
+   </properties>
+  </object>
+  <object id="37" name="Bat" x="112" y="224" width="16" height="16">
+   <properties>
+    <property name="index" value="4"/>
+   </properties>
+  </object>
+  <object id="38" name="Bat" x="96" y="256" width="16" height="16">
+   <properties>
+    <property name="index" value="4"/>
+   </properties>
+  </object>
+  <object id="39" x="400" y="160" width="16" height="16">
+   <properties>
+    <property name="index" value="3"/>
+   </properties>
+  </object>
+  <object id="40" x="304" y="48" width="16" height="16">
+   <properties>
+    <property name="index" value="3"/>
    </properties>
   </object>
  </objectgroup>

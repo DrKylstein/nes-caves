@@ -9,7 +9,7 @@
  </tileset>
  <layer name="Names" width="40" height="24">
   <data encoding="base64" compression="zlib">
-   eJzNlj9PwzAQxZ2JuWGIqgRVLQyd+LsDEwIhVsTCt+YLoCKWfAlscZZOL/fOzlDo8NTE9vl+fj672YQQrg9Um6jTqEbUiZ7l/Ul+RzWmcdqSdhVjGiNnlu5bK75l1MkBaGXwfRfWsW9h3h74SmzDnt8tRsaHcb3Svt+xT9fff+2tJ+t8rP4wfy0f1l+SVSO6VvT7i2hObm/+El/Jyy9gfBel5/OKvLV7pfcXa5DVYWnuWye2Js+gxiDfUOAr8es7nvFbtdSF6dqRD/tq+Dqnbw4bk7e/tfOXPPFil+BH1lH4/R9n56OWbRHVio6jtqSdrb00Z/5+qbmbWfxGzZP51tCHrN66rwL/vmJiTMjXCSPylViR8SLqMkzrz7uHMI/1HYl8OAbXw3y8i7qv4Mu+sbkHEdvf3M/WaPnI6m+ObzcS8ynSfDsVl/t1XZV8tOoPzwfzLXM9wlrZ/mZ/UvuD4vR8tO4/615kniW9helZy/1b0v6q4i0vGUdqPzP80HGjilkoT1A9abfiRsMH7fcH7IN3d7TGmHamvLlYvvT8A6zOV3c=
+   eJzNlk1OwzAQhZ0jNCyiKkFVA4uuyt8eWCEQe8QabgAnrcQFUBGbXAJb2NLoZd7YWQS6eGpiezyfn8dueufc5YGq9zrxqqKaqMf4/hB/BzGmMtqC9gVjKiVnkuxbC76l1/EBaKXwfWfWMbcwbwt8ObZu5neNkfFhXCs09zv2yfr7r721pJ2P1R/mL+XD+gvSakTWinx/8XqdmNuaP8eX8/ILGN+83uPztiBv6V7J/cUaZHWYm/vaiC3J04kxyNdl+HL88o5n/FotNW68duTDvhK+xuibwsZk7W/p/DlPrNgl+JG0c7//4+x8lLItvOqoI68NaWdrz82Zvl9K7mYW34t5Et8a+pDVWveF499XTIwJ+ZrIiHw5VmQ88zp34/qz7iHMo31HIh+OwfUwH2+8bgv4km9s7i6K7W/qZ2vUfGT1N8W3qxjzGSX59iIu9cu6yvmo1R+eD+Zb4rqHtbL9Tf6E9jvBafmo3X/avcg8C3p247OW+jek/UnEa14yjtB+qvgh4wYRsxCeoFrSrsUNig/S7w/YB+vuqJUx9URZc7F84fkHztZYlw==
   </data>
  </layer>
  <objectgroup name="Entities">
@@ -51,16 +51,14 @@
   <object id="7" name="Spider" x="512" y="112" width="16" height="16">
    <properties>
     <property name="index" value="3"/>
-    <property name="velocity" value="1"/>
    </properties>
   </object>
   <object id="8" name="start" type="start" x="288" y="208" width="16" height="16"/>
   <object id="10" type="door1" x="208" y="320" width="16" height="32"/>
   <object id="11" type="door3" x="416" y="320" width="16" height="32"/>
-  <object id="12" x="240" y="352" width="16" height="16">
+  <object id="12" name="Bat" x="240" y="352" width="16" height="16">
    <properties>
     <property name="index" value="4"/>
-    <property name="velocity" value="1"/>
    </properties>
   </object>
  </objectgroup>

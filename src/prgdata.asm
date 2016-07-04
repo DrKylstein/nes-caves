@@ -944,39 +944,39 @@ levelPointers:
     .word mainMap
 
 levelTilesets:
-    .word mineTiles
+    .word caveTiles
     .word techTiles
     .word mineTiles
-    .word mineTiles
-    .word mineTiles
-    .word mineTiles
-    .word mineTiles
-    .word mineTiles
-    .word mineTiles
-    .word mineTiles
-    .word mineTiles
-    .word mineTiles
-    .word mineTiles
-    .word mineTiles
-    .word mineTiles
-    .word mineTiles
+    .word caveTiles
+    .word caveTiles
+    .word caveTiles
+    .word caveTiles
+    .word caveTiles
+    .word caveTiles
+    .word caveTiles
+    .word caveTiles
+    .word caveTiles
+    .word caveTiles
+    .word caveTiles
+    .word caveTiles
+    .word caveTiles
     .word mineTiles
 
 levelPalettes:
     .word volcanoPal
     .word cobaltPal
     .word minePal
-    .word minePal
-    .word minePal
-    .word minePal
-    .word minePal
-    .word minePal
-    .word minePal
-    .word minePal
-    .word minePal
-    .word minePal
-    .word minePal
-    .word minePal
-    .word minePal
-    .word minePal
+    .word volcanoPal
+    .word volcanoPal
+    .word volcanoPal
+    .word volcanoPal
+    .word volcanoPal
+    .word volcanoPal
+    .word volcanoPal
+    .word volcanoPal
+    .word volcanoPal
+    .word volcanoPal
+    .word volcanoPal
+    .word volcanoPal
+    .word volcanoPal
     .word minePal
