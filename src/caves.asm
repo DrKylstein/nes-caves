@@ -81,7 +81,15 @@
     include prgdata.asm
     
 irq subroutine
-    rti
+    tsx
+    inx
+    inx
+    lda $100,x
+    sta shr_debugReg
+    inx
+    lda $100,x
+    sta shr_debugReg+1
+    HCF
 banktable:
     .byte $00, $01, $02, $03, $04, $05, $06
     

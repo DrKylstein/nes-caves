@@ -2,10 +2,23 @@
 ; NMI (VBLANK) HANDLER
 ;------------------------------------------------------------------------------
 nmi:
-    php
     pha
     txa
     pha
+
+    IFCONST DEBUG_PC
+    tsx
+    inx
+    inx
+    inx
+    inx
+    lda $100,x
+    sta shr_debugReg
+    inx
+    lda $100,x
+    sta shr_debugReg+1
+    ENDIF
+    
     tya
     pha
     inc nmi_frame
@@ -271,7 +284,6 @@ nmi_Exit:
     pla
     tax
     pla
-    plp
     rti
    
 ;------------------------------------------------------------------------------

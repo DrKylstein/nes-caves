@@ -8,14 +8,18 @@ bindir		:= ..
 romname		:= $(bindir)/$(name).nes
 
 palettes	:= $(addsuffix .pal,$(basename $(notdir $(wildcard ../gfx/pal??.png))))
-incbins		:= sprites.pat tiles.pat title-patterns.pat title-names.bin
+incbins		:= sprites.pat title-patterns.pat title-names.bin
 tilesets	:= $(addsuffix .pat,$(basename $(notdir $(wildcard ../gfx/tileset??.png))))
 sources		:= $(wildcard ../src/*.*) 
 asmflags	:= -I$(srcdir) -f3 -v0 -l$(name).lst -s$(name).sym
 
+rom_depenencies		:= $(sources) $(incbins) $(palettes) $(tilesets) Makefile
 
-$(romname)		:	$(sources) $(incbins) $(palettes) $(tilesets) Makefile
-					dasm $(name).asm $(asmflags) -o$(romname) -l$(name).lst
+$(romname)		:	$(rom_depenencies)
+					dasm $(name).asm $(asmflags) -o$(romname)
+
+debug			: $(rom_depenencies)
+					dasm $(name).asm $(asmflags) -o$(romname) -DDEBUG_PC
 
 sprites.pat		:	$(gfxdir)/sprites.png
 					tilestrip 8 16 <$< | planarbitmap 2 --interleave 8 >$@
@@ -31,7 +35,6 @@ title-names.bin			: title-patterns.pat
 
 $(palettes):	%.pal:	$(gfxdir)/%.png
 	packedpixels <$< >$@
-
 
 .PHONY			:	run
 run				:	$(romname)
