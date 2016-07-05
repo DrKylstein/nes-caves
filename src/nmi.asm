@@ -98,37 +98,37 @@ nmi_updateReg subroutine
     dec shr_doRegCopy
 nmi_updateReg_end:
 
-; nmi_DebugCounter subroutine
-    ; lda #PPU_CTRL_SETTING
-    ; sta PPU_CTRL
-
-    ; bit PPU_STATUS
-    ; lda #$20
-    ; sta PPU_ADDR
-    ; lda #$5A
-    ; sta PPU_ADDR
-    ; lda shr_debugReg+1
-    ; REPEAT 4
-    ; lsr
-    ; REPEND
-    ; sta PPU_DATA
-    ; lda shr_debugReg+1
-    ; and #$0F
-    ; sta PPU_DATA
-    ; lda shr_debugReg
-    ; REPEAT 4
-    ; lsr
-    ; REPEND
-    ; sta PPU_DATA
-    ; lda shr_debugReg
-    ; and #$0F
-    ; sta PPU_DATA
-; nmi_DebugCounter_end:
-
     lda shr_earlyExit
     beq continue$
     jmp nmi_Exit
 continue$:
+
+nmi_DebugCounter subroutine
+    lda #PPU_CTRL_SETTING
+    sta PPU_CTRL
+
+    bit PPU_STATUS
+    lda #$20
+    sta PPU_ADDR
+    lda #$5A
+    sta PPU_ADDR
+    lda shr_debugReg+1
+    REPEAT 4
+    lsr
+    REPEND
+    sta PPU_DATA
+    lda shr_debugReg+1
+    and #$0F
+    sta PPU_DATA
+    lda shr_debugReg
+    REPEAT 4
+    lsr
+    REPEND
+    sta PPU_DATA
+    lda shr_debugReg
+    and #$0F
+    sta PPU_DATA
+nmi_DebugCounter_end:
 
 nmi_loadSfx subroutine
     MOV16 nmi_tmp,shr_sfxPtr

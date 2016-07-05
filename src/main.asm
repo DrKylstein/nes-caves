@@ -250,6 +250,7 @@ ResetStats subroutine
     sta shr_powerSeconds
     sta powerType
     sta bonusCount
+    sta crystalsLeft
     lda playerFlags
     and #~PLY_HASKEY
     sta playerFlags
@@ -317,6 +318,16 @@ LoadLevel subroutine
 .loop:
     lda (tmp+2),y
     sta (tmp),y
+    sty tmp+4
+    tay
+    lda metatiles+256*4,y
+    lsr
+    lsr
+    cmp #TB_CRYSTAL
+    bne .notCrystal
+    inc crystalsLeft
+.notCrystal:
+    ldy tmp+4
     iny
     bne .loop
     ADD16I tmp+2, tmp+2, 256
@@ -480,6 +491,8 @@ ReenableDisplay_end:
 ;Every Frame
 ;------------------------------------------------------------------------------
 MainLoop:
+    lda crystalsLeft
+    sta shr_debugReg
 CheckInput subroutine
     lda ctrl
     sta oldCtrl

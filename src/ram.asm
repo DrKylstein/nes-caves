@@ -89,6 +89,7 @@ cleared        ds 2
 currPlatform   ds 1
 paused         ds 1
 startSprite    ds 2
+crystalsLeft   ds 1
 
 entityBlock:
 entityXLo        ds MAX_ENTITIES
@@ -110,7 +111,7 @@ shr_cameraX         ds 2
 shr_cameraY         ds 2 
 shr_cameraYMod      ds 1 
 shr_nameTable       ds 1 
-crystalsLeft   ds 1
+    ds 1
 doorsX        ds 3
 doorsY        ds 3
 levelDataEnd:
