@@ -86,22 +86,24 @@ clearOAM subroutine
     dey
     sta shr_oamShadow,y
     bne .loop
-clearOAM_end: 
- 
-    ;; Other things you can do between vblank waits are set up audio
-    ;; or set up other mapper registers.
-    
-    MOV16I shr_debugReg, $BEEF
-    
+clearOAM_end:
+     
 .vblankwait2:
     bit PPU_STATUS
     bpl .vblankwait2
 ;end reset subroutine
 
+;setup nmi
+    MOV16I shr_debugReg, $BEEF
+    lda #<shr_copyBufferEnd
+    sta shr_copyIndex
+    jsr StartQueue
     lda #0
-    sta PPU_CTRL
     sta PPU_MASK
-
+    lda #1
+    sta shr_earlyExit
+    lda #PPU_CTRL_SETTING
+    sta PPU_CTRL
 
     SELECT_BANK 0
 LoadTitle subroutine
@@ -130,18 +132,16 @@ DoTitleScreen subroutine
     sta PPU_SCROLL
     sta PPU_SCROLL
 
-    lda #%0011000
-    sta PPU_CTRL
-    lda #%00011110
-    sta PPU_MASK
+    jsr QEnableDisplay
+    jsr Synchronize
     
 .waitForPress:
     jsr read_joy
     cmp #0
     beq .waitForPress
     
-    lda #0
-    sta PPU_MASK
+    jsr QDisableDisplay
+    jsr Synchronize
 DoTitleScreen_end:
 
 LoadPatterns subroutine
@@ -195,10 +195,6 @@ InitSprites subroutine
     bne .loop
 
 InitSpritePalette subroutine
-    lda #<shr_copyBufferEnd
-    sta shr_copyIndex
-    jsr StartQueue
-
     ldx shr_copyIndex
     
     ldy #19
@@ -213,13 +209,7 @@ InitSpritePalette subroutine
     
     stx shr_copyIndex
 
-    inc shr_earlyExit
-    lda #PPU_CTRL_SETTING ;enable nmi
-    sta PPU_CTRL
     jsr Synchronize
-    lda #0
-    sta PPU_CTRL
-    dec shr_earlyExit
 ;------------------------------------------------------------------------------
 ;New Game
 ;------------------------------------------------------------------------------
@@ -233,16 +223,17 @@ InitSpritePalette subroutine
     sta shr_score+1
     sta shr_score+2
     jsr UpdateScoreDisplay
-    
+    jsr Synchronize
+
     MOV16I arg, mainMap
 ;------------------------------------------------------------------------------
 ;Start of Level
 ;------------------------------------------------------------------------------
 EnterLevel:
 DisableDisplay subroutine
-    lda #0 ;disable nmi
-    sta PPU_CTRL
-    sta PPU_MASK
+    jsr QDisableDisplay
+    jsr Synchronize
+    jsr QEnableSplitDisplay
 DisableDisplay_end:
 
 ResetStats subroutine
@@ -363,7 +354,8 @@ InitEntities_end:
 
 LoadMapState subroutine
     lda currLevel
-    bpl LoadMapState_end
+    cmp #MAP_LEVEL
+    beq LoadMapState_end
     MOV16 playerX, mapPX
     MOV16 playerY, mapPY
     MOV16 shr_cameraX, mapCamX
@@ -378,115 +370,111 @@ LoadMapState subroutine
     sta shr_nameTable
 LoadMapState_end:
 
-LoadNametables subroutine
-    MOV16 arg, shr_cameraX
-    REPEAT 4
-    LSR16 arg
-    REPEND
-    jsr MultiplyBy24
-    ADD16I sav, ret, levelMap
-    ldy #0
-    MOV16 sav+2, shr_cameraX
-    REPEAT 3
-    LSR16 sav+2
-    REPEND
+; LoadNametables subroutine
+    ; MOV16 arg, shr_cameraX
+    ; REPEAT 4
+    ; LSR16 arg
+    ; REPEND
+    ; jsr MultiplyBy24
+    ; ADD16I sav, ret, levelMap
+    ; ldy #0
+    ; MOV16 sav+2, shr_cameraX
+    ; REPEAT 3
+    ; LSR16 sav+2
+    ; REPEND
         
-.loop:
-    ;args to buffer column    
-    MOV16 arg, sav
-    tya
-    clc
-    adc arg
-    sta arg
-    lda #0
-    adc arg+1
-    sta arg+1
-    tya
-    asl
-    clc
-    adc sav+2
-    and #$1F
-    sta arg+2
-    tya
-    pha
-    jsr EvenColumn
-    jsr CopyTileCol     ;terribly unsafe
-    pla
-    tay
+; .loop:
+    ;;args to buffer column    
+    ; MOV16 arg, sav
+    ; tya
+    ; clc
+    ; adc arg
+    ; sta arg
+    ; lda #0
+    ; adc arg+1
+    ; sta arg+1
+    ; tya
+    ; asl
+    ; clc
+    ; adc sav+2
+    ; and #$1F
+    ; sta arg+2
+    ; tya
+    ; pha
+    ; jsr EvenColumn
+    ; jsr CopyTileCol     ;terribly unsafe
+    ; pla
+    ; tay
     
-    MOV16 arg, sav
-    tya
-    clc
-    adc arg
-    sta arg
-    lda #0
-    adc arg+1
-    sta arg+1
-    tya
-    asl
-    sec
-    adc #0
-    adc sav+2
-    and #$1F
-    sta arg+2
-    tya
-    pha
-    jsr OddColumn
-    jsr CopyTileCol     ;ditto
-    pla
-    tay
+    ; MOV16 arg, sav
+    ; tya
+    ; clc
+    ; adc arg
+    ; sta arg
+    ; lda #0
+    ; adc arg+1
+    ; sta arg+1
+    ; tya
+    ; asl
+    ; sec
+    ; adc #0
+    ; adc sav+2
+    ; and #$1F
+    ; sta arg+2
+    ; tya
+    ; pha
+    ; jsr OddColumn
+    ; jsr CopyTileCol     ;ditto
+    ; pla
+    ; tay
     
-    iny
-    ADD16I sav, sav, 23
-    cpy #16
-    bne .loop
-LoadNametables_end:
+    ; iny
+    ; ADD16I sav, sav, 23
+    ; cpy #16
+    ; bne .loop
+; LoadNametables_end:
 
-InitAttributes subroutine
-    MOV16 arg, shr_cameraX
-    REPEAT 4
-    LSR16 arg
-    REPEND
-    jsr MultiplyBy24
-    ADD16I arg, ret, levelMap
-    lda shr_cameraX
-    REPEAT 5
-    lsr
-    REPEND
-    sta sav+3
-    ldy #0
-.loop:
-    tya
-    clc
-    adc sav+3
-    and #7
-    asl
-    asl
-    sta shr_tileCol
-    sty sav+2
-    jsr ColorColumn
-    jsr CopyAttrCol
-    ldy sav+2
-    lda arg
-    clc
-    adc #MT_MAP_HEIGHT*2
-    sta arg
-    lda arg+1
-    adc #0
-    sta arg+1
-    iny
-    cpy #8
-    bne .loop
-InitAttributes_end:
+; InitAttributes subroutine
+    ; MOV16 arg, shr_cameraX
+    ; REPEAT 4
+    ; LSR16 arg
+    ; REPEND
+    ; jsr MultiplyBy24
+    ; ADD16I arg, ret, levelMap
+    ; lda shr_cameraX
+    ; REPEAT 5
+    ; lsr
+    ; REPEND
+    ; sta sav+3
+    ; ldy #0
+; .loop:
+    ; tya
+    ; clc
+    ; adc sav+3
+    ; and #7
+    ; asl
+    ; asl
+    ; sta shr_tileCol
+    ; sty sav+2
+    ; jsr ColorColumn
+    ; jsr CopyAttrCol
+    ; ldy sav+2
+    ; lda arg
+    ; clc
+    ; adc #MT_MAP_HEIGHT*2
+    ; sta arg
+    ; lda arg+1
+    ; adc #0
+    ; sta arg+1
+    ; iny
+    ; cpy #8
+    ; bne .loop
+; InitAttributes_end:
 
-    jsr LoadTilesOnMoveLeft
+    ; jsr LoadTilesOnMoveLeft
 
 ReenableDisplay subroutine
-    lda #%00011000
-    sta PPU_MASK
-    lda #PPU_CTRL_SETTING ;enable nmi
-    bit PPU_STATUS
-    sta PPU_CTRL
+    ;jsr Synchronize
 ReenableDisplay_end:
 
 ;------------------------------------------------------------------------------
@@ -3779,4 +3767,37 @@ TestCollision subroutine
 ;------------------------------------------------------------------------------
 PlaySound subroutine
     MOV16 shr_sfxPtr,arg
+    rts
+;------------------------------------------------------------------------------
+QDisableDisplay subroutine
+    ldx shr_copyIndex
+    lda #1
+    PHXA
+    lda #0
+    PHXA
+    ENQUEUE_ROUTINE nmi_UpdateMask
+    ENQUEUE_PPU_ADDR $0000
+    stx shr_copyIndex
+    rts
+;------------------------------------------------------------------------------
+QEnableDisplay subroutine
+    ldx shr_copyIndex
+    lda #1
+    PHXA
+    lda #PPU_MASK_SETTING
+    PHXA
+    ENQUEUE_ROUTINE nmi_UpdateMask
+    ENQUEUE_PPU_ADDR $0000
+    stx shr_copyIndex
+    rts
+    ;------------------------------------------------------------------------------
+QEnableSplitDisplay subroutine
+    ldx shr_copyIndex
+    lda #0
+    PHXA
+    lda #PPU_MASK_SETTING
+    PHXA
+    ENQUEUE_ROUTINE nmi_UpdateMask
+    ENQUEUE_PPU_ADDR $0000
+    stx shr_copyIndex
     rts
