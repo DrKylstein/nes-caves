@@ -34,11 +34,10 @@ nmi_SpriteDma subroutine
 nmi_SpriteDma_end:
 
 nmi_genericCopy subroutine
-    lda #PPU_CTRL_SETTING
-    sta PPU_CTRL
-
     lda shr_sleeping
     beq nmi_genericCopy_end
+    lda #PPU_CTRL_SETTING
+    sta PPU_CTRL
     tsx
     stx nmi_sp
     ldx shr_copyIndex

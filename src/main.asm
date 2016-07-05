@@ -354,8 +354,7 @@ InitEntities_end:
 
 LoadMapState subroutine
     lda currLevel
-    cmp #MAP_LEVEL
-    beq LoadMapState_end
+    bpl LoadMapState_end
     MOV16 playerX, mapPX
     MOV16 playerY, mapPY
     MOV16 shr_cameraX, mapCamX
@@ -370,108 +369,108 @@ LoadMapState subroutine
     sta shr_nameTable
 LoadMapState_end:
 
-; LoadNametables subroutine
-    ; MOV16 arg, shr_cameraX
-    ; REPEAT 4
-    ; LSR16 arg
-    ; REPEND
-    ; jsr MultiplyBy24
-    ; ADD16I sav, ret, levelMap
-    ; ldy #0
-    ; MOV16 sav+2, shr_cameraX
-    ; REPEAT 3
-    ; LSR16 sav+2
-    ; REPEND
+LoadNametables subroutine
+    MOV16 arg, shr_cameraX
+    REPEAT 4
+    LSR16 arg
+    REPEND
+    jsr MultiplyBy24
+    ADD16I sav, ret, levelMap
+    ldy #0
+    MOV16 sav+2, shr_cameraX
+    REPEAT 3
+    LSR16 sav+2
+    REPEND
         
-; .loop:
-    ;;args to buffer column    
-    ; MOV16 arg, sav
-    ; tya
-    ; clc
-    ; adc arg
-    ; sta arg
-    ; lda #0
-    ; adc arg+1
-    ; sta arg+1
-    ; tya
-    ; asl
-    ; clc
-    ; adc sav+2
-    ; and #$1F
-    ; sta arg+2
-    ; tya
-    ; pha
-    ; jsr EvenColumn
-    ; jsr CopyTileCol     ;terribly unsafe
-    ; pla
-    ; tay
+.loop:
+    ;args to buffer column    
+    MOV16 arg, sav
+    tya
+    clc
+    adc arg
+    sta arg
+    lda #0
+    adc arg+1
+    sta arg+1
+    tya
+    asl
+    clc
+    adc sav+2
+    and #$1F
+    sta arg+2
+    tya
+    pha
+    jsr EvenColumn
+    jsr CopyTileCol     ;terribly unsafe
+    pla
+    tay
     
-    ; MOV16 arg, sav
-    ; tya
-    ; clc
-    ; adc arg
-    ; sta arg
-    ; lda #0
-    ; adc arg+1
-    ; sta arg+1
-    ; tya
-    ; asl
-    ; sec
-    ; adc #0
-    ; adc sav+2
-    ; and #$1F
-    ; sta arg+2
-    ; tya
-    ; pha
-    ; jsr OddColumn
-    ; jsr CopyTileCol     ;ditto
-    ; pla
-    ; tay
+    MOV16 arg, sav
+    tya
+    clc
+    adc arg
+    sta arg
+    lda #0
+    adc arg+1
+    sta arg+1
+    tya
+    asl
+    sec
+    adc #0
+    adc sav+2
+    and #$1F
+    sta arg+2
+    tya
+    pha
+    jsr OddColumn
+    jsr CopyTileCol     ;ditto
+    pla
+    tay
     
-    ; iny
-    ; ADD16I sav, sav, 23
-    ; cpy #16
-    ; bne .loop
-; LoadNametables_end:
+    iny
+    ADD16I sav, sav, 23
+    cpy #16
+    bne .loop
+LoadNametables_end:
 
-; InitAttributes subroutine
-    ; MOV16 arg, shr_cameraX
-    ; REPEAT 4
-    ; LSR16 arg
-    ; REPEND
-    ; jsr MultiplyBy24
-    ; ADD16I arg, ret, levelMap
-    ; lda shr_cameraX
-    ; REPEAT 5
-    ; lsr
-    ; REPEND
-    ; sta sav+3
-    ; ldy #0
-; .loop:
-    ; tya
-    ; clc
-    ; adc sav+3
-    ; and #7
-    ; asl
-    ; asl
-    ; sta shr_tileCol
-    ; sty sav+2
-    ; jsr ColorColumn
-    ; jsr CopyAttrCol
-    ; ldy sav+2
-    ; lda arg
-    ; clc
-    ; adc #MT_MAP_HEIGHT*2
-    ; sta arg
-    ; lda arg+1
-    ; adc #0
-    ; sta arg+1
-    ; iny
-    ; cpy #8
-    ; bne .loop
-; InitAttributes_end:
+InitAttributes subroutine
+    MOV16 arg, shr_cameraX
+    REPEAT 4
+    LSR16 arg
+    REPEND
+    jsr MultiplyBy24
+    ADD16I arg, ret, levelMap
+    lda shr_cameraX
+    REPEAT 5
+    lsr
+    REPEND
+    sta sav+3
+    ldy #0
+.loop:
+    tya
+    clc
+    adc sav+3
+    and #7
+    asl
+    asl
+    sta shr_tileCol
+    sty sav+2
+    jsr ColorColumn
+    jsr CopyAttrCol
+    ldy sav+2
+    lda arg
+    clc
+    adc #MT_MAP_HEIGHT*2
+    sta arg
+    lda arg+1
+    adc #0
+    sta arg+1
+    iny
+    cpy #8
+    bne .loop
+InitAttributes_end:
 
-    ; jsr LoadTilesOnMoveLeft
+    jsr LoadTilesOnMoveLeft
 
 ReenableDisplay subroutine
     ;jsr Synchronize
@@ -3672,7 +3671,7 @@ CopyAttrCol subroutine
 ;------------------------------------------------------------------------------
 CopyTileCol subroutine
     ;vertical mode
-    lda #%00000100
+    lda #PPU_CTRL_SETTING | %00000100
     sta PPU_CTRL
 
 ;top nametable
@@ -3700,9 +3699,7 @@ CopyTileCol subroutine
     sta PPU_DATA
     iny
     REPEND
-
-    lda #0
-    sta PPU_CTRL
+    lda #PPU_CTRL_SETTING & %11111011
    rts
 ;------------------------------------------------------------------------------
 PagesToPPU subroutine ;PPU_ADDR set, x = number of 256 byte quantities, arg = address
