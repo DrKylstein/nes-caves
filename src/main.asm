@@ -2955,9 +2955,22 @@ UpdatePlayerSprite subroutine
 
 UpdatePlayerSprite_end:
 
+ClearSprites subroutine
+    ldy #0
+    lda #$FF
+.loop:
+    sta shr_entitySprites,y
+    iny
+    cpy #32*4
+    bne .loop
+ClearSprites_end:
+
+
 UpdateEntitySprites subroutine
-    lda #[shr_entitySprites-shr_oamShadow]
-    sta startSprite
+    lda startSprite
+    and #$7C
+    ora #$80
+    sta sav+5
     ldy #[MAX_ENTITIES-1]
 .loop:
     lda entityXHi,y
@@ -2999,7 +3012,7 @@ UpdateEntitySprites subroutine
     lsr
     sta sav+2
         
-    lda startSprite 
+    lda sav+5
     sta tmp
     lda #$02
     sta tmp+1
@@ -3061,7 +3074,10 @@ UpdateEntitySprites subroutine
     lda #4
     clc
     adc tmp
+    and #$7F
+    ora #$80
     sta tmp
+    
     
     ADD16I tmp+4, tmp+4, 4
     
@@ -3080,7 +3096,7 @@ UpdateEntitySprites subroutine
     jmp .copyLoop
 .done:
     lda tmp
-    sta startSprite
+    sta sav+5
     
     ldy tmp+2
 .skip:
@@ -3089,17 +3105,10 @@ UpdateEntitySprites subroutine
     jmp .loop
 UpdateEntitySprites_end
 
-ClearSprites subroutine
-    lda #$FF
-    ldy startSprite
-.loop:
-    beq ClearSprites_end
-    sta shr_oamShadow,y
-    iny
-    jmp .loop
-ClearSprites_end:
-
-
+    lda startSprite
+    clc
+    adc #21*4
+    sta startSprite
     inc frame
     inc shr_doDma
     inc shr_doRegCopy

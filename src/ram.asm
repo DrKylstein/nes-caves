@@ -56,6 +56,7 @@ shr_spriteFlags     ds 1
 shr_spriteX         ds 1
 shr_hudCurtain      ds OAM_SIZE*7
 shr_playerSprites   ds OAM_SIZE*2
+    ORG $0280
 shr_entitySprites:
 
     ORG $0300
