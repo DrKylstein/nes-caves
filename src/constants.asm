@@ -38,6 +38,9 @@ DUTY_75 = %11110000
 
 TRI_END = $800
 
+
+INVALID_MAP_STAT = $FF
+
 ;nametable info
 TOP_HEIGHT = 18
 BOTTOM_HEIGHT = 30

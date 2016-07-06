@@ -76,18 +76,18 @@ playerXVel     ds 1
 playerYVel     ds 2
 mercyTime      ds 1
 bonusCount     ds 1
-ammo           ds 1
 powerType      ds 1
 powerFrames    ds 1
 powerSeconds   ds 1
-hp             ds 1
 score          ds 3
+ammo           ds 1
+hp             ds 1
 caterpillarNext ds 1
 mapPX          ds 2
 mapPY          ds 2
-mapCamX        ds 2
-mapCamY        ds 2
-mapCamYMod     ds 1
+mapScore       ds 3
+mapAmmo        ds 1
+
 currLevel      ds 1
 cleared        ds 2
 currPlatform   ds 1

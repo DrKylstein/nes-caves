@@ -10,7 +10,6 @@
 ;strength mushroom melee
 ;pickup sound
 ;air generator death
-;reset in-level score on death or quit
 ;transitions
 ;death animation
     
@@ -217,20 +216,22 @@ InitSpritePalette subroutine
     sta currLevel
     lda #5
     sta ammo
-    jsr UpdateAmmoDisplay
     lda #0
     sta score
     sta score+1
     sta score+2
-    jsr UpdateScoreDisplay
-    jsr Synchronize
-
+    lda #INVALID_MAP_STAT
+    sta mapAmmo
+    sta mapPX+1
+    sta mapPY+1
+    sta mapScore+2
     MOV16I arg, mainMap
 ;------------------------------------------------------------------------------
 ;Start of Level
 ;------------------------------------------------------------------------------
 EnterLevel:
 DisableDisplay subroutine
+    jsr Synchronize
     jsr QDisableDisplay
     jsr Synchronize
     jsr QEnableSplitDisplay
@@ -251,9 +252,9 @@ ResetStats subroutine
     sta powerType
     sta bonusCount
     sta crystalsLeft
-    lda playerFlags
-    and #~PLY_HASKEY
     sta playerFlags
+    sta playerYVel
+    sta playerYVel+2
     lda #CATERPILLAR_ID+1
     sta caterpillarNext
 ResetStats_end:
@@ -434,6 +435,29 @@ LoadLevel subroutine
     jmp .entityLoop
 LoadLevel_end:
 
+LoadMapState subroutine
+    lda currLevel
+    cmp #MAP_LEVEL
+    bne LoadMapState_end
+    lda mapScore+2
+    cmp #INVALID_MAP_STAT
+    beq .keepStuff
+    lda mapAmmo
+    sta ammo
+    MOV16 score, mapScore
+    lda mapScore+2
+    sta score+2
+.keepStuff:
+    lda mapPX+1
+    cmp #INVALID_MAP_STAT
+    beq LoadMapState_end
+    MOV16 playerX, mapPX
+    MOV16 playerY, mapPY
+LoadMapState_end:
+
+    jsr UpdateAmmoDisplay
+    jsr UpdateScoreDisplay
+
 InitCamera subroutine
     SUB16I shr_cameraX,playerX,128
     lda shr_cameraX+1
@@ -467,6 +491,10 @@ InitCamera subroutine
     lda tmp
     sta shr_cameraYMod
 .notLow:
+    lda shr_cameraX
+    and #$E0
+    sta shr_cameraX
+
 InitCamera_end:
     
 InitEntities subroutine
@@ -541,23 +569,6 @@ InitEntities subroutine
     beq InitEntities_end
     jmp .loop
 InitEntities_end:
-
-LoadMapState subroutine
-    lda currLevel
-    bpl LoadMapState_end
-    MOV16 playerX, mapPX
-    MOV16 playerY, mapPY
-    MOV16 shr_cameraX, mapCamX
-    MOV16 shr_cameraY, mapCamY
-    lda mapCamYMod
-    sta shr_cameraYMod
-    CMP16I shr_cameraY, 240
-    lda #0
-    bcc .nt0
-    lda #8
-.nt0:
-    sta shr_nameTable
-LoadMapState_end:
 
 LoadNametables subroutine
     MOV16 arg, shr_cameraX
@@ -694,6 +705,8 @@ CheckInput subroutine
     lda pressed
     and #JOY_SELECT_MASK
     beq CheckInput
+    lda #INVALID_MAP_STAT
+    sta mapPX+1
     jmp doExit
 .left:
     lda ctrl
@@ -1009,6 +1022,11 @@ TC_Foreground_end:
 TC_Exit:
     lda crystalsLeft
     JNE TC_Return
+    
+    lda #INVALID_MAP_STAT
+    sta mapAmmo
+    sta mapScore+2
+    
     ldy currLevel
     cpy #16
     bcs .upperLevels
@@ -1057,13 +1075,11 @@ TC_Entrance:
     sta currLevel
     MOV16 mapPX, playerX
     MOV16 mapPY, playerY
-    MOV16 mapCamX, shr_cameraX
-    lda mapCamX
-    and #$E0
-    sta mapCamX
-    MOV16 mapCamY, shr_cameraY
-    lda shr_cameraYMod
-    sta mapCamYMod
+    lda ammo
+    sta mapAmmo
+    MOV16 mapScore, score
+    lda score+2
+    sta mapScore+2
     jmp EnterLevel
 TC_Entrance_end:
     
@@ -3094,6 +3110,11 @@ ClearSprites_end:
 KillPlayer subroutine
     pla
     pla
+    lda mapAmmo
+    sta ammo
+    MOV16 score, mapScore
+    lda mapScore+2
+    sta score
     jmp EnterLevel
 ;------------------------------------------------------------------------------
 DamagePlayer subroutine
