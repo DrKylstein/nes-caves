@@ -94,6 +94,11 @@ shr_cameraX         ds 2
 shr_cameraY         ds 2 
 shr_cameraYMod      ds 1 
 shr_nameTable       ds 1 
+playerYFrac    ds 1 
+playerY        ds 2 
+playerX        ds 2 
+doorsX        ds 3
+doorsY        ds 3
 
 
 entityBlock:
@@ -109,17 +114,5 @@ entityCount      ds MAX_ENTITIES
 
     ORG $0400
 levelMap       ds 960
-playerYFrac    ds 1 
-playerY        ds 2 
-playerX        ds 2 
-          ds 2 
-          ds 2 
-       ds 1 
-        ds 1 
-    ds 1
-doorsX        ds 3
-doorsY        ds 3
-levelDataEnd:
-
     ECHO $800-.,"bytes left in pages $400-$700"
 

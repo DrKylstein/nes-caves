@@ -294,6 +294,7 @@ LoadLevelPal subroutine
     ENQUEUE_PPU_ADDR VRAM_PALETTE_BG
     
     stx shr_copyIndex
+LoadLevelPal_end:
 
 LoadLevel subroutine
     lda currLevel
@@ -311,9 +312,9 @@ LoadLevel subroutine
     lda levelPointers+1,y
     sta sav+1
 
-    MOV16 tmp+2, sav
-    MOV16I tmp, levelMap
-    ldy #0
+    SUB16I tmp+2,sav,64
+    MOV16I tmp,[levelMap-64]
+    ldy #64
     ldx #4
 .loop:
     lda (tmp+2),y
@@ -330,11 +331,10 @@ LoadLevel subroutine
     ldy tmp+4
     iny
     bne .loop
-    ADD16I tmp+2, tmp+2, 256
-    ADD16I tmp, tmp, 256
+    ADD16I tmp+2,tmp+2,256
+    ADD16I tmp,tmp,256
     dex
     bne .loop
-
 
     ldx #MAX_ENTITIES-1
     lda #$80
