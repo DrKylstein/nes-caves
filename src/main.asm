@@ -216,12 +216,12 @@ InitSpritePalette subroutine
     lda #MAP_LEVEL
     sta currLevel
     lda #5
-    sta shr_ammo
+    sta ammo
     jsr UpdateAmmoDisplay
     lda #0
-    sta shr_score
-    sta shr_score+1
-    sta shr_score+2
+    sta score
+    sta score+1
+    sta score+2
     jsr UpdateScoreDisplay
     jsr Synchronize
 
@@ -240,14 +240,14 @@ ResetStats subroutine
     lda #4
     sta switches
     lda #3
-    sta shr_hp
+    sta hp
     jsr UpdateHeartsDisplay
     lda #MAX_ENTITIES
     sta currPlatform
     lda #0
     sta paused
     sta powerFrames
-    sta shr_powerSeconds
+    sta powerSeconds
     sta powerType
     sta bonusCount
     sta crystalsLeft
@@ -684,11 +684,11 @@ CheckInput subroutine
 .start:
     lda pressed
     and #JOY_START_MASK
-    beq .foo
+    beq .StartNotPressed
     lda #1
     eor paused
     sta paused
-.foo    
+.StartNotPressed    
     lda paused
     beq .left
     lda pressed
@@ -937,10 +937,10 @@ TC_Chest:
 TC_Chest_end:
 
 TC_Ammo:
-    lda shr_ammo
+    lda ammo
     clc
     adc #5
-    sta shr_ammo
+    sta ammo
     jsr UpdateAmmoDisplay
     lda #0
     sta sav
@@ -949,7 +949,7 @@ TC_Ammo_end:
 
 TC_Powershot:
     lda #10
-    sta shr_powerSeconds
+    sta powerSeconds
     lda #60
     sta powerFrames
     lda #POWER_SHOT
@@ -962,7 +962,7 @@ TC_Powershot_end:
 
 TC_Strength:
     lda #15
-    sta shr_powerSeconds
+    sta powerSeconds
     lda #60
     sta powerFrames
     lda #POWER_STRENGTH
@@ -975,7 +975,7 @@ TC_Strength_end:
 
 TC_Gravity:
     lda #10
-    sta shr_powerSeconds
+    sta powerSeconds
     lda #60
     sta powerFrames
     lda #POWER_GRAVITY
@@ -988,7 +988,7 @@ TC_Gravity_end:
 
 TC_Stop:
     lda #20
-    sta shr_powerSeconds
+    sta powerSeconds
     lda #60
     sta powerFrames
     lda #POWER_STOP
@@ -1152,9 +1152,9 @@ TC_Nop:
     lda powerType
     cmp #POWER_SHOT
     beq .InfiniteAmmo
-    lda shr_ammo
+    lda ammo
     JEQ TileInteraction_end
-    dec shr_ammo
+    dec ammo
     jsr UpdateAmmoDisplay
 .InfiniteAmmo
     MOV16I arg, sfxShoot
@@ -1436,13 +1436,13 @@ CheckHurt subroutine
 CheckHurt_end:
 
 UpdatePower subroutine
-    lda shr_powerSeconds
+    lda powerSeconds
     beq UpdatePower_end
     dec powerFrames
     bne UpdatePower_end
     lda #60
     sta powerFrames
-    dec shr_powerSeconds
+    dec powerSeconds
     bne .display
     lda #0
     sta powerType
@@ -3102,11 +3102,11 @@ DamagePlayer subroutine
     lda powerType
     cmp #POWER_STRENGTH
     beq .invulnerable
-    lda shr_hp
+    lda hp
     bne .hurt
     jmp KillPlayer
 .hurt:
-    dec shr_hp
+    dec hp
     jsr UpdateHeartsDisplay
     lda #60
     sta mercyTime
@@ -3681,13 +3681,13 @@ AddScore subroutine ; arg 3 bytes value to add, A and X trashed
 .loop:
     lda arg,x
     clc
-    adc shr_score,x
+    adc score,x
     cmp #100
     bcc .foo
     sbc #100
-    inc shr_score+1,x
+    inc score+1,x
 .foo
-    sta shr_score,x
+    sta score,x
     inx
     cpx #3
     bne .loop
@@ -3695,17 +3695,17 @@ AddScore subroutine ; arg 3 bytes value to add, A and X trashed
 UpdateScoreDisplay subroutine
     ldx shr_copyIndex
     
-    lda shr_score
+    lda score
     jsr CentToDec
     PHXA
     tya
     PHXA
-    lda shr_score+1
+    lda score+1
     jsr CentToDec
     PHXA
     tya
     PHXA
-    lda shr_score+2
+    lda score+2
     jsr CentToDec
     PHXA
     tya
@@ -3729,7 +3729,7 @@ UpdateScoreDisplay subroutine
 UpdateAmmoDisplay subroutine
     ldx shr_copyIndex
 
-    lda shr_ammo
+    lda ammo
     jsr CentToDec
     PHXA
     tya
@@ -3752,7 +3752,7 @@ UpdateAmmoDisplay subroutine
 UpdatePowerDisplay subroutine
     ldx shr_copyIndex
 
-    lda shr_powerSeconds
+    lda powerSeconds
     beq .none
     jsr CentToDec
     PHXA
@@ -3784,7 +3784,7 @@ UpdateHeartsDisplay subroutine
     
     ldy #3
 .loop:
-    cpy shr_hp
+    cpy hp
     beq .heart
     bcs .no_heart
 .heart:

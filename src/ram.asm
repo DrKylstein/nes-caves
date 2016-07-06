@@ -60,6 +60,10 @@ shr_entitySprites:
 
     ORG $0300
 shr_debugReg   ds 2
+shr_cameraX    ds 2 
+shr_cameraY    ds 2 
+shr_cameraYMod ds 1 
+shr_nameTable  ds 1 
 nmi_frame      ds 1
 frame          ds 1
 ctrl           ds 1
@@ -72,12 +76,12 @@ playerXVel     ds 1
 playerYVel     ds 2
 mercyTime      ds 1
 bonusCount     ds 1
-shr_ammo       ds 1
+ammo           ds 1
 powerType      ds 1
 powerFrames    ds 1
-shr_powerSeconds ds 1
-shr_hp         ds 1
-shr_score      ds 3
+powerSeconds   ds 1
+hp             ds 1
+score          ds 3
 caterpillarNext ds 1
 mapPX          ds 2
 mapPY          ds 2
@@ -90,10 +94,6 @@ currPlatform   ds 1
 paused         ds 1
 startSprite    ds 2
 crystalsLeft   ds 1
-shr_cameraX         ds 2 
-shr_cameraY         ds 2 
-shr_cameraYMod      ds 1 
-shr_nameTable       ds 1 
 playerYFrac    ds 1 
 playerY        ds 2 
 playerX        ds 2 
