@@ -90,6 +90,11 @@ currPlatform   ds 1
 paused         ds 1
 startSprite    ds 2
 crystalsLeft   ds 1
+shr_cameraX         ds 2 
+shr_cameraY         ds 2 
+shr_cameraYMod      ds 1 
+shr_nameTable       ds 1 
+
 
 entityBlock:
 entityXLo        ds MAX_ENTITIES
@@ -107,10 +112,10 @@ levelMap       ds 960
 playerYFrac    ds 1 
 playerY        ds 2 
 playerX        ds 2 
-shr_cameraX         ds 2 
-shr_cameraY         ds 2 
-shr_cameraYMod      ds 1 
-shr_nameTable       ds 1 
+          ds 2 
+          ds 2 
+       ds 1 
+        ds 1 
     ds 1
 doorsX        ds 3
 doorsY        ds 3

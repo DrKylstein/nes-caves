@@ -346,6 +346,40 @@ LoadLevel subroutine
     bne .copyEntities
 LoadLevel_end:
 
+InitCamera subroutine
+    SUB16I shr_cameraX,playerX,128
+    lda shr_cameraX+1
+    bpl .notOffLeft
+    MOV16I shr_cameraX,0
+.notOffLeft:
+    CMP16I shr_cameraX,[640-256-8]
+    bcc .notOffRight
+    MOV16I shr_cameraX,[640-256-8]
+.notOffRight:
+    
+    SUB16I shr_cameraY,playerY,104
+    lda shr_cameraY+1
+    bpl .notOffTop
+    MOV16I shr_cameraY,0
+.notOffTop:
+    CMP16I shr_cameraY,[384-208]
+    bcc .notOffBottom
+    MOV16I shr_cameraY,[384-208]
+.notOffBottom:
+    lda #0
+    sta shr_nameTable
+    ADD16I tmp,shr_cameraY,96
+    lda tmp
+    sta shr_cameraYMod
+    CMP16I tmp,240
+    bcc .notLow
+    lda #$08
+    sta shr_nameTable
+    SUB16I tmp,tmp,240
+    lda tmp
+    sta shr_cameraYMod
+.notLow:
+    
 InitEntities subroutine
     ldy #0
 .loop:
