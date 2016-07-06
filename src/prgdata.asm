@@ -170,6 +170,32 @@ entitySpeeds:
     .byte -4 ; left laser
     .byte 1 ; rex
 
+entityChildren:
+    .byte 0 ; bullet
+    .byte 0 ; vertical platform
+    .byte 0 ; horizontal platform
+    .byte 0 ; spider
+    .byte 0 ; bat
+    .byte 0 ; power shot
+    .byte 0 ; rock
+    .byte 0 ; cart
+    .byte 3 ; caterpillar head
+    .byte 0 ; caterpillar front
+    .byte 0 ; caterpillar back
+    .byte 0 ; caterpillar tail
+    .byte 0 ; slime horizontal
+    .byte 0 ; slime vertical
+    .byte 0 ; hammer
+    .byte 1 ; faucet
+    .byte 4 ; water
+    .byte 0 ; vertical platform
+    .byte 0 ; horizontal platform
+    .byte 1 ; right cannon
+    .byte 0 ; right laser
+    .byte 1 ; left cannon
+    .byte 0 ; left laser
+    .byte 0 ; rex
+
 entityInitialAnims:
     .byte ANIM_SMALL_LONG ; bullet
     .byte ANIM_SPIDER ; vertical platform

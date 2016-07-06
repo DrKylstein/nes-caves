@@ -334,16 +334,104 @@ LoadLevel subroutine
     ADD16I tmp, tmp, 256
     dex
     bne .loop
-    
-    ADD16I tmp+2, sav, [levelDataEnd-levelMap]
-    MOV16I tmp, entityBlock
+
+
+    ldx #MAX_ENTITIES-1
+    lda #$80
+.clearEntities:
+    sta entityXHi,x
+    dex
+    bpl .clearEntities
+
+
+    ADD16I tmp, sav, 960
     ldy #0
-.copyEntities:
-    lda (tmp+2),y
-    sta (tmp),y
+    ldx #1
+.entityLoop:
+    lda (tmp),y
     iny
-    cpy #[entityBlockEnd-entityBlock]
-    bne .copyEntities
+    cmp #$FF
+    bne .notEnd
+    jmp LoadLevel_end
+.notEnd:
+;get player start
+    cmp #$FE
+    bne .notPlayer
+    lda (tmp),y
+    iny
+    sta playerX
+    lda #0
+    sta playerX+1
+    REPEAT 4
+    ASL16 playerX
+    REPEND
+    lda (tmp),y
+    iny
+    sta playerY
+    lda #0
+    sta playerY+1
+    sta playerYFrac
+    REPEAT 4
+    ASL16 playerY
+    REPEND
+    jmp .entityLoop
+.notPlayer:
+;get door locations
+    cmp #$FB
+    bcc .notDoor
+    sec
+    sbc #$FB
+    stx tmp+2
+    tax
+    lda (tmp),y
+    iny
+    sta doorsX,x
+    lda (tmp),y
+    iny
+    sta doorsY,x
+    ldx tmp+2
+    jmp .entityLoop
+.notDoor:
+;get normal entity
+    asl
+    sta entityYHi,x
+    lda (tmp),y
+    iny
+    sta tmp+2
+    lda #0
+    sta tmp+3
+    REPEAT 4
+    ASL16 tmp+2
+    REPEND
+    lda tmp+2
+    sta entityXLo,x
+    lda tmp+3
+    sta entityXHi,x
+    lda (tmp),y
+    iny
+    sta tmp+2
+    lda #0
+    sta tmp+3
+    REPEAT 4
+    ASL16 tmp+2
+    REPEND
+    lda tmp+2
+    sta entityYLo,x
+    lda tmp+3
+    ora entityYHi,x
+    sta entityYHi,x
+    inx
+    
+    ;reserve children
+    lsr
+    stx tmp+2
+    tax
+    lda entityChildren,x
+    clc
+    adc tmp+2
+    tax
+    
+    jmp .entityLoop
 LoadLevel_end:
 
 InitCamera subroutine
@@ -379,13 +467,69 @@ InitCamera subroutine
     lda tmp
     sta shr_cameraYMod
 .notLow:
+InitCamera_end:
     
 InitEntities subroutine
     ldy #0
+    ldx #0
 .loop:
     lda entityYHi,y
     lsr
     tax
+    
+;init caterpillar segments
+    cmp #CATERPILLAR_ID
+    bne .notCaterpillar
+    lda entityYHi,y
+    clc
+    adc #2
+    sta entityYHi+1,y
+    adc #2
+    sta entityYHi+2,y
+    adc #2
+    sta entityYHi+3,y
+    
+    lda entityYLo,y
+    sta entityYLo+1,y
+    sta entityYLo+2,y
+    sta entityYLo+3,y
+    
+    lda entityXLo,y
+    sta tmp
+    lda entityXHi,y
+    sta tmp+1
+    
+    SUB16I tmp,tmp,16
+    lda tmp
+    sta entityXLo+1,y
+    lda tmp+1
+    sta entityXHi+1,y
+    
+    SUB16I tmp,tmp,16
+    lda tmp
+    sta entityXLo+2,y
+    lda tmp+1
+    sta entityXHi+2,y
+    
+    SUB16I tmp,tmp,16
+    lda tmp
+    sta entityXLo+3,y
+    lda tmp+1
+    sta entityXHi+3,y
+.notCaterpillar:
+
+;move hammers over
+    cmp #HAMMER_ID
+    bne .notHammer
+    lda entityXLo,y
+    clc
+    adc #8
+    sta entityXLo,y
+    lda entityXHi,y
+    adc #0
+    sta entityXHi,y
+.notHammer
+    
     lda entitySpeeds,x
     sta entityVelocity,y
     lda entityInitialAnims,x
@@ -394,7 +538,8 @@ InitEntities subroutine
     sta entityCount,y
     iny
     cpy #MAX_ENTITIES
-    bne .loop
+    beq InitEntities_end
+    jmp .loop
 InitEntities_end:
 
 LoadMapState subroutine
@@ -525,8 +670,6 @@ ReenableDisplay_end:
 ;Every Frame
 ;------------------------------------------------------------------------------
 MainLoop:
-    lda crystalsLeft
-    sta shr_debugReg
 CheckInput subroutine
     lda ctrl
     sta oldCtrl
@@ -1511,7 +1654,13 @@ hiding$:
     jmp ER_Default
 
 ER_RightCannon subroutine
+    lda #4
+    sta entityVelocity+1,y
+    jmp ER_Cannon
 ER_LeftCannon subroutine
+    lda #<-4
+    sta entityVelocity+1,y
+ER_Cannon
     lda #SWITCH_TURRETS
     bit switches
     beq return$
@@ -1541,6 +1690,8 @@ ER_LeftCannon subroutine
     sta entityYHi+1,y
     lda entityYLo,y
     sta entityYLo+1,y
+    lda #ANIM_SMALL_NONE
+    sta entityAnim+1,y
 return$:
     jmp ER_Return
     
@@ -1565,6 +1716,10 @@ ER_Faucet subroutine
     sta entityYHi+1,y
     lda entityYLo,y
     sta entityYLo+1,y
+    lda #ANIM_SMALL_NONE
+    sta entityAnim+1,y
+    lda #4
+    sta entityVelocity+1,y
 return$:
     jmp ER_Return
     

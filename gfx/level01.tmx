@@ -7,59 +7,17 @@
  <tileset firstgid="1" name="metatiles" tilewidth="16" tileheight="16">
   <image source="metatiles.png" width="256" height="256"/>
  </tileset>
+ <tileset firstgid="257" name="entities" tilewidth="16" tileheight="16">
+  <image source="../../../../Projects/nes caves/gfx/entities.png" width="256" height="256"/>
+ </tileset>
  <layer name="Names" width="40" height="24">
   <data encoding="base64" compression="zlib">
    eJzNlk1OwzAQhZ0jNCyiKkFVA4uuyt8eWCEQe8QabgAnrcQFUBGbXAJb2NLoZd7YWQS6eGpiezyfn8dueufc5YGq9zrxqqKaqMf4/hB/BzGmMtqC9gVjKiVnkuxbC76l1/EBaKXwfWfWMbcwbwt8ObZu5neNkfFhXCs09zv2yfr7r721pJ2P1R/mL+XD+gvSakTWinx/8XqdmNuaP8eX8/ILGN+83uPztiBv6V7J/cUaZHWYm/vaiC3J04kxyNdl+HL88o5n/FotNW68duTDvhK+xuibwsZk7W/p/DlPrNgl+JG0c7//4+x8lLItvOqoI68NaWdrz82Zvl9K7mYW34t5Et8a+pDVWveF499XTIwJ+ZrIiHw5VmQ88zp34/qz7iHMo31HIh+OwfUwH2+8bgv4km9s7i6K7W/qZ2vUfGT1N8W3qxjzGSX59iIu9cu6yvmo1R+eD+Zb4rqHtbL9Tf6E9jvBafmo3X/avcg8C3p247OW+jek/UnEa14yjtB+qvgh4wYRsxCeoFrSrsUNig/S7w/YB+vuqJUx9URZc7F84fkHztZYlw==
   </data>
  </layer>
- <objectgroup name="Entities">
-  <properties>
-   <property name="flags" value="0x62"/>
-   <property name="index" value="72"/>
-   <property name="velocity" value="1"/>
-  </properties>
-  <object id="1" name="Elevator" x="224" y="320" width="16" height="16">
-   <properties>
-    <property name="index" value="17"/>
-    <property name="velocity" value="1"/>
-   </properties>
-  </object>
-  <object id="3" name="Elevator" x="400" y="320" width="16" height="16">
-   <properties>
-    <property name="index" value="17"/>
-    <property name="velocity" value="1"/>
-   </properties>
-  </object>
-  <object id="4" name="Spider" x="32" y="48" width="16" height="16">
-   <properties>
-    <property name="index" value="3"/>
-    <property name="velocity" value="-1"/>
-   </properties>
-  </object>
-  <object id="5" name="Spider" x="240" y="80" width="16" height="16">
-   <properties>
-    <property name="index" value="3"/>
-    <property name="velocity" value="-1"/>
-   </properties>
-  </object>
-  <object id="6" name="Spider" x="352" y="144" width="16" height="16">
-   <properties>
-    <property name="index" value="3"/>
-    <property name="velocity" value="-1"/>
-   </properties>
-  </object>
-  <object id="7" name="Spider" x="512" y="112" width="16" height="16">
-   <properties>
-    <property name="index" value="3"/>
-   </properties>
-  </object>
-  <object id="8" name="start" type="start" x="288" y="208" width="16" height="16"/>
-  <object id="10" type="door1" x="208" y="320" width="16" height="32"/>
-  <object id="11" type="door3" x="416" y="320" width="16" height="32"/>
-  <object id="12" name="Bat" x="240" y="352" width="16" height="16">
-   <properties>
-    <property name="index" value="4"/>
-   </properties>
-  </object>
- </objectgroup>
+ <layer name="Entities" width="40" height="24">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFIwGwMA60C0YeGA3zgQejcYAdjIbLKKAn+D+a3kbBKBgFVAD/gGWJEAnlCUjtn9HyBwOwjoYJAwA4DgM9
+  </data>
+ </layer>
 </map>

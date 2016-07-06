@@ -40,60 +40,25 @@ class NesCave(Plugin):
         
         tiles = None
         entities = None
-        
-        doors = [(0,0),(0,0),(0,0)]
-        
+                
         for i in range(m.layerCount()):
             layer = m.layerAt(i)
             if isTileLayerAt(m, i):
-                tiles = layer.asTileLayer()
-            elif isObjectGroupAt(m, i):
-                entities = layer.asObjectGroup()
-        gemCount = 0
+                if layer.name() == "Entities":
+                    entities = layer.asTileLayer()
+                else:
+                    tiles = layer.asTileLayer()
         with open(f, 'wb') as out:
             for x in range(tiles.width()):
                 for y in range(tiles.height()):
                     cell = tiles.cellAt(x, y)
                     out.write(chr(cell.tile.id()))
-            for i in range(entities.objectCount()):
-                start = entities.objectAt(i)
-                if start.type() == 'start':
-                    out.write(chr(0))
-                    out.write(chr(int(start.y()) & 0xFF))
-                    out.write(chr(int(start.y()) >> 8))
-                    out.write(chr(int(start.x()) & 0xFF))
-                    out.write(chr(int(start.x()) >> 8))
-                    
-                    camX = min(max(int(start.x()) - 128,0),640-256-8)
-                    camY = min(max(int(start.y()) - 104,0),384-208)
-                    out.write(chr(camX & 0xE0))
-                    out.write(chr(camX >> 8))
-                    out.write(chr(camY & 0xFF))
-                    out.write(chr(camY >> 8))
-                    out.write(chr((camY + 96) % 240))
-                    if camY+96 >= 240:
-                        out.write(chr(0x08))
-                    else:
-                        out.write(chr(0x00))
-                    break
-
-            crystals = m.property('crystals')
-            out.write(chr(int(crystals)))
-            
-            for i in range(entities.objectCount()):
-                start = entities.objectAt(i)
-                if start.type() == 'door1':
-                    doors[0] = (int(start.x()/16), int(start.y()/16))
-                if start.type() == 'door2':
-                    doors[1] = (int(start.x()/16), int(start.y()/16))
-                if start.type() == 'door3':
-                    doors[2] = (int(start.x()/16), int(start.y()/16))
-            for door in doors:
-                out.write(chr(door[0]))
-            for door in doors:
-                out.write(chr(door[1]))
-            writeColumn(out, entities, lambda e: int(e.x()), 0xFF)
-            writeColumn(out, entities, lambda e: (int(e.x())) >> 8, 0x80)
-            writeColumn(out, entities, lambda e: e.y(), 0)
-            writeColumn(out, entities, lambda e: (int(e.y()) >> 8) | (int(e.property('index')) << 1), 0)
+            for x in range(entities.width()):
+                for y in range(entities.height()):
+                    cell = entities.cellAt(x, y)
+                    if cell.tile is not None:
+                        out.write(chr(cell.tile.id()))
+                        out.write(chr(x))
+                        out.write(chr(y))
+            out.write(chr(0xFF))
         return True

@@ -7,30 +7,17 @@
  <tileset firstgid="1" name="metatiles" tilewidth="16" tileheight="16">
   <image source="metatiles.png" width="256" height="256"/>
  </tileset>
+ <tileset firstgid="257" name="entities" tilewidth="16" tileheight="16">
+  <image source="../../../../Projects/nes caves/gfx/entities.png" width="256" height="256"/>
+ </tileset>
  <layer name="Names" width="40" height="24">
   <data encoding="base64" compression="zlib">
    eJzNVkluwzAMVHtoemjtnJL32H1BnGN88RP89O5NdxkQgcmUpGSkAXIYyOY6IilbyxDCMqJOqzzj+3+gNuJuIroCX7GrHXg5rf2wzRZsp5wXCZ0Tg+02tFo+HeRDaH415OkoJ+b2uFlArlvFR+Ss473m8mi5cvY3EbeFsU+ByzODxim3h4re144coflr+lztWH7v+FjxRfaQ4aDtoYm4ArTErwL7hmxyseaiNbgP8LxKeqwf8lg4veJYgseCfg2Ua3repXVM61PEHfHrwQ/rZ3EcKS/WtAU5z+dY2AvJLfxkD179LH4i12rKteJ9lfa3hxo+J34vDseRcq8pd6/omd8uHPIT3avS32NnPncOmJ/UAzmKrlH6yzXmuamU/i2cXpZ8Q0r2JvzelPozULdX+CGf9/B3Zlck4/0OSiyrv/jty50z7QxrdtNMfQR9Xq2ZzvUX/2Ml/dVqIbGO6e/nzP5+JX7f4fC8arZz8RNxXdjfkt6dAvz/9Wa09Ix6dwKejRI91m8SWDOKOStHb92ntH5X5DMaOr4Djk5u6z5l1Sw3j7n/HvM7V/wCPqVQFw==
   </data>
  </layer>
- <objectgroup name="Entities">
-  <object id="5" name="Elevator" x="608" y="176" width="16" height="16">
-   <properties>
-    <property name="index" value="1"/>
-    <property name="velocity" value="1"/>
-   </properties>
-  </object>
-  <object id="7" name="Elevator" x="112" y="272" width="16" height="16">
-   <properties>
-    <property name="index" value="1"/>
-    <property name="velocity" value="1"/>
-   </properties>
-  </object>
-  <object id="8" name="Elevator" x="144" y="128" width="16" height="16">
-   <properties>
-    <property name="index" value="2"/>
-    <property name="velocity" value="1"/>
-   </properties>
-  </object>
-  <object id="9" name="start" type="start" x="16" y="64" width="16" height="16"/>
- </objectgroup>
+ <layer name="Entities" width="40" height="24">
+  <data encoding="base64" compression="zlib">
+   eJzt07ERADAIAzES9p+ZTJAK7mikCVy8I2BXne0F8Jf6ZNjVFLT4ENDxANaEAQs=
+  </data>
+ </layer>
 </map>
