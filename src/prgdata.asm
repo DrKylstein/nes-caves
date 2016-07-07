@@ -13,7 +13,7 @@ playerWalk:
     .byte $0C
     .byte $00
     .byte $08
-    
+        
 entityFlags:
     .byte $90 | [2<<1]; bullet
     .byte $60 | [2<<1]; vertical platform

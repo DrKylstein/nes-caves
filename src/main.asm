@@ -1276,12 +1276,12 @@ ApplyGravity subroutine
     lda powerType
     cmp #POWER_GRAVITY
     beq .reverseGravity
-    CMP16I playerYVel, $0400
+    CMP16I playerYVel, TERMINAL_VELOCITY
     bpl ApplyGravity_end
     ADD16I playerYVel, playerYVel, GRAVITY
     jmp ApplyGravity_end
 .reverseGravity:
-    CMP16I playerYVel, -$0400
+    CMP16I playerYVel, -TERMINAL_VELOCITY
     bmi ApplyGravity_end
     SUB16I playerYVel, playerYVel, GRAVITY
 ApplyGravity_end:
@@ -1680,29 +1680,38 @@ EntMoveVertically subroutine
     rts
     
 ER_Stalactite subroutine
-    lda #0
-    sta entityVelocity,y
-    lda entityXLo,y
-    sta tmp
-    lda entityXHi,y
-    and #ENT_X_POS
-    sta tmp+1
-    lda entityYLo,y
-    sta tmp+2
+    jsr EntTryMelee
+    lda entityCount,y
+    beq .notFalling
+    lda entityVelocity,y
+    clc
+    adc entityYLo,y
+    sta entityYLo,y
     lda entityYHi,y
     and #ENT_Y_POS
-    sta tmp+3
-    
-    SUB16 tmp+4, tmp, playerX
-    ABS16 tmp+4, tmp+4
-    CMP16I tmp+4, 8
-    bcs .noFall
-    
-    CMP16I tmp+2, playerY
-    bcs .noFall
-    lda #4
+    adc #0
+    sta tmp
+    lda entityYHi,y
+    and #ENT_Y_INDEX
+    ora tmp
+    sta entityYHi,y
+    lda entityCount,y
+    clc
+    adc #1
+    sta entityCount,y
+    cmp #STALACTITE_GRAVITY
+    bne .noAccel
+    lda #1
+    sta entityCount,y
+    lda entityVelocity,y
+    clc
+    adc #1
+    cmp #>TERMINAL_VELOCITY
+    bcc .nonTerminal
+    lda #>TERMINAL_VELOCITY
+.nonTerminal:
     sta entityVelocity,y
-.noFall:
+.noAccel:
     lda entityXLo,y
     sta arg
     lda entityXHi,y
@@ -1723,10 +1732,30 @@ ER_Stalactite subroutine
     lda #$80
     sta entityYHi,y
 .nohit:
-    lda entityVelocity,y
-    beq .nomove
-    jsr EntMoveVertically
-.nomove:
+    jmp ER_Return
+
+.notFalling:
+    lda entityXLo,y
+    sta tmp
+    lda entityXHi,y
+    and #ENT_X_POS
+    sta tmp+1
+    lda entityYLo,y
+    sta tmp+2
+    lda entityYHi,y
+    and #ENT_Y_POS
+    sta tmp+3
+    
+    SUB16 tmp+4, tmp, playerX
+    ABS16 tmp+4, tmp+4
+    CMP16I tmp+4, 8
+    bcs .noFall
+    
+    CMP16I tmp+2, playerY
+    bcs .noFall
+    lda #1
+    sta entityCount,y
+.noFall:
     jmp ER_Return
     
     
@@ -2766,15 +2795,8 @@ updateEntities_end:
 
 
 ApplyVelocity subroutine
-    MOV16 tmp, playerYVel
-    lda playerYVel+1
-    bmi .negativeY
-    lda #0
-    jmp .continueY
-.negativeY:
-    lda #$FF
-.continueY:
-    sta tmp+2
+    MOV16 tmp,playerYVel
+    EXTEND tmp+1,playerYVel+1
     clc
     lda tmp
     adc playerYFrac
@@ -2787,17 +2809,7 @@ ApplyVelocity subroutine
     sta playerY+1
 
     
-    lda playerXVel
-    sta tmp
-    cmp #0
-    bmi .negativeX
-    lda #0
-    jmp .continueX
-.negativeX:
-    lda #$FF
-.continueX:
-    sta tmp+1
-    
+    EXTEND tmp,playerXVel   
     ADD16 playerX, playerX, tmp
 ApplyVelocity_end:
 
@@ -3007,8 +3019,9 @@ UpdatePlayerSprite subroutine
 
     lda mercyTime
     beq .notFlashing
-    lda #$01
-    ora shr_playerSprites+SPR_FLAGS
+    lda frame
+    and #3
+    eor shr_playerSprites+SPR_FLAGS
     sta shr_playerSprites+SPR_FLAGS
     sta shr_playerSprites+OAM_SIZE+SPR_FLAGS
 .notFlashing:
