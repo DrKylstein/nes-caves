@@ -2006,14 +2006,14 @@ DamagePlayer subroutine
     lda powerType
     cmp #POWER_STRENGTH
     beq .invulnerable
-    lda hp
-    bne .hurt
-    jmp KillPlayer
 .hurt:
     dec hp
     jsr UpdateHeartsDisplay
     lda #60
     sta mercyTime
+    lda hp
+    bne .invulnerable
+    jmp KillPlayer
 .invulnerable:
     rts
 ;------------------------------------------------------------------------------
