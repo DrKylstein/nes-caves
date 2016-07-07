@@ -181,3 +181,4 @@ ANIM_SLIME_RIGHT            ds 1
 ANIM_SLIME_LEFT             ds 1
 ANIM_POWERSHOT              ds 1
 ANIM_POWERSHOT_HFLIP        ds 1
+ANIM_STALACTITE             ds 1

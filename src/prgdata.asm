@@ -38,7 +38,8 @@ entityFlags:
     .byte ENT_F_ISPROJECTILE | ENT_F_ISDEADLY | [1<<1] ; right laser
     .byte ENT_F_ISVERTICAL | [2<<1] ; left cannon
     .byte ENT_F_ISPROJECTILE | ENT_F_ISDEADLY | [1<<1] ; left laser
-    .byte ENT_F_ISMORTAL | ENT_F_ISDEADLY | [3<<1]  ; rex
+    .byte 3<<1  ; rex
+    .byte 0 ; stalactite
     
 entityFlags2:
     .byte 0 ; bullet
@@ -65,6 +66,7 @@ entityFlags2:
     .byte 0 ; left cannon
     .byte 3 ; left laser
     .byte ENT_F2_ISHITTABLE | ENT_F2_ISGROUNDED ; rex
+    .byte 0 ;stalactite
     
 entityTiles:
     .byte 14*2 ; bullet
@@ -91,6 +93,7 @@ entityTiles:
     .byte [2+32]*2 ; left cannon
     .byte <-1 ; unused
     .byte [25+32*2]*2 ; rex
+    .byte 32*2 + 16 + 1; stalactite
     
 entityHPs:
     .byte 0 ; bullet
@@ -116,7 +119,8 @@ entityHPs:
     .byte 0 ; right laser
     .byte 0 ; left cannon
     .byte 0 ; left laser
-    .byte 4 ; rex
+    .byte 0 ; rex
+    .byte 0; stalactite
     
 entityCounts:
     .byte 0 ; bullet
@@ -143,6 +147,7 @@ entityCounts:
     .byte 0 ; left cannon
     .byte $20 ; left laser
     .byte 0 ; rex
+    .byte 0; stalactite
     
 entitySpeeds:
     .byte 4 ; bullet
@@ -168,8 +173,9 @@ entitySpeeds:
     .byte 4 ; right laser
     .byte 0 ; left cannon
     .byte -4 ; left laser
-    .byte 1 ; rex
-
+    .byte 1; rex
+    .byte 0; stalactite
+    
 entityChildren:
     .byte 0 ; bullet
     .byte 0 ; vertical platform
@@ -195,6 +201,7 @@ entityChildren:
     .byte 1 ; left cannon
     .byte 0 ; left laser
     .byte 0 ; rex
+    .byte 0 ; stalactite
 
 entityInitialAnims:
     .byte ANIM_SMALL_LONG ; bullet
@@ -221,6 +228,7 @@ entityInitialAnims:
     .byte ANIM_SMALL_HFLIP_NONE ; left cannon
     .byte ANIM_SYMMETRICAL_NONE ; unused
     .byte ANIM_REX ;rex
+    .byte ANIM_STALACTITE
 
 animations:
     .word anim_null
@@ -250,6 +258,7 @@ animations:
     .word anim_slime_left
     .word anim_powershot
     .word anim_powershot_hflip
+    .word anim_stalactite
     
 frame_small1:
     .byte 8
@@ -910,6 +919,22 @@ anim_powershot_hflip subroutine
     .byte PX_VIEWPORT_OFFSET
     .byte 4
     .byte $40
+    .byte 16
+
+anim_stalactite subroutine
+    .byte 0
+    .word .frame1
+.frame1:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET-1
+    .byte 0
+    .byte $20
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET-1
+    .byte 0
+    .byte $20
     .byte 16
 
 

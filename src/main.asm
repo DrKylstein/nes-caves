@@ -1604,6 +1604,7 @@ entityRoutine:
     .word ER_LeftCannon
     .word ER_LeftLaser
     .word ER_Rex
+    .word ER_Stalactite ;stalactite
     
 IsNearPlayerY subroutine
     lda entityYLo,y
@@ -1677,6 +1678,56 @@ EntMoveVertically subroutine
     ora tmp
     sta entityYHi,y
     rts
+    
+ER_Stalactite subroutine
+    lda #0
+    sta entityVelocity,y
+    lda entityXLo,y
+    sta tmp
+    lda entityXHi,y
+    and #ENT_X_POS
+    sta tmp+1
+    lda entityYLo,y
+    sta tmp+2
+    lda entityYHi,y
+    and #ENT_Y_POS
+    sta tmp+3
+    
+    SUB16 tmp+4, tmp, playerX
+    ABS16 tmp+4, tmp+4
+    CMP16I tmp+4, 8
+    bcs .noFall
+    
+    CMP16I tmp+2, playerY
+    bcs .noFall
+    lda #4
+    sta entityVelocity,y
+.noFall:
+    lda entityXLo,y
+    sta arg
+    lda entityXHi,y
+    and #ENT_X_POS
+    sta arg+1
+    lda entityYLo,y
+    sta arg+2
+    lda entityYHi,y
+    and #ENT_Y_POS
+    sta arg+3
+    ADD16I arg,arg, 8
+    sty sav
+    jsr TestCollision
+    ldy sav
+    bcs .hit
+    jmp .nohit
+.hit:
+    lda #$80
+    sta entityYHi,y
+.nohit:
+    lda entityVelocity,y
+    beq .nomove
+    jsr EntMoveVertically
+.nomove:
+    jmp ER_Return
     
     
 ER_Mimrock subroutine
