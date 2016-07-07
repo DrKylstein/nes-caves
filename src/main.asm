@@ -1516,15 +1516,10 @@ UpdateEntities subroutine
     jmp .offScreen
 .noStop:
 
-    ;temporary sprites always test both axes
+.xtest:
     lda entityFlags,x
-    and #ENT_F_ISTEMPORARY
-    bne .htest
-    ;nonvertical sprites test only y
-    lda entityFlags,x
-    and #ENT_F_ISVERTICAL
-    beq .vtest
-.htest:
+    and #ENT_F_SKIPXTEST
+    bne .ytest
     lda entityXLo,y
     sec
     sbc shr_cameraX
@@ -1537,11 +1532,10 @@ UpdateEntities subroutine
     bpl .offScreen
     CMP16I tmp, -PX_MT_WIDTH
     bmi .offScreen
-    ;non-temporary vertical sprites test only x
+.ytest:
     lda entityFlags,x
-    and #ENT_F_ISTEMPORARY
-    beq .persistent
-.vtest:
+    and #ENT_F_SKIPYTEST
+    bne .persistent
     lda entityYLo,y
     sec
     sbc shr_cameraY
@@ -1890,7 +1884,6 @@ UpdateEntitySprites subroutine
     
     lda entityFlags,x
     and #ENT_F_COLOR
-    lsr
     sta sav+2
         
     lda sav+5

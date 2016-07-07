@@ -60,10 +60,11 @@ ENT_X_HP = %00001100
 ENT_X_COUNT = $F0
 
 ;contents of prgdata_entityFlags
-ENT_F_ISPLATFORM = $80 ;keep for player collision test?
-ENT_F_ISVERTICAL = $40 ;keep for testing activity?
-ENT_F_ISTEMPORARY = $20
-ENT_F_COLOR = $06 ;keep for sprite rendering
+ENT_F_SKIPYTEST = $80
+ENT_F_SKIPXTEST = $40
+ENT_F_ISTEMPORARY = $20 ;deleted when off screen
+ENT_F_ISPLATFORM = $10 ; player collides with top
+ENT_F_COLOR = $03 ;for sprite rendering
 
 PLY_ISJUMPING =    %10000000
 PLY_ISFLIPPED =    %01000000

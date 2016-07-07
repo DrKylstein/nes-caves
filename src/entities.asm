@@ -26,31 +26,31 @@ entityRoutine:
     .word ER_Stalactite ;stalactite
     
 entityFlags:
-    .byte ENT_F_ISTEMPORARY | [2<<1]; bullet
-    .byte ENT_F_ISPLATFORM | ENT_F_ISVERTICAL | [2<<1]; vertical platform
-    .byte ENT_F_ISPLATFORM | [2<<1]; horizontal platform
-    .byte ENT_F_ISVERTICAL | [2<<1] ; spider
-    .byte [2<<1] ; bat
-    .byte ENT_F_ISTEMPORARY | [1<<1]; power shot
-    .byte [0<<1]; rock
-    .byte [2<<1] ; cart
-    .byte [3<<1] ; caterpillar head
-    .byte [3<<1] ; caterpillar front
-    .byte [3<<1] ; caterpillar back
-    .byte [3<<1] ; caterpillar tail
-    .byte [3<<1] ; slime horizontal
-    .byte ENT_F_ISVERTICAL | [3<<1] ; slime horizontal
-    .byte ENT_F_ISVERTICAL | [2<<1] ; hammer
-    .byte ENT_F_ISVERTICAL | [2<<1] ; faucet
-    .byte ENT_F_ISTEMPORARY | [2<<1] ; water
-    .byte ENT_F_ISPLATFORM | ENT_F_ISVERTICAL | [2<<1]; vertical platform
-    .byte ENT_F_ISPLATFORM | [2<<1]; horizontal platform
-    .byte ENT_F_ISVERTICAL | [2<<1] ; right cannon
-    .byte ENT_F_ISTEMPORARY | [1<<1] ; right laser
-    .byte ENT_F_ISVERTICAL | [2<<1] ; left cannon
+    .byte ENT_F_ISTEMPORARY | 2; bullet
+    .byte ENT_F_ISPLATFORM | ENT_F_SKIPYTEST | 2; vertical platform
+    .byte ENT_F_ISPLATFORM | ENT_F_SKIPXTEST | 2; horizontal platform
+    .byte 2 ; spider
+    .byte 2 ; bat
+    .byte ENT_F_ISTEMPORARY | 1; power shot
+    .byte 0; rock
+    .byte 2 ; cart
+    .byte ENT_F_SKIPXTEST | 3 ; caterpillar head
+    .byte ENT_F_SKIPXTEST | 3 ; caterpillar front
+    .byte ENT_F_SKIPXTEST | 3 ; caterpillar back
+    .byte ENT_F_SKIPXTEST | 3 ; caterpillar tail
+    .byte 3 ; slime horizontal
+    .byte 3 ; slime horizontal
+    .byte 2 ; hammer
+    .byte 2 ; faucet
+    .byte ENT_F_ISTEMPORARY | 2 ; water
+    .byte ENT_F_ISPLATFORM | ENT_F_SKIPYTEST | 2; vertical platform
+    .byte ENT_F_ISPLATFORM | ENT_F_SKIPXTEST | 2; horizontal platform
+    .byte 2 ; right cannon
+    .byte ENT_F_ISTEMPORARY | 1 ; right laser
+    .byte 2 ; left cannon
     .byte 0
-    .byte 3<<1  ; rex
-    .byte ENT_F_ISVERTICAL | 0 ; stalactite
+    .byte 3  ; rex
+    .byte 0 ; stalactite
         
 entityTiles:
     .byte 14*2 ; bullet
