@@ -838,27 +838,21 @@ ER_CaterpillarHead:
     bcc .alive
     lda #$80
     sta entityXHi
-    tya
-    clc
-    adc #4
-    tax
-.loop:
-    dex
-    stx tmp
-    cpy tmp
-    beq .head
-    lda entityXHi,x
-    bmi .loop
-.head:
     lda #$80
-    sta entityXHi,x
-    sty tmp
-    dex
-    cpx tmp 
-    beq .lastOne
+    sta entityXHi,y
+    
+    tya
+    tax
+    inx
+    lda entityYHi,x
+    lsr
+    cmp #CATERPILLAR_ID
+    bcc .lastOne
+    cmp #CATERPILLAR_ID+4
+    bcs .lastOne
     lda entityYHi,x
     and #ENT_Y_POS
-    ora #[CATERPILLAR_ID+3]<<1
+    ora #CATERPILLAR_ID<<1
     sta entityYHi,x
 .lastOne:
     lda #1
