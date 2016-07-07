@@ -561,19 +561,19 @@ InitEntities subroutine
     lda entityXHi,y
     sta tmp+1
     
-    SUB16I tmp,tmp,16
+    ADD16I tmp,tmp,16
     lda tmp
     sta entityXLo+1,y
     lda tmp+1
     sta entityXHi+1,y
     
-    SUB16I tmp,tmp,16
+    ADD16I tmp,tmp,16
     lda tmp
     sta entityXLo+2,y
     lda tmp+1
     sta entityXHi+2,y
     
-    SUB16I tmp,tmp,16
+    ADD16I tmp,tmp,16
     lda tmp
     sta entityXLo+3,y
     lda tmp+1

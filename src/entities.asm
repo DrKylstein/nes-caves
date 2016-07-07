@@ -88,10 +88,10 @@ entitySpeeds:
     .byte 4 ; power shot
     .byte 1 ; rock
     .byte 2 ; cart
-    .byte 1 ; caterpillar head
-    .byte 1 ; caterpillar front
-    .byte 1 ; caterpillar back
-    .byte 1 ; caterpillar tail
+    .byte -1 ; caterpillar head
+    .byte -1 ; caterpillar front
+    .byte -1 ; caterpillar back
+    .byte -1 ; caterpillar tail
     .byte 2 ; slime horizontal
     .byte 2 ; slime vertical
     .byte -1 ; hammer
