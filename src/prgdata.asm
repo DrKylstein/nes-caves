@@ -15,30 +15,30 @@ playerWalk:
     .byte $08
     
 entityFlags:
-    .byte $92 ; bullet
-    .byte $62 ; vertical platform
-    .byte $42 ; horizontal platform
-    .byte $3F ; spider
-    .byte $0B ; bat
-    .byte $90 ; power shot
-    .byte $1B ; rock
-    .byte ENT_F_ISDEADLY | ENT_F_ISMORTAL | $02 ; cart
-    .byte ENT_F_ISDEADLY | ENT_F_ISMORTAL | $04 ; caterpillar head
-    .byte ENT_F_ISDEADLY | $04 ; caterpillar front
-    .byte ENT_F_ISDEADLY | $04 ; caterpillar back
-    .byte ENT_F_ISDEADLY | $04 ; caterpillar tail
-    .byte ENT_F_ISDEADLY | ENT_F_ISMORTAL | $04 ; slime horizontal
-    .byte ENT_F_ISDEADLY | ENT_F_ISMORTAL | ENT_F_ISVERTICAL | $04 ; slime horizontal
-    .byte ENT_F_ISDEADLY | ENT_F_ISVERTICAL | $02 ; hammer
-    .byte $06 ; faucet
-    .byte ENT_F_ISPROJECTILE | ENT_F_ISDEADLY | ENT_F_ISVERTICAL | $06 ; water
-    .byte $62 ; vertical platform
-    .byte $42 ; horizontal platform
-    .byte $02 | ENT_F_ISVERTICAL ; right cannon
-    .byte ENT_F_ISPROJECTILE | ENT_F_ISDEADLY | $00 ; right laser
-    .byte $02 | ENT_F_ISVERTICAL ; left cannon
-    .byte ENT_F_ISPROJECTILE | ENT_F_ISDEADLY | $00 ; left laser
-    .byte ENT_F_ISMORTAL | ENT_F_ISDEADLY | $04 ; rex
+    .byte $90 | [2<<1]; bullet
+    .byte $60 | [2<<1]; vertical platform
+    .byte $40 | [2<<1]; horizontal platform
+    .byte $38 | ENT_F_ISMORTAL | [2<<1] ; spider
+    .byte $08 | ENT_F_ISMORTAL | [2<<1] ; bat
+    .byte $90 | [1<<1]; power shot
+    .byte $18 | ENT_F_ISMORTAL | [0<<1]; rock
+    .byte ENT_F_ISDEADLY | ENT_F_ISMORTAL | [2<<1] ; cart
+    .byte ENT_F_ISDEADLY | ENT_F_ISMORTAL | [3<<1] ; caterpillar head
+    .byte ENT_F_ISDEADLY | [3<<1] ; caterpillar front
+    .byte ENT_F_ISDEADLY | [3<<1] ; caterpillar back
+    .byte ENT_F_ISDEADLY | [3<<1] ; caterpillar tail
+    .byte ENT_F_ISDEADLY | ENT_F_ISMORTAL | [3<<1] ; slime horizontal
+    .byte ENT_F_ISDEADLY | ENT_F_ISMORTAL | ENT_F_ISVERTICAL | [3<<1] ; slime horizontal
+    .byte ENT_F_ISDEADLY | ENT_F_ISVERTICAL | [2<<1] ; hammer
+    .byte [2<<1] ; faucet
+    .byte ENT_F_ISPROJECTILE | ENT_F_ISDEADLY | ENT_F_ISVERTICAL | [2<<1] ; water
+    .byte $60 | [2<<1]; vertical platform
+    .byte $40 | [2<<1]; horizontal platform
+    .byte ENT_F_ISVERTICAL | [2<<1] ; right cannon
+    .byte ENT_F_ISPROJECTILE | ENT_F_ISDEADLY | [1<<1] ; right laser
+    .byte ENT_F_ISVERTICAL | [2<<1] ; left cannon
+    .byte ENT_F_ISPROJECTILE | ENT_F_ISDEADLY | [1<<1] ; left laser
+    .byte ENT_F_ISMORTAL | ENT_F_ISDEADLY | [3<<1]  ; rex
     
 entityFlags2:
     .byte 0 ; bullet
@@ -603,28 +603,28 @@ anim_caterpillarHFlip2 subroutine
 anim_spider subroutine
     .byte 3
     .word frame_small1
-    .word .frame2
+    .word frame_symmetrical1
     .word frame_smallHFlip1
+    .word frame_symmetrical1
+
+anim_spiderVFlip subroutine
+    .byte 3
+    .word frame_smallVFlip1
+    .word .frame2
+    .word frame_smallHV1
     .word .frame2
 .frame2:
     .byte 8
     
     .byte PX_VIEWPORT_OFFSET
     .byte 2
-    .byte $40
+    .byte $C0
     .byte 8
     
     .byte PX_VIEWPORT_OFFSET
     .byte 2
-    .byte 0
+    .byte $80
     .byte 16
-
-anim_spiderVFlip subroutine
-    .byte 3
-    .word frame_smallVFlip1
-    .word frame_symmetrical1
-    .word frame_smallHV1
-    .word frame_symmetrical1
             
 anim_rex subroutine
     .byte 3

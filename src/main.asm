@@ -227,15 +227,15 @@ InitSprites subroutine
 InitSpritePalette subroutine
     ldx shr_copyIndex
     
-    ldy #19
+    ldy #11
 .loop
     lda palettes,y
     PHXA
     dey
     bpl .loop
 
-    ENQUEUE_ROUTINE nmi_Copy20
-    ENQUEUE_PPU_ADDR [VRAM_PALETTE_SP-4]
+    ENQUEUE_ROUTINE nmi_Copy12
+    ENQUEUE_PPU_ADDR [VRAM_PALETTE_SP+4]
     
     stx shr_copyIndex
 
@@ -315,14 +315,14 @@ LoadLevelPal subroutine
     sta tmp
     lda levelPalettes+1,y
     sta tmp+1
-    ldy #11
+    ldy #19
 .loop
     lda (tmp),y
     PHXA
     dey
     bpl .loop
 
-    ENQUEUE_ROUTINE nmi_Copy12
+    ENQUEUE_ROUTINE nmi_Copy20
     ENQUEUE_PPU_ADDR VRAM_PALETTE_BG
     
     stx shr_copyIndex
@@ -2934,6 +2934,7 @@ UpdatePlayerSprite subroutine
 .do_anim:
     lda playerFlags
     and #PLY_ISFLIPPED
+    ora #1
     sta shr_playerSprites+SPR_FLAGS
     sta shr_playerSprites+OAM_SIZE+SPR_FLAGS
     bit playerFlags
