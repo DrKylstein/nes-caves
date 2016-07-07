@@ -11,7 +11,7 @@ playerWalk:
     .byte $0C
     .byte $10
     .byte $0C
-    .byte $14
+    .byte $00
     .byte $08
     
 entityFlags:
@@ -67,30 +67,30 @@ entityFlags2:
     .byte ENT_F2_ISHITTABLE | ENT_F2_ISGROUNDED ; rex
     
 entityTiles:
-    .byte 64 ; bullet
-    .byte 80 ; vertical platform
-    .byte 80 ; horizontal platform
-    .byte 152 ; spider
-    .byte 128 ; bat
-    .byte 156 ; power shot
-    .byte 140 ; rock
-    .byte 84 ; cart
-    .byte 120 ; caterpillar head
-    .byte 116 ; caterpillar front
-    .byte 116 ; caterpillar back
-    .byte 112 ; caterpillar tail
-    .byte 192 ; slime horizontal
-    .byte 204 ; slime vertical
-    .byte 100 ; hammer
-    .byte 220 ; faucet
-    .byte 216 ; water
-    .byte 80 ; vertical platform
-    .byte 80 ; horizontal platform
-    .byte 224 ; right cannon
-    .byte 228 ; right laser
-    .byte 224 ; left cannon
-    .byte 228 ; left laser
-    .byte 168 ; rex
+    .byte 14*2 ; bullet
+    .byte [0+32]*2 ; vertical platform
+    .byte [0+32]*2 ; horizontal platform
+    .byte [16+32]*2 ; spider
+    .byte [19+32]*2 ; bat
+    .byte 20*2 ; power shot
+    .byte [22+32]*2 ; rock
+    .byte [5+32]*2 ; cart
+    .byte [23+32*2]*2 ; caterpillar head
+    .byte [21+32*2]*2 ; caterpillar front
+    .byte [21+32*2]*2 ; caterpillar back
+    .byte [19+32*2]*2 ; caterpillar tail
+    .byte [28+32]*2 ; slime horizontal
+    .byte [30+32]*2 ; slime vertical
+    .byte [15+32*2]*2 ; hammer
+    .byte [9+32]*2 ; faucet
+    .byte [8+32]*2 ; water
+    .byte [0+32]*2 ; vertical platform
+    .byte [0+32]*2 ; horizontal platform
+    .byte [2+32]*2 ; right cannon
+    .byte [4+32]*2 ; right laser
+    .byte [2+32]*2 ; left cannon
+    .byte <-1 ; unused
+    .byte [25+32*2]*2 ; rex
     
 entityHPs:
     .byte 0 ; bullet
@@ -201,25 +201,25 @@ entityInitialAnims:
     .byte ANIM_SPIDER ; vertical platform
     .byte ANIM_SPIDER ; horizontal platform
     .byte ANIM_SPIDER ; spider
-    .byte ANIM_SMALL_OSCILLATE ; bat
-    .byte ANIM_SMALL_OSCILLATE ; power shot
+    .byte ANIM_SYMMETRICAL_OSCILLATE ; bat
+    .byte ANIM_POWERSHOT ; power shot
     .byte ANIM_SMALL_OSCILLATE ; rock
-    .byte ANIM_SMALL_LONG ; cart
+    .byte ANIM_SMALL_OSCILLATE ; cart
     .byte ANIM_CATERPILLAR ; caterpillar head
     .byte ANIM_CATERPILLAR_2 ; caterpillar front
     .byte ANIM_CATERPILLAR ; caterpillar back
     .byte ANIM_CATERPILLAR_2 ; caterpillar tail
-    .byte ANIM_SMALL_OSCILLATE ; slime horizontal
-    .byte ANIM_SMALL_OSCILLATE ; slime vertical
-    .byte ANIM_SMALL_NONE ; hammer
-    .byte ANIM_SMALL_NONE ; faucet
-    .byte ANIM_SMALL_NONE ; water
+    .byte ANIM_SLIME_RIGHT ; slime horizontal
+    .byte ANIM_SLIME_DOWN ; slime vertical
+    .byte ANIM_SYMMETRICAL_NONE ; hammer
+    .byte ANIM_SYMMETRICAL_NONE ; faucet
+    .byte ANIM_SYMMETRICAL_NONE ; water
     .byte ANIM_SPIDER ; vertical platform
     .byte ANIM_SPIDER ; horizontal platform
     .byte ANIM_SMALL_NONE ; right cannon
-    .byte ANIM_SMALL_NONE ; right laser
+    .byte ANIM_SYMMETRICAL_NONE ; laser
     .byte ANIM_SMALL_HFLIP_NONE ; left cannon
-    .byte ANIM_SMALL_NONE ; left laser
+    .byte ANIM_SYMMETRICAL_NONE ; unused
     .byte ANIM_REX ;rex
 
 animations:
@@ -229,8 +229,8 @@ animations:
     .word anim_smallOscillate
     .word anim_smallHFlipOscillate
     .word anim_smallVFlipOscillate
-    .word anim_smallLong
-    .word anim_smallHFlipLong
+    .word -1
+    .word -1
     .word anim_caterpillar
     .word anim_caterpillarHFlip
     .word anim_caterpillar2
@@ -240,6 +240,16 @@ animations:
     .word anim_rex
     .word anim_rex_hflip
     .word anim_rock_hiding
+    .word anim_symmetrical_none
+    .word anim_symmetrical_oscillate
+    .word anim_rocket
+    .word anim_rocket_hflip
+    .word anim_slime_down
+    .word anim_slime_up
+    .word anim_slime_right
+    .word anim_slime_left
+    .word anim_powershot
+    .word anim_powershot_hflip
     
 frame_small1:
     .byte 8
@@ -320,6 +330,45 @@ frame_smallHFlip3:
     .byte $40
     .byte 16
 
+frame_smallVFlip1:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 0
+    .byte $80
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 2
+    .byte $80
+    .byte 16
+
+frame_smallHV1:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 2
+    .byte $C0
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 0
+    .byte $C0
+    .byte 16
+
+frame_symmetrical1:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 0
+    .byte 0
+    .byte 8
+
+    .byte PX_VIEWPORT_OFFSET
+    .byte 0
+    .byte $40
+    .byte 16
+
 anim_null subroutine
     .byte 0
     .word .frame1
@@ -329,6 +378,43 @@ anim_null subroutine
 anim_smallNone subroutine
     .byte 0
     .word frame_small1
+
+anim_symmetrical_none subroutine
+    .byte 0
+    .word frame_symmetrical1
+
+anim_symmetrical_oscillate subroutine
+    .byte 3
+    .word frame_symmetrical1
+    .word .frame2
+    .word .frame3
+    .word .frame2
+    
+.frame2
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 2
+    .byte 0
+    .byte 8
+
+    .byte PX_VIEWPORT_OFFSET
+    .byte 2
+    .byte $40
+    .byte 16
+    
+.frame3
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 4
+    .byte 0
+    .byte 8
+
+    .byte PX_VIEWPORT_OFFSET
+    .byte 4
+    .byte $40
+    .byte 16
 
 anim_smallHFlipNone subroutine
     .byte 0
@@ -347,6 +433,27 @@ anim_smallHFlipOscillate subroutine
     .word frame_smallHFlip2
     .word frame_smallHFlip3
     .word frame_smallHFlip2
+
+anim_slime_up subroutine
+    .byte 1
+    .word frame_smallVFlip1
+    .word frame_smallHV1
+    
+anim_slime_down subroutine
+    .byte 1
+    .word frame_small1
+    .word frame_smallHFlip1
+    
+anim_slime_left subroutine
+    .byte 1
+    .word frame_small1
+    .word frame_smallVFlip1
+    
+anim_slime_right subroutine
+    .byte 1
+    .word frame_smallHFlip1
+    .word frame_smallHV1
+
 
 anim_smallVFlipOscillate subroutine
     .byte 3
@@ -390,46 +497,6 @@ anim_smallVFlipOscillate subroutine
     .byte 10
     .byte $80
     .byte 16
-
-
-anim_smallLong subroutine
-    .byte 3
-    .word frame_small1
-    .word frame_small2
-    .word frame_small3
-    .word .frame4
-.frame4:
-    .byte 8
-    
-    .byte PX_VIEWPORT_OFFSET
-    .byte 12
-    .byte 0
-    .byte 8
-    
-    .byte PX_VIEWPORT_OFFSET
-    .byte 14
-    .byte 0
-    .byte 16
-    
-anim_smallHFlipLong subroutine
-    .byte 3
-    .word frame_smallHFlip1
-    .word frame_smallHFlip2
-    .word frame_smallHFlip3
-    .word .frame4
-.frame4:
-    .byte 8
-    
-    .byte PX_VIEWPORT_OFFSET
-    .byte 14
-    .byte $40
-    .byte 8
-    
-    .byte PX_VIEWPORT_OFFSET
-    .byte 12
-    .byte $40
-    .byte 16
-    
     
 frame_caterpillar1:
     .byte 8
@@ -554,56 +621,17 @@ anim_spider subroutine
 
 anim_spiderVFlip subroutine
     .byte 3
-    .word .frame1
-    .word .frame2
-    .word .frame3
-    .word .frame2
-    
-.frame1:
-    .byte 8
-    
-    .byte PX_VIEWPORT_OFFSET
-    .byte 0
-    .byte $80
-    .byte 8
-    
-    .byte PX_VIEWPORT_OFFSET
-    .byte 2
-    .byte $80
-    .byte 16
-    
-.frame2:
-    .byte 8
-    
-    .byte PX_VIEWPORT_OFFSET
-    .byte 2
-    .byte $C0
-    .byte 8
-    
-    .byte PX_VIEWPORT_OFFSET
-    .byte 2
-    .byte $80
-    .byte 16
-    
-.frame3:
-    .byte 8
-    
-    .byte PX_VIEWPORT_OFFSET
-    .byte 2
-    .byte $C0
-    .byte 8
-    
-    .byte PX_VIEWPORT_OFFSET
-    .byte 0
-    .byte $C0
-    .byte 16
-    
+    .word frame_smallVFlip1
+    .word frame_symmetrical1
+    .word frame_smallHV1
+    .word frame_symmetrical1
+            
 anim_rex subroutine
     .byte 3
     .word .frame1
     .word .frame2
     .word .frame3
-    .word .frame4
+    .word .frame2
 .frame1:
     .byte 16
     
@@ -668,28 +696,6 @@ anim_rex subroutine
     
     .byte PX_VIEWPORT_OFFSET
     .byte 74
-    .byte 0
-    .byte 16
-.frame4:
-    .byte 16
-    
-    .byte PX_VIEWPORT_OFFSET-16
-    .byte 12
-    .byte 0
-    .byte 8
-    
-    .byte PX_VIEWPORT_OFFSET-16
-    .byte 14
-    .byte 0
-    .byte 16
-
-    .byte PX_VIEWPORT_OFFSET
-    .byte 76
-    .byte 0
-    .byte 8
-    
-    .byte PX_VIEWPORT_OFFSET
-    .byte 78
     .byte 0
     .byte 16
 
@@ -698,7 +704,7 @@ anim_rex_hflip subroutine
     .word .frame1
     .word .frame2
     .word .frame3
-    .word .frame4
+    .word .frame2
 .frame1:
     .byte 16
     
@@ -763,28 +769,6 @@ anim_rex_hflip subroutine
     
     .byte PX_VIEWPORT_OFFSET
     .byte 74
-    .byte $40
-    .byte 8
-.frame4:
-    .byte 16
-    
-    .byte PX_VIEWPORT_OFFSET-16
-    .byte 12
-    .byte $40
-    .byte 16
-    
-    .byte PX_VIEWPORT_OFFSET-16
-    .byte 14
-    .byte $40
-    .byte 8
-
-    .byte PX_VIEWPORT_OFFSET
-    .byte 76
-    .byte $40
-    .byte 16
-    
-    .byte PX_VIEWPORT_OFFSET
-    .byte 78
     .byte $40
     .byte 8
     
@@ -802,9 +786,133 @@ anim_rock_hiding subroutine
     .byte PX_VIEWPORT_OFFSET+8
     .byte 2
     .byte $20
+    .byte 16    
+    
+anim_rocket subroutine
+    .byte 3
+    .word frame_small1
+    .word frame_small2
+    .word frame_small3
+    .word .frame4
+.frame4:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 4
+    .byte $80
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 6
+    .byte $80
+    .byte 16
+    
+anim_rocket_hflip subroutine
+    .byte 3
+    .word frame_smallHFlip1
+    .word frame_smallHFlip2
+    .word frame_smallHFlip3
+    .word .frame4
+.frame4:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 6
+    .byte $C0
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 4
+    .byte $C0
     .byte 16
 
+anim_powershot subroutine
+    .byte 3
+    .word .frame1
+    .word .frame2
+    .word .frame3
+    .word .frame2
+.frame1:
+    .byte 8
     
+    .byte PX_VIEWPORT_OFFSET
+    .byte 0
+    .byte 0
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 6
+    .byte 0
+    .byte 16
+.frame2:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 2
+    .byte 0
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 6
+    .byte 0
+    .byte 16
+.frame3:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 4
+    .byte 0
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 6
+    .byte 0
+    .byte 16
+
+anim_powershot_hflip subroutine
+    .byte 3
+    .word .frame1
+    .word .frame2
+    .word .frame3
+    .word .frame2
+.frame1:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 6
+    .byte $40
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 0
+    .byte $40
+    .byte 16
+.frame2:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 6
+    .byte $40
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 2
+    .byte $40
+    .byte 16
+.frame3:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 6
+    .byte $40
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 4
+    .byte $40
+    .byte 16
+
+
 bits:
     .byte 0
     .byte 1
@@ -982,6 +1090,8 @@ sfxShoot subroutine
     .byte $31, $0F
     .byte $30, $0F
     .byte 0
+    
+    
 levelBanks:
     .byte 1
     .byte 1

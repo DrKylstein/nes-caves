@@ -2,17 +2,48 @@
 ; MAIN THREAD
 ;------------------------------------------------------------------------------
 
-;triceratops and/or stalk-eye
-;rex chasing
-;explosions
+;sprites:
+;vacuum pipe
+;falling rocks
 ;flame traps
-;rolling enemy or robot?
+;full-size hammers?
+;spider shots (down only)
+;mask right edge?
+;explosions
+;bonus fruit
+;snake
+;hopper
+;bird
+;triceratops
+;stalk-eye
+;rolling enemy
+;robot
+;wall snake
+;flying alien wrench
+
+;arrange and orient bg tiles for:
+;hidden spikes
+;girder bump
+;stalactites
+;animated torches
+
+;low gravity
+;rex chasing
 ;strength mushroom melee
-;pickup sound
+;more sounds
+;music
 ;air generator death
-;transitions
+;fades
 ;death animation
-    
+;full dump independent of nmi for brk handler?
+;passwords?
+;intro and ending
+;map background planet
+;faster spiders?
+;test on hardware!
+;enemy tile swaps?
+;dynamic player tiles?
+;door animation
 ;------------------------------------------------------------------------------
 ;Initial Boot
 ;------------------------------------------------------------------------------
@@ -183,7 +214,7 @@ InitSprites subroutine
     sta shr_spriteY,y
     lda #206
     sta shr_spriteX,y
-    lda #$FE
+    lda #62
     sta shr_spriteIndex,y
     lda #%00100000
     sta shr_spriteFlags,y
@@ -1185,7 +1216,7 @@ TC_Nop:
     lda playerY+1
     and #ENT_Y_POS
     sta entityYHi
-    lda #ANIM_SMALL_LONG
+    lda #ANIM_ROCKET
     sta entityAnim
     lda #0
     sta entityCount
@@ -1195,7 +1226,7 @@ TC_Nop:
     lda #POWERSHOT_ID<<1
     ora entityYHi
     sta entityYHi
-    lda #ANIM_SMALL_OSCILLATE
+    lda #ANIM_POWERSHOT
     sta entityAnim
 .notPowerShot
     
@@ -1706,7 +1737,7 @@ ER_Cannon
     sta entityYHi+1,y
     lda entityYLo,y
     sta entityYLo+1,y
-    lda #ANIM_SMALL_NONE
+    lda #ANIM_SYMMETRICAL_NONE
     sta entityAnim+1,y
 return$:
     jmp ER_Return
@@ -1732,7 +1763,7 @@ ER_Faucet subroutine
     sta entityYHi+1,y
     lda entityYLo,y
     sta entityYLo+1,y
-    lda #ANIM_SMALL_NONE
+    lda #ANIM_SYMMETRICAL_NONE
     sta entityAnim+1,y
     lda #4
     sta entityVelocity+1,y
@@ -2158,13 +2189,8 @@ ER_CaterpillarTail subroutine
     jmp ER_Default
 
 ER_Cart subroutine
-    lda #ANIM_SMALL_HFLIP_LONG
+    lda #ANIM_SYMMETRICAL_OSCILLATE
     sta entityAnim,y
-    lda entityVelocity,y
-    bmi .notRight
-    lda #ANIM_SMALL_LONG
-    sta entityAnim,y
-.notRight:
     sty sav
     jsr EntTestWalkingCollision
     ldy sav
@@ -2204,7 +2230,7 @@ ER_Cart subroutine
     sec
     sbc #1
     sta entityCount,y
-    lda #ANIM_SMALL_NONE
+    lda #ANIM_SYMMETRICAL_NONE
     sta entityAnim,y
     jmp ER_Return
 .nopause:

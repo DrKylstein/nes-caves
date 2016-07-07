@@ -171,3 +171,13 @@ ANIM_SPIDER_VFLIP:          ds 1
 ANIM_REX                    ds 1
 ANIM_REX_HFLIP              ds 1
 ANIM_ROCK_HIDING            ds 1
+ANIM_SYMMETRICAL_NONE       ds 1
+ANIM_SYMMETRICAL_OSCILLATE  ds 1
+ANIM_ROCKET                 ds 1
+ANIM_ROCKET_HFLIP           ds 1
+ANIM_SLIME_DOWN             ds 1
+ANIM_SLIME_UP               ds 1
+ANIM_SLIME_RIGHT            ds 1
+ANIM_SLIME_LEFT             ds 1
+ANIM_POWERSHOT              ds 1
+ANIM_POWERSHOT_HFLIP        ds 1
