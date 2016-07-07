@@ -56,14 +56,14 @@ ENT_Y_INDEX = $FE
 
 ;contents of main_entityXHi
 ENT_X_POS = $03
-ENT_X_HP = %00001100
-ENT_X_COUNT = $F0
 
 ;contents of prgdata_entityFlags
 ENT_F_SKIPYTEST = $80
 ENT_F_SKIPXTEST = $40
 ENT_F_ISTEMPORARY = $20 ;deleted when off screen
 ENT_F_ISPLATFORM = $10 ; player collides with top
+ENT_F_CHILDREN  = $0C
+ENT_F_CHILDREN_SHIFT = 2
 ENT_F_COLOR = $03 ;for sprite rendering
 
 PLY_ISJUMPING =    %10000000

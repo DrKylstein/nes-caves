@@ -457,7 +457,11 @@ LoadLevel subroutine
     lsr
     stx tmp+2
     tax
-    lda entityChildren,x
+    lda entityFlags,x
+    and #ENT_F_CHILDREN
+    REPEAT ENT_F_CHILDREN_SHIFT
+    lsr
+    REPEND
     clc
     adc tmp+2
     tax

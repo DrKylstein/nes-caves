@@ -29,25 +29,25 @@ entityFlags:
     .byte ENT_F_ISTEMPORARY | 2; bullet
     .byte ENT_F_ISPLATFORM | ENT_F_SKIPYTEST | 2; vertical platform
     .byte ENT_F_ISPLATFORM | ENT_F_SKIPXTEST | 2; horizontal platform
-    .byte 2 ; spider
+    .byte [1<<ENT_F_CHILDREN_SHIFT] | 2 ; spider
     .byte 2 ; bat
     .byte ENT_F_ISTEMPORARY | 1; power shot
     .byte 0; rock
     .byte 2 ; cart
-    .byte ENT_F_SKIPXTEST | 3 ; caterpillar head
+    .byte ENT_F_SKIPXTEST | [3<<ENT_F_CHILDREN_SHIFT] | 3 ; caterpillar head
     .byte ENT_F_SKIPXTEST | 3 ; caterpillar front
     .byte ENT_F_SKIPXTEST | 3 ; caterpillar back
     .byte ENT_F_SKIPXTEST | 3 ; caterpillar tail
     .byte 3 ; slime horizontal
     .byte 3 ; slime horizontal
     .byte 2 ; hammer
-    .byte 2 ; faucet
+    .byte [1<<ENT_F_CHILDREN_SHIFT] | 2 ; faucet
     .byte ENT_F_ISTEMPORARY | 2 ; water
     .byte ENT_F_ISPLATFORM | ENT_F_SKIPYTEST | 2; vertical platform
     .byte ENT_F_ISPLATFORM | ENT_F_SKIPXTEST | 2; horizontal platform
-    .byte 2 ; right cannon
+    .byte [1<<ENT_F_CHILDREN_SHIFT] | 2 ; right cannon
     .byte ENT_F_ISTEMPORARY | 1 ; right laser
-    .byte 2 ; left cannon
+    .byte [1<<ENT_F_CHILDREN_SHIFT] | 2 ; left cannon
     .byte 0
     .byte 3  ; rex
     .byte 0 ; stalactite
@@ -106,33 +106,6 @@ entitySpeeds:
     .byte 1; rex
     .byte 0; stalactite
     
-entityChildren:
-    .byte 0 ; bullet
-    .byte 0 ; vertical platform
-    .byte 0 ; horizontal platform
-    .byte 0 ; spider
-    .byte 0 ; bat
-    .byte 0 ; power shot
-    .byte 0 ; rock
-    .byte 0 ; cart
-    .byte 3 ; caterpillar head
-    .byte 0 ; caterpillar front
-    .byte 0 ; caterpillar back
-    .byte 0 ; caterpillar tail
-    .byte 0 ; slime horizontal
-    .byte 0 ; slime vertical
-    .byte 1 ; hammer
-    .byte 1 ; faucet
-    .byte 4 ; water
-    .byte 0 ; vertical platform
-    .byte 0 ; horizontal platform
-    .byte 1 ; right cannon
-    .byte 0 ; right laser
-    .byte 1 ; left cannon
-    .byte 0
-    .byte 0 ; rex
-    .byte 0 ; stalactite
-
 entityInitialAnims:
     .byte ANIM_SMALL_LONG ; bullet
     .byte ANIM_SPIDER ; vertical platform
@@ -953,12 +926,7 @@ ER_SlimeVertical subroutine
     jsr EntTryMelee
     jmp ER_Return
     
-ER_Hammer subroutine
-    lda entityVelocity,y
-    sta shr_debugReg
-    lda entityCount,y
-    sta shr_debugReg+1
-    
+ER_Hammer subroutine    
     jsr EntTryMelee
     
     lda entityCount,y
