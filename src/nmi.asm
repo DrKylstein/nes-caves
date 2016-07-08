@@ -64,8 +64,53 @@ nmi_TileCopy_end:
     
 nmi_AttrCopy subroutine
     lda shr_doAttrCol
-    beq nmi_AttrCopy_end
-    jsr nmi_CopyAttrCol
+    bne .continue
+    jmp nmi_AttrCopy_end
+.continue:
+    lda shr_tileCol
+    lsr
+    lsr
+    sta nmi_tmp+2
+    EXTEND nmi_tmp+2,nmi_tmp+2
+
+;top
+    MOV16I nmi_tmp,TOP_ATTR_OFFSET
+    ADD16 nmi_tmp,nmi_tmp,nmi_tmp+2
+
+    bit PPU_STATUS
+    lda nmi_tmp+1
+    sta PPU_ADDR
+    lda nmi_tmp
+    sta PPU_ADDR
+    
+    ldy #0
+    REPEAT TOP_ATTR_HEIGHT
+    lda shr_attrBuffer,y
+    iny
+    sta PPU_DATA
+    REPEAT 7
+    bit PPU_DATA
+    REPEND
+    REPEND
+    
+;bottom    
+    MOV16I nmi_tmp,BOTTOM_ATTR_OFFSET
+    ADD16 nmi_tmp,nmi_tmp,nmi_tmp+2
+    
+    lda nmi_tmp+1
+    sta PPU_ADDR
+    lda nmi_tmp
+    sta PPU_ADDR
+    
+    REPEAT BOTTOM_ATTR_HEIGHT
+    lda shr_attrBuffer,y
+    iny
+    sta PPU_DATA
+    ADD16I nmi_tmp, nmi_tmp, 8
+    REPEAT 7
+    bit PPU_DATA
+    REPEND
+    REPEND
     dec shr_doAttrCol
 nmi_AttrCopy_end:
 
@@ -271,62 +316,37 @@ nmi_Exit:
     rti
    
 ;------------------------------------------------------------------------------
-nmi_CopyAttrCol subroutine
-    lda shr_tileCol
-    lsr
-    lsr
-    sta nmi_tmp+2
-
-;top
-    lda #<TOP_ATTR_OFFSET
-    sta nmi_tmp
-    lda #>TOP_ATTR_OFFSET
-    sta nmi_tmp+1
-    clc
-    lda nmi_tmp
-    adc nmi_tmp+2
-    sta nmi_tmp
-    lda nmi_tmp+1
-    adc #0
-    sta nmi_tmp+1
-
-    ldy #0
-    bit PPU_STATUS
-    
-    REPEAT TOP_ATTR_HEIGHT
-    lda nmi_tmp+1
-    sta PPU_ADDR
-    lda nmi_tmp
-    sta PPU_ADDR
-    lda shr_attrBuffer,y
+nmi_Copy8Stride8
+    pla
     sta PPU_DATA
-    iny
-    ADD16I nmi_tmp, nmi_tmp, 8
+    REPEAT 7
+    bit PPU_DATA
+    REPEND
+nmi_Copy7Stride8
+    pla
+    sta PPU_DATA
+    REPEAT 7
+    bit PPU_DATA
+    REPEND
+nmi_Copy6Stride8
+    pla
+    sta PPU_DATA
+    REPEAT 7
+    bit PPU_DATA
+    REPEND
+nmi_Copy5Stride8
+    REPEAT 5
+    pla
+    sta PPU_DATA
+    REPEAT 7
+    bit PPU_DATA
+    REPEND
     REPEND
     
-;bottom    
-    lda #<BOTTOM_ATTR_OFFSET
-    sta nmi_tmp
-    lda #>BOTTOM_ATTR_OFFSET
-    sta nmi_tmp+1
-    clc
-    lda nmi_tmp
-    adc nmi_tmp+2
-    sta nmi_tmp
-    lda nmi_tmp+1
-    adc #0
-    sta nmi_tmp+1
-    
-    REPEAT BOTTOM_ATTR_HEIGHT
-    lda nmi_tmp+1
+    pla
     sta PPU_ADDR
-    lda nmi_tmp
+    pla
     sta PPU_ADDR
-    lda shr_attrBuffer,y
-    sta PPU_DATA
-    iny
-    ADD16I nmi_tmp, nmi_tmp, 8
-    REPEND
     rts
 ;------------------------------------------------------------------------------
 nmi_CopyTileCol subroutine
