@@ -592,12 +592,12 @@ InitEntities subroutine
     sta entityXHi,y
 .notHammer
     
+    lda #0
+    sta entityCount,y
     lda entitySpeeds,x
     sta entityVelocity,y
     lda entityInitialAnims,x
     sta entityAnim,y
-    lda #0;lda entityCounts,x
-    sta entityCount,y
     iny
     cpy #MAX_ENTITIES
     beq InitEntities_end
@@ -715,7 +715,7 @@ ReenableDisplay_end:
 ;Every Frame
 ;------------------------------------------------------------------------------
 MainLoop:
-CheckInput subroutine
+UpdateInput subroutine
     lda ctrl
     sta oldCtrl
     jsr read_joy
@@ -723,25 +723,48 @@ CheckInput subroutine
     and oldCtrl
     eor ctrl
     sta pressed
-    
+UpdateInput_end:
+
+Paused subroutine
+    lda paused
+    beq Paused_end
+    lda pressed
+    and #JOY_START_MASK
+    beq .StartNotPressed
+    lda #0
+    sta paused
+    jsr QEnableSplitDisplay
+    jmp MainLoop
+.StartNotPressed:
+    lda pressed
+    and #JOY_SELECT_MASK
+    beq .SelectNotPressed
+    lda #INVALID_MAP_STAT
+    sta mapPX+1
+    jmp doExit
+.SelectNotPressed:
+    lda frame
+    and #$E0
+    ora #1
+    sta arg
+    jsr QColorEffect
+    jsr Synchronize
+    inc frame
+    jmp MainLoop
+Paused_end:
+
+CheckInput subroutine
     lda #0
     sta playerXVel
 .start:
     lda pressed
     and #JOY_START_MASK
-    beq .StartNotPressed
-    lda #1
-    eor paused
-    sta paused
-.StartNotPressed    
-    lda paused
     beq .left
-    lda pressed
-    and #JOY_SELECT_MASK
-    beq CheckInput
-    lda #INVALID_MAP_STAT
-    sta mapPX+1
-    jmp doExit
+    lda #1
+    sta paused
+    lda #$01
+    sta arg
+    jsr QColorEffect
 .left:
     lda ctrl
     and #JOY_LEFT_MASK
@@ -2903,6 +2926,18 @@ QEnableSplitDisplay subroutine
     lda #0
     PHXA
     lda #PPU_MASK_SETTING
+    PHXA
+    ENQUEUE_ROUTINE nmi_UpdateMask
+    ENQUEUE_PPU_ADDR $0000
+    stx shr_copyIndex
+    rts
+;------------------------------------------------------------------------------
+QColorEffect subroutine
+    ldx shr_copyIndex
+    lda #0
+    PHXA
+    lda #PPU_MASK_SETTING
+    ora arg
     PHXA
     ENQUEUE_ROUTINE nmi_UpdateMask
     ENQUEUE_PPU_ADDR $0000
