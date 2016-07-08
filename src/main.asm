@@ -2024,8 +2024,6 @@ UpdateEntitySprites_end
     adc #21*4
     sta startSprite
     inc frame
-    inc shr_doDma
-    inc shr_doRegCopy
     jsr Synchronize
     jmp MainLoop
 

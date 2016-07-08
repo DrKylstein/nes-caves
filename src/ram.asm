@@ -16,8 +16,6 @@ nmi_scrollX         ds 1
 nmi_sp              ds 1
 
 shr_sleeping        ds 1
-shr_doDma           ds 1
-shr_doRegCopy       ds 1
 shr_doTileCol       ds 1
 shr_doAttrCol       ds 1
 shr_tileCol         ds 1

@@ -24,13 +24,12 @@ nmi:
     inc nmi_frame
 
 nmi_SpriteDma subroutine
-    lda shr_doDma
+    lda shr_sleeping
     beq nmi_SpriteDma_end
     lda #0
     sta OAM_ADDR
     lda #>shr_spriteY
     sta OAM_DMA
-    dec shr_doDma
 nmi_SpriteDma_end:
 
 nmi_genericCopy subroutine
@@ -69,21 +68,6 @@ nmi_AttrCopy subroutine
     jsr nmi_CopyAttrCol
     dec shr_doAttrCol
 nmi_AttrCopy_end:
-
-nmi_updateReg subroutine
-    lda shr_doRegCopy
-    beq nmi_updateReg_end
-    
-    SUB16I nmi_tmp, shr_cameraX, 8
-    lda nmi_tmp
-    sta nmi_scrollX
-    
-    lda shr_cameraYMod
-    sta nmi_scrollY
-    lda shr_nameTable
-    sta nmi_nametable
-    dec shr_doRegCopy
-nmi_updateReg_end:
 
     lda shr_earlyExit
     beq continue$
@@ -148,6 +132,20 @@ nmi_loadSfx subroutine
     lda #0
     sta shr_sfxPtr+1
 nmi_loadSfx_end:
+
+nmi_updateReg subroutine
+    lda shr_sleeping
+    beq nmi_updateReg_end
+    
+    SUB16I nmi_tmp, shr_cameraX, 8
+    lda nmi_tmp
+    sta nmi_scrollX
+    
+    lda shr_cameraYMod
+    sta nmi_scrollY
+    lda shr_nameTable
+    sta nmi_nametable
+nmi_updateReg_end:
 
 nmi_doStatus subroutine
     lda #PPU_CTRL_SETTING
