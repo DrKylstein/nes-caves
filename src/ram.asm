@@ -83,7 +83,6 @@ powerSeconds   ds 1
 score          ds 3
 ammo           ds 1
 hp             ds 1
-caterpillarNext ds 1
 mapPX          ds 2
 mapPY          ds 2
 mapScore       ds 3

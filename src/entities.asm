@@ -24,6 +24,7 @@ entityRoutine:
     .word ER_Return
     .word ER_Rex
     .word ER_Stalactite ;stalactite
+    .word ER_SpiderWeb
     
 entityFlags:
     .byte ENT_F_ISTEMPORARY | 2; bullet
@@ -51,6 +52,7 @@ entityFlags:
     .byte 0
     .byte 3  ; rex
     .byte 0 ; stalactite
+    .byte ENT_F_ISTEMPORARY | 2 ; spider web
         
 entityTiles:
     .byte 14*2 ; bullet
@@ -78,6 +80,7 @@ entityTiles:
     .byte 0
     .byte [25+32*2]*2 ; rex
     .byte 32*2 + 16 + 1; stalactite
+    .byte [18+32]*2 ; spider web
             
 entitySpeeds:
     .byte 4 ; bullet
@@ -105,6 +108,7 @@ entitySpeeds:
     .byte 0
     .byte 1; rex
     .byte 0; stalactite
+    .byte 2; spider web
     
 entityInitialAnims:
     .byte ANIM_SMALL_LONG ; bullet
@@ -129,9 +133,10 @@ entityInitialAnims:
     .byte ANIM_SMALL_NONE ; right cannon
     .byte ANIM_SYMMETRICAL_NONE ; laser
     .byte ANIM_SMALL_HFLIP_NONE ; left cannon
-    .byte ANIM_SYMMETRICAL_NONE ; unused
+    .byte 0 ; unused
     .byte ANIM_REX ;rex
     .byte ANIM_STALACTITE
+    .byte ANIM_SYMMETRICAL_NONE ; spider web
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
     lda entityXLo,y
@@ -656,6 +661,44 @@ ER_Spider subroutine
 .nohit
     jsr EntTryMelee
     jsr EntMoveVertically
+    
+    lda entityCount,y
+    bne .notShoot
+    MOV16I arg, 8
+    jsr EntAwayFromPlayerX
+    bcs .notShoot
+    lda entityYLo,y
+    sta tmp
+    lda entityYHi,y
+    and #ENT_Y_POS
+    sta tmp+1
+    CMP16 playerY,tmp
+    bcc .notShoot
+    lda entityXHi+1,y
+    bpl .notShoot
+    ADD16I tmp, tmp, 16
+    lda tmp
+    sta entityYLo+1,y
+    lda tmp+1
+    ora #SPIDERWEB_ID<<1
+    sta entityYHi+1,y
+    lda entityXLo,y
+    sta entityXLo+1,y
+    lda entityXHi,y
+    sta entityXHi+1,y
+    lda #ANIM_SYMMETRICAL_NONE
+    sta entityAnim+1,y
+    lda #2
+    sta entityVelocity+1,y
+    lda #60
+    sta entityCount,y
+.notShoot:
+    lda entityCount,y
+    beq .noDecrement
+    sec
+    sbc #1
+    sta entityCount,y
+.noDecrement
     jsr EntIsBulletNear
     bcc .alive
     lda #$80
@@ -668,6 +711,19 @@ ER_Spider subroutine
     sta arg+2
     jsr AddScore
 .alive:
+    jmp ER_Return
+    
+ER_SpiderWeb subroutine
+    sty sav
+    jsr EntTestVerticalCollision
+    ldy sav
+    bcc .notDead
+    lda #$80
+    sta entityXHi,y
+    jmp ER_Return
+.notDead:
+    jsr EntMoveVertically
+    jsr EntTryMelee
     jmp ER_Return
     
 ER_Bat subroutine

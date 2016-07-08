@@ -38,10 +38,7 @@
 ;passwords?
 ;intro and ending
 ;map background planet
-;faster spiders?
 ;test on hardware!
-;enemy tile swaps?
-;dynamic player tiles?
 ;door animation
 ;------------------------------------------------------------------------------
 ;Initial Boot
@@ -285,8 +282,6 @@ ResetStats subroutine
     sta playerFlags
     sta playerYVel
     sta playerYVel+2
-    lda #CATERPILLAR_ID+1
-    sta caterpillarNext
 ResetStats_end:
 
 LoadLevelTileset subroutine
@@ -465,7 +460,10 @@ LoadLevel subroutine
     clc
     adc tmp+2
     tax
-    
+    cpx #MAX_ENTITIES
+    bcc .noOverflow
+    brk
+.noOverflow:
     jmp .entityLoop
 LoadLevel_end:
 
