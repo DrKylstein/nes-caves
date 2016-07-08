@@ -70,19 +70,6 @@ nmi_AttrCopy subroutine
     dec shr_doAttrCol
 nmi_AttrCopy_end:
 
-nmi_FlashBg subroutine
-    lda shr_flashBg
-    beq nmi_FlashBg_end
-    bit PPU_STATUS
-    lda #$3F
-    sta PPU_ADDR
-    lda #$00
-    sta PPU_ADDR
-    lda #$0A
-    sta PPU_DATA
-    dec shr_flashBg
-nmi_FlashBg_end:
-
 nmi_updateReg subroutine
     lda shr_doRegCopy
     beq nmi_updateReg_end

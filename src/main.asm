@@ -40,6 +40,7 @@
 ;map background planet
 ;test on hardware!
 ;door animation
+;strip leading zeros on hud
 ;------------------------------------------------------------------------------
 ;Initial Boot
 ;------------------------------------------------------------------------------
@@ -731,7 +732,17 @@ Paused subroutine
     beq .StartNotPressed
     lda #0
     sta paused
-    jsr QEnableSplitDisplay
+    lda #0
+    sta arg
+    lda crystalsLeft
+    bne .notGreen
+    lda currLevel
+    cmp #MAP_LEVEL
+    beq .notGreen
+    lda #ALL_CRYSTALS_EFFECT
+    sta arg
+.notGreen:
+    jsr QColorEffect
     jmp MainLoop
 .StartNotPressed:
     lda pressed
@@ -741,10 +752,15 @@ Paused subroutine
     sta mapPX+1
     jmp doExit
 .SelectNotPressed:
-    lda frame
-    and #$E0
-    ora #1
+    lda #$E1
     sta arg
+    lda frame
+    and #$3F
+    cmp #$1F
+    bcs .light
+    lda #1
+    sta arg
+.light
     jsr QColorEffect
     jsr Synchronize
     inc frame
@@ -760,9 +776,6 @@ CheckInput subroutine
     beq .left
     lda #1
     sta paused
-    lda #$01
-    sta arg
-    jsr QColorEffect
 .left:
     lda ctrl
     and #JOY_LEFT_MASK
@@ -931,7 +944,9 @@ TC_Crystal:
     jsr PlaySound
     dec crystalsLeft
     bne .notDone
-    inc shr_flashBg
+    lda #ALL_CRYSTALS_EFFECT
+    sta arg
+    jsr QColorEffect
 .notDone:
     lda #0
     sta arg+2
