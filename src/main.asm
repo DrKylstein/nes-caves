@@ -2631,23 +2631,42 @@ AddScore subroutine ; arg 3 bytes value to add, A and X trashed
     bne .loop
     
 UpdateScoreDisplay subroutine
-    ldx shr_copyIndex
-    
+
     lda score
     jsr CentToDec
-    PHXA
+    sta tmp
     tya
-    PHXA
+    sta tmp+1
     lda score+1
     jsr CentToDec
-    PHXA
+    sta tmp+2
     tya
-    PHXA
+    sta tmp+3
     lda score+2
     jsr CentToDec
-    PHXA
+    sta tmp+4
     tya
+    sta tmp+5
+    
+    ldy #5
+.prefixloop:
+    lda tmp,y
+    bne .nonzero
+    lda #$10
+    sta tmp,y
+    dey
+    bpl .prefixloop
+.nonzero    
+
+    ldx shr_copyIndex
+    
+    ldy #0
+.pushloop:
+    lda tmp,y
     PHXA
+    iny
+    cpy #6
+    bne .pushloop
     
     lda #>[nmi_Copy6-1]
     PHXA
@@ -2671,6 +2690,9 @@ UpdateAmmoDisplay subroutine
     jsr CentToDec
     PHXA
     tya
+    bne .nonzero
+    ora #$10
+.nonzero
     PHXA
     
     lda #>[nmi_Copy2-1]
