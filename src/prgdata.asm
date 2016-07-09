@@ -47,6 +47,7 @@ animations:
     .word anim_flame
     .word anim_pipe_right
     .word anim_pipe_left
+    .word anim_torch
     
 frame_small1:
     .byte 8
@@ -843,6 +844,25 @@ anim_pipe_left subroutine
     .byte 6
     .byte $C0
     .byte 0
+
+anim_torch subroutine
+    .byte 1
+    .word .frame1
+    .word .frame2
+.frame1:
+    .byte 4
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 0
+    .byte $40
+    .byte 12
+.frame2:
+    .byte 4
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 0
+    .byte 0
+    .byte 12
 
 bits:
     .byte 0

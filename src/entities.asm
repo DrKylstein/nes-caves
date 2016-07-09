@@ -23,11 +23,12 @@ entityRoutine:
     .word ER_LeftCannon
     .word ER_Return
     .word ER_Rex
-    .word ER_Stalactite ;stalactite
+    .word ER_Stalactite
     .word ER_SpiderWeb
     .word ER_Flame
     .word ER_PipeRight
     .word ER_PipeLeft
+    .word ER_Return ; torch
     
 entityFlags:
     .byte ENT_F_ISTEMPORARY | 2; bullet
@@ -59,6 +60,7 @@ entityFlags:
     .byte ENT_F_SKIPYTEST | 1
     .byte 3 ;pipe right
     .byte 3 ;pipe left
+    .byte 1 ;torch
         
 entityTiles:
     .byte 14*2 ; bullet
@@ -90,6 +92,7 @@ entityTiles:
     .byte [14+32]*2 ; flame
     .byte [10+32]*2 ; pipe right
     .byte [10+32]*2 ; pipe left
+    .byte 251 ;torch
             
 entitySpeeds:
     .byte 4 ; bullet
@@ -121,6 +124,7 @@ entitySpeeds:
     .byte 0 ; flame
     .byte -1 ;pipe right
     .byte 1 ; pipe left
+    .byte 0 ; torch
     
 entityInitialAnims:
     .byte ANIM_SMALL_LONG ; bullet
@@ -152,6 +156,7 @@ entityInitialAnims:
     .byte ANIM_FLAME
     .byte ANIM_PIPE_RIGHT
     .byte ANIM_PIPE_LEFT
+    .byte ANIM_TORCH
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
     lda entityXLo,y

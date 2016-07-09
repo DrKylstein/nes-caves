@@ -5,7 +5,6 @@
 ;sprites:
 ;falling rocks
 ;full-size hammers?
-;spider shots (down only)
 ;mask right edge?
 ;explosions
 ;bonus fruit
@@ -22,7 +21,6 @@
 ;arrange and orient bg tiles for:
 ;hidden spikes
 ;girder bump
-;animated torches
 
 ;low gravity
 ;rex chasing
