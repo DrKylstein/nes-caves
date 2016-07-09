@@ -3,7 +3,6 @@
 ;------------------------------------------------------------------------------
 
 ;sprites:
-;vacuum pipe
 ;falling rocks
 ;full-size hammers?
 ;spider shots (down only)

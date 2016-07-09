@@ -45,6 +45,8 @@ animations:
     .word anim_powershot_hflip
     .word anim_stalactite
     .word anim_flame
+    .word anim_pipe_right
+    .word anim_pipe_left
     
 frame_small1:
     .byte 8
@@ -752,7 +754,95 @@ anim_flame subroutine
     .byte $60
     .byte 16
 
+anim_pipe_right subroutine
+    .byte 1
+    .word .frame1
+    .word .frame2
+.frame1:
+    .byte 16
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 0
+    .byte 0
+    .byte 8
 
+    .byte PX_VIEWPORT_OFFSET
+    .byte 2
+    .byte 0
+    .byte 16
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 4
+    .byte 0
+    .byte 24
+
+    .byte PX_VIEWPORT_OFFSET
+    .byte 6
+    .byte 0
+    .byte 32
+
+.frame2:
+    .byte 12
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 0
+    .byte 0
+    .byte 8
+
+    .byte PX_VIEWPORT_OFFSET
+    .byte 2
+    .byte 0
+    .byte 16
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 6
+    .byte 0
+    .byte 24
+
+anim_pipe_left subroutine
+    .byte 1
+    .word .frame1
+    .word .frame2
+.frame1:
+    .byte 16
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 2
+    .byte $C0
+    .byte 8
+
+    .byte PX_VIEWPORT_OFFSET
+    .byte 0
+    .byte $C0
+    .byte 16
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 4
+    .byte $C0
+    .byte 0
+
+    .byte PX_VIEWPORT_OFFSET
+    .byte 6
+    .byte $C0
+    .byte -8
+
+.frame2:
+    .byte 12
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 2
+    .byte $C0
+    .byte 8
+
+    .byte PX_VIEWPORT_OFFSET
+    .byte 0
+    .byte $C0
+    .byte 16
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 6
+    .byte $C0
+    .byte 0
 
 bits:
     .byte 0

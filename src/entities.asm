@@ -26,6 +26,8 @@ entityRoutine:
     .word ER_Stalactite ;stalactite
     .word ER_SpiderWeb
     .word ER_Flame
+    .word ER_PipeRight
+    .word ER_PipeLeft
     
 entityFlags:
     .byte ENT_F_ISTEMPORARY | 2; bullet
@@ -55,6 +57,8 @@ entityFlags:
     .byte 0 ; stalactite
     .byte ENT_F_ISTEMPORARY | 2 ; spider web
     .byte ENT_F_SKIPYTEST | 1
+    .byte 3 ;pipe right
+    .byte 3 ;pipe left
         
 entityTiles:
     .byte 14*2 ; bullet
@@ -84,6 +88,8 @@ entityTiles:
     .byte 32*2 + 16 + 1; stalactite
     .byte [18+32]*2 ; spider web
     .byte [14+32]*2 ; flame
+    .byte [10+32]*2 ; pipe right
+    .byte [10+32]*2 ; pipe left
             
 entitySpeeds:
     .byte 4 ; bullet
@@ -113,6 +119,8 @@ entitySpeeds:
     .byte 0; stalactite
     .byte 2; spider web
     .byte 0 ; flame
+    .byte -1 ;pipe right
+    .byte 1 ; pipe left
     
 entityInitialAnims:
     .byte ANIM_SMALL_LONG ; bullet
@@ -142,6 +150,8 @@ entityInitialAnims:
     .byte ANIM_STALACTITE
     .byte ANIM_SYMMETRICAL_NONE ; spider web
     .byte ANIM_FLAME
+    .byte ANIM_PIPE_RIGHT
+    .byte ANIM_PIPE_LEFT
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
     lda entityXLo,y
@@ -406,6 +416,58 @@ EntFall subroutine
     ora tmp
     sta entityYHi,y
     rts
+
+ER_PipeRight subroutine
+    lda entityXLo,y
+    sta tmp
+    lda entityXHi,y
+    sta tmp+1
+    CMP16 playerX,tmp
+    bcs .notbehind
+    jmp ER_Return
+.notbehind:
+    ADD16I tmp,tmp,[5*16]
+    CMP16 playerX,tmp
+    bcc .notBeyond
+    jmp ER_Return
+.notBeyond:
+    Jmp ER_Pipe
+    
+ER_PipeLeft subroutine
+    lda entityXLo,y
+    sta tmp
+    lda entityXHi,y
+    sta tmp+1
+    ADD16I tmp,tmp,16
+    CMP16 playerX,tmp
+    bcc .notbehind
+    jmp ER_Return
+.notbehind:
+    SUB16I tmp,tmp,[5*16]
+    CMP16 playerX,tmp
+    bcs .notBeyond
+    jmp ER_Return
+.notBeyond:
+    Jmp ER_Pipe
+    
+ER_Pipe subroutine
+    MOV16I arg, 10
+    jsr EntAwayFromPlayerY
+    bcs .end
+    MOV16I arg, 10
+    jsr EntAwayFromPlayerX
+    bcs .noKill
+    jsr KillPlayer
+.noKill:
+    lda frame
+    and #1
+    beq .end
+    lda entityVelocity,y
+    sta tmp
+    EXTEND tmp,tmp
+    ADD16 playerX, playerX, tmp
+.end:
+    jmp ER_Return
 
 FlameTable:
     .byte 16

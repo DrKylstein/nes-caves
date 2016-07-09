@@ -183,3 +183,5 @@ ANIM_POWERSHOT              ds 1
 ANIM_POWERSHOT_HFLIP        ds 1
 ANIM_STALACTITE             ds 1
 ANIM_FLAME                  ds 1
+ANIM_PIPE_RIGHT             ds 1
+ANIM_PIPE_LEFT              ds 1
