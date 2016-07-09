@@ -1094,22 +1094,16 @@ ER_CaterpillarHead:
     bcc .alive
     lda #$80
     sta entityXHi
-    lda #$80
     sta entityXHi,y
     
-    tya
-    tax
-    inx
-    lda entityYHi,x
+    lda entityYHi+1,y
     lsr
     cmp #CATERPILLAR_ID
     bcc .lastOne
     cmp #CATERPILLAR_ID+4
     bcs .lastOne
-    lda entityYHi,x
-    and #ENT_Y_POS
-    ora #CATERPILLAR_ID<<1
-    sta entityYHi,x
+    lda entityYHi,y ;should be on same y coord, no need to extract
+    sta entityYHi+1,y
 .lastOne:
     lda #1
     sta arg+1
@@ -1117,6 +1111,7 @@ ER_CaterpillarHead:
     sta arg
     sta arg+2
     jsr AddScore
+    jmp ER_Return
 .alive:
 ER_CaterpillarBack subroutine
     lda #ANIM_CATERPILLAR
