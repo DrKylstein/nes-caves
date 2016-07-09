@@ -25,6 +25,7 @@ entityRoutine:
     .word ER_Rex
     .word ER_Stalactite ;stalactite
     .word ER_SpiderWeb
+    .word ER_Flame
     
 entityFlags:
     .byte ENT_F_ISTEMPORARY | 2; bullet
@@ -53,6 +54,7 @@ entityFlags:
     .byte 3  ; rex
     .byte 0 ; stalactite
     .byte ENT_F_ISTEMPORARY | 2 ; spider web
+    .byte ENT_F_SKIPYTEST | 1
         
 entityTiles:
     .byte 14*2 ; bullet
@@ -81,6 +83,7 @@ entityTiles:
     .byte [25+32*2]*2 ; rex
     .byte 32*2 + 16 + 1; stalactite
     .byte [18+32]*2 ; spider web
+    .byte [14+32]*2 ; flame
             
 entitySpeeds:
     .byte 4 ; bullet
@@ -109,6 +112,7 @@ entitySpeeds:
     .byte 1; rex
     .byte 0; stalactite
     .byte 2; spider web
+    .byte 0 ; flame
     
 entityInitialAnims:
     .byte ANIM_SMALL_LONG ; bullet
@@ -137,6 +141,7 @@ entityInitialAnims:
     .byte ANIM_REX ;rex
     .byte ANIM_STALACTITE
     .byte ANIM_SYMMETRICAL_NONE ; spider web
+    .byte ANIM_FLAME
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
     lda entityXLo,y
@@ -277,12 +282,12 @@ EntTryMelee subroutine
     
     SUB16 tmp+4, tmp, playerX
     ABS16 tmp+4, tmp+4
-    CMP16I tmp+4, 14
+    CMP16I tmp+4, 12
     bcs .noMelee
     
     SUB16 tmp+4, tmp+2, playerY
     ABS16 tmp+4, tmp+4
-    CMP16I tmp+4, 14
+    CMP16I tmp+4, 12
     bcs .noMelee
     
     jsr DamagePlayer
@@ -401,6 +406,161 @@ EntFall subroutine
     ora tmp
     sta entityYHi,y
     rts
+
+FlameTable:
+    .byte 16
+    .byte 15
+    .byte 14
+    .byte 13
+    .byte 12
+    .byte 11
+    .byte 10
+    .byte 9
+    .byte 8
+    .byte 7
+    .byte 6
+    .byte 5
+    .byte 4
+    .byte 3
+    .byte 2
+    .byte 1
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 1
+    .byte 2
+    .byte 4
+    .byte 8
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    .byte 16
+    
+ER_Flame subroutine
+    lda entityXHi,y
+    and #ENT_X_STATE
+    bne .notFirstUpdate
+    lda entityYLo,y
+    sta entityCount,y
+    lda entityYHi,y
+    sta entityVelocity,y
+    lda entityXHi,y
+    ora #[1<<ENT_X_STATE_SHIFT]
+    sta entityXHi,y
+.notFirstUpdate:
+    lda frame
+    lsr
+    tax
+    lda FlameTable,x
+    clc
+    adc entityCount,y
+    sta entityYLo,y
+    lda #0
+    adc entityVelocity,y
+    sta entityYHi,y
+    jsr EntTryMelee
+    jmp ER_Return
 
 ER_Stalactite subroutine
     jsr EntTryMelee

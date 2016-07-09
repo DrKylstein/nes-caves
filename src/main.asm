@@ -5,7 +5,6 @@
 ;sprites:
 ;vacuum pipe
 ;falling rocks
-;flame traps
 ;full-size hammers?
 ;spider shots (down only)
 ;mask right edge?

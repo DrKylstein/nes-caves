@@ -44,6 +44,7 @@ animations:
     .word anim_powershot
     .word anim_powershot_hflip
     .word anim_stalactite
+    .word anim_flame
     
 frame_small1:
     .byte 8
@@ -721,6 +722,36 @@ anim_stalactite subroutine
     .byte 0
     .byte $20
     .byte 16
+
+anim_flame subroutine
+    .byte 1
+    .word .frame1
+    .word .frame2
+.frame1:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 0
+    .byte $20
+    .byte 8
+
+    .byte PX_VIEWPORT_OFFSET
+    .byte 2
+    .byte $20
+    .byte 16
+.frame2:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 2
+    .byte $60
+    .byte 8
+
+    .byte PX_VIEWPORT_OFFSET
+    .byte 0
+    .byte $60
+    .byte 16
+
 
 
 bits:

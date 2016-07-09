@@ -58,6 +58,8 @@ ENT_Y_INDEX = $FE
 
 ;contents of main_entityXHi
 ENT_X_POS = $03
+ENT_X_STATE = $7C
+ENT_X_STATE_SHIFT = 2
 
 ;contents of prgdata_entityFlags
 ENT_F_SKIPYTEST = $80
@@ -180,3 +182,4 @@ ANIM_SLIME_LEFT             ds 1
 ANIM_POWERSHOT              ds 1
 ANIM_POWERSHOT_HFLIP        ds 1
 ANIM_STALACTITE             ds 1
+ANIM_FLAME                  ds 1
