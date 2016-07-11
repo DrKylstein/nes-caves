@@ -76,9 +76,7 @@
     
     ORG 16 + 7*$4000
     RORG $C000
-    include main.asm
-    include nmi.asm
-    include prgdata.asm
+    include bank7.asm
     
 irq subroutine
     tsx

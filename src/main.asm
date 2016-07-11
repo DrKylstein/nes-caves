@@ -33,10 +33,24 @@
 ;full dump independent of nmi for brk handler?
 ;passwords?
 ;intro and ending
-;map background planet
 ;test on hardware!
 ;door animation
-;strip leading zeros on hud
+
+;???
+;animated , layered, map background planet
+;parallaxing tiled backgrounds
+;-everywhere, make pickups square and move non-blocky decor to sprites
+;Hilltop style clouds on main map
+;dynamically load small messages, e.g.: paused, hints
+;separate top and bottom of main map to enable separate effects
+;animated background objects
+;sprite decoartions as feature, extend coord tables 
+;/or add metatile based tables and separate sprite update
+;shift entities into middle of OAM and use upper 16 for foreground effects
+;move player into entity sprite space to share flickering
+;flickering torch/pulsing lava emphasis effect
+
+
 ;------------------------------------------------------------------------------
 ;Initial Boot
 ;------------------------------------------------------------------------------
