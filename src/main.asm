@@ -293,6 +293,7 @@ ResetStats subroutine
     sta playerFlags
     sta playerYVel
     sta playerYVel+2
+    MOV16I shr_percussionStream, testDrumSequence
 ResetStats_end:
 
 LoadLevelTileset subroutine

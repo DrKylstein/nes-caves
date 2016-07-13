@@ -2,11 +2,90 @@
 ; Sound Data
 ;------------------------------------------------------------------------------
 
-sfxLaser subroutine
-    .byte 3
+testDrumSequence:
+    .byte $80 | 16+8
+    .byte 1,$80 | 8
+    .byte 1,$80 | 8
+    .byte 0,$80 | 16
+    .byte 1,$80 | 8
+    .byte 1,$80 | 8
+    .byte 0,$80 | 16
+    .byte 1,$80 | 8
+    .byte 1,$80 | 8
+    .byte 0,$80 | 16
+    .byte 1,$80 | 8
+    .byte 0,$80 | 16
+    .byte 0,$80 | 16
+    .byte <testDrumSequence-. ;rewind 10 bytes
+
+
+drumPatches:
+    .word bassDrum
+    .word hihat
+
+
+;square patch: 
+;.byte duty | vol, relative freq
+; .byte 0 ; end
+;tri patch:
+;.word relative freq
+;.word TRI_END ; to end
+;noise patch:
+;.byte %0011xxxx ; volume
+;.byte %L000FFFF ;L = loop noise, F = absolute frequency
+;.byte 0 ; end
+
+bassDrum subroutine
+    .byte NOISE_CH
+    .byte 0
     .word .noise
     .word 0
-    .byte <-1
+    .byte TRI_CH
+    .byte 0
+    .word .tri
+    .word $200
+    .byte -1
+.noise:
+    .byte #$3E, $08
+    .byte #$3C, $09
+    .byte #$3A, $0a
+    .byte #$38, $0b
+    .byte #$36, $0c
+    .byte #$34, $0d
+    .byte #$32, $0e
+    .byte #$30, $0F
+    .byte 0
+.tri:
+    .word 0
+    .word 4
+    .word 8
+    .word 16
+    .word TRI_END
+
+hihat subroutine
+    .byte NOISE_CH
+    .byte 0
+    .word .noise
+    .word 0
+    .byte -1
+.noise:
+    .byte #$3E, $84
+    .byte #$3C, $85
+    .byte #$3A, $86
+    .byte #$38, $87
+    .byte #$36, $88
+    .byte #$34, $89
+    .byte #$32, $8a
+    .byte #$30, $8b
+    .byte 0
+
+
+sfxLaser subroutine
+    .byte NOISE_CH ;channel
+    .byte 3 ;priority
+    .word .noise ; patch
+    .word 0 ;note
+    .byte <-1 ;terminator
 .noise:
     .byte $31, $8D
     .byte $32, $8D
@@ -26,11 +105,11 @@ sfxLaser subroutine
     .byte 0
     
 sfxCrystal subroutine
-    .byte 0
+    .byte SQ1_CH
+    .byte 1
     .word .sq
     .word $060
     .byte <-1
-
 .sq:
     .byte DUTY_50 | $8, 0
     .byte DUTY_50 | $F, 0
@@ -54,10 +133,11 @@ sfxCrystal subroutine
     .byte 0
 
 sfxJump subroutine
-    .byte 0
+    .byte SQ1_CH
+    .byte 2
     .word .sqJump
     .word $00F0
-    .byte <-1
+    .byte <-2
     
 .sqJump:
     .byte DUTY_25 | $F, 0
@@ -93,12 +173,16 @@ sfxJump subroutine
     .byte 0
     
 sfxShoot subroutine
-    .byte 0
+    .byte SQ1_CH
+    .byte 2
     .word .sqShoot
     .word $0230
-    .byte 3
+    
+    .byte NOISE_CH
+    .byte 2
     .word .noiseShoot
     .word 0
+    
     .byte <-1
 .sqShoot:
     .byte DUTY_25 | $F, 0

@@ -146,6 +146,48 @@ nmi_DebugCounter subroutine
     sta PPU_DATA
 nmi_DebugCounter_end:
 
+nmi_DoPercussion subroutine
+    lda shr_percussionStream+1
+    beq nmi_DoPercussion_end
+    ldy #0    
+    lda nmi_percussionTimer
+    beq .loop
+    dec nmi_percussionTimer
+    jmp nmi_DoPercussion_end
+    
+.loop:
+    lda (shr_percussionStream),y
+    bmi .command
+    asl
+    tax
+    lda drumPatches,x
+    sta shr_sfxPtr
+    lda drumPatches+1,x
+    sta shr_sfxPtr+1
+    INC16 shr_percussionStream
+    jmp .loop
+.command:
+    and #$40
+    bne .branch
+    lda (shr_percussionStream),y
+    and #$1F
+    sta nmi_percussionTimer
+    INC16 shr_percussionStream
+    jmp nmi_DoPercussion_end
+.branch:
+    lda (shr_percussionStream),y
+    clc
+    adc shr_percussionStream
+    sta shr_percussionStream
+    lda shr_percussionStream+1
+    adc #$FF
+    sta shr_percussionStream+1
+    MOV16 shr_debugReg,shr_percussionStream
+    jmp .loop
+nmi_DoPercussion_end:
+        
+
+
 nmi_loadSfx subroutine
     MOV16 nmi_tmp,shr_sfxPtr
     lda nmi_tmp+1
@@ -154,24 +196,47 @@ nmi_loadSfx subroutine
 .loop:
     lda (nmi_tmp),y
     bmi .end
-    asl
-    asl
     tax
     iny
-    REPEAT 2
+    
     lda (nmi_tmp),y
-    sta nmi_sfxBase,x
+    cmp nmi_sfxPriority,x
+    bcs .higher
+    tya
+    clc
+    adc #5
+    tay
+    jmp .loop
+.higher
+    sta nmi_sfxPriority,x
     iny
-    inx
-    REPEND
+    txa
+    asl
+    tax
+    
+    lda (nmi_tmp),y
+    iny
+    sta nmi_sfxPatch,x
+    
+    lda (nmi_tmp),y
+    iny
+    sta nmi_sfxPatch+1,x
 
-    REPEAT 2
     lda (nmi_tmp),y
-    sta nmi_sfxBase,x
-    sta APU_SQ1_VOL,x
     iny
-    inx
-    REPEND
+    sta nmi_sfxFreq,x
+    
+    lda (nmi_tmp),y
+    iny
+    sta nmi_sfxFreq+1,x
+    ;set upper frequency byte for square qwaves
+    sta nmi_tmp+2
+    txa
+    asl
+    tax
+    lda nmi_tmp+2
+    sta APU_SQ1_HI,x
+    
     jmp .loop
 .end:
     lda #0
@@ -219,7 +284,6 @@ nmi_doStatus_end:
 
 nmi_DoSq1 subroutine
 ;update sound during wait
-
     ldy #0
     lda nmi_sq1Patch+1 ;pointer can't be in zero page, no sound must be set
     beq .ended
@@ -234,11 +298,12 @@ nmi_DoSq1 subroutine
 .noTrigger
     ADD16I nmi_sq1Patch, nmi_sq1Patch, 2
 .ended:
+    lda #0
+    sta nmi_sq1Priority
 nmi_DoSq1_end:
 
 nmi_DoTri subroutine
 ;update sound during wait
-
     ldy #0
     lda nmi_triPatch+1 ;pointer can't be in zero page, no sound must be set
     beq .ended
@@ -262,13 +327,14 @@ nmi_DoTri subroutine
 .ended:
     lda #$80
     sta APU_TRI_LINEAR
-    
+    lda #0
+    sta nmi_triPriority
+
 nmi_DoTri_end:
 
 
 nmi_DoNoise subroutine
 ;update sound during wait
-
     ldy #0
     lda nmi_noisePatch+1 ;pointer can't be in zero page, no sound must be set
     beq .ended
@@ -279,9 +345,10 @@ nmi_DoNoise subroutine
     lda (nmi_noisePatch),y
     eor #$0F
     sta APU_NOISE_LO
-.noTrigger
     ADD16I nmi_noisePatch, nmi_noisePatch, 2
 .ended:
+    lda #0
+    sta nmi_noisePriority
 nmi_DoNoise_end:
 
 nmi_ClockAPU subroutine

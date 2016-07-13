@@ -23,15 +23,27 @@ shr_earlyExit       ds 1
 shr_copyIndex       ds 1
 
 shr_sfxPtr ds 2
-nmi_sfxBase:
+
+nmi_sfxPriority:
+nmi_sq1Priority  ds 1
+nmi_sq2Priority  ds 1
+nmi_triPriority  ds 1
+nmi_noisePriority ds 1
+
+nmi_sfxPatch:
 nmi_sq1Patch     ds 2
-nmi_sq1Freq      ds 2
 nmi_sq2Patch     ds 2
-nmi_sq2Freq      ds 2
 nmi_triPatch     ds 2
-nmi_triFreq      ds 2
 nmi_noisePatch   ds 2
+
+nmi_sfxFreq:
+nmi_sq1Freq      ds 2
+nmi_sq2Freq      ds 2
+nmi_triFreq      ds 2
 nmi_noiseFreq    ds 2
+
+shr_percussionStream ds 2
+nmi_percussionTimer ds 1
 
     ECHO $100-.," bytes left in page $000"
 
