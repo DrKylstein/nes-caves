@@ -293,6 +293,8 @@ ResetStats subroutine
     sta playerFlags
     sta playerYVel
     sta playerYVel+2
+    lda #8
+    sta shr_tempo
     MOV16I shr_percussionStream, testDrumSequence
 ResetStats_end:
 

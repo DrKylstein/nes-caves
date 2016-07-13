@@ -43,7 +43,8 @@ nmi_triFreq      ds 2
 nmi_noiseFreq    ds 2
 
 shr_percussionStream ds 2
-nmi_percussionTimer ds 1
+shr_tempo ds 1
+nmi_beatTimer ds 1
 
     ECHO $100-.," bytes left in page $000"
 

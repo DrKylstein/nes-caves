@@ -150,9 +150,9 @@ nmi_DoPercussion subroutine
     lda shr_percussionStream+1
     beq nmi_DoPercussion_end
     ldy #0    
-    lda nmi_percussionTimer
+    lda nmi_beatTimer
     beq .loop
-    dec nmi_percussionTimer
+    dec nmi_beatTimer
     jmp nmi_DoPercussion_end
     
 .loop:
@@ -164,16 +164,13 @@ nmi_DoPercussion subroutine
     sta shr_sfxPtr
     lda drumPatches+1,x
     sta shr_sfxPtr+1
-    INC16 shr_percussionStream
-    jmp .loop
+    jmp .end
 .command:
     and #$40
     bne .branch
-    lda (shr_percussionStream),y
-    and #$1F
-    sta nmi_percussionTimer
-    INC16 shr_percussionStream
-    jmp nmi_DoPercussion_end
+    ;%10xxxxxx misc commands
+    ;$80 = nop
+    jmp .end
 .branch:
     lda (shr_percussionStream),y
     clc
@@ -182,8 +179,11 @@ nmi_DoPercussion subroutine
     lda shr_percussionStream+1
     adc #$FF
     sta shr_percussionStream+1
-    MOV16 shr_debugReg,shr_percussionStream
     jmp .loop
+.end:
+    INC16 shr_percussionStream
+    lda shr_tempo
+    sta nmi_beatTimer
 nmi_DoPercussion_end:
         
 

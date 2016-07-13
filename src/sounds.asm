@@ -3,20 +3,24 @@
 ;------------------------------------------------------------------------------
 
 testDrumSequence:
-    .byte $80 | 16+8
-    .byte 1,$80 | 8
-    .byte 1,$80 | 8
-    .byte 0,$80 | 16
-    .byte 1,$80 | 8
-    .byte 1,$80 | 8
-    .byte 0,$80 | 16
-    .byte 1,$80 | 8
-    .byte 1,$80 | 8
-    .byte 0,$80 | 16
-    .byte 1,$80 | 8
-    .byte 0,$80 | 16
-    .byte 0,$80 | 16
-    .byte <testDrumSequence-. ;rewind 10 bytes
+    .byte 1
+    .byte 1
+    .byte 0
+    .byte $80
+    .byte 1
+    .byte 1
+    .byte 0
+    .byte $80
+    .byte 1
+    .byte 1
+    .byte 0
+    .byte $80
+    .byte 1
+    .byte 0
+    .byte $80
+    .byte 0
+    .byte $80
+    .byte <testDrumSequence-. ;loop
 
 
 drumPatches:
