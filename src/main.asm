@@ -17,19 +17,17 @@
 ;robot
 ;wall snake
 ;flying alien wrench
+;hidden crystal
 
-;arrange and orient bg tiles for:
 ;hidden spikes
-;girder bump
 
 ;low gravity
 ;rex chasing
 ;strength mushroom melee
 ;more sounds
 ;music
-;air generator death
 ;fades
-;death animation
+;death animations
 ;full dump independent of nmi for brk handler?
 ;passwords?
 ;intro and ending

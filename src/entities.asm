@@ -871,6 +871,10 @@ ER_Bullet subroutine
     jsr GetTileBehavior
     ldy sav+4
     lda ret
+    cmp #TB_AIR
+    bne .notAir
+    jsr KillPlayer
+.notAir:
     cmp #TB_SOLID
     beq .die
     cmp #TB_WEAKBLOCK
