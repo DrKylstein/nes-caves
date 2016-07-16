@@ -295,14 +295,14 @@ ResetStats subroutine
     sta playerYVel+2
     lda #8
     sta shr_tempo
-    lda #<testDrumSequence
-    sta shr_musicStreamLo
-    lda #>testDrumSequence
-    sta shr_musicStreamHi
-    lda #<testBassSequence
-    sta shr_musicStreamLo+1
-    lda #>testBassSequence
-    sta shr_musicStreamHi+1
+    ; lda #<testDrumSequence
+    ; sta shr_musicStreamLo
+    ; lda #>testDrumSequence
+    ; sta shr_musicStreamHi
+    ; lda #<testBassSequence
+    ; sta shr_musicStreamLo+1
+    ; lda #>testBassSequence
+    ; sta shr_musicStreamHi+1
     
 ResetStats_end:
 
@@ -391,10 +391,9 @@ LoadLevel subroutine
     dex
     bpl .clearEntities
 
-
     ADD16I tmp, sav, 960
     ldy #0
-    ldx #1
+    ldx #RESERVED_ENTITIES
 .entityLoop:
     lda (tmp),y
     iny
@@ -1520,6 +1519,66 @@ CheckCieling subroutine
     bcs .hit
     jmp CheckCieling_end
 .hit:
+    ;handle girder
+    ADD16I arg, playerX, PLAYER_HCENTER
+    SUB16I arg+2, playerY, 0
+    REPEAT 4
+    LSR16 arg
+    LSR16 arg+2
+    REPEND
+    jsr MultiplyBy24
+    ADD16 tmp, arg+2, ret
+    ADD16I tmp, tmp, levelMap
+    ldy #0
+    lda (tmp),y
+    tay
+    lda metatiles+256*4,y
+    REPEAT 2
+    lsr
+    REPEND
+    cmp #TB_GIRDER_LEFT
+    bcc .normal
+    cmp #TB_GIRDER_RIGHT+1
+    bcs .normal
+    sta sav
+    
+    MOV16 tmp+2,arg
+    MOV16 tmp+4,arg+2
+    REPEAT 4
+    ASL16 tmp+2
+    ASL16 tmp+4
+    REPEND
+    ldx #1
+    lda tmp+2
+    sta entityXLo,x
+    lda tmp+3
+    sta entityXHi,x
+    lda tmp+4
+    sta entityYLo,x
+    lda tmp+5
+    ora #GIRDER_ID<<1
+    sta entityYHi,x
+    lda #0
+    sta entityCount,x
+    lda arg+2
+    sta entityVelocity,x
+    lda sav
+    sec
+    sbc #TB_GIRDER_LEFT
+    clc
+    adc #ANIM_GIRDER_LEFT
+    sta entityAnim,x
+
+    
+    ldy #0
+    lda (tmp),y
+    ora #1
+    sta arg+4
+    jsr SetTile
+    
+    
+    
+.normal:
     MOV16I playerYVel, 0
     lda #0
     sta playerYFrac
@@ -1529,10 +1588,12 @@ CheckCieling subroutine
     sta playerY
     lda powerType
     cmp #POWER_GRAVITY
-    bne CheckCieling_end
+    JNE CheckCieling_end
     lda playerFlags
     and #~PLY_ISJUMPING
     sta playerFlags
+    
+    
 CheckCieling_end:
     
 CheckHurt subroutine
@@ -1897,12 +1958,12 @@ ClearSprites subroutine
 .loop:
     sta shr_entitySprites,y
     iny
-    cpy #32*4
+    cpy #32*OAM_SIZE
     bne .loop
 ClearSprites_end:
 
-
 UpdateEntitySprites subroutine
+    SELECT_BANK 3
     lda startSprite
     and #$7C
     ora #$80
@@ -2234,8 +2295,7 @@ GetTileBehavior ;arg0..1 = mt_x arg2..3 = mt_y ret0 = value
     rts
 ;------------------------------------------------------------------------------
 GetTile ;arg0..1 = mt_x arg2..3 = mt_y ret0 = value
-    jsr MultiplyBy24 ;takes arg0, which we no longer care about after this
-                          ;returns
+    jsr MultiplyBy24 ;takes arg0
     ;t0 = y+ x*24
     ADD16 tmp, arg+2, ret
     
@@ -2247,10 +2307,7 @@ GetTile ;arg0..1 = mt_x arg2..3 = mt_y ret0 = value
     rts
 ;------------------------------------------------------------------------------
 SetTile ;arg0..1 = mt_x arg2..3 = mt_y, arg4 = value
-    lda sav
-    pha
-    lda sav+1
-    pha
+    PUSH16 sav
     jsr MultiplyBy24
     ADD16I ret, ret, levelMap
     ADD16 tmp, arg+2, ret
@@ -2328,10 +2385,7 @@ SetTile ;arg0..1 = mt_x arg2..3 = mt_y, arg4 = value
     stx shr_copyIndex
     
 .end:
-    pla
-    sta sav+1
-    pla
-    sta sav
+    POP16 sav
     rts
 ;------------------------------------------------------------------------------
 MultiplyBy24: ;arg0..arg1 is factor, ret0..ret1 is result
@@ -2911,6 +2965,12 @@ TestCollisionTop subroutine
     lda ret
     cmp #TB_SOLID
     beq .hit
+    cmp #TB_GIRDER_LEFT
+    beq .hit
+    cmp #TB_GIRDER_MIDDLE
+    beq .hit
+    cmp #TB_GIRDER_RIGHT
+    beq .hit
     cmp #TB_WEAKBLOCK
     beq .hit
     cmp #TB_PLATFORM
@@ -2935,6 +2995,12 @@ TestCollision subroutine
     jsr GetTileBehavior
     lda ret
     cmp #TB_SOLID
+    beq .hit
+    cmp #TB_GIRDER_LEFT
+    beq .hit
+    cmp #TB_GIRDER_MIDDLE
+    beq .hit
+    cmp #TB_GIRDER_RIGHT
     beq .hit
     cmp #TB_WEAKBLOCK
     beq .hit

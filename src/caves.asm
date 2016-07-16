@@ -44,6 +44,7 @@
     
     ORG 16 + 3*$4000
     RORG $8000
+    include bank3.asm
     ECHO "PRGROM Bank 3 left:",$C000-.
     IF . > $C000-6
     ECHO "Exceeded PRGROM Bank 0 size!"
@@ -93,7 +94,7 @@ banktable:
     
     ECHO "PRGROM Bank 7 left:",$10000-.-6
     IF . > $10000-6
-    ECHO "Exceeded PRGROM Bank 6 size!"
+    ECHO "Exceeded PRGROM Bank 7 size!"
     ERR
     ENDIF
 ;interrupt vectors

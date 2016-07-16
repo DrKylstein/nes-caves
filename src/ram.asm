@@ -57,10 +57,11 @@ BUFFER_SEG:
 shr_tileBuffer      ds TOP_HEIGHT+BOTTOM_HEIGHT           ;18+30 = 48 : 48
 shr_attrBuffer      ds TOP_ATTR_HEIGHT+BOTTOM_ATTR_HEIGHT ; 5+ 8 = 13 : 61
 shr_copyBuffer: ;163 bytes
+    ECHO $1E0-.," bytes left for copy buffer"
     ORG $1E0
 shr_copyBufferEnd:
 shr_stack: ;32 bytes
-    ECHO $200-.," bytes left in page $100"
+    ECHO $200-.," bytes left for stack"
     
     ORG $0200
 shr_oamShadow:
@@ -70,6 +71,8 @@ shr_spriteFlags     ds 1
 shr_spriteX         ds 1
 shr_hudCurtain      ds OAM_SIZE*7
 shr_playerSprites   ds OAM_SIZE*2
+girderSprite        ds OAM_SIZE*2
+    ECHO [$280-.]/OAM_SIZE," sprites left in upper table"
     ORG $0280
 shr_entitySprites:
 
@@ -111,19 +114,16 @@ crystalsLeft   ds 1
 playerYFrac    ds 1 
 playerY        ds 2 
 playerX        ds 2 
-doorsX        ds 3
-doorsY        ds 3
+doorsX         ds 3
+doorsY         ds 3
 
-
-entityBlock:
 entityXLo        ds MAX_ENTITIES
 entityXHi        ds MAX_ENTITIES
 entityYLo        ds MAX_ENTITIES
 entityYHi        ds MAX_ENTITIES ; bottom bit
-entityBlockEnd:
 entityVelocity   ds MAX_ENTITIES ; 
-entityAnim       ds MAX_ENTITIES
 entityCount      ds MAX_ENTITIES
+entityAnim       ds MAX_ENTITIES
     ECHO $400-.," bytes left in page $300"
 
     ORG $0400

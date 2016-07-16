@@ -1,6 +1,5 @@
     include main.asm
     include nmi.asm
-    include anims.asm
     include sounds.asm
 ;------------------------------------------------------------------------------
 ; Misc Data

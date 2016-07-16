@@ -21,7 +21,7 @@ entityRoutine:
     .word ER_RightCannon
     .word ER_RightLaser
     .word ER_LeftCannon
-    .word ER_Return
+    .word ER_Girder ; girder
     .word ER_Rex
     .word ER_Stalactite
     .word ER_SpiderWeb
@@ -53,7 +53,7 @@ entityFlags:
     .byte [1<<ENT_F_CHILDREN_SHIFT] | 2 ; right cannon
     .byte ENT_F_ISTEMPORARY | 1 ; right laser
     .byte [1<<ENT_F_CHILDREN_SHIFT] | 2 ; left cannon
-    .byte 0
+    .byte 0 ;girder
     .byte 3  ; rex
     .byte 0 ; stalactite
     .byte ENT_F_ISTEMPORARY | 2 ; spider web
@@ -85,7 +85,7 @@ entityTiles:
     .byte [2+32]*2 ; right cannon
     .byte [4+32]*2 ; right laser
     .byte [2+32]*2 ; left cannon
-    .byte 0
+    .byte 123 ; girder
     .byte [25+32*2]*2 ; rex
     .byte 32*2 + 16 + 1; stalactite
     .byte [18+32]*2 ; spider web
@@ -117,7 +117,7 @@ entitySpeeds:
     .byte 0 ; right cannon
     .byte 4 ; right laser
     .byte 0 ; left cannon
-    .byte 0
+    .byte 0 ;girder
     .byte 1; rex
     .byte 0; stalactite
     .byte 2; spider web
@@ -149,7 +149,7 @@ entityInitialAnims:
     .byte ANIM_SMALL_NONE ; right cannon
     .byte ANIM_SYMMETRICAL_NONE ; laser
     .byte ANIM_SMALL_HFLIP_NONE ; left cannon
-    .byte 0 ; unused
+    .byte ANIM_GIRDER_MIDDLE ; girder
     .byte ANIM_REX ;rex
     .byte ANIM_STALACTITE
     .byte ANIM_SYMMETRICAL_NONE ; spider web
@@ -157,6 +157,7 @@ entityInitialAnims:
     .byte ANIM_PIPE_RIGHT
     .byte ANIM_PIPE_LEFT
     .byte ANIM_TORCH
+
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
     lda entityXLo,y
@@ -421,6 +422,62 @@ EntFall subroutine
     ora tmp
     sta entityYHi,y
     rts
+
+girderTable
+    .byte #-2
+    .byte #-1
+    .byte #-1
+    .byte #0
+    .byte #2
+    .byte #1
+    .byte #0
+    .byte #1
+
+ER_Girder subroutine
+    lda entityCount,y
+    cmp #8
+    bne .continue    
+    lda entityXLo,y
+    sta arg
+    lda entityXHi,y
+    sta arg+1
+    lda entityYLo,y
+    sta arg+2
+    lda entityYHi,y
+    and #ENT_Y_POS
+    sta arg+3
+    REPEAT 4
+    LSR16 arg
+    LSR16 arg+2
+    REPEND
+    sty sav
+    jsr GetTile
+    ldy sav
+    lda ret
+    and #$FE
+    sta arg+4
+    jsr SetTile
+    ldy sav
+    lda #$80
+    sta entityXHi,y
+    jmp ER_Return
+.continue:
+    lda entityCount,y
+    tax
+    lda girderTable,x
+    sta tmp
+    inx
+    txa
+    sta entityCount,y
+    EXTEND tmp,tmp
+    lda tmp
+    clc
+    adc entityYLo,y
+    sta entityYLo,y
+    lda tmp+1
+    adc entityYHi,y
+    sta entityYHi,y
+    jmp ER_Return
 
 ER_PipeRight subroutine
     lda entityXLo,y

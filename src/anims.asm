@@ -48,6 +48,9 @@ animations:
     .word anim_pipe_right
     .word anim_pipe_left
     .word anim_torch
+    .word anim_girder_left
+    .word anim_girder_middle
+    .word anim_girder_right
     
 frame_small1:
     .byte 8
@@ -724,6 +727,54 @@ anim_stalactite subroutine
     .byte PX_VIEWPORT_OFFSET-1
     .byte 0
     .byte $20
+    .byte 16
+    
+anim_girder_middle subroutine
+    .byte 0
+    .word .frame1
+.frame1:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET-1
+    .byte 2
+    .byte $00
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET-1
+    .byte 2
+    .byte $00
+    .byte 16
+    
+anim_girder_left subroutine
+    .byte 0
+    .word .frame1
+.frame1:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET-1
+    .byte 0
+    .byte $00
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET-1
+    .byte 2
+    .byte $00
+    .byte 16
+    
+anim_girder_right subroutine
+    .byte 0
+    .word .frame1
+.frame1:
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET-1
+    .byte 2
+    .byte $00
+    .byte 8
+    
+    .byte PX_VIEWPORT_OFFSET-1
+    .byte 4
+    .byte $00
     .byte 16
 
 anim_flame subroutine

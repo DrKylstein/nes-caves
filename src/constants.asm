@@ -43,7 +43,7 @@ DUTY_50 = %10110000
 DUTY_75 = %11110000
 TRI_END = $800
 
-
+RESERVED_ENTITIES = 2
 
 INVALID_MAP_STAT = $FF
 
@@ -90,6 +90,7 @@ CATERPILLAR_ID = 8
 SLIME_ID = 12
 HAMMER_ID = 14
 SPIDERWEB_ID = 25
+GIRDER_ID = 22
 
 OAM_SIZE = 4
 SPR_Y = 0
@@ -148,9 +149,9 @@ TB_LOCK:       ds 3
                ds 1
 TB_AIR:        ds 1
 TB_FOREGROUND  ds 1
-               ds 1
-               ds 1
-               ds 1
+TB_GIRDER_LEFT ds 1
+TB_GIRDER_MIDDLE ds 1
+TB_GIRDER_RIGHT ds 1
                ds 1
                ds 1
                ds 1
@@ -192,3 +193,6 @@ ANIM_FLAME                  ds 1
 ANIM_PIPE_RIGHT             ds 1
 ANIM_PIPE_LEFT              ds 1
 ANIM_TORCH                  ds 1
+ANIM_GIRDER_LEFT            ds 1
+ANIM_GIRDER_MIDDLE          ds 1
+ANIM_GIRDER_RIGHT           ds 1

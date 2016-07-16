@@ -2,54 +2,37 @@
 ; Sound Data
 ;------------------------------------------------------------------------------
 
-testDrumSequence:    
-    .byte $01,$12
+testDrumSequence:   
+    .byte $00,$20
     .byte $FF,$FF
-    .byte $FF,$12
+    .byte $01,$20
     .byte $FF,$FF
-    .byte $00,$12
+
+    .byte $00,$20
     .byte $FF,$FF
-    .byte $FF,$FF
-    .byte $01,$12
-    .byte $FF,$FF
-    .byte $FF,$12
-    .byte $FF,$FF
-    .byte $80,$12
-    .byte $FF,$FF
-    .byte $FF,$FF
-    .byte $FF,$FF
-    .byte $01,$12
-    .byte $FF,$FF
-    .byte $FF,$12
-    .byte $FF,$FF
-    .byte $00,$12
-    .byte $FF,$FF
-    .byte $FF,$FF
-    .byte $FF,$FF
-    .byte $01,$12
-    .byte $FF,$FF
-    .byte $00,$12
-    .byte $FF,$FF
-    .byte $FF,$FF
-    .byte $FF,$FF
-    .byte $00,$12
-    .byte $FF,$FF
-    .byte $FF,$FF
+    .byte $01,$20
     .byte <[[testDrumSequence-.]>>1],$FF
 
 testBassSequence:
     .byte $FF,$FF
     .byte $02,$10
     .byte $FF,$FF
+    .byte $02,$20
+    
     .byte $FF,$FF
     .byte $FF,$14
     .byte $FF,$FF
+    .byte $FF,$24
+    
     .byte $FF,$FF
     .byte $FF,$16
     .byte $FF,$FF
+    .byte $FF,$26
+    
     .byte $FF,$FF
     .byte $FF,$12
-    .byte <[[testBassSequence-.]>>1],$FF
+    .byte $FF,$FF
+    .byte <[[testBassSequence-.]>>1],$22
 
 instruments:
     .word bassDrum
@@ -58,20 +41,20 @@ instruments:
 
 
 periodTableLo:
-  .byte $f1,$7f,$13,$ad,$4d,$f3,$9d,$4c,$00,$b8,$74,$34
-  .byte $f8,$bf,$89,$56,$26,$f9,$ce,$a6,$80,$5c,$3a,$1a
-  .byte $fb,$df,$c4,$ab,$93,$7c,$67,$52,$3f,$2d,$1c,$0c
-  .byte $fd,$ef,$e1,$d5,$c9,$bd,$b3,$a9,$9f,$96,$8e,$86
-  .byte $7e,$77,$70,$6a,$64,$5e,$59,$54,$4f,$4b,$46,$42
-  .byte $3f,$3b,$38,$34,$31,$2f,$2c,$29,$27,$25,$23,$21
+  .byte $f1,$7f,$13,$ad,$4d,$f3,$9d,$4c,$00,$b8,$74,$34,0,0,0,0
+  .byte $f8,$bf,$89,$56,$26,$f9,$ce,$a6,$80,$5c,$3a,$1a,0,0,0,0
+  .byte $fb,$df,$c4,$ab,$93,$7c,$67,$52,$3f,$2d,$1c,$0c,0,0,0,0
+  .byte $fd,$ef,$e1,$d5,$c9,$bd,$b3,$a9,$9f,$96,$8e,$86,0,0,0,0
+  .byte $7e,$77,$70,$6a,$64,$5e,$59,$54,$4f,$4b,$46,$42,0,0,0,0
+  .byte $3f,$3b,$38,$34,$31,$2f,$2c,$29,$27,$25,$23,$21,0,0,0,0
   .byte $1f,$1d,$1b,$1a,$18,$17,$15,$14
 periodTableHi:
-  .byte $07,$07,$07,$06,$06,$05,$05,$05,$05,$04,$04,$04
-  .byte $03,$03,$03,$03,$03,$02,$02,$02,$02,$02,$02,$02
-  .byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
-  .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-  .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-  .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+  .byte $07,$07,$07,$06,$06,$05,$05,$05,$05,$04,$04,$04,0,0,0,0
+  .byte $03,$03,$03,$03,$03,$02,$02,$02,$02,$02,$02,$02,0,0,0,0
+  .byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,0,0,0,0
+  .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,0,0,0,0
+  .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,0,0,0,0
+  .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,0,0,0,0
   .byte $00,$00,$00,$00,$00,$00,$00,$00
 
 ;square patch: 
@@ -92,17 +75,26 @@ bass subroutine
     .byte -1
 .tri:
     .word 0
+    .word -128
+    .word 0
+    .word 64
+    .word 0
+    .word -32
+    .word 0
     .word 16
     .word 0
     .word -8
     .word 0
     .word 4
     .word 0
+    .word -2
+    .word 0
+    .word 0
+    .word 0
     .word 0
     .word TRI_END
 
 bassDrum subroutine
-    ;.word $200
     .byte NOISE_CH
     .byte 0
     .word .noise
