@@ -146,102 +146,21 @@ nmi_DebugCounter subroutine
     sta PPU_DATA
 nmi_DebugCounter_end:
 
-nmi_DoPercussion subroutine
-    lda shr_percussionStream+1
-    beq nmi_DoPercussion_end
-    ldy #0    
-    lda nmi_beatTimer
-    beq .loop
-    dec nmi_beatTimer
-    jmp nmi_DoPercussion_end
-    
-.loop:
-    lda (shr_percussionStream),y
-    bmi .command
-    asl
-    tax
-    lda drumPatches,x
-    sta shr_sfxPtr
-    lda drumPatches+1,x
-    sta shr_sfxPtr+1
-    jmp .end
-.command:
-    and #$40
-    bne .branch
-    ;%10xxxxxx misc commands
-    ;$80 = nop
-    jmp .end
-.branch:
-    lda (shr_percussionStream),y
-    clc
-    adc shr_percussionStream
-    sta shr_percussionStream
-    lda shr_percussionStream+1
-    adc #$FF
-    sta shr_percussionStream+1
-    jmp .loop
-.end:
-    INC16 shr_percussionStream
-    lda shr_tempo
-    sta nmi_beatTimer
-nmi_DoPercussion_end:
-        
-
-
-nmi_loadSfx subroutine
-    MOV16 nmi_tmp,shr_sfxPtr
-    lda nmi_tmp+1
-    beq nmi_loadSfx_end
+nmi_doLoadSfx subroutine
+    MOV16 nmi_arg,shr_sfxPtr
+    lda nmi_arg+1
+    beq nmi_doLoadSfx_end
     ldy #0
-.loop:
-    lda (nmi_tmp),y
-    bmi .end
-    tax
-    iny
-    
-    lda (nmi_tmp),y
-    cmp nmi_sfxPriority,x
-    bcs .higher
-    tya
-    clc
-    adc #5
-    tay
-    jmp .loop
-.higher
-    sta nmi_sfxPriority,x
-    iny
-    txa
-    asl
-    tax
-    
-    lda (nmi_tmp),y
-    iny
-    sta nmi_sfxPatch,x
-    
-    lda (nmi_tmp),y
-    iny
-    sta nmi_sfxPatch+1,x
-
-    lda (nmi_tmp),y
-    iny
-    sta nmi_sfxFreq,x
-    
-    lda (nmi_tmp),y
-    iny
-    sta nmi_sfxFreq+1,x
-    ;set upper frequency byte for square qwaves
-    sta nmi_tmp+2
-    txa
-    asl
-    tax
-    lda nmi_tmp+2
-    sta APU_SQ1_HI,x
-    
-    jmp .loop
-.end:
+    lda (nmi_arg),y
+    sta nmi_arg+2
+    INC16 nmi_arg
+    lda (nmi_arg),y
+    sta nmi_arg+3
+    INC16 nmi_arg
+    jsr nmi_LoadSfx
     lda #0
     sta shr_sfxPtr+1
-nmi_loadSfx_end:
+nmi_doLoadSfx_end:
 
 nmi_updateReg subroutine
     lda shr_sleeping
@@ -372,6 +291,99 @@ nmi_DoViewport
     sta PPU_ADDR
 nmi_DoViewport_end:
 
+nmi_DoMusic subroutine
+    ldx #-1
+    lda nmi_beatTimer
+    beq .tick
+    dec nmi_beatTimer
+    jmp nmi_DoMusic_end
+.tick:
+    inx
+    cpx #4
+    bne .continue
+    jmp .loopend
+.continue:
+    
+    lda shr_musicStreamLo,x
+    sta nmi_tmp+2
+    lda shr_musicStreamHi,x
+    sta nmi_tmp+3
+    beq .tick
+    
+    ldy #0
+    lda (nmi_tmp+2),y
+    sta nmi_tmp
+    iny
+    lda (nmi_tmp+2),y
+    sta nmi_tmp+1
+    
+    lda nmi_tmp
+    cmp #$FF ;nop
+    beq .note
+    bmi .effect
+    ;%0xxxxxxx change instrument
+    asl
+    tay
+    lda instruments,y
+    sta nmi_instrumentLo,x
+    lda instruments+1,y
+    sta nmi_instrumentHi,x
+    jmp .note
+.effect:
+    and #$40
+    bne .branch
+    ;%10xxxxxx misc effects
+    jmp .note
+.branch:
+    ;%11xxxxxx and != $FF -> branches (currently <= -2 only)
+    lda nmi_tmp
+    sta shr_debugReg
+    asl
+    sec
+    sbc #2
+    clc
+    adc shr_musicStreamLo,x
+    sta shr_musicStreamLo,x
+    lda shr_musicStreamHi,x
+    adc #$FF
+    sta shr_musicStreamHi,x
+    
+.note:
+    lda nmi_tmp+1
+    cmp #$FF
+    beq .end
+
+    lda nmi_instrumentLo,x
+    sta nmi_arg
+    lda nmi_instrumentHi,x
+    sta nmi_arg+1
+
+    ldy nmi_tmp+1
+    lda periodTableLo,y
+    sta nmi_arg+2
+    lda periodTableHi,y
+    sta nmi_arg+3
+        
+    txa
+    pha
+    jsr nmi_LoadSfx
+    pla
+    tax
+.end:
+    lda shr_musicStreamLo,x
+    clc
+    adc #2
+    sta shr_musicStreamLo,x
+    lda shr_musicStreamHi,x
+    adc #0
+    sta shr_musicStreamHi,x
+    jmp .tick
+.loopend:
+    lda shr_tempo
+    sta nmi_beatTimer
+nmi_DoMusic_end:
+
+
 nmi_Exit:
     lda #0
     sta shr_sleeping
@@ -451,17 +463,53 @@ nmi_CopyTileCol subroutine
     sta PPU_CTRL
    rts
 ;------------------------------------------------------------------------------
-nmi_CentToDec subroutine ;input in A, output ones to A, tens to Y
+nmi_LoadSfx subroutine ; uses nmi_tmp as argument
     ldy #0
 .loop:
-    cmp #10
-    bcc .end
-    sbc #10
+    lda (nmi_arg),y
+    bmi .end
+    tax
     iny
+    
+    lda (nmi_arg),y
+    cmp nmi_sfxPriority,x
+    bcs .higher
+    tya
+    clc
+    adc #5
+    tay
+    jmp .loop
+.higher
+    sta nmi_sfxPriority,x
+    iny
+    txa
+    asl
+    tax
+    
+    lda (nmi_arg),y
+    iny
+    sta nmi_sfxPatch,x
+    
+    lda (nmi_arg),y
+    iny
+    sta nmi_sfxPatch+1,x
+
+    lda nmi_arg+2
+    sta nmi_sfxFreq,x
+    
+    lda nmi_arg+3
+    sta nmi_sfxFreq+1,x
+    ;set upper frequency byte for square qwaves
+    sta nmi_tmp
+    txa
+    asl
+    tax
+    lda nmi_tmp
+    sta APU_SQ1_HI,x
+    
     jmp .loop
 .end:
     rts
-nmi_CentToDec_end:
 ;------------------------------------------------------------------------------
 nmi_Copy32:
     pla

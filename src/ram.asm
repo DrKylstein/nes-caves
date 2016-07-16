@@ -9,6 +9,7 @@ sav            ds 6 ;MIPS-style $s#
 ret            ds 4 ;MIPS-style $p#
 
 nmi_tmp             ds 4
+nmi_arg             ds 4
 nmi_splitBits       ds 1
 nmi_scrollY         ds 1
 nmi_nametable       ds 1
@@ -42,7 +43,10 @@ nmi_sq2Freq      ds 2
 nmi_triFreq      ds 2
 nmi_noiseFreq    ds 2
 
-shr_percussionStream ds 2
+shr_musicStreamLo ds 4
+shr_musicStreamHi ds 4
+nmi_instrumentLo ds 4
+nmi_instrumentHi ds 4
 shr_tempo ds 1
 nmi_beatTimer ds 1
 

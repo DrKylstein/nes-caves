@@ -2,31 +2,77 @@
 ; Sound Data
 ;------------------------------------------------------------------------------
 
-testDrumSequence:
-    .byte 1
-    .byte 1
-    .byte 0
-    .byte $80
-    .byte 1
-    .byte 1
-    .byte 0
-    .byte $80
-    .byte 1
-    .byte 1
-    .byte 0
-    .byte $80
-    .byte 1
-    .byte 0
-    .byte $80
-    .byte 0
-    .byte $80
-    .byte <testDrumSequence-. ;loop
+testDrumSequence:    
+    .byte $01,$12
+    .byte $FF,$FF
+    .byte $FF,$12
+    .byte $FF,$FF
+    .byte $00,$12
+    .byte $FF,$FF
+    .byte $FF,$FF
+    .byte $01,$12
+    .byte $FF,$FF
+    .byte $FF,$12
+    .byte $FF,$FF
+    .byte $80,$12
+    .byte $FF,$FF
+    .byte $FF,$FF
+    .byte $FF,$FF
+    .byte $01,$12
+    .byte $FF,$FF
+    .byte $FF,$12
+    .byte $FF,$FF
+    .byte $00,$12
+    .byte $FF,$FF
+    .byte $FF,$FF
+    .byte $FF,$FF
+    .byte $01,$12
+    .byte $FF,$FF
+    .byte $00,$12
+    .byte $FF,$FF
+    .byte $FF,$FF
+    .byte $FF,$FF
+    .byte $00,$12
+    .byte $FF,$FF
+    .byte $FF,$FF
+    .byte <[[testDrumSequence-.]>>1],$FF
 
+testBassSequence:
+    .byte $FF,$FF
+    .byte $02,$10
+    .byte $FF,$FF
+    .byte $FF,$FF
+    .byte $FF,$14
+    .byte $FF,$FF
+    .byte $FF,$FF
+    .byte $FF,$16
+    .byte $FF,$FF
+    .byte $FF,$FF
+    .byte $FF,$12
+    .byte <[[testBassSequence-.]>>1],$FF
 
-drumPatches:
+instruments:
     .word bassDrum
     .word hihat
+    .word bass
 
+
+periodTableLo:
+  .byte $f1,$7f,$13,$ad,$4d,$f3,$9d,$4c,$00,$b8,$74,$34
+  .byte $f8,$bf,$89,$56,$26,$f9,$ce,$a6,$80,$5c,$3a,$1a
+  .byte $fb,$df,$c4,$ab,$93,$7c,$67,$52,$3f,$2d,$1c,$0c
+  .byte $fd,$ef,$e1,$d5,$c9,$bd,$b3,$a9,$9f,$96,$8e,$86
+  .byte $7e,$77,$70,$6a,$64,$5e,$59,$54,$4f,$4b,$46,$42
+  .byte $3f,$3b,$38,$34,$31,$2f,$2c,$29,$27,$25,$23,$21
+  .byte $1f,$1d,$1b,$1a,$18,$17,$15,$14
+periodTableHi:
+  .byte $07,$07,$07,$06,$06,$05,$05,$05,$05,$04,$04,$04
+  .byte $03,$03,$03,$03,$03,$02,$02,$02,$02,$02,$02,$02
+  .byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
+  .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+  .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+  .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+  .byte $00,$00,$00,$00,$00,$00,$00,$00
 
 ;square patch: 
 ;.byte duty | vol, relative freq
@@ -39,25 +85,40 @@ drumPatches:
 ;.byte %L000FFFF ;L = loop noise, F = absolute frequency
 ;.byte 0 ; end
 
-bassDrum subroutine
-    .byte NOISE_CH
-    .byte 0
-    .word .noise
-    .word 0
+bass subroutine
     .byte TRI_CH
     .byte 0
     .word .tri
-    .word $200
+    .byte -1
+.tri:
+    .word 0
+    .word 16
+    .word 0
+    .word -8
+    .word 0
+    .word 4
+    .word 0
+    .word 0
+    .word TRI_END
+
+bassDrum subroutine
+    ;.word $200
+    .byte NOISE_CH
+    .byte 0
+    .word .noise
+    .byte TRI_CH
+    .byte 0
+    .word .tri
     .byte -1
 .noise:
-    .byte #$3E, $08
-    .byte #$3C, $09
-    .byte #$3A, $0a
-    .byte #$38, $0b
-    .byte #$36, $0c
-    .byte #$34, $0d
-    .byte #$32, $0e
-    .byte #$30, $0F
+    .byte #$3E, $00
+    .byte #$3C, $01
+    .byte #$3A, $02
+    .byte #$38, $03
+    .byte #$36, $04
+    .byte #$34, $05
+    .byte #$32, $06
+    .byte #$30, $07
     .byte 0
 .tri:
     .word 0
@@ -70,7 +131,6 @@ hihat subroutine
     .byte NOISE_CH
     .byte 0
     .word .noise
-    .word 0
     .byte -1
 .noise:
     .byte #$3E, $84
@@ -85,10 +145,10 @@ hihat subroutine
 
 
 sfxLaser subroutine
+    .word 0 ;note
     .byte NOISE_CH ;channel
     .byte 3 ;priority
     .word .noise ; patch
-    .word 0 ;note
     .byte <-1 ;terminator
 .noise:
     .byte $31, $8D
@@ -109,10 +169,10 @@ sfxLaser subroutine
     .byte 0
     
 sfxCrystal subroutine
+    .word $060
     .byte SQ1_CH
     .byte 1
     .word .sq
-    .word $060
     .byte <-1
 .sq:
     .byte DUTY_50 | $8, 0
@@ -137,10 +197,10 @@ sfxCrystal subroutine
     .byte 0
 
 sfxJump subroutine
+    .word $00F0
     .byte SQ1_CH
     .byte 2
     .word .sqJump
-    .word $00F0
     .byte <-2
     
 .sqJump:
@@ -177,15 +237,14 @@ sfxJump subroutine
     .byte 0
     
 sfxShoot subroutine
+    .word $0230
     .byte SQ1_CH
     .byte 2
     .word .sqShoot
-    .word $0230
     
     .byte NOISE_CH
     .byte 2
     .word .noiseShoot
-    .word 0
     
     .byte <-1
 .sqShoot:

@@ -295,7 +295,15 @@ ResetStats subroutine
     sta playerYVel+2
     lda #8
     sta shr_tempo
-    MOV16I shr_percussionStream, testDrumSequence
+    lda #<testDrumSequence
+    sta shr_musicStreamLo
+    lda #>testDrumSequence
+    sta shr_musicStreamHi
+    lda #<testBassSequence
+    sta shr_musicStreamLo+1
+    lda #>testBassSequence
+    sta shr_musicStreamHi+1
+    
 ResetStats_end:
 
 LoadLevelTileset subroutine
