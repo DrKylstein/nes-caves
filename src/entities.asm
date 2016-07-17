@@ -94,7 +94,7 @@ entityTiles:
     .byte [14+32]*2 ; flame
     .byte [10+32]*2 ; pipe right
     .byte [10+32]*2 ; pipe left
-    .byte 251 ;torch
+    .byte [31+32*3]*2 ; torch
     .byte 32*3 + 16 + 1; spike
     
 entitySpeeds:
