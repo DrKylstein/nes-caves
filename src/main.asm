@@ -1802,23 +1802,26 @@ UpdateCameraY subroutine
     lda #0
     sta tmp+1
     SUB16 shr_cameraY, shr_cameraY, tmp
+    lda shr_cameraY+1
+    bpl .notminus
+    lda #0
+    sta shr_cameraY
+    sta shr_cameraY+1
+.notminus:
+    lda #0
+    sta shr_nameTable
+    ADD16I tmp,shr_cameraY,96
+    lda tmp
+    sta shr_cameraYMod
+    CMP16I tmp,240
+    bcc .notLow
+    lda #$08
+    sta shr_nameTable
+    SUB16I tmp,tmp,240
+    lda tmp
+    sta shr_cameraYMod
+.notLow:
     
-    ;handle nametable boundary
-    lda shr_cameraYMod
-    cmp tmp
-    bcs .noModUp
-    clc
-    adc #240
-    sta shr_cameraYMod
-	lda #8
-	eor shr_nameTable
-	sta shr_nameTable
-.noModUp:
-
-	lda shr_cameraYMod
-    sec
-	sbc tmp
-    sta shr_cameraYMod
 .Scroll_Up_end:
     
 .Scroll_Down:
