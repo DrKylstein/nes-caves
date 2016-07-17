@@ -35,7 +35,6 @@
 ;???
 ;animated , layered, map background planet
 ;parallaxing tiled backgrounds
-;-everywhere, make pickups square and move non-blocky decor to sprites
 ;Hilltop style clouds on main map
 ;dynamically load small messages, e.g.: paused, hints
 ;separate top and bottom of main map to enable separate effects
