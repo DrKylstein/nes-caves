@@ -698,7 +698,7 @@ ER_Stalactite subroutine
     jmp .nohit
 .hit:
     lda #$80
-    sta entityYHi,y
+    sta entityXHi,y
 .nohit:
     jmp ER_Return
 
