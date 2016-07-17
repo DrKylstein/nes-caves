@@ -19,8 +19,6 @@
 ;flying alien wrench
 ;hidden crystal
 
-;hidden spikes
-
 ;low gravity
 ;rex chasing
 ;strength mushroom melee

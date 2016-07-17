@@ -51,6 +51,7 @@ animations:
     .word anim_girder_left
     .word anim_girder_middle
     .word anim_girder_right
+    .word anim_spike
     
 frame_small1:
     .byte 8
@@ -913,4 +914,15 @@ anim_torch subroutine
     .byte PX_VIEWPORT_OFFSET
     .byte 0
     .byte 0
+    .byte 12
+
+anim_spike subroutine
+    .byte 0
+    .word .frame1
+.frame1:
+    .byte 4
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 0
+    .byte $20
     .byte 12

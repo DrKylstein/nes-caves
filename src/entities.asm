@@ -29,6 +29,7 @@ entityRoutine:
     .word ER_PipeRight
     .word ER_PipeLeft
     .word ER_Return ; torch
+    .word ER_Spike ; spike
     
 entityFlags:
     .byte ENT_F_ISTEMPORARY | 2; bullet
@@ -57,10 +58,11 @@ entityFlags:
     .byte 3  ; rex
     .byte 0 ; stalactite
     .byte ENT_F_ISTEMPORARY | 2 ; spider web
-    .byte ENT_F_SKIPYTEST | 1
+    .byte ENT_F_SKIPYTEST | 1 ;flame
     .byte 3 ;pipe right
     .byte 3 ;pipe left
     .byte 1 ;torch
+    .byte 0 ;spike
         
 entityTiles:
     .byte 14*2 ; bullet
@@ -93,7 +95,8 @@ entityTiles:
     .byte [10+32]*2 ; pipe right
     .byte [10+32]*2 ; pipe left
     .byte 251 ;torch
-            
+    .byte 32*3 + 16 + 1; spike
+    
 entitySpeeds:
     .byte 4 ; bullet
     .byte 1 ; vertical platform
@@ -125,6 +128,7 @@ entitySpeeds:
     .byte -1 ;pipe right
     .byte 1 ; pipe left
     .byte 0 ; torch
+    .byte 0 ; spike
     
 entityInitialAnims:
     .byte ANIM_SMALL_LONG ; bullet
@@ -157,6 +161,7 @@ entityInitialAnims:
     .byte ANIM_PIPE_RIGHT
     .byte ANIM_PIPE_LEFT
     .byte ANIM_TORCH
+    .byte ANIM_SPIKE
 
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
@@ -422,6 +427,31 @@ EntFall subroutine
     ora tmp
     sta entityYHi,y
     rts
+
+ER_Spike subroutine
+    jsr EntTryMelee
+    lda entityYLo,y
+    ora #$0A
+    sta entityYLo,y
+
+    MOV16I arg, 10
+    jsr EntAwayFromPlayerX
+    bcs .end
+    lda entityYLo,y
+    sta tmp
+    lda entityYHi,y
+    and #ENT_Y_POS
+    sta tmp+1
+    CMP16 playerY,tmp
+    bcs .end
+    SUB16I tmp, tmp, 4*16
+    CMP16 playerY,tmp
+    bcc .end
+    lda entityYLo,y
+    and #$F0
+    sta entityYLo,y
+.end:
+    jmp ER_Return
 
 girderTable
     .byte #-2

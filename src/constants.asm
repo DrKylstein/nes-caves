@@ -196,3 +196,4 @@ ANIM_TORCH                  ds 1
 ANIM_GIRDER_LEFT            ds 1
 ANIM_GIRDER_MIDDLE          ds 1
 ANIM_GIRDER_RIGHT           ds 1
+ANIM_SPIKE                  ds 1
