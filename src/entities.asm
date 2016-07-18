@@ -30,6 +30,7 @@ entityRoutine:
     .word ER_PipeLeft
     .word ER_Return ; torch
     .word ER_Spike ; spike
+    .word ER_Planet ; planet
     
 entityFlags:
     .byte ENT_F_ISTEMPORARY | 2; bullet
@@ -63,6 +64,7 @@ entityFlags:
     .byte 3 ;pipe left
     .byte 1 ;torch
     .byte 0 ;spike
+    .byte 0 ; planet
         
 entityTiles:
     .byte 14*2 ; bullet
@@ -96,6 +98,7 @@ entityTiles:
     .byte [10+32]*2 ; pipe left
     .byte [31+32*3]*2 ; torch
     .byte 32*3 + 16 + 1; spike
+    .byte 32*4 + 24 + 1;planet
     
 entitySpeeds:
     .byte 4 ; bullet
@@ -129,6 +132,7 @@ entitySpeeds:
     .byte 1 ; pipe left
     .byte 0 ; torch
     .byte 0 ; spike
+    .byte 0 ; planet
     
 entityInitialAnims:
     .byte ANIM_SMALL_LONG ; bullet
@@ -162,6 +166,7 @@ entityInitialAnims:
     .byte ANIM_PIPE_LEFT
     .byte ANIM_TORCH
     .byte ANIM_SPIKE
+    .byte ANIM_PLANET
 
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
@@ -427,6 +432,20 @@ EntFall subroutine
     ora tmp
     sta entityYHi,y
     rts
+
+ER_Planet subroutine
+    ADD16I tmp, shr_cameraX, 160
+    ; MOV16 tmp+2, shr_cameraX
+    ; REPEAT 1
+    ; LSR16 tmp+2
+    ; REPEND
+    ; SUB16 tmp, tmp, tmp+2
+    
+    lda tmp
+    sta entityXLo,y
+    lda tmp+1
+    sta entityXHi,y
+    jmp ER_Return
 
 ER_Spike subroutine
     jsr EntTryMelee

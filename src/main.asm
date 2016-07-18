@@ -5,7 +5,6 @@
 ;sprites:
 ;falling rocks
 ;full-size hammers?
-;mask right edge?
 ;explosions
 ;bonus fruit
 ;snake
@@ -33,17 +32,15 @@
 ;door animation
 
 ;???
-;animated , layered, map background planet
 ;parallaxing tiled backgrounds
 ;Hilltop style clouds on main map
+;orbiting moon on map -- allow entities to switch between upper and lower 32?
 ;dynamically load small messages, e.g.: paused, hints
 ;separate top and bottom of main map to enable separate effects
 ;animated background objects
-;sprite decoartions as feature, extend coord tables 
-;/or add metatile based tables and separate sprite update
-;shift entities into middle of OAM and use upper 16 for foreground effects
 ;move player into entity sprite space to share flickering
 ;flickering torch/pulsing lava emphasis effect
+;mask right edge?
 
 
 ;------------------------------------------------------------------------------
@@ -1598,102 +1595,6 @@ CheckHurt subroutine
     jmp CheckHurt_end
 CheckHurt_end:
 
-UpdatePower subroutine
-    lda powerSeconds
-    beq UpdatePower_end
-    dec powerFrames
-    bne UpdatePower_end
-    lda #60
-    sta powerFrames
-    dec powerSeconds
-    bne .display
-    lda #0
-    sta powerType
-.display:
-    jsr UpdatePowerDisplay
-UpdatePower_end:
-
-UpdateEntities subroutine
-    ldy #[MAX_ENTITIES-1]
-.loop:
-    lda entityXHi,y
-    bpl .active
-    jmp ER_Return
-.active:   
-    lda entityYHi,y
-    and #ENT_Y_INDEX
-    lsr
-    tax
-
-    cpy #0
-    beq .noStop
-    lda powerType
-    cmp #POWER_STOP
-    bne .noStop
-    jmp .offScreen
-.noStop:
-
-.xtest:
-    lda entityFlags,x
-    and #ENT_F_SKIPXTEST
-    bne .ytest
-    lda entityXLo,y
-    sec
-    sbc shr_cameraX
-    sta tmp
-    lda entityXHi,y
-    and #ENT_X_POS
-    sbc shr_cameraX+1
-    sta tmp+1
-    CMP16I tmp, [MT_VIEWPORT_WIDTH*PX_MT_WIDTH + PX_MT_WIDTH]
-    bpl .offScreen
-    CMP16I tmp, -PX_MT_WIDTH
-    bmi .offScreen
-.ytest:
-    lda entityFlags,x
-    and #ENT_F_SKIPYTEST
-    bne .persistent
-    lda entityYLo,y
-    sec
-    sbc shr_cameraY
-    sta tmp
-    lda entityYHi,y
-    and #ENT_Y_POS
-    sbc shr_cameraY+1
-    sta tmp+1
-    CMP16I tmp, [MT_VIEWPORT_HEIGHT*PX_MT_HEIGHT + PX_MT_HEIGHT]
-    bpl .offScreen
-    CMP16I tmp, -PX_MT_HEIGHT
-    bmi .offScreen
-    jmp .persistent
-.offScreen:
-    lda entityFlags,x
-    and #ENT_F_ISTEMPORARY
-    beq .normal
-    lda #$80
-    sta entityXHi,y
-.normal:
-    jmp ER_Return
-.persistent:
-    txa
-    asl
-    tax
-    lda entityRoutine,x
-    sta tmp
-    lda entityRoutine+1,x
-    sta tmp+1
-    txa
-    lsr
-    tax
-    jmp (tmp)
-ER_Return:
-    dey
-    JMI updateEntities_end
-    jmp .loop
-    
-    include entities.asm
-
-updateEntities_end:
 
 ApplyVelocity subroutine
     MOV16 tmp,playerYVel
@@ -1856,6 +1757,104 @@ UpdateCameraY subroutine
 	sta shr_nameTable
 .Scroll_Down_end:
 UpdateCameraY_end:
+
+UpdatePower subroutine
+    lda powerSeconds
+    beq UpdatePower_end
+    dec powerFrames
+    bne UpdatePower_end
+    lda #60
+    sta powerFrames
+    dec powerSeconds
+    bne .display
+    lda #0
+    sta powerType
+.display:
+    jsr UpdatePowerDisplay
+UpdatePower_end:
+
+UpdateEntities subroutine
+    ldy #[MAX_ENTITIES-1]
+.loop:
+    lda entityXHi,y
+    bpl .active
+    jmp ER_Return
+.active:   
+    lda entityYHi,y
+    and #ENT_Y_INDEX
+    lsr
+    tax
+
+    cpy #0
+    beq .noStop
+    lda powerType
+    cmp #POWER_STOP
+    bne .noStop
+    jmp .offScreen
+.noStop:
+
+.xtest:
+    lda entityFlags,x
+    and #ENT_F_SKIPXTEST
+    bne .ytest
+    lda entityXLo,y
+    sec
+    sbc shr_cameraX
+    sta tmp
+    lda entityXHi,y
+    and #ENT_X_POS
+    sbc shr_cameraX+1
+    sta tmp+1
+    CMP16I tmp, [MT_VIEWPORT_WIDTH*PX_MT_WIDTH + PX_MT_WIDTH]
+    bpl .offScreen
+    CMP16I tmp, -PX_MT_WIDTH
+    bmi .offScreen
+.ytest:
+    lda entityFlags,x
+    and #ENT_F_SKIPYTEST
+    bne .persistent
+    lda entityYLo,y
+    sec
+    sbc shr_cameraY
+    sta tmp
+    lda entityYHi,y
+    and #ENT_Y_POS
+    sbc shr_cameraY+1
+    sta tmp+1
+    CMP16I tmp, [MT_VIEWPORT_HEIGHT*PX_MT_HEIGHT + PX_MT_HEIGHT]
+    bpl .offScreen
+    CMP16I tmp, -PX_MT_HEIGHT
+    bmi .offScreen
+    jmp .persistent
+.offScreen:
+    lda entityFlags,x
+    and #ENT_F_ISTEMPORARY
+    beq .normal
+    lda #$80
+    sta entityXHi,y
+.normal:
+    jmp ER_Return
+.persistent:
+    txa
+    asl
+    tax
+    lda entityRoutine,x
+    sta tmp
+    lda entityRoutine+1,x
+    sta tmp+1
+    txa
+    lsr
+    tax
+    jmp (tmp)
+ER_Return:
+    dey
+    JMI updateEntities_end
+    jmp .loop
+    
+    include entities.asm
+
+updateEntities_end:
+
 
 UpdatePlayerSprite subroutine
     ;update position

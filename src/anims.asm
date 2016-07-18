@@ -52,6 +52,7 @@ animations:
     .word anim_girder_middle
     .word anim_girder_right
     .word anim_spike
+    .word anim_planet
     
 frame_small1:
     .byte 8
@@ -926,3 +927,49 @@ anim_spike subroutine
     .byte 0
     .byte $20
     .byte 12
+
+anim_planet subroutine
+    .byte 0
+    .word .frame1
+.frame1:
+    .byte 8*OAM_SIZE
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 0
+    .byte $20
+    .byte 8    
+    
+    .byte PX_VIEWPORT_OFFSET+16
+    .byte 2
+    .byte $20
+    .byte 8    
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 4
+    .byte $20
+    .byte 8+8
+    
+    .byte PX_VIEWPORT_OFFSET+16
+    .byte 6
+    .byte $20
+    .byte 8+8
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 32
+    .byte $20
+    .byte 8+16
+    
+    .byte PX_VIEWPORT_OFFSET+16
+    .byte 32+2
+    .byte $20
+    .byte 8+16
+    
+    .byte PX_VIEWPORT_OFFSET
+    .byte 32+4
+    .byte $20
+    .byte 8+24
+    
+    .byte PX_VIEWPORT_OFFSET+16
+    .byte 32+6
+    .byte $20
+    .byte 8+24
