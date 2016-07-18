@@ -2,6 +2,10 @@
 ; MAIN THREAD
 ;------------------------------------------------------------------------------
 
+;map:
+;underground bg element
+;torch glow?
+
 ;sprites:
 ;falling rocks
 ;full-size hammers?
