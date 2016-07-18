@@ -108,6 +108,9 @@
     cmp {2}
     lda {1}+1
     sbc {2}+1
+    bvc .signed
+    eor #$80
+.signed:
     ENDM
 
 	MAC CMP16I
@@ -115,6 +118,9 @@
     cmp #<{2}
     lda {1}+1
     sbc #>{2}
+    bvc .signed
+    eor #$80
+.signed:
 	ENDM
     
     MAC EXTEND ;<16bit result> <8bit input>

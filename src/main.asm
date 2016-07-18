@@ -723,7 +723,7 @@ InitAttributes_end:
     jsr LoadTilesOnMoveLeft
 
 ReenableDisplay subroutine
-    ;jsr Synchronize
+    jsr Synchronize
 ReenableDisplay_end:
 
 ;------------------------------------------------------------------------------
@@ -1968,138 +1968,152 @@ UpdateEntitySprites subroutine
     lda startSprite
     and #$7C
     ora #$80
-    sta sav+5
-    ldy #[MAX_ENTITIES-1]
-.loop:
-    lda entityXHi,y
-    bpl .active
-    jmp .skip
-.active:
-
-
-    lda entityYLo,y
-    sta tmp
-    lda entityYHi,y
-    and #ENT_Y_POS
-    sta tmp+1
-    SUB16 sav, tmp, shr_cameraY
-    lda sav+1
-    beq .y_ok
-    jmp .skip
-.y_ok:
-    
-    lda entityXLo,y
-    sta tmp
-    lda entityXHi,y
-    and #ENT_X_POS
-    sta tmp+1
-    SUB16 sav+3, tmp, shr_cameraX
-    lda sav+4
-    beq .x_ok
-    jmp .skip
-.x_ok:
-    
-    lda entityYHi,y
-    lsr
-    tax
-    lda entityTiles,x
-    sta sav+1
-    
-    lda entityFlags,x
-    and #ENT_F_COLOR
-    sta sav+2
-        
-    lda sav+5
-    sta tmp
+    sta arg
     lda #$02
-    sta tmp+1
-    
-    lda entityAnim,y
+    sta arg+1
+    ldx #[MAX_ENTITIES]
+.outerloop:
+    dex
+    bpl .continue
+    jmp UpdateEntitySprites_end
+.continue:
+    lda entityXHi,x
+    bmi .outerloop
+.active:
+    ;---------------
+    ;get frame
+    ;---------------
+    lda entityAnim,x
     asl
-    tax
-    lda animations,x
-    sta tmp+6
-    lda animations+1,x
-    sta tmp+7
-    sty tmp+2
-    
-    cpy #0
-    beq .noStop
-    lda powerType
-    cmp #POWER_STOP
-    bne .noStop
-    lda #0
-    jmp .getFrame
-.noStop:
+    tay
+    lda animations,y
+    sta tmp
+    lda animations+1,y
+    sta tmp+1
+    ldy #0
     lda frame
     lsr
     lsr
-.getFrame:
-    ldy #0
-    and (tmp+6),y
+    and (tmp),y
     asl
     tay
+    INC16 tmp
+    lda (tmp),y
+    sta sav
     iny
-    lda (tmp+6),y
-    sta tmp+4
-    iny
-    lda (tmp+6),y
-    sta tmp+5
-    
+    lda (tmp),y
+    sta sav+1
     ldy #0
-    lda (tmp+4),y
-    sta tmp+6
-    INC16 tmp+4
-    
-    ldx #0
-.copyLoop:
-    cpx tmp+6
-    bcs .done
+    lda (sav),y
+    sta sav+2
+    lda #0
+    sta sav+3
+    INC16 sav
+    ADD16 sav+2,sav+2,sav
+    ;---------------
+    ;load frame from (sav) into (arg) until sav+2
+    ;x is entity index
+    ;---------------
+.loop:
     ldy #0
-    
-.innerLoop:
-    lda (tmp+4),y
-    clc
-    adc sav,y
-    bcs .abort
-    sta (tmp),y
-    iny
-    inx
-    cpy #4
-    bne .innerLoop
-    
-    lda #4
+;--Y--
+    lda entityYLo,x
+    sta tmp
+    lda entityYHi,x
+    and #ENT_Y_POS
+    sta tmp+1
+    SUB16 tmp,tmp,shr_cameraY    
+    lda (sav),y
     clc
     adc tmp
+    sta tmp
+    lda #0
+    adc tmp+1
+    sta tmp+1
+    CMP16I tmp,-16
+    bpl .notabove
+    jmp .abort
+.notabove:
+    CMP16I tmp,[MT_VIEWPORT_HEIGHT*PX_MT_HEIGHT+16]
+    bmi .notbelow
+    jmp .abort
+.notbelow:
+    lda tmp
+    clc
+    adc #PX_VIEWPORT_OFFSET-1
+    sta (arg),y
+    iny
+;--tile--
+    lda entityYHi,x
+    lsr
+    stx tmp
+    tax
+    lda entityTiles,x
+    ldx tmp
+    clc
+    adc (sav),y
+    sta (arg),y
+    iny
+;--flags--
+    lda entityYHi,x
+    lsr
+    stx tmp
+    tax
+    lda entityFlags,x
+    and #ENT_F_COLOR
+    ldx tmp
+    clc
+    ora (sav),y
+    sta (arg),y
+    iny
+;--X--
+    lda entityXLo,x
+    sta tmp
+    lda entityXHi,x
+    and #ENT_X_POS
+    sta tmp+1
+    SUB16 tmp,tmp,shr_cameraX    
+    lda (sav),y
+    clc
+    adc tmp
+    sta tmp
+    lda #0
+    adc tmp+1
+    sta tmp+1
+    CMP16I tmp,-8
+    bpl .notLeft
+    ldy #0
+    lda #$FF
+    sta (arg),y
+    jmp .abort
+.notLeft:
+    CMP16I tmp,[MT_VIEWPORT_WIDTH*PX_MT_WIDTH+8]
+    bmi .notRight
+    ldy #0
+    lda #$FF
+    sta (arg),y
+    jmp .abort
+.notRight:
+    lda tmp
+    clc
+    adc #8
+    sta (arg),y
+    iny
+    
+    lda #4
+    clc
+    adc arg
     and #$7F
     ora #$80
-    sta tmp
-    
-    
-    ADD16I tmp+4, tmp+4, 4
-    
-    jmp .copyLoop
+    sta arg
 .abort:
-    sty tmp+3
-    lda #4
-    sec
-    sbc tmp+3
-    sta tmp+3
-    txa
-    clc
-    adc tmp+3
-    tax
-    ADD16I tmp+4, tmp+4, 4
-    jmp .copyLoop
-.done:
-    lda tmp
-    sta sav+5
-    
-    ldy tmp+2
-.skip:
-    dey
-    bmi UpdateEntitySprites_end
+    ADD16I sav,sav,4
+    CMP16 sav, sav+2
+    bcs .done
     jmp .loop
+.done:
+    jmp .outerloop
+    
 UpdateEntitySprites_end
 
     lda startSprite

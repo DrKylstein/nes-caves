@@ -17,6 +17,7 @@ nmi:
     inx
     lda $100,x
     sta shr_debugReg+1
+    ADD16I shr_debugReg,shr_debugReg,12
     ENDIF
     
     tya
