@@ -27,12 +27,6 @@ points:
     .byte  0, 0, 0,10;0
     .byte  0, 0,10, 0;0
 
-palettes:
-;global
-    incbin palsp.pal
-
-hud:
-	incbin hud.bin
 metatiles:
     incbin metatiles.bin    
     

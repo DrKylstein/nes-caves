@@ -5,7 +5,7 @@
     ORG $0000
 tmp            ds 8 ;MIPS-style $t#
 arg            ds 6 ;MIPS-style $a#
-sav            ds 6 ;MIPS-style $s#
+sav            ds 8 ;MIPS-style $s#
 ret            ds 4 ;MIPS-style $p#
 
 nmi_tmp             ds 4
@@ -50,18 +50,18 @@ nmi_instrumentHi ds 4
 shr_tempo ds 1
 nmi_beatTimer ds 1
 
-    ECHO $100-.," bytes left in page $000"
+    ECHO [$100-.]d," bytes left in page $000"
 
     ORG $0100
 BUFFER_SEG:
 shr_tileBuffer      ds TOP_HEIGHT+BOTTOM_HEIGHT           ;18+30 = 48 : 48
 shr_attrBuffer      ds TOP_ATTR_HEIGHT+BOTTOM_ATTR_HEIGHT ; 5+ 8 = 13 : 61
 shr_copyBuffer: ;163 bytes
-    ECHO $1E0-.," bytes left for copy buffer"
+    ECHO [$1E0-.]d," bytes left for copy buffer"
     ORG $1E0
 shr_copyBufferEnd:
 shr_stack: ;32 bytes
-    ECHO $200-.," bytes left for stack"
+    ECHO [$200-.]d," bytes left for stack"
     
     ORG $0200
 shr_oamShadow:
@@ -72,7 +72,7 @@ shr_spriteX         ds 1
 shr_hudCurtain      ds OAM_SIZE*7
 shr_playerSprites   ds OAM_SIZE*2
 girderSprite        ds OAM_SIZE*2
-    ECHO [$280-.]/OAM_SIZE," sprites left in upper table"
+    ECHO [[$280-.]/OAM_SIZE]d," sprites left in upper table"
     ORG $0280
 shr_entitySprites:
 
@@ -124,9 +124,9 @@ entityYHi        ds MAX_ENTITIES ; bottom bit
 entityVelocity   ds MAX_ENTITIES ; 
 entityCount      ds MAX_ENTITIES
 entityAnim       ds MAX_ENTITIES
-    ECHO $400-.," bytes left in page $300"
+    ECHO [$400-.]d," bytes left in page $300"
 
     ORG $0400
 levelMap       ds 960
-    ECHO $800-.,"bytes left in pages $400-$700"
+    ECHO [$800-.]d,"bytes left in pages $400-$700"
 

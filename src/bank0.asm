@@ -5,9 +5,14 @@ titlePalette:
     incbin paltl.pal
 titleTiles:
     incbin title-patterns.pat
+hud:
+	incbin hud.bin
 globalTiles:
     incbin sprites.pat
     incbin tileset00.pat
+palettes:
+;global
+    incbin palsp.pal
 minePal:
     incbin pal00.pal
 volcanoPal:

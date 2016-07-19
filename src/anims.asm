@@ -2,6 +2,28 @@
 ; Animation Data
 ;------------------------------------------------------------------------------
 
+playerAnims:
+    .byte ANIM_SMALL_NONE
+    .byte ANIM_SMALL_HFLIP_NONE
+    .byte ANIM_SMALL_VFLIP_NONE
+    .byte ANIM_SMALL_HV_NONE
+    
+    .byte ANIM_PLAYER_JUMP
+    .byte ANIM_PLAYER_JUMP_LEFT
+    .byte ANIM_PLAYER_JUMPV
+    .byte ANIM_PLAYER_JUMP_LEFTV
+    
+    .byte ANIM_PLAYER_WALK
+    .byte ANIM_PLAYER_WALK_LEFT
+    .byte ANIM_PLAYER_WALKV
+    .byte ANIM_PLAYER_WALK_LEFTV
+
+    .byte ANIM_PLAYER_JUMP
+    .byte ANIM_PLAYER_JUMP_LEFT
+    .byte ANIM_PLAYER_JUMPV
+    .byte ANIM_PLAYER_JUMP_LEFTV
+
+
 animations:
     .word anim_null
     .word anim_smallNone

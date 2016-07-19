@@ -183,6 +183,7 @@ LoadPatterns subroutine
 LoadPatterns_end:
 
 InitNametables subroutine
+    SELECT_BANK 0
     ldy #$A0
     SET_PPU_ADDR VRAM_NAME_UL
 .clear_upper
@@ -1876,29 +1877,9 @@ FadeOut subroutine
     rts
 
 ;------------------------------------------------------------------------------
-playerAnims:
-    .byte ANIM_SMALL_NONE
-    .byte ANIM_SMALL_HFLIP_NONE
-    .byte ANIM_SMALL_VFLIP_NONE
-    .byte ANIM_SMALL_HV_NONE
-    
-    .byte ANIM_PLAYER_JUMP
-    .byte ANIM_PLAYER_JUMP_LEFT
-    .byte ANIM_PLAYER_JUMPV
-    .byte ANIM_PLAYER_JUMP_LEFTV
-    
-    .byte ANIM_PLAYER_WALK
-    .byte ANIM_PLAYER_WALK_LEFT
-    .byte ANIM_PLAYER_WALKV
-    .byte ANIM_PLAYER_WALK_LEFTV
-
-    .byte ANIM_PLAYER_JUMP
-    .byte ANIM_PLAYER_JUMP_LEFT
-    .byte ANIM_PLAYER_JUMPV
-    .byte ANIM_PLAYER_JUMP_LEFTV
-
 
 UpdateSprites:
+    SELECT_BANK 3
     lda playerX
     sta entityXLo+2
     lda playerX+1
@@ -1930,7 +1911,6 @@ ClearSprites subroutine
 ClearSprites_end:
 
 UpdateEntitySprites subroutine
-    SELECT_BANK 3
     lda startSprite
     and #$7C
     ora #$80
@@ -1990,6 +1970,7 @@ UpdateEntitySprites subroutine
     sta tmp+1
     SUB16 tmp,tmp,shr_cameraY    
     lda (sav),y
+    sta sav+4
     sta tmp+2
     EXTEND tmp+2,tmp+2
     ADD16 tmp,tmp,tmp+2
@@ -2028,6 +2009,15 @@ UpdateEntitySprites subroutine
     clc
     ora (sav),y
     sta (arg),y
+    cpx #2
+    bne .noFG
+    lda playerFlags
+    and #PLY_ISBEHIND
+    beq .noFG
+    lda #$20
+    ora (arg),y
+    sta (arg),y
+.noFG:
     iny
 ;--X--
     lda entityXLo,x
@@ -2037,6 +2027,7 @@ UpdateEntitySprites subroutine
     sta tmp+1
     SUB16 tmp,tmp,shr_cameraX    
     lda (sav),y
+    sta sav+5
     sta tmp+2
     EXTEND tmp+2,tmp+2
     ADD16 tmp,tmp,tmp+2
@@ -2059,6 +2050,57 @@ UpdateEntitySprites subroutine
     adc #8
     sta (arg),y
     iny
+    
+    ;---foreground tiles---
+    ; lda sav+5
+    ; sta tmp
+    ; EXTEND tmp, tmp
+    ; lda entityXLo,x
+    ; clc
+    ; adc tmp
+    ; sta tmp
+    ; lda entityXHi,x
+    ; and #ENT_X_POS
+    ; adc tmp+1
+    ; sta tmp+1
+    
+    ; lda sav+4
+    ; sta arg+2
+    ; EXTEND arg+2, arg+2
+    ; lda entityYLo,x
+    ; clc
+    ; adc arg+2
+    ; sta arg+2
+    ; lda entityYHi,x
+    ; and #ENT_Y_POS
+    ; adc arg+3
+    ; sta arg+3
+    
+    ; REPEAT 4
+    ; LSR16 tmp
+    ; LSR16 arg+2
+    ; REPEND
+    
+    ; MOV16 sav+4,arg
+    ; MOV16 arg, tmp
+    ; sty sav+6
+    ; jsr GetTileBehavior
+    ; ldy sav+6
+    ; MOV16 arg, sav+4
+    ; lda ret
+    ; cmp #TB_FOREGROUND
+    ; bne .notFG
+    ; dey
+    ; dey
+    ; lda (arg),y
+    ; ora #$20
+    ; sta (arg),y
+    ; iny
+    ; iny
+; .notFG:
+    
+    ;----
+    
     
     lda #4
     clc
@@ -2249,10 +2291,8 @@ LoadColorsOnMoveLeft subroutine
     rts
 ;------------------------------------------------------------------------------
 GetTileBehavior ;arg0..1 = mt_x arg2..3 = mt_y ret0 = value
-    jsr MultiplyBy24 ;takes arg0, which we no longer care about after this
-                          ;returns
-    ;t0 = y+ x*24
-    ADD16 tmp, arg+2, ret
+    MUL_BY_24 tmp, arg
+    ADD16 tmp, tmp, arg+2
     
     ;lookup tile, get behavior
     ADD16I tmp, tmp, levelMap
