@@ -147,10 +147,10 @@ entityInitialAnims:
     .byte ANIM_POWERSHOT ; power shot
     .byte ANIM_SMALL_OSCILLATE ; rock
     .byte ANIM_SMALL_OSCILLATE ; cart
-    .byte ANIM_CATERPILLAR ; caterpillar head
-    .byte ANIM_CATERPILLAR_2 ; caterpillar front
-    .byte ANIM_CATERPILLAR ; caterpillar back
-    .byte ANIM_CATERPILLAR_2 ; caterpillar tail
+    .byte ANIM_SMALL_NONE ; caterpillar head
+    .byte ANIM_SMALL_NONE ; caterpillar front
+    .byte ANIM_SMALL_NONE ; caterpillar back
+    .byte ANIM_SMALL_NONE ; caterpillar tail
     .byte ANIM_SLIME_RIGHT ; slime horizontal
     .byte ANIM_SLIME_DOWN ; slime vertical
     .byte ANIM_SYMMETRICAL_NONE ; hammer
@@ -171,7 +171,7 @@ entityInitialAnims:
     .byte ANIM_TORCH
     .byte ANIM_SPIKE
     .byte ANIM_PLANET
-    .byte ANIM_SMALL_LONG ; bullet
+    .byte ANIM_ROCKET ; bullet
 
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
@@ -1229,25 +1229,39 @@ ER_CaterpillarHead:
     jmp ER_Return
 .alive:
 ER_CaterpillarBack subroutine
-    lda #ANIM_CATERPILLAR
-    sta entityAnim,y
-    lda entityVelocity,y
-    bpl .notRight
-    lda #ANIM_CATERPILLAR_HFLIP
-    sta entityAnim,y
-.notRight:
+    lda entityYLo,y
+    and #$FE
+    sta entityYLo,y
+    lda frame
+    lsr
+    lsr
+    lsr
+    and #1
+    ora entityYLo,y
+    sta entityYLo,y
     jmp ER_Caterpillar
     
 ER_CaterpillarFront:
 ER_CaterpillarTail subroutine
-    lda #ANIM_CATERPILLAR_2
+    lda entityYLo,y
+    and #$FE
+    sta entityYLo,y
+    lda frame
+    lsr
+    lsr
+    lsr
+    and #1
+    eor #1
+    ora entityYLo,y
+    sta entityYLo,y
+ER_Caterpillar subroutine
+    lda #ANIM_SMALL_NONE
     sta entityAnim,y
     lda entityVelocity,y
     bpl .notRight
-    lda #ANIM_CATERPILLAR_HFLIP_2
+    lda #ANIM_SMALL_HFLIP_NONE
     sta entityAnim,y
 .notRight:
-ER_Caterpillar subroutine
     sty sav
     jsr EntTestWalkingCollision
     ldy sav
