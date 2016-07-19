@@ -27,7 +27,6 @@
 ;strength mushroom melee
 ;more sounds
 ;music
-;fades
 ;death animations
 ;full dump independent of nmi for brk handler?
 ;passwords?
@@ -42,7 +41,6 @@
 ;dynamically load small messages, e.g.: paused, hints
 ;separate top and bottom of main map to enable separate effects
 ;animated background objects
-;move player into entity sprite space to share flickering
 ;flickering torch/pulsing lava emphasis effect
 ;mask right edge?
 ;use grayscale and/or emphasis on hud? 
@@ -227,21 +225,6 @@ InitSprites subroutine
     cpy #8*OAM_SIZE
     bne .loop
 
-; InitSpritePalette subroutine
-    ; ldx shr_copyIndex
-    
-    ; ldy #11
-; .loop
-    ; lda palettes,y
-    ; PHXA
-    ; dey
-    ; bpl .loop
-
-    ; ENQUEUE_ROUTINE nmi_Copy12
-    ; ENQUEUE_PPU_ADDR [VRAM_PALETTE_SP+4]
-    
-    ; stx shr_copyIndex
-
     jsr Synchronize
 ;------------------------------------------------------------------------------
 ;New Game
@@ -313,31 +296,6 @@ LoadLevelTileset subroutine
     SET_PPU_ADDR [VRAM_PATTERN_R+2048]
     ldx #8
     jsr PagesToPPU
-
-    
-; LoadLevelPal subroutine
-    ; SELECT_BANK 0
-    ; ldx shr_copyIndex
-    
-    ; lda currLevel
-    ; asl
-    ; tay
-    ; lda levelPalettes,y
-    ; sta tmp
-    ; lda levelPalettes+1,y
-    ; sta tmp+1
-    ; ldy #19
-; .loop
-    ; lda (tmp),y
-    ; PHXA
-    ; dey
-    ; bpl .loop
-
-    ; ENQUEUE_ROUTINE nmi_Copy20
-    ; ENQUEUE_PPU_ADDR VRAM_PALETTE_BG
-    
-    ; stx shr_copyIndex
-; LoadLevelPal_end:
 
 LoadLevel subroutine
     lda currLevel
@@ -544,7 +502,7 @@ InitCamera subroutine
     sta shr_cameraX
 
 InitCamera_end:
-    
+        
 InitEntities subroutine
     ldy #0
     ldx #0
@@ -837,12 +795,13 @@ CheckInput subroutine
     lda ctrl
     and #JOY_A_MASK
     beq CheckInput_end
-    bit playerFlags
-    bmi CheckInput_end
+    lda playerFlags
+    and #PLY_ISJUMPING
+    bne CheckInput_end
     MOV16I playerYVel, JUMP_VELOCITY
-    lda powerType
-    cmp #POWER_GRAVITY
-    bne .notUpsideDown
+    lda playerFlags
+    and #PLY_UPSIDEDOWN
+    beq .notUpsideDown
     MOV16I playerYVel, -JUMP_VELOCITY
 .notUpsideDown:
     lda playerFlags
@@ -1037,7 +996,7 @@ TC_Key_end:
 
 TC_Chest:
     lda #PLY_HASKEY
-    bit playerFlags
+    and playerFlags
     JEQ TC_Return
     
     lda #2
@@ -1288,6 +1247,7 @@ TC_Nop:
     sta entityYLo
     lda playerY+1
     and #ENT_Y_POS
+    ora #BULLET_ID<<1
     sta entityYHi
     lda #ANIM_ROCKET
     sta entityAnim
@@ -1296,15 +1256,17 @@ TC_Nop:
     lda powerType
     cmp #POWER_SHOT
     bne .notPowerShot
-    lda #POWERSHOT_ID<<1
-    ora entityYHi
+    lda entityYHi
+    and #ENT_Y_POS
+    ora #POWERSHOT_ID<<1
     sta entityYHi
     lda #ANIM_POWERSHOT
     sta entityAnim
 .notPowerShot
     
-    bit playerFlags
-    bvs .shootLeft
+    lda playerFlags
+    and #PLY_ISFLIPPED
+    bne .shootLeft
 .shootRight:
     lda #2
     sta entityVelocity
@@ -1346,9 +1308,9 @@ TC_UpdateTile:
 TileInteraction_end:
 
 ApplyGravity subroutine
-    lda powerType
-    cmp #POWER_GRAVITY
-    beq .reverseGravity
+    lda playerFlags
+    and #PLY_UPSIDEDOWN
+    bne .reverseGravity
     CMP16I playerYVel, TERMINAL_VELOCITY
     bpl ApplyGravity_end
     ADD16I playerYVel, playerYVel, GRAVITY
@@ -1782,9 +1744,9 @@ UpdateCameraY_end:
 
 UpdatePower subroutine
     lda powerSeconds
-    beq UpdatePower_end
+    beq .end
     dec powerFrames
-    bne UpdatePower_end
+    bne .end
     lda #60
     sta powerFrames
     dec powerSeconds
@@ -1793,6 +1755,16 @@ UpdatePower subroutine
     sta powerType
 .display:
     jsr UpdatePowerDisplay
+.end:
+    lda playerFlags
+    and #~PLY_UPSIDEDOWN
+    sta playerFlags
+    lda powerType
+    cmp #POWER_GRAVITY
+    bne UpdatePower_end
+    lda playerFlags
+    ora #PLY_UPSIDEDOWN
+    sta playerFlags
 UpdatePower_end:
 
 UpdateEntities subroutine
@@ -1904,100 +1876,49 @@ FadeOut subroutine
     rts
 
 ;------------------------------------------------------------------------------
+playerAnims:
+    .byte ANIM_SMALL_NONE
+    .byte ANIM_SMALL_HFLIP_NONE
+    .byte ANIM_SMALL_VFLIP_NONE
+    .byte ANIM_SMALL_HV_NONE
+    
+    .byte ANIM_PLAYER_JUMP
+    .byte ANIM_PLAYER_JUMP_LEFT
+    .byte ANIM_PLAYER_JUMPV
+    .byte ANIM_PLAYER_JUMP_LEFTV
+    
+    .byte ANIM_PLAYER_WALK
+    .byte ANIM_PLAYER_WALK_LEFT
+    .byte ANIM_PLAYER_WALKV
+    .byte ANIM_PLAYER_WALK_LEFTV
+
+    .byte ANIM_PLAYER_JUMP
+    .byte ANIM_PLAYER_JUMP_LEFT
+    .byte ANIM_PLAYER_JUMPV
+    .byte ANIM_PLAYER_JUMP_LEFTV
+
+
 UpdateSprites:
-UpdatePlayerSprite subroutine
-    ;update position
-    SUB16 sav, playerX, shr_cameraX
-    lda sav
-    clc
-    adc #8
-    sta shr_playerSprites+SPR_X
-    clc
-    adc #8
-    sta shr_playerSprites+OAM_SIZE+SPR_X
-    
-    SUB16 sav, playerY, shr_cameraY
-    lda sav
-    clc
-    adc #31
-    sta shr_playerSprites+SPR_Y
-    sta shr_playerSprites+OAM_SIZE+SPR_Y
-
-    ;update tiles
-    lda playerFrame
-    clc
-    adc playerXVel
-    and #%00011111
-    sta playerFrame
-
-    lda playerFrame
-    lsr
-    lsr
-    tax
-
-    bit playerFlags
-    bpl .walk_anim
-    ldx #9
-    jmp .do_anim
-
-.walk_anim:
-    lda #0
-    cmp playerXVel
-    bne .do_anim
-    ldx #8
-
-.do_anim:
+    lda playerX
+    sta entityXLo+2
+    lda playerX+1
+    sta entityXHi+2
+    lda playerY
+    sta entityYLo+2
+    lda playerY+1
+    sta entityYHi+2
     lda playerFlags
-    and #PLY_ISFLIPPED
-    ora #1
-    sta shr_playerSprites+SPR_FLAGS
-    sta shr_playerSprites+OAM_SIZE+SPR_FLAGS
-    bit playerFlags
-    bvs .left
-.right:
-    lda playerWalk,x
-    sta shr_playerSprites+SPR_INDEX
-    clc
-    adc #2
-    sta shr_playerSprites+OAM_SIZE+SPR_INDEX
-    jmp .animEnd
-.left:
-    lda playerWalk,x
-    sta shr_playerSprites+OAM_SIZE+SPR_INDEX
-    clc
-    adc #2
-    sta shr_playerSprites+SPR_INDEX
-.animEnd:
-
-    lda mercyTime
-    beq .notFlashing
-    lda frame
-    and #3
-    eor shr_playerSprites+SPR_FLAGS
-    sta shr_playerSprites+SPR_FLAGS
-    sta shr_playerSprites+OAM_SIZE+SPR_FLAGS
-.notFlashing:
-
-    lda playerFlags
-    and #PLY_ISBEHIND
-    beq .notBehind
-    lda #$20
-    ora shr_playerSprites+SPR_FLAGS
-    sta shr_playerSprites+SPR_FLAGS
-    sta shr_playerSprites+OAM_SIZE+SPR_FLAGS
-.notBehind:
+    and #7
+    tay
+    lda playerXVel
+    beq .notmoving
+    tya
+    ora #8
+    tay
+.notmoving:
+    lda playerAnims,y
+    sta entityAnim+2
     
-    lda powerType
-    cmp #POWER_GRAVITY
-    bne .notUpsideDown
-    lda #$80
-    ora shr_playerSprites+SPR_FLAGS
-    sta shr_playerSprites+SPR_FLAGS
-    sta shr_playerSprites+OAM_SIZE+SPR_FLAGS
-.notUpsideDown:
-
-UpdatePlayerSprite_end:
-
 ClearSprites subroutine
     ldy #0
     lda #$FF

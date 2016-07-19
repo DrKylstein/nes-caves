@@ -1,5 +1,5 @@
 entityRoutine:
-    .word ER_Bullet
+    .word ER_Return ; player
     .word ER_VerticalPlatform
     .word ER_HorizontalPlatform
     .word ER_Spider
@@ -31,9 +31,10 @@ entityRoutine:
     .word ER_Return ; torch
     .word ER_Spike ; spike
     .word ER_Planet ; planet
+    .word ER_Bullet; bullet
     
 entityFlags:
-    .byte ENT_F_ISTEMPORARY | 2; bullet
+    .byte 1 ; player
     .byte ENT_F_ISPLATFORM | ENT_F_SKIPYTEST | 2; vertical platform
     .byte ENT_F_ISPLATFORM | ENT_F_SKIPXTEST | 2; horizontal platform
     .byte [1<<ENT_F_CHILDREN_SHIFT] | 2 ; spider
@@ -65,9 +66,10 @@ entityFlags:
     .byte 1 ;torch
     .byte 0 ;spike
     .byte 0 ; planet
+    .byte ENT_F_ISTEMPORARY | 2; bullet
         
 entityTiles:
-    .byte 14*2 ; bullet
+    .byte 0 ; player
     .byte [0+32]*2 ; vertical platform
     .byte [0+32]*2 ; horizontal platform
     .byte [16+32]*2 ; spider
@@ -99,9 +101,10 @@ entityTiles:
     .byte [31+32*3]*2 ; torch
     .byte 32*3 + 16 + 1; spike
     .byte 32*4 + 24 + 1;planet
+    .byte 14*2 ; bullet
     
 entitySpeeds:
-    .byte 4 ; bullet
+    .byte 0 ; player
     .byte 1 ; vertical platform
     .byte 1 ; horizontal platform
     .byte 1 ; spider
@@ -133,9 +136,10 @@ entitySpeeds:
     .byte 0 ; torch
     .byte 0 ; spike
     .byte 0 ; planet
+    .byte 4 ; bullet
     
 entityInitialAnims:
-    .byte ANIM_SMALL_LONG ; bullet
+    .byte ANIM_SMALL_NONE ; player
     .byte ANIM_SPIDER ; vertical platform
     .byte ANIM_SPIDER ; horizontal platform
     .byte ANIM_SPIDER ; spider
@@ -167,6 +171,7 @@ entityInitialAnims:
     .byte ANIM_TORCH
     .byte ANIM_SPIKE
     .byte ANIM_PLANET
+    .byte ANIM_SMALL_LONG ; bullet
 
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry

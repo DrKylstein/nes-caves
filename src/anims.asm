@@ -2,19 +2,6 @@
 ; Animation Data
 ;------------------------------------------------------------------------------
 
-playerWalk:
-    .byte $00
-    .byte $04
-    .byte $08
-    .byte $04
-    .byte $00
-    .byte $0C
-    .byte $10
-    .byte $0C
-    .byte $00
-    .byte $08
-        
-
 animations:
     .word anim_null
     .word anim_smallNone
@@ -53,6 +40,16 @@ animations:
     .word anim_girder_right
     .word anim_spike
     .word anim_planet
+    .word anim_player_walk
+    .word anim_player_walk_left
+    .word anim_player_jump
+    .word anim_player_jump_left
+    .word anim_player_walkv
+    .word anim_player_walk_leftv
+    .word anim_player_jumpv
+    .word anim_player_jump_leftv
+    .word anim_smallVFlipNone
+    .word anim_smallHVNone
     
 frame_small1:
     .byte 8
@@ -181,6 +178,15 @@ anim_null subroutine
 anim_smallNone subroutine
     .byte 0
     .word frame_small1
+
+anim_smallVFlipNone subroutine
+    .byte 0
+    .word frame_smallVFlip1
+    
+anim_smallHVNone subroutine
+    .byte 0
+    .word frame_smallHV1
+    
 
 anim_symmetrical_none subroutine
     .byte 0
@@ -973,3 +979,118 @@ anim_planet subroutine
     .byte 32+6
     .byte $20
     .byte 24
+    
+anim_player_walk subroutine
+    .byte 7
+    .word frame_small1
+    .word frame_small2
+    .word frame_small3
+    .word frame_small2
+    .word frame_small1
+    .word .frame4
+    .word .frame5
+    .word .frame4
+.frame4:
+    .byte 2*OAM_SIZE
+    .byte   0, 12,  0,  0
+    .byte   0, 14,  0,  8
+.frame5:
+    .byte 2*OAM_SIZE
+    .byte   0, 16,  0,  0
+    .byte   0, 18,  0,  8
+    
+anim_player_walk_left subroutine
+    .byte 7
+    .word frame_smallHFlip1
+    .word frame_smallHFlip2
+    .word frame_smallHFlip3
+    .word frame_smallHFlip2
+    .word frame_smallHFlip1
+    .word .frame4
+    .word .frame5
+    .word .frame4
+.frame4:
+    .byte 2*OAM_SIZE
+    .byte   0, 14,$40,  0
+    .byte   0, 12,$40,  8
+.frame5:
+    .byte 2*OAM_SIZE
+    .byte   0, 18,$40,  0
+    .byte   0, 16,$40,  8
+
+anim_player_jump subroutine
+    .byte 0
+    .word frame_small3
+anim_player_jump_left subroutine
+    .byte 0
+    .word frame_smallHFlip3
+    
+anim_player_walkv subroutine
+    .byte 7
+    .word frame_smallVFlip1
+    .word .frame2
+    .word .frame3
+    .word .frame2
+    .word frame_smallVFlip1
+    .word .frame4
+    .word .frame5
+    .word .frame4
+.frame2:
+    .byte 2*OAM_SIZE
+    .byte   0,  4,$80,  0
+    .byte   0,  6,$80,  8
+.frame3:
+    .byte 2*OAM_SIZE
+    .byte   0,  8,$80,  0
+    .byte   0, 10,$80,  8
+.frame4:
+    .byte 2*OAM_SIZE
+    .byte   0, 12,$80,  0
+    .byte   0, 14,$80,  8
+.frame5:
+    .byte 2*OAM_SIZE
+    .byte   0, 16,$80,  0
+    .byte   0, 18,$80,  8
+    
+anim_player_walk_leftv subroutine
+    .byte 7
+    .word frame_smallHV1
+    .word .frame2
+    .word .frame3
+    .word .frame2
+    .word frame_smallHV1
+    .word .frame4
+    .word .frame5
+    .word .frame4
+.frame2:
+    .byte 2*OAM_SIZE
+    .byte   0,  6,$C0,  0
+    .byte   0,  4,$C0,  8
+.frame3:
+    .byte 2*OAM_SIZE
+    .byte   0, 10,$C0,  0
+    .byte   0,  8,$C0,  8
+.frame4:
+    .byte 2*OAM_SIZE
+    .byte   0, 14,$C0,  0
+    .byte   0, 12,$C0,  8
+.frame5:
+    .byte 2*OAM_SIZE
+    .byte   0, 18,$C0,  0
+    .byte   0, 16,$C0,  8
+
+anim_player_jumpv subroutine
+    .byte 0
+    .word .frame
+.frame:
+    .byte 2*OAM_SIZE
+    .byte   0,  8,$80,  0
+    .byte   0, 10,$80,  8
+    
+anim_player_jump_leftv subroutine
+    .byte 0
+    .word .frame
+.frame:
+    .byte 2*OAM_SIZE
+    .byte   0, 10,$C0,  0
+    .byte   0,  8,$C0,  8
