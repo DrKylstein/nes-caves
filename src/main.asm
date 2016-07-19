@@ -2069,12 +2069,9 @@ UpdateEntitySprites subroutine
     sta tmp+1
     SUB16 tmp,tmp,shr_cameraY    
     lda (sav),y
-    clc
-    adc tmp
-    sta tmp
-    lda #0
-    adc tmp+1
-    sta tmp+1
+    sta tmp+2
+    EXTEND tmp+2,tmp+2
+    ADD16 tmp,tmp,tmp+2
     CMP16I tmp,-16
     bpl .notabove
     jmp .abort
@@ -2119,12 +2116,9 @@ UpdateEntitySprites subroutine
     sta tmp+1
     SUB16 tmp,tmp,shr_cameraX    
     lda (sav),y
-    clc
-    adc tmp
-    sta tmp
-    lda #0
-    adc tmp+1
-    sta tmp+1
+    sta tmp+2
+    EXTEND tmp+2,tmp+2
+    ADD16 tmp,tmp,tmp+2
     CMP16I tmp,-8
     bpl .notLeft
     ldy #0
