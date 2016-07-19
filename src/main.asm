@@ -45,7 +45,7 @@
 ;move player into entity sprite space to share flickering
 ;flickering torch/pulsing lava emphasis effect
 ;mask right edge?
-
+;use grayscale and/or emphasis on hud? 
 
 ;------------------------------------------------------------------------------
 ;Initial Boot
@@ -227,20 +227,20 @@ InitSprites subroutine
     cpy #8*OAM_SIZE
     bne .loop
 
-InitSpritePalette subroutine
-    ldx shr_copyIndex
+; InitSpritePalette subroutine
+    ; ldx shr_copyIndex
     
-    ldy #11
-.loop
-    lda palettes,y
-    PHXA
-    dey
-    bpl .loop
+    ; ldy #11
+; .loop
+    ; lda palettes,y
+    ; PHXA
+    ; dey
+    ; bpl .loop
 
-    ENQUEUE_ROUTINE nmi_Copy12
-    ENQUEUE_PPU_ADDR [VRAM_PALETTE_SP+4]
+    ; ENQUEUE_ROUTINE nmi_Copy12
+    ; ENQUEUE_PPU_ADDR [VRAM_PALETTE_SP+4]
     
-    stx shr_copyIndex
+    ; stx shr_copyIndex
 
     jsr Synchronize
 ;------------------------------------------------------------------------------
@@ -268,7 +268,6 @@ DisableDisplay subroutine
     jsr Synchronize
     jsr QDisableDisplay
     jsr Synchronize
-    jsr QEnableSplitDisplay
 DisableDisplay_end:
 
 ResetStats subroutine
@@ -316,29 +315,29 @@ LoadLevelTileset subroutine
     jsr PagesToPPU
 
     
-LoadLevelPal subroutine
-    SELECT_BANK 0
-    ldx shr_copyIndex
+; LoadLevelPal subroutine
+    ; SELECT_BANK 0
+    ; ldx shr_copyIndex
     
-    lda currLevel
-    asl
-    tay
-    lda levelPalettes,y
-    sta tmp
-    lda levelPalettes+1,y
-    sta tmp+1
-    ldy #19
-.loop
-    lda (tmp),y
-    PHXA
-    dey
-    bpl .loop
+    ; lda currLevel
+    ; asl
+    ; tay
+    ; lda levelPalettes,y
+    ; sta tmp
+    ; lda levelPalettes+1,y
+    ; sta tmp+1
+    ; ldy #19
+; .loop
+    ; lda (tmp),y
+    ; PHXA
+    ; dey
+    ; bpl .loop
 
-    ENQUEUE_ROUTINE nmi_Copy20
-    ENQUEUE_PPU_ADDR VRAM_PALETTE_BG
+    ; ENQUEUE_ROUTINE nmi_Copy20
+    ; ENQUEUE_PPU_ADDR VRAM_PALETTE_BG
     
-    stx shr_copyIndex
-LoadLevelPal_end:
+    ; stx shr_copyIndex
+; LoadLevelPal_end:
 
 LoadLevel subroutine
     lda currLevel
@@ -723,7 +722,24 @@ InitAttributes_end:
     jsr LoadTilesOnMoveLeft
 
 ReenableDisplay subroutine
+    jsr QEnableSplitDisplay
+    jsr UpdateSprites
+    SELECT_BANK 0
+    ldy #3
+.loop:
+    tya
+    REPEAT 4
+    asl
+    REPEND
+    sta arg
+    sty sav
+    jsr Fade
+    ldy sav
+    REPEAT 8
     jsr Synchronize
+    REPEND
+    dey
+    bpl .loop
 ReenableDisplay_end:
 
 ;------------------------------------------------------------------------------
@@ -1128,6 +1144,7 @@ TC_Exit:
     ora cleared+1
     sta cleared+1
 doExit:
+    jsr FadeOut
     lda #MAP_LEVEL
     sta currLevel
     jmp EnterLevel
@@ -1155,6 +1172,7 @@ TC_Entrance:
     lda sav+3
     jmp TC_Return
 .uncleared:
+    jsr FadeOut
     lda sav+3
     sec
     sbc #TB_MAPDOOR
@@ -1859,7 +1877,34 @@ ER_Return:
 
 updateEntities_end:
 
+    jsr UpdateSprites
+    inc frame
+    jsr Synchronize
+    jmp MainLoop
 
+;------------------------------------------------------------------------------
+FadeOut subroutine
+    SELECT_BANK 0
+    ldy #0
+.fadeloop:
+    tya
+    REPEAT 4
+    asl
+    REPEND
+    sta arg
+    sty sav
+    jsr Fade
+    ldy sav
+    REPEAT 8
+    jsr Synchronize
+    REPEND
+    iny
+    cpy #4
+    bne .fadeloop
+    rts
+
+;------------------------------------------------------------------------------
+UpdateSprites:
 UpdatePlayerSprite subroutine
     ;update position
     SUB16 sav, playerX, shr_cameraX
@@ -2120,10 +2165,7 @@ UpdateEntitySprites_end
     clc
     adc #21*4
     sta startSprite
-    inc frame
-    jsr Synchronize
-    jmp MainLoop
-
+    rts
 ;------------------------------------------------------------------------------
 KillPlayer subroutine
     pla
@@ -3076,5 +3118,45 @@ QColorEffect subroutine
     PHXA
     ENQUEUE_ROUTINE nmi_UpdateMask
     ENQUEUE_PPU_ADDR $0000
+    stx shr_copyIndex
+    rts
+;------------------------------------------------------------------------------
+Fade subroutine
+    ldx shr_copyIndex
+    
+    ldy #11
+.loop
+    lda palettes,y
+    sec
+    sbc arg
+    bpl .nn1
+    lda #$0f
+.nn1:
+    PHXA
+    dey
+    bpl .loop
+    
+    lda currLevel
+    asl
+    tay
+    lda levelPalettes,y
+    sta tmp
+    lda levelPalettes+1,y
+    sta tmp+1
+    ldy #19
+.loop2
+    lda (tmp),y
+    sec
+    sbc arg
+    bpl .nn2
+    lda #$0f
+.nn2:
+    PHXA
+    dey
+    bpl .loop2
+
+    ENQUEUE_ROUTINE nmi_Copy32
+    ENQUEUE_PPU_ADDR VRAM_PALETTE_BG
+    
     stx shr_copyIndex
     rts
