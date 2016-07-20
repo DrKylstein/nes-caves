@@ -1822,6 +1822,9 @@ UpdateEntities subroutine
     bmi .offScreen
     jmp .persistent
 .offScreen:
+    lda entityStatus,y
+    ora #ENT_S_OFFSCREEN
+    sta entityStatus,y
     lda entityFlags,x
     and #ENT_F_ISTEMPORARY
     beq .normal
@@ -1830,6 +1833,10 @@ UpdateEntities subroutine
 .normal:
     jmp ER_Return
 .persistent:
+    lda entityStatus,y
+    and #~ENT_S_OFFSCREEN
+    sta entityStatus,y
+
     txa
     asl
     tax
@@ -1925,6 +1932,9 @@ UpdateEntitySprites subroutine
 .continue:
     lda entityXHi,x
     bmi .outerloop
+    lda entityStatus,x
+    and #ENT_S_OFFSCREEN
+    bne .outerloop
 .active:
     ;---------------
     ;get frame
@@ -1956,24 +1966,35 @@ UpdateEntitySprites subroutine
     sta sav+3
     INC16 sav
     ADD16 sav+2,sav+2,sav
+    
+    ;prepare coordinates
+    lda entityYLo,x
+    sta sav+4
+    lda entityYHi,x
+    and #ENT_Y_POS
+    sta sav+5
+    SUB16 sav+4,sav+4,shr_cameraY  
+    
+    lda entityXLo,x
+    sta sav+6
+    lda entityXHi,x
+    and #ENT_X_POS
+    sta sav+7
+    SUB16 sav+6,sav+6,shr_cameraX    
+
     ;---------------
     ;load frame from (sav) into (arg) until sav+2
     ;x is entity index
+    ;sav+4 is relative y
+    ;sav+6 is relative x
     ;---------------
 .loop:
     ldy #0
 ;--Y--
-    lda entityYLo,x
-    sta tmp
-    lda entityYHi,x
-    and #ENT_Y_POS
-    sta tmp+1
-    SUB16 tmp,tmp,shr_cameraY    
     lda (sav),y
-    sta sav+4
-    sta tmp+2
-    EXTEND tmp+2,tmp+2
-    ADD16 tmp,tmp,tmp+2
+    sta tmp
+    EXTEND tmp,tmp
+    ADD16 tmp,tmp,sav+4
     CMP16I tmp,-16
     bpl .notabove
     jmp .abort
@@ -2020,17 +2041,10 @@ UpdateEntitySprites subroutine
 .noFG:
     iny
 ;--X--
-    lda entityXLo,x
-    sta tmp
-    lda entityXHi,x
-    and #ENT_X_POS
-    sta tmp+1
-    SUB16 tmp,tmp,shr_cameraX    
     lda (sav),y
-    sta sav+5
-    sta tmp+2
-    EXTEND tmp+2,tmp+2
-    ADD16 tmp,tmp,tmp+2
+    sta tmp
+    EXTEND tmp,tmp
+    ADD16 tmp,tmp,sav+6
     CMP16I tmp,-8
     bpl .notLeft
     ldy #0
@@ -2050,57 +2064,7 @@ UpdateEntitySprites subroutine
     adc #8
     sta (arg),y
     iny
-    
-    ;---foreground tiles---
-    ; lda sav+5
-    ; sta tmp
-    ; EXTEND tmp, tmp
-    ; lda entityXLo,x
-    ; clc
-    ; adc tmp
-    ; sta tmp
-    ; lda entityXHi,x
-    ; and #ENT_X_POS
-    ; adc tmp+1
-    ; sta tmp+1
-    
-    ; lda sav+4
-    ; sta arg+2
-    ; EXTEND arg+2, arg+2
-    ; lda entityYLo,x
-    ; clc
-    ; adc arg+2
-    ; sta arg+2
-    ; lda entityYHi,x
-    ; and #ENT_Y_POS
-    ; adc arg+3
-    ; sta arg+3
-    
-    ; REPEAT 4
-    ; LSR16 tmp
-    ; LSR16 arg+2
-    ; REPEND
-    
-    ; MOV16 sav+4,arg
-    ; MOV16 arg, tmp
-    ; sty sav+6
-    ; jsr GetTileBehavior
-    ; ldy sav+6
-    ; MOV16 arg, sav+4
-    ; lda ret
-    ; cmp #TB_FOREGROUND
-    ; bne .notFG
-    ; dey
-    ; dey
-    ; lda (arg),y
-    ; ora #$20
-    ; sta (arg),y
-    ; iny
-    ; iny
-; .notFG:
-    
-    ;----
-    
+;--commit--
     
     lda #4
     clc

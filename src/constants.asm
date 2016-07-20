@@ -18,7 +18,7 @@ PX_VIEWPORT_OFFSET = [MT_NAMETABLE_HEIGHT - MT_VIEWPORT_HEIGHT]*PX_MT_HEIGHT
 BONUS_TILES = 235
 HIDDEN_TILE = $01
 
-MAX_ENTITIES = 28
+MAX_ENTITIES = 26
 RESERVED_ENTITIES = 3
 
 MAP_LEVEL = $10
@@ -56,14 +56,15 @@ BOTTOM_ATTR_HEIGHT = 8
 TOP_ATTR_OFFSET = $23C0+[3*8]
 BOTTOM_ATTR_OFFSET = $2BC0
 
-;contents of main_entityYHi
+;contents of entityYHi
 ENT_Y_POS = $01
 ENT_Y_INDEX = $FE
-
-;contents of main_entityXHi
+;contents of entityXHi
 ENT_X_POS = $03
 ENT_X_STATE = $7C
 ENT_X_STATE_SHIFT = 2
+;contents of entityStatus
+ENT_S_OFFSCREEN = 1
 
 ;contents of prgdata_entityFlags
 ENT_F_SKIPYTEST = $80

@@ -128,5 +128,6 @@ entityAnim       ds MAX_ENTITIES
 
     ORG $0400
 levelMap       ds 960
+entityStatus    ds MAX_ENTITIES
     ECHO [$800-.]d,"bytes left in pages $400-$700"
 
