@@ -61,8 +61,6 @@ ENT_Y_POS = $01
 ENT_Y_INDEX = $FE
 ;contents of entityXHi
 ENT_X_POS = $03
-ENT_X_STATE = $7C
-ENT_X_STATE_SHIFT = 2
 ;contents of entityStatus
 ENT_S_OFFSCREEN = 1
 

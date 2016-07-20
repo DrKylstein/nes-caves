@@ -585,23 +585,7 @@ ER_Pipe subroutine
 .end:
     jmp ER_Return
 
-FlameTable:
-    .byte 16
-    .byte 15
-    .byte 14
-    .byte 13
-    .byte 12
-    .byte 11
-    .byte 10
-    .byte 9
-    .byte 8
-    .byte 7
-    .byte 6
-    .byte 5
-    .byte 4
-    .byte 3
-    .byte 2
-    .byte 1
+flameTable:
     .byte 0
     .byte 0
     .byte 0
@@ -657,86 +641,98 @@ FlameTable:
     .byte 0
     .byte 0
     .byte 1
-    .byte 2
-    .byte 4
-    .byte 8
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
-    .byte 16
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 1
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte 0
+    .byte -1 ;1
+    .byte -1 ;2
+    .byte -2 ;4
+    .byte -4 ;8
+    .byte -8 ;16
     
 ER_Flame subroutine
-    lda entityXHi,y
-    and #ENT_X_STATE
-    bne .notFirstUpdate
-    lda entityYLo,y
-    sta entityCount,y
-    lda entityYHi,y
-    sta entityVelocity,y
-    lda entityXHi,y
-    ora #[1<<ENT_X_STATE_SHIFT]
-    sta entityXHi,y
-.notFirstUpdate:
-    lda frame
+    lda entityCount,y
     lsr
     tax
-    lda FlameTable,x
+    lda flameTable,x
+    sta tmp
+    lda entityCount,y
     clc
-    adc entityCount,y
+    adc #1
+    sta entityCount,y
+    EXTEND tmp,tmp
+    lda tmp
+    clc
+    adc entityYLo,y
     sta entityYLo,y
-    lda #0
-    adc entityVelocity,y
-    sta entityYHi,y
+    lda tmp+1
+    adc entityYHi,y
+    sta entityYHi,y    
     jsr EntTryMelee
     jmp ER_Return
 
