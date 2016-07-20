@@ -60,9 +60,10 @@ BOTTOM_ATTR_OFFSET = $2BC0
 ENT_Y_POS = $01
 ENT_Y_INDEX = $FE
 ;contents of entityXHi
-ENT_X_POS = $03
-;contents of entityStatus
-ENT_S_OFFSCREEN = 1
+ENT_X_DEAD = %10000000
+ENT_X_OFFSCREEN = %01000000
+ENT_X_POS =  %00000011
+
 
 ;contents of prgdata_entityFlags
 ENT_F_SKIPYTEST = $80

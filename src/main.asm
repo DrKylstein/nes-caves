@@ -1822,9 +1822,9 @@ UpdateEntities subroutine
     bmi .offScreen
     jmp .persistent
 .offScreen:
-    lda entityStatus,y
-    ora #ENT_S_OFFSCREEN
-    sta entityStatus,y
+    lda entityXHi,y
+    ora #ENT_X_OFFSCREEN
+    sta entityXHi,y
     lda entityFlags,x
     and #ENT_F_ISTEMPORARY
     beq .normal
@@ -1833,9 +1833,9 @@ UpdateEntities subroutine
 .normal:
     jmp ER_Return
 .persistent:
-    lda entityStatus,y
-    and #~ENT_S_OFFSCREEN
-    sta entityStatus,y
+    lda entityXHi,y
+    and #~ENT_X_OFFSCREEN
+    sta entityXHi,y
 
     txa
     asl
@@ -1932,8 +1932,7 @@ UpdateEntitySprites subroutine
 .continue:
     lda entityXHi,x
     bmi .outerloop
-    lda entityStatus,x
-    and #ENT_S_OFFSCREEN
+    and #ENT_X_OFFSCREEN
     bne .outerloop
 .active:
     ;---------------
