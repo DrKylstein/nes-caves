@@ -1919,7 +1919,7 @@ ClearSprites_end:
 
 UpdateEntitySprites subroutine
     lda startSprite
-    and #$7C
+    ;and #$7C
     ora #$80
     sta arg
     lda #$02
@@ -1935,9 +1935,48 @@ UpdateEntitySprites subroutine
     and #ENT_X_OFFSCREEN
     bne .outerloop
 .active:
-    ;---------------
-    ;get frame
-    ;---------------
+    ;prepare coordinates in sav+4 (Y) and sav+5 (X)
+    lda entityYLo,x
+    sta sav+4
+    lda entityYHi,x
+    and #ENT_Y_POS
+    sta sav+5
+    SUB16 sav+4,sav+4,shr_cameraY  
+    lda entityXLo,x
+    sta sav+6
+    lda entityXHi,x
+    and #ENT_X_POS
+    sta sav+7
+    SUB16 sav+6,sav+6,shr_cameraX 
+    
+    ;get base tile in arg+2
+    lda entityYHi,x
+    lsr
+    stx tmp
+    tax
+    lda entityTiles,x
+    ldx tmp
+    sta arg+2
+    
+    ;get base attribute in arg+3
+    lda entityYHi,x
+    lsr
+    stx tmp
+    tax
+    lda entityFlags,x
+    and #ENT_F_COLOR
+    ldx tmp
+    sta arg+3
+    cpx #2
+    bne .noFG
+    lda playerFlags
+    and #PLY_ISBEHIND
+    beq .noFG
+    lda arg+3
+    ora #$20
+    sta arg+3
+.noFG:
+    ;get frame in sav
     lda entityAnim,x
     asl
     tay
@@ -1958,6 +1997,8 @@ UpdateEntitySprites subroutine
     iny
     lda (tmp),y
     sta sav+1
+    
+    ;get size in sav+2
     ldy #0
     lda (sav),y
     sta sav+2
@@ -1966,20 +2007,6 @@ UpdateEntitySprites subroutine
     INC16 sav
     ADD16 sav+2,sav+2,sav
     
-    ;prepare coordinates
-    lda entityYLo,x
-    sta sav+4
-    lda entityYHi,x
-    and #ENT_Y_POS
-    sta sav+5
-    SUB16 sav+4,sav+4,shr_cameraY  
-    
-    lda entityXLo,x
-    sta sav+6
-    lda entityXHi,x
-    and #ENT_X_POS
-    sta sav+7
-    SUB16 sav+6,sav+6,shr_cameraX    
 
     ;---------------
     ;load frame from (sav) into (arg) until sav+2
@@ -2008,36 +2035,15 @@ UpdateEntitySprites subroutine
     sta (arg),y
     iny
 ;--tile--
-    lda entityYHi,x
-    lsr
-    stx tmp
-    tax
-    lda entityTiles,x
-    ldx tmp
+    lda arg+2
     clc
     adc (sav),y
     sta (arg),y
     iny
 ;--flags--
-    lda entityYHi,x
-    lsr
-    stx tmp
-    tax
-    lda entityFlags,x
-    and #ENT_F_COLOR
-    ldx tmp
-    clc
+    lda arg+3
     ora (sav),y
     sta (arg),y
-    cpx #2
-    bne .noFG
-    lda playerFlags
-    and #PLY_ISBEHIND
-    beq .noFG
-    lda #$20
-    ora (arg),y
-    sta (arg),y
-.noFG:
     iny
 ;--X--
     lda (sav),y
@@ -2068,7 +2074,7 @@ UpdateEntitySprites subroutine
     lda #4
     clc
     adc arg
-    and #$7F
+    ;and #$7F
     ora #$80
     sta arg
 .abort:
