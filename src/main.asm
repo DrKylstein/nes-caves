@@ -11,19 +11,18 @@
 ;full-size hammers?
 ;explosions
 ;bonus fruit
-;snake
-;hopper
+;hopper -> snake
 ;bird
-;triceratops
-;stalk-eye
+;triceratops-> stalk-eye
 ;rolling enemy
-;robot
+;walker -> robot
 ;wall snake
 ;flying alien wrench
 ;hidden crystal
 
 ;low gravity
 ;rex chasing
+;moving cannon
 ;strength mushroom melee
 ;more sounds
 ;music
@@ -42,7 +41,6 @@
 ;separate top and bottom of main map to enable separate effects
 ;animated background objects
 ;flickering torch/pulsing lava emphasis effect
-;mask right edge?
 ;use grayscale and/or emphasis on hud? 
 
 ;------------------------------------------------------------------------------
@@ -250,7 +248,25 @@ InitSprites subroutine
     REPEND
     cpy #8*OAM_SIZE
     bne .loop
-
+    lda #PX_VIEWPORT_OFFSET-1
+    sta tmp
+.loop2:
+    lda tmp
+    sta shr_spriteY,y
+    clc
+    adc #16
+    sta tmp
+    lda #248
+    sta shr_spriteX,y
+    lda #60
+    sta shr_spriteIndex,y
+    lda #1
+    sta shr_spriteFlags,y
+    REPEAT OAM_SIZE
+    iny
+    REPEND
+    cpy #21*OAM_SIZE
+    bne .loop2
     jsr Synchronize
 ;------------------------------------------------------------------------------
 ;New Game
