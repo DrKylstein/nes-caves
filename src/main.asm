@@ -148,14 +148,7 @@ LoadTitle subroutine
     ldx #4
     jsr PagesToPPU
     
-    ldy #15
-    SET_PPU_ADDR VRAM_PALETTE_BG
-.loop:
-    lda titlePalette,y
-    sta PPU_DATA
-    dey
-    bpl .loop
-LoadTitlePalette_end:
+LoadTitle_end:
 
 DoTitleScreen subroutine
     lda #0
@@ -164,12 +157,44 @@ DoTitleScreen subroutine
     sta PPU_SCROLL
 
     jsr QEnableDisplay
+    ldy #4
+    lda #$30
+    sta arg
+.loopin:
+    sty sav
+    jsr FadeTitle
+    REPEAT FADE_DELAY
     jsr Synchronize
+    REPEND
+    ldy sav
+    lda arg
+    sec
+    sbc #$10
+    sta arg
+    dey
+    bne .loopin
     
 .waitForPress:
     jsr read_joy
     cmp #0
     beq .waitForPress
+    
+    ldy #3
+    lda #$10
+    sta arg
+.loopout:
+    sty sav
+    jsr FadeTitle
+    REPEAT FADE_DELAY
+    jsr Synchronize
+    REPEND
+    ldy sav
+    lda arg
+    clc
+    adc #$10
+    sta arg
+    dey
+    bne .loopout
     
     jsr QDisableDisplay
     jsr Synchronize
@@ -694,7 +719,7 @@ ReenableDisplay subroutine
     sty sav
     jsr Fade
     ldy sav
-    REPEAT 8
+    REPEAT FADE_DELAY
     jsr Synchronize
     REPEND
     dey
@@ -1875,7 +1900,7 @@ FadeOut subroutine
     sty sav
     jsr Fade
     ldy sav
-    REPEAT 8
+    REPEAT FADE_DELAY
     jsr Synchronize
     REPEND
     iny
@@ -2010,9 +2035,6 @@ UpdateEntitySprites subroutine
 
     ;---------------
     ;load frame from (sav) into (arg) until sav+2
-    ;x is entity index
-    ;sav+4 is relative y
-    ;sav+6 is relative x
     ;---------------
 .loop:
     ldy #0
@@ -3080,6 +3102,28 @@ Fade subroutine
     bpl .loop2
 
     ENQUEUE_ROUTINE nmi_Copy32
+    ENQUEUE_PPU_ADDR VRAM_PALETTE_BG
+    
+    stx shr_copyIndex
+    rts
+;------------------------------------------------------------------------------
+FadeTitle subroutine
+    ldx shr_copyIndex
+    
+    ldy #0
+.loop
+    lda titlePalette,y
+    sec
+    sbc arg
+    bpl .nn1
+    lda #$0f
+.nn1:
+    PHXA
+    iny
+    cpy #16
+    bne .loop
+    
+    ENQUEUE_ROUTINE nmi_Copy16
     ENQUEUE_PPU_ADDR VRAM_PALETTE_BG
     
     stx shr_copyIndex
