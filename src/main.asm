@@ -31,7 +31,7 @@
 ;passwords?
 ;intro and ending
 ;test on hardware!
-;door animation
+;enter/exit animation
 
 ;???
 ;parallaxing tiled backgrounds
@@ -1960,11 +1960,8 @@ ClearSprites_end:
 
 UpdateEntitySprites subroutine
     lda startSprite
-    ;and #$7C
     ora #$80
     sta arg
-    lda #$02
-    sta arg+1
     ldx #[MAX_ENTITIES]
 .outerloop:
     dex
@@ -2019,11 +2016,12 @@ UpdateEntitySprites subroutine
 .noFG:
     ;get frame in sav
     lda entityAnim,x
+    stx arg+4 ; entity index in arg+4
     asl
-    tay
-    lda animations,y
+    tax
+    lda animations,x
     sta tmp
-    lda animations+1,y
+    lda animations+1,x
     sta tmp+1
     ldy #0
     lda frame
@@ -2039,88 +2037,89 @@ UpdateEntitySprites subroutine
     lda (tmp),y
     sta sav+1
     
-    ;get size in sav+2
+    ;get size in sav+2, def index in y
     ldy #0
     lda (sav),y
     sta sav+2
-    lda #0
-    sta sav+3
     INC16 sav
-    ADD16 sav+2,sav+2,sav
     
-
+    ;sprite base in x
+    ldx arg
     ;---------------
-    ;load frame from (sav) into (arg) until sav+2
+    ;load frame from (sav) into $200,x until sav+2
     ;---------------
 .loop:
-    ldy #0
 ;--Y--
     lda (sav),y
+    iny
     sta tmp
     EXTEND tmp,tmp
     ADD16 tmp,tmp,sav+4
     CMP16I tmp,-16
     bpl .notabove
+    iny
+    iny
+    iny
     jmp .abort
 .notabove:
     CMP16I tmp,[MT_VIEWPORT_HEIGHT*PX_MT_HEIGHT+16]
     bmi .notbelow
+    iny
+    iny
+    iny
     jmp .abort
 .notbelow:
     lda tmp
     clc
     adc #PX_VIEWPORT_OFFSET-1
-    sta (arg),y
-    iny
+    sta shr_spriteY,x
 ;--tile--
     lda arg+2
     clc
     adc (sav),y
-    sta (arg),y
     iny
+    sta shr_spriteIndex,x
 ;--flags--
     lda arg+3
     ora (sav),y
-    sta (arg),y
     iny
+    sta shr_spriteFlags,x
 ;--X--
     lda (sav),y
+    iny
     sta tmp
     EXTEND tmp,tmp
     ADD16 tmp,tmp,sav+6
     CMP16I tmp,-8
     bpl .notLeft
-    ldy #0
     lda #$FF
-    sta (arg),y
+    sta shr_spriteY,x
     jmp .abort
 .notLeft:
     CMP16I tmp,[MT_VIEWPORT_WIDTH*PX_MT_WIDTH+8]
     bmi .notRight
-    ldy #0
     lda #$FF
-    sta (arg),y
+    sta shr_spriteY,x
     jmp .abort
 .notRight:
     lda tmp
     clc
     adc #8
-    sta (arg),y
-    iny
+    sta shr_spriteX,x
 ;--commit--
     
-    lda #4
+    txa
     clc
-    adc arg
-    ;and #$7F
+    adc #4
     ora #$80
-    sta arg
+    tax
 .abort:
-    ADD16I sav,sav,4
-    CMP16 sav, sav+2
+    cpy sav+2
     bcs .done
     jmp .loop
 .done:
+    stx arg ;save sprite addr
+    ldx arg+4 ;reload entity index
     jmp .outerloop
     
 UpdateEntitySprites_end
