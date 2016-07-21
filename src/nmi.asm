@@ -58,15 +58,45 @@ nmi_genericCopy_end:
 
 nmi_TileCopy subroutine
     lda shr_doTileCol
-    beq nmi_TileCopy_end
-    jsr nmi_CopyTileCol
+    JEQ nmi_TileCopy_end
+    ;vertical mode
+    lda #[PPU_CTRL_SETTING | %00000100]
+    sta PPU_CTRL
+
+;top nametable
+    bit PPU_STATUS
+    lda #>[$2000+TOP_OFFSET]
+    sta PPU_ADDR
+    lda shr_tileCol
+    clc
+    adc #<[$2000+TOP_OFFSET]
+    sta PPU_ADDR
+    ldy #0
+    REPEAT TOP_HEIGHT
+    lda shr_tileBuffer,y
+    sta PPU_DATA
+    iny
+    REPEND
+    
+    ;bottom nametable
+    lda #$28
+    sta PPU_ADDR
+    lda shr_tileCol
+    sta PPU_ADDR
+    REPEAT BOTTOM_HEIGHT
+    lda shr_tileBuffer,y
+    sta PPU_DATA
+    iny
+    REPEND
+
+    lda #PPU_CTRL_SETTING
+    sta PPU_CTRL
     dec shr_doTileCol
 nmi_TileCopy_end:
     
 nmi_AttrCopy subroutine
     lda shr_doAttrCol
-    bne .continue
-    jmp nmi_AttrCopy_end
+    JEQ nmi_AttrCopy_end
 .continue:
     lda shr_tileCol
     lsr
@@ -89,9 +119,18 @@ nmi_AttrCopy subroutine
     lda shr_attrBuffer,y
     iny
     sta PPU_DATA
-    REPEAT 7
-    bit PPU_DATA
-    REPEND
+    ;ADD16I nmi_tmp, nmi_tmp, 8 ;18 cycles
+    lda nmi_tmp
+    clc
+    adc #8
+    sta nmi_tmp ;10
+    ; REPEAT 7 ;7*4 = 28 cycles
+    ; bit PPU_DATA
+    ; REPEND
+    lda nmi_tmp+1 ;3
+    sta PPU_ADDR  ;4 7
+    lda nmi_tmp   ;3 10
+    sta PPU_ADDR  ;4 14
     REPEND
     
 ;bottom    
@@ -107,10 +146,18 @@ nmi_AttrCopy subroutine
     lda shr_attrBuffer,y
     iny
     sta PPU_DATA
-    ADD16I nmi_tmp, nmi_tmp, 8
-    REPEAT 7
-    bit PPU_DATA
-    REPEND
+    ;ADD16I nmi_tmp, nmi_tmp, 8 ;18 cycles
+    lda nmi_tmp
+    clc
+    adc #8
+    sta nmi_tmp ;10
+    ; REPEAT 7 ;7*4 = 28 cycles
+    ; bit PPU_DATA
+    ; REPEND
+    lda nmi_tmp+1 ;3
+    sta PPU_ADDR  ;4 7
+    lda nmi_tmp   ;3 10
+    sta PPU_ADDR  ;4 14
     REPEND
     dec shr_doAttrCol
 nmi_AttrCopy_end:
@@ -428,41 +475,6 @@ nmi_Copy5Stride8
     pla
     sta PPU_ADDR
     rts
-;------------------------------------------------------------------------------
-nmi_CopyTileCol subroutine
-    ;vertical mode
-    lda #[PPU_CTRL_SETTING | %00000100]
-    sta PPU_CTRL
-
-;top nametable
-    bit PPU_STATUS
-    lda #>[$2000+TOP_OFFSET]
-    sta PPU_ADDR
-    lda shr_tileCol
-    clc
-    adc #<[$2000+TOP_OFFSET]
-    sta PPU_ADDR
-    ldy #0
-    REPEAT TOP_HEIGHT
-    lda shr_tileBuffer,y
-    sta PPU_DATA
-    iny
-    REPEND
-    
-    ;bottom nametable
-    lda #$28
-    sta PPU_ADDR
-    lda shr_tileCol
-    sta PPU_ADDR
-    REPEAT BOTTOM_HEIGHT
-    lda shr_tileBuffer,y
-    sta PPU_DATA
-    iny
-    REPEND
-
-    lda #PPU_CTRL_SETTING
-    sta PPU_CTRL
-   rts
 ;------------------------------------------------------------------------------
 nmi_LoadSfx subroutine ; uses nmi_tmp as argument
     ldy #0

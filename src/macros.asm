@@ -58,13 +58,13 @@
     MAC ADD16I
     ; ADD_D dest a b
     ; dest = a + #b
-    clc
-    lda {2}
-    adc #<{3}
-    sta {1}
-    lda {2}+1
-    adc #>{3}
-    sta {1}+1
+    clc         ;2   2/2
+    lda {2}     ;3/4 5/6
+    adc #<{3}   ;2   7/8
+    sta {1}     ;3/4 10/12
+    lda {2}+1   ;3/4 13/16
+    adc #>{3}   ;2   15/18
+    sta {1}+1   ;3/4 18/22
     ENDM
 
     MAC ADD16
