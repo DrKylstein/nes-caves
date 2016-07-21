@@ -1821,14 +1821,6 @@ UpdateEntities subroutine
     lsr
     tax
 
-    cpy #0
-    beq .noStop
-    lda powerType
-    cmp #POWER_STOP
-    bne .noStop
-    jmp .offScreen
-.noStop:
-
 .xtest:
     lda entityFlags,x
     and #ENT_F_SKIPXTEST
@@ -1878,6 +1870,13 @@ UpdateEntities subroutine
     and #~ENT_X_OFFSCREEN
     sta entityXHi,y
 
+    cpy #RESERVED_ENTITIES
+    bcc .noStop
+    lda powerType
+    cmp #POWER_STOP
+    beq ER_Return
+.noStop:
+
     txa
     asl
     tax
@@ -1891,12 +1890,12 @@ UpdateEntities subroutine
     jmp (tmp)
 ER_Return:
     dey
-    JMI updateEntities_end
+    JMI UpdateEntities_end
     jmp .loop
     
     include entities.asm
 
-updateEntities_end:
+UpdateEntities_end:
 
     jsr UpdateSprites
     inc frame
