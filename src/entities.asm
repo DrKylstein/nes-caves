@@ -175,9 +175,9 @@ entityInitialAnims:
 
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
-    lda entityXLo,y
+    lda entityXLo,x
     sta tmp
-    lda entityXHi,y
+    lda entityXHi,x
     and #ENT_X_POS
     sta tmp+1
     SUB16 tmp,tmp,playerX
@@ -186,9 +186,9 @@ EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
     rts
     
 EntAwayFromPlayerY subroutine ; distance in arg 0-1, result in carry
-    lda entityYLo,y
+    lda entityYLo,x
     sta tmp
-    lda entityYHi,y
+    lda entityYHi,x
     and #ENT_Y_POS
     sta tmp+1
     SUB16 tmp,tmp,playerY
@@ -197,14 +197,14 @@ EntAwayFromPlayerY subroutine ; distance in arg 0-1, result in carry
     rts
 
 EntMoveHorizontally subroutine
-    lda entityVelocity,y
+    lda entityVelocity,x
     NMOS_ASR
     sta tmp
     EXTEND tmp, tmp
     lda frame
     and #1
     beq .noExtra
-    lda entityVelocity,y
+    lda entityVelocity,x
     bpl .positive
     DEC16 tmp
     jmp .noExtra
@@ -212,28 +212,28 @@ EntMoveHorizontally subroutine
     INC16 tmp
 .noExtra:
     clc
-    lda entityXLo,y
+    lda entityXLo,x
     adc tmp
-    sta entityXLo,y
-    lda entityXHi,y
+    sta entityXLo,x
+    lda entityXHi,x
     adc tmp+1
     and #ENT_X_POS
     sta tmp
-    lda entityXHi,y
+    lda entityXHi,x
     and #~ENT_X_POS
     ora tmp
-    sta entityXHi,y
+    sta entityXHi,x
     rts
     
 EntMoveVertically subroutine
-    lda entityVelocity,y
+    lda entityVelocity,x
     NMOS_ASR
     sta tmp
     EXTEND tmp, tmp
     lda frame
     and #1
     beq .noExtra
-    lda entityVelocity,y
+    lda entityVelocity,x
     bpl .positive
     DEC16 tmp
     jmp .noExtra
@@ -241,17 +241,17 @@ EntMoveVertically subroutine
     INC16 tmp
 .noExtra:
     clc
-    lda entityYLo,y
+    lda entityYLo,x
     adc tmp
-    sta entityYLo,y
-    lda entityYHi,y
+    sta entityYLo,x
+    lda entityYHi,x
     adc tmp+1
     and #ENT_Y_POS
     sta tmp
-    lda entityYHi,y
+    lda entityYHi,x
     and #~ENT_Y_POS
     ora tmp
-    sta entityYHi,y
+    sta entityYHi,x
     rts
    
 EntIsBulletNear subroutine
@@ -260,9 +260,9 @@ EntIsBulletNear subroutine
     clc
     rts
 .exists
-    lda entityXLo,y
+    lda entityXLo,x
     sta tmp
-    lda entityXHi,y
+    lda entityXHi,x
     and #ENT_X_POS
     sta tmp+1
     lda entityXLo
@@ -277,9 +277,9 @@ EntIsBulletNear subroutine
     bcs .no
     
     
-    lda entityYLo,y
+    lda entityYLo,x
     sta tmp
-    lda entityYHi,y
+    lda entityYHi,x
     and #ENT_Y_POS
     sta tmp+1
     lda entityYLo
@@ -300,14 +300,14 @@ EntIsBulletNear subroutine
     rts
 
 EntTryMelee subroutine
-    lda entityXLo,y
+    lda entityXLo,x
     sta tmp
-    lda entityXHi,y
+    lda entityXHi,x
     and #ENT_X_POS
     sta tmp+1
-    lda entityYLo,y
+    lda entityYLo,x
     sta tmp+2
-    lda entityYHi,y
+    lda entityYHi,x
     and #ENT_Y_POS
     sta tmp+3
     
@@ -329,18 +329,18 @@ EntTryMelee subroutine
 EntTestWalkingCollision subroutine
     PUSH16 sav
     PUSH16 sav+2
-    lda entityXLo,y
+    lda entityXLo,x
     sta arg
-    lda entityXHi,y
+    lda entityXHi,x
     and #ENT_X_POS
     sta arg+1
-    lda entityYLo,y
+    lda entityYLo,x
     sta arg+2
-    lda entityYHi,y
+    lda entityYHi,x
     and #ENT_Y_POS
     sta arg+3
     ADD16I arg+2,arg+2, 8
-    lda entityVelocity,y
+    lda entityVelocity,x
     bmi .notRight
     ADD16I arg,arg,16
 .notRight:
@@ -365,36 +365,36 @@ EntTestWalkingCollision subroutine
     rts
 
 EntTestFlyingCollision subroutine
-    lda entityXLo,y
+    lda entityXLo,x
     sta arg
-    lda entityXHi,y
+    lda entityXHi,x
     and #ENT_X_POS
     sta arg+1
-    lda entityYLo,y
+    lda entityYLo,x
     sta arg+2
-    lda entityYHi,y
+    lda entityYHi,x
     and #ENT_Y_POS
     sta arg+3
     ADD16I arg+2,arg+2,8
-    lda entityVelocity,y
+    lda entityVelocity,x
     bmi .notRight
     ADD16I arg,arg,16
 .notRight:
     jmp TestCollision
 
 EntTestVerticalCollision
-    lda entityXLo,y
+    lda entityXLo,x
     sta arg
-    lda entityXHi,y
+    lda entityXHi,x
     and #ENT_X_POS
     sta arg+1
-    lda entityYLo,y
+    lda entityYLo,x
     sta arg+2
-    lda entityYHi,y
+    lda entityYHi,x
     and #ENT_Y_POS
     sta arg+3
     ADD16I arg,arg, 8
-    lda entityVelocity,y
+    lda entityVelocity,x
     bmi .notDown
     ADD16I arg+2,arg+2,16
 .notDown:
@@ -402,40 +402,40 @@ EntTestVerticalCollision
 
 
 EntFall subroutine
-    lda entityCount,y
+    lda entityCount,x
     clc
     adc #1
-    sta entityCount,y
+    sta entityCount,x
     cmp #STALACTITE_GRAVITY
     bmi .noAccel
     
     lda #1
-    sta entityCount,y
-    lda entityVelocity,y
+    sta entityCount,x
+    lda entityVelocity,x
     clc
     adc #1
     cmp #>TERMINAL_VELOCITY
     bcc .nonTerminal
     lda #>TERMINAL_VELOCITY
 .nonTerminal:
-    sta entityVelocity,y
+    sta entityVelocity,x
 .noAccel:
     ;apply velocity at 1 pixel per frame resolution
-    lda entityVelocity,y
+    lda entityVelocity,x
     sta tmp
     EXTEND tmp,tmp
     lda tmp
     clc
-    adc entityYLo,y
-    sta entityYLo,y
-    lda entityYHi,y
+    adc entityYLo,x
+    sta entityYLo,x
+    lda entityYHi,x
     and #ENT_Y_POS
     adc tmp+1
     sta tmp
-    lda entityYHi,y
+    lda entityYHi,x
     and #ENT_Y_INDEX
     ora tmp
-    sta entityYHi,y
+    sta entityYHi,x
     rts
 
 ER_Planet subroutine
@@ -447,23 +447,23 @@ ER_Planet subroutine
     ; SUB16 tmp, tmp, tmp+2
     
     lda tmp
-    sta entityXLo,y
+    sta entityXLo,x
     lda tmp+1
-    sta entityXHi,y
+    sta entityXHi,x
     jmp ER_Return
 
 ER_Spike subroutine
     jsr EntTryMelee
-    lda entityYLo,y
+    lda entityYLo,x
     ora #$0A
-    sta entityYLo,y
+    sta entityYLo,x
 
     MOV16I arg, 10
     jsr EntAwayFromPlayerX
     bcs .end
-    lda entityYLo,y
+    lda entityYLo,x
     sta tmp
-    lda entityYHi,y
+    lda entityYHi,x
     and #ENT_Y_POS
     sta tmp+1
     CMP16 playerY,tmp
@@ -471,9 +471,9 @@ ER_Spike subroutine
     SUB16I tmp, tmp, 4*16
     CMP16 playerY,tmp
     bcc .end
-    lda entityYLo,y
+    lda entityYLo,x
     and #$F0
-    sta entityYLo,y
+    sta entityYLo,x
 .end:
     jmp ER_Return
 
@@ -488,55 +488,55 @@ girderTable
     .byte #1
 
 ER_Girder subroutine
-    lda entityCount,y
+    lda entityCount,x
     cmp #8
     bne .continue    
-    lda entityXLo,y
+    lda entityXLo,x
     sta arg
-    lda entityXHi,y
+    lda entityXHi,x
     sta arg+1
-    lda entityYLo,y
+    lda entityYLo,x
     sta arg+2
-    lda entityYHi,y
+    lda entityYHi,x
     and #ENT_Y_POS
     sta arg+3
     REPEAT 4
     LSR16 arg
     LSR16 arg+2
     REPEND
-    sty sav
+    stx sav
     jsr GetTile
-    ldy sav
+    ldx sav
     lda ret
     and #$FE
     sta arg+4
     jsr SetTile
-    ldy sav
+    ldx sav
     lda #$80
-    sta entityXHi,y
+    sta entityXHi,x
     jmp ER_Return
 .continue:
-    lda entityCount,y
-    tax
-    lda girderTable,x
+    lda entityCount,x
+    tay
+    lda girderTable,y
     sta tmp
     inx
-    txa
-    sta entityCount,y
+    tya
+    sta entityCount,x
     EXTEND tmp,tmp
     lda tmp
     clc
-    adc entityYLo,y
-    sta entityYLo,y
+    adc entityYLo,x
+    sta entityYLo,x
     lda tmp+1
-    adc entityYHi,y
-    sta entityYHi,y
+    adc entityYHi,x
+    sta entityYHi,x
     jmp ER_Return
 
 ER_PipeRight subroutine
-    lda entityXLo,y
+    lda entityXLo,x
     sta tmp
-    lda entityXHi,y
+    lda entityXHi,x
     sta tmp+1
     CMP16 playerX,tmp
     bcs .notbehind
@@ -550,9 +550,9 @@ ER_PipeRight subroutine
     Jmp ER_Pipe
     
 ER_PipeLeft subroutine
-    lda entityXLo,y
+    lda entityXLo,x
     sta tmp
-    lda entityXHi,y
+    lda entityXHi,x
     sta tmp+1
     ADD16I tmp,tmp,16
     CMP16 playerX,tmp
@@ -578,7 +578,7 @@ ER_Pipe subroutine
     lda frame
     and #1
     beq .end
-    lda entityVelocity,y
+    lda entityVelocity,x
     sta tmp
     EXTEND tmp,tmp
     ADD16 playerX, playerX, tmp
@@ -716,39 +716,37 @@ flameTable:
     .byte -8 ;16
     
 ER_Flame subroutine
-    lda entityCount,y
+    lda entityCount,x
     lsr
-    tax
-    lda flameTable,x
+    tay
+    lda flameTable,y
     sta tmp
-    lda entityCount,y
+    lda entityCount,x
     clc
     adc #1
-    sta entityCount,y
+    sta entityCount,x
     EXTEND tmp,tmp
     lda tmp
     clc
-    adc entityYLo,y
-    sta entityYLo,y
+    adc entityYLo,x
+    sta entityYLo,x
     lda tmp+1
-    adc entityYHi,y
-    sta entityYHi,y    
+    adc entityYHi,x
+    sta entityYHi,x    
     jsr EntTryMelee
     jmp ER_Return
 
 ER_Stalactite subroutine
     jsr EntTryMelee
-    lda entityCount,y
+    lda entityCount,x
     beq .notFalling
     jsr EntFall
-    sty sav
     jsr EntTestVerticalCollision
-    ldy sav
     bcs .hit
     jmp .nohit
 .hit:
     lda #$80
-    sta entityXHi,y
+    sta entityXHi,x
 .nohit:
     jmp ER_Return
 
@@ -757,15 +755,15 @@ ER_Stalactite subroutine
     jsr EntAwayFromPlayerX
     bcs .noFall
     
-    lda entityYLo,y
+    lda entityYLo,x
     sta tmp
-    lda entityYHi,y
+    lda entityYHi,x
     and #ENT_Y_POS
     sta tmp+1
     CMP16I tmp, playerY
     bcs .noFall
     lda #1
-    sta entityCount,y
+    sta entityCount,x
 .noFall:
     jmp ER_Return
     
@@ -781,13 +779,15 @@ ER_Mimrock subroutine
     cmp #POWERSHOT_ID
     bne .alive
     lda #$80
-    sta entityXHi,y
+    sta entityXHi,x
     lda #10
     sta arg
     lda #0
     sta arg+1
     sta arg+2
+    stx sav
     jsr AddScore
+    ldx sav
 .alive:
     MOV16I arg, 32
     jsr EntAwayFromPlayerY
@@ -796,36 +796,34 @@ ER_Mimrock subroutine
     jsr EntAwayFromPlayerX
     bcs .hiding
     lda #ANIM_SMALL_OSCILLATE
-    sta entityAnim,y
-    lda entityVelocity,y
+    sta entityAnim,x
+    lda entityVelocity,x
     bpl .notLeft
     lda #ANIM_SMALL_HFLIP_OSCILLATE
-    sta entityAnim,y
+    sta entityAnim,x
 .notLeft:
-    sty sav
     jsr EntTestWalkingCollision
-    ldy sav
     bcc .noTurn
-    lda entityVelocity,y
+    lda entityVelocity,x
     eor #$FF
     clc
     adc #1
-    sta entityVelocity,y
+    sta entityVelocity,x
 .noTurn:
     jsr EntMoveHorizontally
     jmp ER_Return
 .hiding:
     lda #ANIM_ROCK_HIDING
-    sta entityAnim,y
+    sta entityAnim,x
     jmp ER_Return
 
 ER_RightCannon subroutine
     lda #4
-    sta entityVelocity+1,y
+    sta entityVelocity+1,x
     jmp ER_Cannon
 ER_LeftCannon subroutine
     lda #<-4
-    sta entityVelocity+1,y
+    sta entityVelocity+1,x
 ER_Cannon
     lda #SWITCH_TURRETS
     bit switches
@@ -833,12 +831,12 @@ ER_Cannon
     MOV16I arg, 8
     jsr EntAwayFromPlayerY
     bcs return$
-    lda entityXHi+1,y
+    lda entityXHi+1,x
     bpl return$
-    lda entityCount,y
+    lda entityCount,x
     clc
     adc #1
-    sta entityCount,y
+    sta entityCount,x
     cmp #$10
     bne return$
     
@@ -846,65 +844,65 @@ ER_Cannon
     jsr PlaySound
     
     lda #0
-    sta entityCount,y
-    lda entityXHi,y
-    sta entityXHi+1,y
-    lda entityXLo,y
-    sta entityXLo+1,y
-    lda entityYHi,y
+    sta entityCount,x
+    lda entityXHi,x
+    sta entityXHi+1,x
+    lda entityXLo,x
+    sta entityXLo+1,x
+    lda entityYHi,x
     and #~ENT_Y_INDEX
     ora #40
-    sta entityYHi+1,y
-    lda entityYLo,y
-    sta entityYLo+1,y
+    sta entityYHi+1,x
+    lda entityYLo,x
+    sta entityYLo+1,x
     lda #ANIM_SYMMETRICAL_NONE
-    sta entityAnim+1,y
+    sta entityAnim+1,x
 return$:
     jmp ER_Return
     
 ER_Faucet subroutine
-    lda entityXHi+1,y
+    lda entityXHi+1,x
     bpl return$
-    lda entityCount,y
+    lda entityCount,x
     clc
     adc #1
-    sta entityCount,y
+    sta entityCount,x
     cmp #$30
     bne return$
     lda #0
-    sta entityCount,y
-    lda entityXHi,y
-    sta entityXHi+1,y
-    lda entityXLo,y
-    sta entityXLo+1,y
-    lda entityYHi,y
+    sta entityCount,x
+    lda entityXHi,x
+    sta entityXHi+1,x
+    lda entityXLo,x
+    sta entityXLo+1,x
+    lda entityYHi,x
     and #~ENT_Y_INDEX
     ora #32
-    sta entityYHi+1,y
-    lda entityYLo,y
-    sta entityYLo+1,y
+    sta entityYHi+1,x
+    lda entityYLo,x
+    sta entityYLo+1,x
     lda #ANIM_SYMMETRICAL_NONE
-    sta entityAnim+1,y
+    sta entityAnim+1,x
     lda #4
-    sta entityVelocity+1,y
+    sta entityVelocity+1,x
 return$:
     jmp ER_Return
     
 ER_PowerShot:
 ER_Bullet subroutine
-    lda entityXLo,y
+    lda entityXLo,x
     sta sav
-    lda entityXHi,y
+    lda entityXHi,x
     and #ENT_X_POS
     sta sav+1
     ADD16I sav,sav,2
-    lda entityYLo,y
+    lda entityYLo,x
     sta sav+2
-    lda entityYHi,y
+    lda entityYHi,x
     and #ENT_Y_POS
     sta sav+3
     ADD16I sav+2,sav+2,8
-    lda entityVelocity,y
+    lda entityVelocity,x
     bmi .notRight
     ADD16I sav,sav,12
 .notRight:
@@ -917,9 +915,9 @@ ER_Bullet subroutine
 
     MOV16 arg,sav
     MOV16 arg+2,sav+2
-    sty sav+4
+    stx sav+4
     jsr GetTileBehavior
-    ldy sav+4
+    ldx sav+4
     lda ret
     cmp #TB_AIR
     bne .notAir
@@ -946,118 +944,116 @@ ER_Bullet subroutine
     sta arg+4
     inc bonusCount
 .changeTile:
-    sty sav
+    stx sav
     jsr SetTile
-    ldy sav
+    ldx sav
 .die:
     lda #$80
-    sta entityXHi,y
+    sta entityXHi,x
     jmp ER_Return
 .notEgg:
 
     jsr EntMoveHorizontally
-    lda entityCount,y
+    lda entityCount,x
     clc
     adc #1
-    sta entityCount,y
+    sta entityCount,x
     cmp #$28
     bne done$
     
-    lda entityVelocity,y
+    lda entityVelocity,x
     bmi negative$
     clc
     adc #3
-    sta entityVelocity,y
+    sta entityVelocity,x
     jmp ER_Return
 negative$:
     sec
     sbc #3
-    sta entityVelocity,y
+    sta entityVelocity,x
 done$:
     jmp ER_Return
 
 
 ER_Spider subroutine
     lda #ANIM_SPIDER_VFLIP
-    sta entityAnim,y
-    lda entityVelocity,y
+    sta entityAnim,x
+    lda entityVelocity,x
     bmi .notDown
     lda #ANIM_SPIDER
-    sta entityAnim,y
+    sta entityAnim,x
 .notDown:
-    sty sav
     jsr EntTestVerticalCollision
-    ldy sav
     bcs .hit
     jmp .nohit
 .hit:
-    lda entityVelocity,y
+    lda entityVelocity,x
     eor #$FF
     clc
     adc #1
-    sta entityVelocity,y
+    sta entityVelocity,x
 .nohit
     jsr EntTryMelee
     jsr EntMoveVertically
     
-    lda entityCount,y
+    lda entityCount,x
     bne .notShoot
     MOV16I arg, 8
     jsr EntAwayFromPlayerX
     bcs .notShoot
-    lda entityYLo,y
+    lda entityYLo,x
     sta tmp
-    lda entityYHi,y
+    lda entityYHi,x
     and #ENT_Y_POS
     sta tmp+1
     CMP16 playerY,tmp
     bcc .notShoot
-    lda entityXHi+1,y
+    lda entityXHi+1,x
     bpl .notShoot
     ADD16I tmp, tmp, 16
     lda tmp
-    sta entityYLo+1,y
+    sta entityYLo+1,x
     lda tmp+1
     ora #SPIDERWEB_ID<<1
-    sta entityYHi+1,y
-    lda entityXLo,y
-    sta entityXLo+1,y
-    lda entityXHi,y
-    sta entityXHi+1,y
+    sta entityYHi+1,x
+    lda entityXLo,x
+    sta entityXLo+1,x
+    lda entityXHi,x
+    sta entityXHi+1,x
     lda #ANIM_SYMMETRICAL_NONE
-    sta entityAnim+1,y
+    sta entityAnim+1,x
     lda #2
-    sta entityVelocity+1,y
+    sta entityVelocity+1,x
     lda #60
-    sta entityCount,y
+    sta entityCount,x
 .notShoot:
-    lda entityCount,y
+    lda entityCount,x
     beq .noDecrement
     sec
     sbc #1
-    sta entityCount,y
+    sta entityCount,x
 .noDecrement
     jsr EntIsBulletNear
     bcc .alive
     lda #$80
     sta entityXHi
-    sta entityXHi,y
+    sta entityXHi,x
     lda #10
     sta arg
     lda #0
     sta arg+1
     sta arg+2
+    stx sav
     jsr AddScore
+    ldx sav
 .alive:
     jmp ER_Return
     
 ER_SpiderWeb subroutine
-    sty sav
     jsr EntTestVerticalCollision
-    ldy sav
     bcc .notDead
     lda #$80
-    sta entityXHi,y
+    sta entityXHi,x
     jmp ER_Return
 .notDead:
     jsr EntMoveVertically
@@ -1065,15 +1061,13 @@ ER_SpiderWeb subroutine
     jmp ER_Return
     
 ER_Bat subroutine
-    sty sav
     jsr EntTestFlyingCollision
-    ldy sav
     bcc .nohit
-    lda entityVelocity,y
+    lda entityVelocity,x
     eor #$FF
     clc
     adc #1
-    sta entityVelocity,y
+    sta entityVelocity,x
 .nohit
     jsr EntTryMelee
     jsr EntMoveHorizontally
@@ -1081,45 +1075,45 @@ ER_Bat subroutine
     bcc .alive
     lda #$80
     sta entityXHi
-    sta entityXHi,y
+    sta entityXHi,x
     lda #10
     sta arg
     lda #0
     sta arg+1
     sta arg+2
+    stx sav
     jsr AddScore
+    ldx sav
 .alive:
     jmp ER_Return
 
 
 ER_Rex subroutine
-    sty sav
     jsr EntTestWalkingCollision
-    ldy sav
     bcc .nohit
-    lda entityVelocity,y
+    lda entityVelocity,x
     eor #$FF
     clc
     adc #1
-    sta entityVelocity,y
+    sta entityVelocity,x
 .nohit:
     lda #ANIM_REX
-    sta entityAnim,y
-    lda entityVelocity,y
+    sta entityAnim,x
+    lda entityVelocity,x
     bpl .notRight
     lda #ANIM_REX_HFLIP
-    sta entityAnim,y
+    sta entityAnim,x
 .notRight:
     jsr EntMoveHorizontally
     
-    lda entityXLo,y
+    lda entityXLo,x
     sta tmp
-    lda entityXHi,y
+    lda entityXHi,x
     and #ENT_X_POS
     sta tmp+1
-    lda entityYLo,y
+    lda entityYLo,x
     sta tmp+2
-    lda entityYHi,y
+    lda entityYHi,x
     and #ENT_Y_POS
     sta tmp+3
     SUB16I tmp+2,tmp+2,8
@@ -1138,9 +1132,9 @@ ER_Rex subroutine
     bpl .exists
     jmp .noBullet
 .exists
-    lda entityXLo,y
+    lda entityXLo,x
     sta tmp
-    lda entityXHi,y
+    lda entityXHi,x
     and #ENT_X_POS
     sta tmp+1
     lda entityXLo
@@ -1156,9 +1150,9 @@ ER_Rex subroutine
     jmp .noBullet
 .maybeBullet:
     
-    lda entityYLo,y
+    lda entityYLo,x
     sta tmp
-    lda entityYHi,y
+    lda entityYHi,x
     and #ENT_Y_POS
     sta tmp+1
     lda entityYLo
@@ -1179,23 +1173,25 @@ ER_Rex subroutine
     asl
     cmp #POWERSHOT_ID
     beq .dead
-    lda entityCount,y
+    lda entityCount,x
     cmp #5
     beq .dead
     clc
     adc #1
-    sta entityCount,y
+    sta entityCount,x
     jmp .noBullet
 .dead
     lda #$80
-    sta entityXHi,y
+    sta entityXHi,x
     lda #0
     sta arg
     lda #5
     sta arg+1
     lda #0
     sta arg+2
+    stx sav
     jsr AddScore
+    ldx sav
 .noBullet:    
     jmp ER_Return
 
@@ -1205,68 +1201,68 @@ ER_CaterpillarHead:
     bcc .alive
     lda #$80
     sta entityXHi
-    sta entityXHi,y
+    sta entityXHi,x
     
-    lda entityYHi+1,y
+    lda entityYHi+1,x
     lsr
     cmp #CATERPILLAR_ID
     bcc .lastOne
     cmp #CATERPILLAR_ID+4
     bcs .lastOne
-    lda entityYHi,y ;should be on same y coord, no need to extract
-    sta entityYHi+1,y
+    lda entityYHi,x ;should be on same y coord, no need to extract
+    sta entityYHi+1,x
 .lastOne:
     lda #1
     sta arg+1
     lda #0
     sta arg
     sta arg+2
+    stx sav
     jsr AddScore
+    ldx sav
     jmp ER_Return
 .alive:
 ER_CaterpillarBack subroutine
-    lda entityYLo,y
+    lda entityYLo,x
     and #$FE
-    sta entityYLo,y
+    sta entityYLo,x
     lda frame
     lsr
     lsr
     lsr
     and #1
-    ora entityYLo,y
-    sta entityYLo,y
+    ora entityYLo,x
+    sta entityYLo,x
     jmp ER_Caterpillar
     
 ER_CaterpillarFront:
 ER_CaterpillarTail subroutine
-    lda entityYLo,y
+    lda entityYLo,x
     and #$FE
-    sta entityYLo,y
+    sta entityYLo,x
     lda frame
     lsr
     lsr
     lsr
     and #1
     eor #1
-    ora entityYLo,y
-    sta entityYLo,y
+    ora entityYLo,x
+    sta entityYLo,x
 ER_Caterpillar subroutine
     lda #ANIM_SMALL_NONE
-    sta entityAnim,y
-    lda entityVelocity,y
+    sta entityAnim,x
+    lda entityVelocity,x
     bpl .notRight
     lda #ANIM_SMALL_HFLIP_NONE
-    sta entityAnim,y
+    sta entityAnim,x
 .notRight:
-    sty sav
     jsr EntTestWalkingCollision
-    ldy sav
     bcc .noTurn
-    lda entityVelocity,y
+    lda entityVelocity,x
     eor #$FF
     clc
     adc #1
-    sta entityVelocity,y
+    sta entityVelocity,x
 .noTurn:
     jsr EntMoveHorizontally
     jsr EntTryMelee
@@ -1274,20 +1270,18 @@ ER_Caterpillar subroutine
 
 ER_Cart subroutine
     lda #ANIM_SYMMETRICAL_OSCILLATE
-    sta entityAnim,y
-    sty sav
+    sta entityAnim,x
     jsr EntTestWalkingCollision
-    ldy sav
     bcs .hit
     jmp .nohit
 .hit:
-    lda entityVelocity,y
+    lda entityVelocity,x
     eor #$FF
     clc
     adc #1
-    sta entityVelocity,y
+    sta entityVelocity,x
     lda #$60
-    sta entityCount,y
+    sta entityCount,x
 .nohit:
     jsr EntTryMelee
     jsr EntIsBulletNear
@@ -1301,21 +1295,23 @@ ER_Cart subroutine
     bne .alive
     
     lda #$80
-    sta entityXHi,y
+    sta entityXHi,x
     lda #10
     sta arg
     lda #0
     sta arg+1
     sta arg+2
+    stx sav
     jsr AddScore
+    ldx sav
 .alive:
-    lda entityCount,y
+    lda entityCount,x
     beq .nopause
     sec
     sbc #1
-    sta entityCount,y
+    sta entityCount,x
     lda #ANIM_SYMMETRICAL_NONE
-    sta entityAnim,y
+    sta entityAnim,x
     jmp ER_Return
 .nopause:
     jsr EntMoveHorizontally
@@ -1332,79 +1328,73 @@ ER_SlimeVertical subroutine
 ER_Hammer subroutine    
     jsr EntTryMelee
     
-    lda entityCount,y
+    lda entityCount,x
     beq .notFalling
-    lda entityXLo,y
+    lda entityXLo,x
     sta arg
-    lda entityXHi,y
+    lda entityXHi,x
     and #ENT_X_POS
     sta arg+1
-    lda entityYLo,y
+    lda entityYLo,x
     sta arg+2
-    lda entityYHi,y
+    lda entityYHi,x
     and #ENT_Y_POS
     sta arg+3
     ADD16I arg,arg, 8
     ADD16I arg+2,arg+2,16
-    sty sav
     jsr TestCollision
-    ldy sav
     bcc .notLanded
     lda #0
-    sta entityCount,y
+    sta entityCount,x
     lda #<-1
-    sta entityVelocity,y
+    sta entityVelocity,x
     jmp ER_Return
 .notLanded:
     jsr EntFall
     jmp ER_Return
 .notFalling:
-    lda entityXLo,y
+    lda entityXLo,x
     sta arg
-    lda entityXHi,y
+    lda entityXHi,x
     and #ENT_X_POS
     sta arg+1
-    lda entityYLo,y
+    lda entityYLo,x
     sta arg+2
-    lda entityYHi,y
+    lda entityYHi,x
     and #ENT_Y_POS
     sta arg+3
     ADD16I arg,arg, 8
-    sty sav
     jsr TestCollision
-    ldy sav
     bcc .notApex
     lda #1
-    sta entityCount,y
+    sta entityCount,x
     lda #0
-    sta entityVelocity,y
+    sta entityVelocity,x
     jmp ER_Return
 .notApex:
     jsr EntMoveVertically
     jmp ER_Return
     
 ER_Water subroutine
-    lda entityXLo,y
+    lda entityXLo,x
     sta arg
-    lda entityXHi,y
+    lda entityXHi,x
     and #ENT_X_POS
     sta arg+1
-    lda entityYLo,y
+    lda entityYLo,x
     sta arg+2
-    lda entityYHi,y
+    lda entityYHi,x
     and #ENT_Y_POS
     sta arg+3
     ADD16I arg,arg, 8
-    lda entityVelocity,y
+    lda entityVelocity,x
     bmi .notDown
     ADD16I arg+2,arg+2,16
 .notDown:
-    sty sav
     jsr TestCollisionTop
-    ldy sav
     bcc .notDead
     lda #$80
-    sta entityXHi,y
+    sta entityXHi,x
     jmp ER_Return
 .notDead:
     jsr EntMoveVertically
@@ -1413,12 +1403,10 @@ ER_Water subroutine
     
 ER_RightLaser subroutine
 ER_LeftLaser subroutine
-    sty sav
     jsr EntTestFlyingCollision
-    ldy sav
     bcc .notDead
     lda #$80
-    sta entityXHi,y
+    sta entityXHi,x
     jmp ER_Return
 .notDead:
     jsr EntMoveHorizontally
@@ -1426,44 +1414,42 @@ ER_LeftLaser subroutine
     jmp ER_Return
 
 ER_VerticalPlatform subroutine
-    lda entityXLo,y
+    lda entityXLo,x
     sta arg
-    lda entityXHi,y
+    lda entityXHi,x
     and #ENT_X_POS
     sta arg+1
-    lda entityYLo,y
+    lda entityYLo,x
     sta arg+2
-    lda entityYHi,y
+    lda entityYHi,x
     and #ENT_Y_POS
     sta arg+3
     ADD16I arg,arg, 8
     SUB16I arg+2,arg+2,16
-    lda entityVelocity,y
+    lda entityVelocity,x
     bmi .notDown
     ADD16I arg+2,arg+2,32
 .notDown:
-    sty sav
     jsr TestCollision
-    ldy sav
     bcc .nohit
-    lda entityVelocity,y
+    lda entityVelocity,x
     eor #$FF
     clc
     adc #1
-    sta entityVelocity,y
+    sta entityVelocity,x
 .nohit:
-    lda entityYLo,y
+    lda entityYLo,x
     sta sav
-    lda entityYHi,y
+    lda entityYHi,x
     and #ENT_Y_POS
     sta sav+1
     jsr EntMoveVertically
     MOV16I arg, 8
     jsr EntAwayFromPlayerX
     bcs .noRider
-    lda entityYLo,y
+    lda entityYLo,x
     sta tmp
-    lda entityYHi,y
+    lda entityYHi,x
     and #ENT_Y_POS
     sta tmp+1
     SUB16I tmp,tmp,16
@@ -1471,9 +1457,9 @@ ER_VerticalPlatform subroutine
     ABS16 tmp,tmp
     CMP16I tmp,4
     bcs .noRider
-    lda entityYLo,y
+    lda entityYLo,x
     sta tmp
-    lda entityYHi,y
+    lda entityYHi,x
     and #ENT_Y_POS
     sta tmp+1
     SUB16 tmp, tmp, sav
@@ -1482,28 +1468,26 @@ ER_VerticalPlatform subroutine
     jmp ER_Return
     
 ER_HorizontalPlatform subroutine
-    sty sav
     jsr EntTestFlyingCollision
-    ldy sav
     bcc .nohit
-    lda entityVelocity,y
+    lda entityVelocity,x
     eor #$FF
     clc
     adc #1
-    sta entityVelocity,y
+    sta entityVelocity,x
 .nohit:
-    lda entityXLo,y
+    lda entityXLo,x
     sta sav
-    lda entityXHi,y
+    lda entityXHi,x
     and #ENT_X_POS
     sta sav+1
     jsr EntMoveHorizontally
     MOV16I arg, 8
     jsr EntAwayFromPlayerX
     bcs .noRider
-    lda entityYLo,y
+    lda entityYLo,x
     sta tmp
-    lda entityYHi,y
+    lda entityYHi,x
     and #ENT_Y_POS
     sta tmp+1
     SUB16I tmp,tmp,16
@@ -1511,9 +1495,9 @@ ER_HorizontalPlatform subroutine
     ABS16 tmp,tmp
     CMP16I tmp,4
     bcs .noRider
-    lda entityXLo,y
+    lda entityXLo,x
     sta tmp
-    lda entityXHi,y
+    lda entityXHi,x
     and #ENT_X_POS
     sta tmp+1
     SUB16 tmp, tmp, sav

@@ -1810,26 +1810,26 @@ UpdatePower subroutine
 UpdatePower_end:
 
 UpdateEntities subroutine
-    ldy #[MAX_ENTITIES-1]
+    ldx #[MAX_ENTITIES-1]
 .loop:
-    lda entityXHi,y
+    lda entityXHi,x
     bpl .active
     jmp ER_Return
 .active:   
-    lda entityYHi,y
+    lda entityYHi,x
     and #ENT_Y_INDEX
     lsr
-    tax
+    tay
 
 .xtest:
-    lda entityFlags,x
+    lda entityFlags,y
     and #ENT_F_SKIPXTEST
     bne .ytest
-    lda entityXLo,y
+    lda entityXLo,x
     sec
     sbc shr_cameraX
     sta tmp
-    lda entityXHi,y
+    lda entityXHi,x
     and #ENT_X_POS
     sbc shr_cameraX+1
     sta tmp+1
@@ -1838,14 +1838,14 @@ UpdateEntities subroutine
     CMP16I tmp, -PX_MT_WIDTH
     bmi .offScreen
 .ytest:
-    lda entityFlags,x
+    lda entityFlags,y
     and #ENT_F_SKIPYTEST
     bne .persistent
-    lda entityYLo,y
+    lda entityYLo,x
     sec
     sbc shr_cameraY
     sta tmp
-    lda entityYHi,y
+    lda entityYHi,x
     and #ENT_Y_POS
     sbc shr_cameraY+1
     sta tmp+1
@@ -1855,41 +1855,38 @@ UpdateEntities subroutine
     bmi .offScreen
     jmp .persistent
 .offScreen:
-    lda entityXHi,y
+    lda entityXHi,x
     ora #ENT_X_OFFSCREEN
-    sta entityXHi,y
-    lda entityFlags,x
+    sta entityXHi,x
+    lda entityFlags,y
     and #ENT_F_ISTEMPORARY
     beq .normal
     lda #$80
-    sta entityXHi,y
+    sta entityXHi,x
 .normal:
     jmp ER_Return
 .persistent:
-    lda entityXHi,y
+    lda entityXHi,x
     and #~ENT_X_OFFSCREEN
-    sta entityXHi,y
+    sta entityXHi,x
 
-    cpy #RESERVED_ENTITIES
+    cpx #RESERVED_ENTITIES
     bcc .noStop
     lda powerType
     cmp #POWER_STOP
     beq ER_Return
 .noStop:
 
-    txa
+    tya
     asl
-    tax
-    lda entityRoutine,x
+    tay
+    lda entityRoutine,y
     sta tmp
-    lda entityRoutine+1,x
+    lda entityRoutine+1,y
     sta tmp+1
-    txa
-    lsr
-    tax
     jmp (tmp)
 ER_Return:
-    dey
+    dex
     JMI UpdateEntities_end
     jmp .loop
     
