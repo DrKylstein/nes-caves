@@ -1729,7 +1729,7 @@ UpdateCameraX subroutine
     bcc .Scroll_Right_end
     
     ;no scrolling becuse screen is at map edge
-    CMP16I shr_cameraX, [[MT_MAP_WIDTH - MT_VIEWPORT_WIDTH]*PX_MT_WIDTH - 8]
+    CMP16I shr_cameraX, [[MT_MAP_WIDTH - MT_VIEWPORT_WIDTH]*PX_MT_WIDTH]
     bcs .Scroll_Right_end
     
     ;scroll right 1 pixel
