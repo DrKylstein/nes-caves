@@ -90,6 +90,9 @@ pressed        ds 1
 switches       ds 1
 playerFlags    ds 1
 playerFrame    ds 1
+playerYFrac    ds 1 
+playerY        ds 2 
+playerX        ds 2 
 playerXVel     ds 1
 playerYVel     ds 2
 mercyTime      ds 1
@@ -104,18 +107,15 @@ mapPX          ds 2
 mapPY          ds 2
 mapScore       ds 3
 mapAmmo        ds 1
-
 currLevel      ds 1
 cleared        ds 2
 currPlatform   ds 1
 paused         ds 1
 startSprite    ds 2
 crystalsLeft   ds 1
-playerYFrac    ds 1 
-playerY        ds 2 
-playerX        ds 2 
-doorsX         ds 3
-doorsY         ds 3
+doorsX         ds 4
+doorsY         ds 4
+exitTriggered  ds 1
 
 entityXLo        ds MAX_ENTITIES
 entityXHi        ds MAX_ENTITIES

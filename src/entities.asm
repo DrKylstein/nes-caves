@@ -1,5 +1,5 @@
 entityRoutine:
-    .word ER_Return ; player
+    .word ER_Player ; player
     .word ER_VerticalPlatform
     .word ER_HorizontalPlatform
     .word ER_Spider
@@ -438,6 +438,23 @@ EntFall subroutine
     sta entityYHi,x
     rts
 
+ER_Player subroutine
+    lda playerFlags
+    and #PLY_LOCKED
+    beq .end
+    lda entityCount,x
+    beq .end
+    lda #1
+    sta playerXVel
+    lda entityCount,x
+    sec
+    sbc #1
+    sta entityCount,x
+    bne .end
+    inc exitTriggered
+.end:
+    jmp ER_Return
+
 ER_Planet subroutine
     ADD16I tmp, shr_cameraX, 160
     ; MOV16 tmp+2, shr_cameraX
@@ -520,7 +537,7 @@ ER_Girder subroutine
     tay
     lda girderTable,y
     sta tmp
-    inx
+    iny
     tya
     sta entityCount,x
     EXTEND tmp,tmp

@@ -419,10 +419,10 @@ LoadLevel subroutine
     jmp .entityLoop
 .notPlayer:
 ;get door locations
-    cmp #$FB
+    cmp #$FA
     bcc .notDoor
     sec
-    sbc #$FB
+    sbc #$FA
     stx tmp+2
     tax
     lda (tmp),y
@@ -756,6 +756,17 @@ UpdateInput subroutine
     sta pressed
 UpdateInput_end:
 
+    lda exitTriggered
+    beq .noExit
+doExit:
+    jsr FadeOut
+    lda #MAP_LEVEL
+    sta currLevel
+    lda #0
+    sta exitTriggered
+    jmp EnterLevel
+.noExit:
+
 Paused subroutine
     lda paused
     beq Paused_end
@@ -784,6 +795,12 @@ Paused subroutine
     sta mapPX+1
     jmp doExit
 .SelectNotPressed:
+    lda pressed
+    and #JOY_A_MASK
+    beq .ANotPressed
+    lda #0
+    sta crystalsLeft
+.ANotPressed:
     lda #$E1
     sta arg
     lda frame
@@ -800,8 +817,6 @@ Paused subroutine
 Paused_end:
 
 CheckInput subroutine
-    lda #0
-    sta playerXVel
 .start:
     lda pressed
     and #JOY_START_MASK
@@ -809,6 +824,11 @@ CheckInput subroutine
     lda #1
     sta paused
 .left:
+    lda playerFlags
+    and #PLY_LOCKED
+    bne CheckInput_end
+    lda #0
+    sta playerXVel
     lda ctrl
     and #JOY_LEFT_MASK
     beq .left_end
@@ -1125,6 +1145,9 @@ TC_Foreground_end:
 TC_Exit:
     lda crystalsLeft
     JNE TC_Return
+    lda playerFlags
+    and #PLY_LOCKED
+    JNE TC_Return
     
     lda #INVALID_MAP_STAT
     sta mapAmmo
@@ -1136,7 +1159,7 @@ TC_Exit:
     lda bits+1,y
     ora cleared
     sta cleared
-    jmp doExit
+    jmp walkOut
 .upperLevels:
     tya
     sec
@@ -1144,11 +1167,33 @@ TC_Exit:
     lda bits+1,y
     ora cleared+1
     sta cleared+1
-doExit:
-    jsr FadeOut
-    lda #MAP_LEVEL
-    sta currLevel
-    jmp EnterLevel
+walkOut:
+    lda playerFlags
+    ora #PLY_LOCKED
+    sta playerFlags
+    lda #64
+    sta entityCount+2
+    
+    lda doorsX
+    sta arg
+    lda doorsY
+    sta arg+2
+    lda #0
+    sta arg+1
+    sta arg+3
+    sta arg+4
+    jsr SetTile
+    lda doorsX
+    sta arg
+    lda doorsY
+    sta arg+2
+    inc arg+2
+    lda #0
+    sta arg+1
+    sta arg+3
+    sta arg+4
+    jsr SetTile
+    jmp TC_Return
 TC_Exit_end:
 
 TC_Entrance:
@@ -1207,10 +1252,10 @@ TC_Lock:
     sec
     sbc #TB_LOCK
     tay
-    lda doorsX,y
+    lda doorsX+1,y
     sta sav+4
     sta arg
-    lda doorsY,y
+    lda doorsY+1,y
     sta sav+5
     sta arg+2
     lda #0
@@ -1265,6 +1310,9 @@ TC_Off_end:
     
 TC_Return:
 TC_Nop:
+    lda playerFlags
+    and #PLY_LOCKED
+    JNE TileInteraction_end
     lda #JOY_B_MASK
     and pressed
     JEQ TileInteraction_end
