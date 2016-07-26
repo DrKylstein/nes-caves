@@ -4,3 +4,5 @@ techTiles:
     incbin tileset02.pat
 mineTiles:
     incbin tileset03.pat
+introTiles:
+    incbin tileset04.pat

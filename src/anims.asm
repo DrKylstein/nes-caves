@@ -66,6 +66,7 @@ animations:
     .word anim_player_jump_leftv
     .word anim_smallVFlipNone
     .word anim_smallHVNone
+    .word anim_kiwi
     
 frame_small1:
     .byte 8
@@ -575,3 +576,11 @@ anim_player_jump_leftv subroutine
     .byte 2*OAM_SIZE
     .byte   0, 10,$C0,  0
     .byte   0,  8,$C0,  8
+
+anim_kiwi subroutine
+    .byte 0
+    .word .frame
+.frame:
+    .byte 2*OAM_SIZE
+    .byte   0,$85,$03,  0
+    .byte   0,$87,$03,  8

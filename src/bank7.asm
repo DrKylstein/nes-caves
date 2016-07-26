@@ -48,6 +48,7 @@ levelBanks:
     .byte 1
     .byte 1
     .byte 1
+    .byte 1
 
 levelPointers:
     .word level01
@@ -67,6 +68,7 @@ levelPointers:
     .word level01
     .word level01
     .word mainMap
+    .word introScene
 
 levelTilesets:
     .word caveTiles
@@ -86,6 +88,7 @@ levelTilesets:
     .word caveTiles
     .word caveTiles
     .word mineTiles
+    .word introTiles
 
 levelPalettes:
     .word volcanoPal
@@ -104,4 +107,5 @@ levelPalettes:
     .word volcanoPal
     .word volcanoPal
     .word volcanoPal
+    .word minePal
     .word minePal

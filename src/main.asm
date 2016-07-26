@@ -42,6 +42,12 @@
 ;animated background objects
 ;flickering torch/pulsing lava emphasis effect
 ;use grayscale and/or emphasis on hud? 
+;hold ER pointer in ram so that entities can change routines dynamically?
+;hold frame pointer/index in entity filed instead of animation? 
+;-entites would manage their own animation and  non-animated would save time
+;store size and shared offset instead of individual offsets in frames?
+;-denser, can re-use y coordinate on horizontal runs
+
 
 ;------------------------------------------------------------------------------
 ;Initial Boot
@@ -271,7 +277,7 @@ InitSprites subroutine
 ;------------------------------------------------------------------------------
 ;New Game
 ;------------------------------------------------------------------------------
-    lda #MAP_LEVEL
+    lda #INTRO_LEVEL
     sta currLevel
     lda #5
     sta ammo
@@ -294,37 +300,6 @@ DisableDisplay subroutine
     jsr QDisableDisplay
     jsr Synchronize
 DisableDisplay_end:
-
-ResetStats subroutine
-    lda #4
-    sta switches
-    lda #3
-    sta hp
-    jsr UpdateHeartsDisplay
-    lda #MAX_ENTITIES
-    sta currPlatform
-    lda #0
-    sta paused
-    sta powerFrames
-    sta powerSeconds
-    sta powerType
-    sta bonusCount
-    sta crystalsLeft
-    sta playerFlags
-    sta playerYVel
-    sta playerYVel+2
-    lda #8
-    sta shr_tempo
-    ; lda #<testDrumSequence
-    ; sta shr_musicStreamLo
-    ; lda #>testDrumSequence
-    ; sta shr_musicStreamHi
-    ; lda #<testBassSequence
-    ; sta shr_musicStreamLo+1
-    ; lda #>testBassSequence
-    ; sta shr_musicStreamHi+1
-    
-ResetStats_end:
 
 LoadLevelTileset subroutine
     SELECT_BANK 2
@@ -617,6 +592,46 @@ InitEntities subroutine
     beq InitEntities_end
     jmp .loop
 InitEntities_end:
+
+ResetStats subroutine
+    lda #4
+    sta switches
+    lda #3
+    sta hp
+    jsr UpdateHeartsDisplay
+    lda #MAX_ENTITIES
+    sta currPlatform
+    lda #0
+    sta paused
+    sta powerFrames
+    sta powerSeconds
+    sta powerType
+    sta bonusCount
+    sta crystalsLeft
+    sta playerFlags
+    sta playerYVel
+    sta playerYVel+2
+    lda currLevel
+    cmp #INTRO_LEVEL
+    bne .notIntro
+    lda #PLY_LOCKED
+    sta playerFlags
+    lda #255
+    sta entityCount+2
+.notIntro:
+    lda #8
+    sta shr_tempo
+    ; lda #<testDrumSequence
+    ; sta shr_musicStreamLo
+    ; lda #>testDrumSequence
+    ; sta shr_musicStreamHi
+    ; lda #<testBassSequence
+    ; sta shr_musicStreamLo+1
+    ; lda #>testBassSequence
+    ; sta shr_musicStreamHi+1
+    
+ResetStats_end:
+
 
 LoadNametables subroutine
     MOV16 arg, shr_cameraX
@@ -1980,6 +1995,13 @@ UpdateSprites:
     sta entityYLo+2
     lda playerY+1
     sta entityYHi+2
+    lda currLevel
+    cmp #INTRO_LEVEL
+    bne .notintro
+    lda #ANIM_KIWI
+    sta entityAnim+2
+    jmp ClearSprites
+.notintro:
     lda playerFlags
     and #7
     tay
@@ -2125,7 +2147,7 @@ UpdateEntitySprites subroutine
     sta shr_spriteIndex,x
 ;--flags--
     lda arg+3
-    ora (sav),y
+    eor (sav),y
     iny
     sta shr_spriteFlags,x
 ;--X--

@@ -8,3 +8,5 @@ level04:
     incbin level04.bin
 mainMap:
     incbin main_map.bin
+introScene:
+    incbin intro_scene.bin
