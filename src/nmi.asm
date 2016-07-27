@@ -33,6 +33,41 @@ nmi_SpriteDma subroutine
     sta OAM_DMA
 nmi_SpriteDma_end:
 
+UpdateInput subroutine
+    lda ctrl
+    sta oldCtrl
+   ;; Strobe controller
+   lda #1
+   sta $4016
+   lda #0
+   sta $4016
+    
+   ;; Read all 8 buttons
+   ldx #8
+.loop:
+   pha
+    
+   ;; Read next button state and mask off low 2 bits.
+   ;; Compare with $01, which will set carry flag if
+   ;; either or both bits are set.
+   lda $4016
+   and #$03
+   cmp #$01
+    
+   ;; Now, rotate the carry flag into the top of A,
+   ;; land shift all the other buttons to the right
+   pla
+   ror
+    
+   dex
+   bne .loop
+    sta ctrl
+    and oldCtrl
+    eor ctrl
+    sta pressed
+UpdateInput_end:
+
+
 nmi_genericCopy subroutine
     lda shr_sleeping
     beq nmi_genericCopy_end
@@ -194,6 +229,8 @@ nmi_DebugCounter subroutine
     sta PPU_DATA
 nmi_DebugCounter_end:
 
+    NMI_SELECT_BANK 3
+
 nmi_doLoadSfx subroutine
     MOV16 nmi_arg,shr_sfxPtr
     lda nmi_arg+1
@@ -323,6 +360,7 @@ nmi_ClockAPU subroutine
     sta APU_FRAME
 nmi_ClockAPU_end:
     
+    RESTORE_BANK
 
 nmi_DoViewport
 .wait2: ;wait for sprite 0 to be set again

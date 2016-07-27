@@ -5,6 +5,8 @@ titlePalette:
     incbin paltl.pal
 titleTiles:
     incbin title-patterns.pat
+textTiles:
+    incbin tileset05.pat
 hud:
 	incbin hud.bin
 globalTiles:

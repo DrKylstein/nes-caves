@@ -234,6 +234,18 @@
     ldy #{1}
     lda banktable,y
     sta banktable,y
+    sty currBank
+    ENDM
+    
+    MAC NMI_SELECT_BANK
+    ldy #{1}
+    lda banktable,y
+    sta banktable,y
+    ENDM
+    MAC RESTORE_BANK
+    ldy currBank
+    lda banktable,y
+    sta banktable,y
     ENDM
     
     MAC ENQUEUE_PPU_ADDR

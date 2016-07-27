@@ -49,6 +49,7 @@ nmi_instrumentLo ds 4
 nmi_instrumentHi ds 4
 shr_tempo ds 1
 nmi_beatTimer ds 1
+currBank    ds 1
 
     ECHO [$100-.]d," bytes left in page $000"
 

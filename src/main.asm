@@ -178,10 +178,7 @@ DoTitleScreen subroutine
     dey
     bne .loopin
     
-.waitForPress:
-    jsr read_joy
-    cmp #0
-    beq .waitForPress
+    jsr WaitForPress
     
     ldy #3
     lda #$10
@@ -203,6 +200,120 @@ DoTitleScreen subroutine
     jsr QDisableDisplay
     jsr Synchronize
 DoTitleScreen_end:
+
+LoadOpening subroutine
+    SELECT_BANK 0
+    MOV16I arg, textTiles
+    SET_PPU_ADDR VRAM_PATTERN_R
+    ldx #16
+    jsr PagesToPPU
+    jsr ClearNameTable
+LoadOpening_end
+    
+    
+DoOpeningText subroutine
+    SELECT_BANK 3
+    lda #0
+    sta sav+4
+    MOV16I sav+2,OpeningText
+    ldy #0
+    MOV16I sav,[VRAM_NAME_UL + 32*4 + 1]
+    SET_PPU_ADDR [VRAM_NAME_UL + 32*4 + 1]
+.TextLoop:
+    lda (sav+2),y
+    cmp #"@"
+    beq .LastWindow
+    cmp #"^"
+    beq .LastWindow
+    jmp .ContinueWindow
+.LastWindow:
+    jsr QEnableDisplay
+    lda sav+4
+    bne .notFirst
+    inc sav+4
+    SELECT_BANK 0
+    lda #$30
+    sta arg
+    jsr FadeTitle
+    REPEAT FADE_DELAY
+    jsr Synchronize
+    REPEND
+    lda #$20
+    sta arg
+    jsr FadeTitle
+    REPEAT FADE_DELAY
+    jsr Synchronize
+    REPEND
+    lda #$10
+    sta arg
+    jsr FadeTitle
+    REPEAT FADE_DELAY
+    jsr Synchronize
+    REPEND
+    lda #$0
+    sta arg
+    jsr FadeTitle
+    REPEAT FADE_DELAY
+    jsr Synchronize
+    REPEND
+    SELECT_BANK 3
+
+.notFirst:
+    jsr Synchronize
+    jsr WaitForPress
+    lda (sav+2),y
+    cmp #"@"
+    beq .EndOfText
+    jsr QDisableDisplay
+    jsr Synchronize
+    ADD16I sav+2,sav+2,2
+    MOV16I sav,[VRAM_NAME_UL + 32*4 + 1]
+    jsr ClearNameTable
+    SET_PPU_ADDR [VRAM_NAME_UL + 32*4 + 1]
+    jmp .TextLoop
+.ContinueWindow
+    cmp #$0A
+    bne .ContinueLine
+    ADD16I sav,sav,32
+    lda sav
+    and #%11100000
+    ora #1
+    sta sav
+    lda sav+1
+    bit PPU_STATUS
+    sta PPU_ADDR
+    lda sav
+    sta PPU_ADDR
+    jmp .Next
+.ContinueLine:
+    sta PPU_DATA
+.Next:
+    INC16 sav+2
+    jmp .TextLoop
+.EndOfText:
+    
+DoOpeningText_end:
+    SELECT_BANK 0
+    
+    ldy #3
+    lda #$10
+    sta arg
+.loopout:
+    sty sav
+    jsr FadeTitle
+    REPEAT FADE_DELAY
+    jsr Synchronize
+    REPEND
+    ldy sav
+    lda arg
+    clc
+    adc #$10
+    sta arg
+    dey
+    bne .loopout
+    
+    jsr QDisableDisplay
+    jsr Synchronize
 
 LoadPatterns subroutine
     MOV16I arg, globalTiles
@@ -761,15 +872,6 @@ ReenableDisplay_end:
 ;Every Frame
 ;------------------------------------------------------------------------------
 MainLoop:
-UpdateInput subroutine
-    lda ctrl
-    sta oldCtrl
-    jsr read_joy
-    sta ctrl
-    and oldCtrl
-    eor ctrl
-    sta pressed
-UpdateInput_end:
 
     lda exitTriggered
     beq .noExit
@@ -2735,37 +2837,6 @@ ColorWrappedColumn subroutine
     bne .loop
     rts
 ;------------------------------------------------------------------------------
-; Reads controller
-; Out: A=buttons pressed, where bit 0 is A button
-read_joy subroutine
-   ;; Strobe controller
-   lda #1
-   sta $4016
-   lda #0
-   sta $4016
-    
-   ;; Read all 8 buttons
-   ldx #8
-.loop:
-   pha
-    
-   ;; Read next button state and mask off low 2 bits.
-   ;; Compare with $01, which will set carry flag if
-   ;; either or both bits are set.
-   lda $4016
-   and #$03
-   cmp #$01
-    
-   ;; Now, rotate the carry flag into the top of A,
-   ;; land shift all the other buttons to the right
-   pla
-   ror
-    
-   dex
-   bne .loop
-    
-   rts
-;------------------------------------------------------------------------------
 CentToDec subroutine ;input in A, output ones to A, tens to Y
     ldy #0
 .loop:
@@ -3208,4 +3279,23 @@ FadeTitle subroutine
     ENQUEUE_PPU_ADDR VRAM_PALETTE_BG
     
     stx shr_copyIndex
+    rts
+;------------------------------------------------------------------------------
+WaitForPress subroutine
+    lda pressed
+    cmp #0
+    beq WaitForPress
+    rts
+;------------------------------------------------------------------------------
+ClearNameTable subroutine
+    SET_PPU_ADDR VRAM_NAME_UL
+    lda #0
+    ldx #4
+    ldy #0
+.loop:
+    sta PPU_DATA
+    dey
+    bne .loop
+    dex
+    bne .loop
     rts
