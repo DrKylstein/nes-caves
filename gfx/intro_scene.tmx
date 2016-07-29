@@ -12,12 +12,12 @@
  </tileset>
  <layer name="Names" width="40" height="24">
   <data encoding="base64" compression="zlib">
-   eJxjZGBgYBzkOBkJk6MPmU9rN4LYSUS6F5fbaOlOfBifu9cB8XosbkzCoZ7eeB8Q76eBuRsGOR7ocCcWk5ofBtp9hNw7UOl+MOQ1cuIWn/sHo58GAg+WsnQUj+JRPIpH8Sge7hgAEncvsg==
+   eJzt00kOgCAQBED4qj7P9e72APVPtgcTYgCXAYfEOVSiIY5Ni1oppROXG948Z97HzrhfZzfzutZj5vRx5a6h8XTKlfcwwnTqroASKuLsNgBbRx30MBBnh+jPNneGBdZA76D8D194eq6zi/WYObk6onxbX/4U98SB60wJIYQQf7MBM+A1Xw==
   </data>
  </layer>
  <layer name="Entities" width="40" height="24">
   <data encoding="base64" compression="zlib">
-   eJztzjEBAAAIA6DZP7TG2CEkIIGunfYAAAD44ACLswEB
+   eJztzgENAAAIA6DbP7TG0DlIQAI3dW0PAACATwZzswEB
   </data>
  </layer>
 </map>

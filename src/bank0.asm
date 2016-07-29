@@ -7,6 +7,8 @@ titleTiles:
     incbin title-patterns.pat
 textTiles:
     incbin tileset05.pat
+textPalette:
+    incbin paltx.pal
 hud:
 	incbin hud.bin
 globalTiles:

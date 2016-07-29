@@ -161,41 +161,12 @@ DoTitleScreen subroutine
     sta PPU_SCROLL
 
     jsr QEnableDisplay
-    ldy #4
-    lda #$30
-    sta arg
-.loopin:
-    sty sav
-    jsr FadeTitle
-    REPEAT FADE_DELAY
-    jsr Synchronize
-    REPEND
-    ldy sav
-    lda arg
-    sec
-    sbc #$10
-    sta arg
-    dey
-    bne .loopin
-    
+    MOV16I arg+2, titlePalette
+    jsr FadeInBg
     jsr WaitForPress
     
-    ldy #3
-    lda #$10
-    sta arg
-.loopout:
-    sty sav
-    jsr FadeTitle
-    REPEAT FADE_DELAY
-    jsr Synchronize
-    REPEND
-    ldy sav
-    lda arg
-    clc
-    adc #$10
-    sta arg
-    dey
-    bne .loopout
+    MOV16I arg+2, titlePalette
+    jsr FadeOutBg
     
     jsr QDisableDisplay
     jsr Synchronize
@@ -232,30 +203,8 @@ DoOpeningText subroutine
     bne .notFirst
     inc sav+4
     SELECT_BANK 0
-    lda #$30
-    sta arg
-    jsr FadeTitle
-    REPEAT FADE_DELAY
-    jsr Synchronize
-    REPEND
-    lda #$20
-    sta arg
-    jsr FadeTitle
-    REPEAT FADE_DELAY
-    jsr Synchronize
-    REPEND
-    lda #$10
-    sta arg
-    jsr FadeTitle
-    REPEAT FADE_DELAY
-    jsr Synchronize
-    REPEND
-    lda #$0
-    sta arg
-    jsr FadeTitle
-    REPEAT FADE_DELAY
-    jsr Synchronize
-    REPEND
+    MOV16I arg+2, textPalette
+    jsr FadeInBg
     SELECT_BANK 3
 
 .notFirst:
@@ -294,23 +243,8 @@ DoOpeningText subroutine
     
 DoOpeningText_end:
     SELECT_BANK 0
-    
-    ldy #3
-    lda #$10
-    sta arg
-.loopout:
-    sty sav
-    jsr FadeTitle
-    REPEAT FADE_DELAY
-    jsr Synchronize
-    REPEND
-    ldy sav
-    lda arg
-    clc
-    adc #$10
-    sta arg
-    dey
-    bne .loopout
+    MOV16I arg+2, textPalette
+    jsr FadeOutBg
     
     jsr QDisableDisplay
     jsr Synchronize
@@ -850,22 +784,7 @@ InitAttributes_end:
 ReenableDisplay subroutine
     jsr QEnableSplitDisplay
     jsr UpdateSprites
-    SELECT_BANK 0
-    ldy #3
-.loop:
-    tya
-    REPEAT 4
-    asl
-    REPEND
-    sta arg
-    sty sav
-    jsr Fade
-    ldy sav
-    REPEAT FADE_DELAY
-    jsr Synchronize
-    REPEND
-    dey
-    bpl .loop
+    jsr FadeIn
 ReenableDisplay_end:
 
 ;------------------------------------------------------------------------------
@@ -2084,9 +2003,126 @@ FadeOut subroutine
     cpy #4
     bne .fadeloop
     rts
+;------------------------------------------------------------------------------
+FadeIn subroutine
+    SELECT_BANK 0
+    ldy #3
+.fadeloop:
+    tya
+    REPEAT 4
+    asl
+    REPEND
+    sta arg
+    sty sav
+    jsr Fade
+    ldy sav
+    REPEAT FADE_DELAY
+    jsr Synchronize
+    REPEND
+    dey
+    bpl .fadeloop
+    rts
 
 ;------------------------------------------------------------------------------
+Fade subroutine
+    ldx shr_copyIndex
+    
+    ldy #11
+.loop
+    lda palettes,y
+    sec
+    sbc arg
+    bpl .nn1
+    lda #$0f
+.nn1:
+    PHXA
+    dey
+    bpl .loop
+    
+    lda currLevel
+    asl
+    tay
+    lda levelPalettes,y
+    sta tmp
+    lda levelPalettes+1,y
+    sta tmp+1
+    ldy #19
+.loop2
+    lda (tmp),y
+    sec
+    sbc arg
+    bpl .nn2
+    lda #$0f
+.nn2:
+    PHXA
+    dey
+    bpl .loop2
 
+    ENQUEUE_ROUTINE nmi_Copy32
+    ENQUEUE_PPU_ADDR VRAM_PALETTE_BG
+    
+    stx shr_copyIndex
+    rts
+;------------------------------------------------------------------------------
+FadeOutBg subroutine ; arg+2 passes thru to nested call
+    ldy #0
+.fadeloop:
+    tya
+    REPEAT 4
+    asl
+    REPEND
+    sta arg
+    sty sav
+    jsr FadeBg
+    ldy sav
+    REPEAT FADE_DELAY
+    jsr Synchronize
+    REPEND
+    iny
+    cpy #4
+    bne .fadeloop
+    rts
+;------------------------------------------------------------------------------
+FadeInBg subroutine ; arg+2 passes thru to nested call
+    ldy #3
+.fadeloop:
+    tya
+    REPEAT 4
+    asl
+    REPEND
+    sta arg
+    sty sav
+    jsr FadeBg
+    ldy sav
+    REPEAT FADE_DELAY
+    jsr Synchronize
+    REPEND
+    dey
+    bpl .fadeloop
+    rts
+;------------------------------------------------------------------------------
+FadeBg subroutine
+    ldx shr_copyIndex
+    
+    ldy #0
+.loop
+    lda (arg+2),y
+    sec
+    sbc arg
+    bpl .nn1
+    lda #$0f
+.nn1:
+    PHXA
+    iny
+    cpy #16
+    bne .loop
+    
+    ENQUEUE_ROUTINE nmi_Copy16
+    ENQUEUE_PPU_ADDR VRAM_PALETTE_BG
+    
+    stx shr_copyIndex
+    rts
+;------------------------------------------------------------------------------
 UpdateSprites:
     SELECT_BANK 3
     lda playerX
@@ -3216,68 +3252,6 @@ QColorEffect subroutine
     PHXA
     ENQUEUE_ROUTINE nmi_UpdateMask
     ENQUEUE_PPU_ADDR $0000
-    stx shr_copyIndex
-    rts
-;------------------------------------------------------------------------------
-Fade subroutine
-    ldx shr_copyIndex
-    
-    ldy #11
-.loop
-    lda palettes,y
-    sec
-    sbc arg
-    bpl .nn1
-    lda #$0f
-.nn1:
-    PHXA
-    dey
-    bpl .loop
-    
-    lda currLevel
-    asl
-    tay
-    lda levelPalettes,y
-    sta tmp
-    lda levelPalettes+1,y
-    sta tmp+1
-    ldy #19
-.loop2
-    lda (tmp),y
-    sec
-    sbc arg
-    bpl .nn2
-    lda #$0f
-.nn2:
-    PHXA
-    dey
-    bpl .loop2
-
-    ENQUEUE_ROUTINE nmi_Copy32
-    ENQUEUE_PPU_ADDR VRAM_PALETTE_BG
-    
-    stx shr_copyIndex
-    rts
-;------------------------------------------------------------------------------
-FadeTitle subroutine
-    ldx shr_copyIndex
-    
-    ldy #0
-.loop
-    lda titlePalette,y
-    sec
-    sbc arg
-    bpl .nn1
-    lda #$0f
-.nn1:
-    PHXA
-    iny
-    cpy #16
-    bne .loop
-    
-    ENQUEUE_ROUTINE nmi_Copy16
-    ENQUEUE_PPU_ADDR VRAM_PALETTE_BG
-    
     stx shr_copyIndex
     rts
 ;------------------------------------------------------------------------------
