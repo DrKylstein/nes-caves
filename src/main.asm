@@ -171,16 +171,86 @@ LoadOpening subroutine
     SELECT_BANK 0
     MOV16I arg, textTiles
     SET_PPU_ADDR VRAM_PATTERN_R
-    ldx #16
+    ldx #8
     jsr PagesToPPU
 LoadOpening_end
     
     
 DoOpeningText subroutine
     jsr ClearNameTable
+    
+    SET_PPU_ADDR [VRAM_NAME_UL + 32*3]
+    lda #2
+    sta PPU_DATA
+    lda #3
+    ldx #29
+.topbar:
+    sta PPU_DATA
+    dex
+    bne .topbar
+    lda #4
+    sta PPU_DATA
+    
+    
+    SET_PPU_ADDR [VRAM_NAME_UL + 32*22]
+    lda #7
+    sta PPU_DATA
+    lda #8
+    ldx #29
+.bottombar:
+    sta PPU_DATA
+    dex
+    bne .bottombar
+    lda #9
+    sta PPU_DATA
+    
+    SET_PPU_ADDR [VRAM_NAME_UL + 32*23 + 1]
+    lda #1
+    ldx #30
+.bottomshadow:
+    sta PPU_DATA
+    dex
+    bne .bottomshadow
+    
+    
+    SET_PPU_ADDR [VRAM_NAME_UL + 32*4]
+    lda #PPU_CTRL_SETTING | %100
+    sta PPU_CTRL
+    lda #5
+    ldx #18
+.leftbar:
+    sta PPU_DATA
+    dex
+    bne .leftbar
+    
+    SET_PPU_ADDR [VRAM_NAME_UL + 32*4 + 30]
+    lda #6
+    ldx #18
+.rightbar:
+    sta PPU_DATA
+    dex
+    bne .rightbar
+    
+    SET_PPU_ADDR [VRAM_NAME_UL + 32*4 + 31]
+    lda #1
+    ldx #20
+.rightshadow:
+    sta PPU_DATA
+    dex
+    bne .rightshadow
+    
+    lda #PPU_CTRL_SETTING
+    sta PPU_CTRL
+    
     SELECT_BANK 3
+    MOV16I arg,openingHeader
+    MOV16I arg+2,[VRAM_NAME_UL + 32*5 + TEXT_MARGIN]
+    jsr Print
+    MOV16I arg,pressAnyKey
+    MOV16I arg+2,[VRAM_NAME_UL + 32*20 + TEXT_MARGIN + 7]
+    jsr Print
     MOV16I arg,openingText
-    MOV16I arg+2,[VRAM_NAME_UL + 32*4 + TEXT_MARGIN]
+    MOV16I arg+2,[VRAM_NAME_UL + 32*8 + TEXT_MARGIN]
     jsr Print
     MOV16 sav,arg
 
@@ -193,9 +263,9 @@ DoOpeningText subroutine
 .loop:
     jsr QDisableDisplay
     jsr Synchronize
-    jsr ClearNameTable
+    jsr ClearBox
     SELECT_BANK 3
-    MOV16I arg+2,[VRAM_NAME_UL + 32*4 + TEXT_MARGIN]
+    MOV16I arg+2,[VRAM_NAME_UL + 32*7 + TEXT_MARGIN]
     MOV16 arg,sav
     jsr Print
     MOV16 sav,arg
@@ -1949,6 +2019,23 @@ UpdateEntities_end:
     jsr Synchronize
     jmp MainLoop
 
+;------------------------------------------------------------------------------
+ClearBox subroutine
+    SET_PPU_ADDR [VRAM_NAME_UL + 32*8 + TEXT_MARGIN]
+    lda #" "
+    ldy #11
+.outerloop:
+    ldx #29
+.loop:
+    sta PPU_DATA
+    dex
+    bne .loop
+    REPEAT 3
+    bit PPU_DATA
+    REPEND
+    dey
+    bne .outerloop
+    rts
 ;------------------------------------------------------------------------------
 ;print caret-terminated string with LF line breaks
 Print subroutine ;arg0..1 source, arg2..3 PPU dest; updated for future calls
