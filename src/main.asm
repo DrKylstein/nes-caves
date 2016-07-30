@@ -155,11 +155,7 @@ LoadTitle subroutine
 LoadTitle_end:
 
 DoTitleScreen subroutine
-    lda #0
-    bit PPU_STATUS
-    sta PPU_SCROLL
-    sta PPU_SCROLL
-
+    
     jsr QEnableDisplay
     MOV16I arg+2, titlePalette
     jsr FadeInBg
@@ -178,76 +174,47 @@ LoadOpening subroutine
     SET_PPU_ADDR VRAM_PATTERN_R
     ldx #16
     jsr PagesToPPU
-    jsr ClearNameTable
 LoadOpening_end
     
     
 DoOpeningText subroutine
+    jsr ClearNameTable
     SELECT_BANK 3
-    lda #0
-    sta sav+4
-    MOV16I sav+2,OpeningText
-    ldy #0
-    MOV16I sav,[VRAM_NAME_UL + 32*4 + 1]
-    SET_PPU_ADDR [VRAM_NAME_UL + 32*4 + 1]
-.TextLoop:
-    lda (sav+2),y
-    cmp #"@"
-    beq .LastWindow
-    cmp #"^"
-    beq .LastWindow
-    jmp .ContinueWindow
-.LastWindow:
-    jsr QEnableDisplay
-    lda sav+4
-    bne .notFirst
-    inc sav+4
-    SELECT_BANK 0
-    MOV16I arg+2, textPalette
-    jsr FadeInBg
-    SELECT_BANK 3
+    MOV16I arg,openingText
+    MOV16I arg+2,[VRAM_NAME_UL + 32*4 + 1]
+    jsr Print
+    MOV16 sav,arg
 
-.notFirst:
-    jsr Synchronize
+    MOV16I arg+2,textPalette
+    SELECT_BANK 0
+    jsr QEnableDisplay
+    jsr FadeInBg
     jsr WaitForPress
-    lda (sav+2),y
-    cmp #"@"
-    beq .EndOfText
+    
+.loop:
     jsr QDisableDisplay
     jsr Synchronize
-    ADD16I sav+2,sav+2,2
-    MOV16I sav,[VRAM_NAME_UL + 32*4 + 1]
     jsr ClearNameTable
-    SET_PPU_ADDR [VRAM_NAME_UL + 32*4 + 1]
-    jmp .TextLoop
-.ContinueWindow
-    cmp #$0A
-    bne .ContinueLine
-    ADD16I sav,sav,32
-    lda sav
-    and #%11100000
-    ora #1
-    sta sav
-    lda sav+1
-    bit PPU_STATUS
-    sta PPU_ADDR
-    lda sav
-    sta PPU_ADDR
-    jmp .Next
-.ContinueLine:
-    sta PPU_DATA
-.Next:
-    INC16 sav+2
-    jmp .TextLoop
-.EndOfText:
-    
-DoOpeningText_end:
+    SELECT_BANK 3
+    MOV16I arg+2,[VRAM_NAME_UL + 32*4 + 1]
+    MOV16 arg,sav
+    jsr Print
+    MOV16 sav,arg
+    jsr QEnableDisplay
+    jsr Synchronize
+    jsr WaitForPress
+    ldy #0
+    lda (sav),y
+    cmp #"@"
+    bne .loop
+        
     SELECT_BANK 0
     MOV16I arg+2, textPalette
     jsr FadeOutBg
-    
     jsr QDisableDisplay
     jsr Synchronize
+DoOpeningText_end:
+
 
 LoadPatterns subroutine
     MOV16I arg, globalTiles
@@ -1984,6 +1951,41 @@ UpdateEntities_end:
     jmp MainLoop
 
 ;------------------------------------------------------------------------------
+;print caret-terminated string with LF line breaks
+Print subroutine ;arg0..1 source, arg2..3 PPU dest; updated for future calls
+    ldy #0
+    lda arg+3
+    bit PPU_STATUS
+    sta PPU_ADDR
+    lda arg+2
+    sta PPU_ADDR
+.TextLoop:
+    lda (arg),y
+    cmp #"^"
+    bne .NotEnd
+    INC16 arg
+    rts
+.NotEnd:
+    cmp #$0A
+    bne .NotLineFeed
+    ADD16I arg+2,arg+2,32
+    lda arg+2
+    and #%11100000
+    ora #1
+    sta arg+2
+    lda arg+3
+    bit PPU_STATUS
+    sta PPU_ADDR
+    lda arg+2
+    sta PPU_ADDR
+    jmp .Next
+.NotLineFeed:
+    sta PPU_DATA
+    INC16 arg+2
+.Next:
+    INC16 arg
+    jmp .TextLoop
+;------------------------------------------------------------------------------
 FadeOut subroutine
     SELECT_BANK 0
     ldy #0
@@ -2065,6 +2067,8 @@ Fade subroutine
     rts
 ;------------------------------------------------------------------------------
 FadeOutBg subroutine ; arg+2 passes thru to nested call
+    lda sav
+    pha
     ldy #0
 .fadeloop:
     tya
@@ -2081,9 +2085,13 @@ FadeOutBg subroutine ; arg+2 passes thru to nested call
     iny
     cpy #4
     bne .fadeloop
+    pla
+    sta sav
     rts
 ;------------------------------------------------------------------------------
 FadeInBg subroutine ; arg+2 passes thru to nested call
+    lda sav
+    pha
     ldy #3
 .fadeloop:
     tya
@@ -2099,6 +2107,8 @@ FadeInBg subroutine ; arg+2 passes thru to nested call
     REPEND
     dey
     bpl .fadeloop
+    pla
+    sta sav
     rts
 ;------------------------------------------------------------------------------
 FadeBg subroutine

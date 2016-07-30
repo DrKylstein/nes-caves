@@ -1,5 +1,5 @@
     include anims.asm
     include sounds.asm
     
-OpeningText:
+openingText:
     incbin opening.txt

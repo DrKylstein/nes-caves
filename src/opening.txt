@@ -40,4 +40,4 @@ clear of anything big...
 
 Personal Entry - Record Off
 
-Press Any Key@
+Press Any Key^@
