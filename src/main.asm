@@ -155,7 +155,6 @@ LoadTitle subroutine
 LoadTitle_end:
 
 DoTitleScreen subroutine
-    
     jsr QEnableDisplay
     MOV16I arg+2, titlePalette
     jsr FadeInBg
@@ -181,7 +180,7 @@ DoOpeningText subroutine
     jsr ClearNameTable
     SELECT_BANK 3
     MOV16I arg,openingText
-    MOV16I arg+2,[VRAM_NAME_UL + 32*4 + 1]
+    MOV16I arg+2,[VRAM_NAME_UL + 32*4 + TEXT_MARGIN]
     jsr Print
     MOV16 sav,arg
 
@@ -196,7 +195,7 @@ DoOpeningText subroutine
     jsr Synchronize
     jsr ClearNameTable
     SELECT_BANK 3
-    MOV16I arg+2,[VRAM_NAME_UL + 32*4 + 1]
+    MOV16I arg+2,[VRAM_NAME_UL + 32*4 + TEXT_MARGIN]
     MOV16 arg,sav
     jsr Print
     MOV16 sav,arg
@@ -1971,7 +1970,8 @@ Print subroutine ;arg0..1 source, arg2..3 PPU dest; updated for future calls
     ADD16I arg+2,arg+2,32
     lda arg+2
     and #%11100000
-    ora #1
+    clc
+    adc #TEXT_MARGIN
     sta arg+2
     lda arg+3
     bit PPU_STATUS
@@ -3235,7 +3235,7 @@ QEnableDisplay subroutine
     ldx shr_copyIndex
     lda #1
     PHXA
-    lda #PPU_MASK_SETTING
+    lda #PPU_MASK_SETTING | %00000010
     PHXA
     ENQUEUE_ROUTINE nmi_UpdateMask
     ENQUEUE_PPU_ADDR $0000
