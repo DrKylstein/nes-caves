@@ -43,10 +43,9 @@ nmi_sq2Freq      ds 2
 nmi_triFreq      ds 2
 nmi_noiseFreq    ds 2
 
-shr_musicStreamLo ds 4
-shr_musicStreamHi ds 4
-nmi_instrumentLo ds 4
-nmi_instrumentHi ds 4
+shr_musicStream ds 8
+shr_musicRestart ds 8
+nmi_instrument ds 8
 shr_tempo ds 1
 nmi_beatTimer ds 1
 currBank    ds 1

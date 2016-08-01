@@ -231,6 +231,88 @@ nmi_DebugCounter_end:
 
     NMI_SELECT_BANK 3
 
+nmi_DoMusic subroutine
+    lda nmi_beatTimer
+    beq .tick
+    dec nmi_beatTimer
+    jmp nmi_DoMusic_end
+.tick:
+    ldx #6
+.loop:
+    lda shr_musicStream+1,x
+    beq .end
+    
+    lda (shr_musicStream,x)
+    sta nmi_tmp
+    lda shr_musicStream,x
+    clc
+    adc #1
+    sta shr_musicStream,x
+    lda shr_musicStream+1,x
+    adc #0
+    sta shr_musicStream+1,x
+
+    lda (shr_musicStream,x)
+    sta nmi_tmp+1
+    lda shr_musicStream,x
+    clc
+    adc #1
+    sta shr_musicStream,x
+    lda shr_musicStream+1,x
+    adc #0
+    sta shr_musicStream+1,x
+    
+    lda nmi_tmp
+    cmp #MC____
+    beq .note
+    bmi .effect
+    ;%0xxxxxxx change instrument
+    asl
+    tay
+    lda instruments,y
+    sta nmi_instrument,x
+    lda instruments+1,y
+    sta nmi_instrument+1,x
+    jmp .note
+.effect:
+    ;#$FE loop
+    lda shr_musicRestart,x
+    sta shr_musicStream,x
+    lda shr_musicRestart+1,x
+    sta shr_musicStream+1,x
+    
+.note:
+    lda nmi_tmp+1
+    cmp #MN____
+    beq .end
+
+    lda nmi_instrument,x
+    sta nmi_arg
+    lda nmi_instrument+1,x
+    sta nmi_arg+1
+
+    ldy nmi_tmp+1
+    lda periodTableLo,y
+    sta nmi_arg+2
+    lda periodTableHi,y
+    sta nmi_arg+3
+        
+    txa
+    pha
+    jsr nmi_LoadSfx
+    pla
+    tax
+.end:
+    dex
+    dex
+    bmi .loopend
+    jmp .loop
+.loopend:
+    lda shr_tempo
+    sta nmi_beatTimer
+nmi_DoMusic_end:
+
+
 nmi_doLoadSfx subroutine
     MOV16 nmi_arg,shr_sfxPtr
     lda nmi_arg+1
@@ -359,7 +441,6 @@ nmi_ClockAPU subroutine
     lda #$C0
     sta APU_FRAME
 nmi_ClockAPU_end:
-    
     RESTORE_BANK
 
 nmi_DoViewport
@@ -376,99 +457,6 @@ nmi_DoViewport
     lda nmi_splitBits
     sta PPU_ADDR
 nmi_DoViewport_end:
-
-nmi_DoMusic subroutine
-    ldx #-1
-    lda nmi_beatTimer
-    beq .tick
-    dec nmi_beatTimer
-    jmp nmi_DoMusic_end
-.tick:
-    inx
-    cpx #4
-    bne .continue
-    jmp .loopend
-.continue:
-    
-    lda shr_musicStreamLo,x
-    sta nmi_tmp+2
-    lda shr_musicStreamHi,x
-    sta nmi_tmp+3
-    beq .tick
-    
-    ldy #0
-    lda (nmi_tmp+2),y
-    sta nmi_tmp
-    iny
-    lda (nmi_tmp+2),y
-    sta nmi_tmp+1
-    
-    lda nmi_tmp
-    cmp #$FF ;nop
-    beq .note
-    bmi .effect
-    ;%0xxxxxxx change instrument
-    asl
-    tay
-    lda instruments,y
-    sta nmi_instrumentLo,x
-    lda instruments+1,y
-    sta nmi_instrumentHi,x
-    jmp .note
-.effect:
-    and #$40
-    bne .branch
-    ;%10xxxxxx misc effects
-    jmp .note
-.branch:
-    ;%11xxxxxx and != $FF -> branches (currently <= -2 only)
-    lda nmi_tmp
-    sta shr_debugReg
-    asl
-    sec
-    sbc #2
-    clc
-    adc shr_musicStreamLo,x
-    sta shr_musicStreamLo,x
-    lda shr_musicStreamHi,x
-    adc #$FF
-    sta shr_musicStreamHi,x
-    
-.note:
-    lda nmi_tmp+1
-    cmp #$FF
-    beq .end
-
-    lda nmi_instrumentLo,x
-    sta nmi_arg
-    lda nmi_instrumentHi,x
-    sta nmi_arg+1
-
-    ldy nmi_tmp+1
-    lda periodTableLo,y
-    sta nmi_arg+2
-    lda periodTableHi,y
-    sta nmi_arg+3
-        
-    txa
-    pha
-    jsr nmi_LoadSfx
-    pla
-    tax
-.end:
-    lda shr_musicStreamLo,x
-    clc
-    adc #2
-    sta shr_musicStreamLo,x
-    lda shr_musicStreamHi,x
-    adc #0
-    sta shr_musicStreamHi,x
-    jmp .tick
-.loopend:
-    lda shr_tempo
-    sta nmi_beatTimer
-nmi_DoMusic_end:
-
 
 nmi_Exit:
     lda #0

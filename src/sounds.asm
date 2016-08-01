@@ -3,58 +3,63 @@
 ;------------------------------------------------------------------------------
 
 testDrumSequence:   
-    .byte $00,$20
-    .byte $FF,$FF
-    .byte $01,$20
-    .byte $FF,$FF
-
-    .byte $00,$20
-    .byte $FF,$FF
-    .byte $01,$20
-    .byte <[[testDrumSequence-.]>>1],$FF
+    .byte    $00,MN_C1_
+    .byte MC____,MN____
+    .byte    $03,MN_C1_
+    .byte MC____,MN____
+    .byte    $01,MN_G3_
+    .byte MC____,MN____
+    .byte    $03,MN_C1_
+    .byte MC____,MN____
+    .byte    $00,MN_C1_
+    .byte MC____,MN____
+    .byte    $03,MN_C1_
+    .byte MC____,MN____
+    .byte    $01,MN_G3_
+    .byte MC____,MN____
+    .byte    $03,MN_C1_
+    .byte MC_LOP,MN____
 
 testBassSequence:
-    .byte $FF,$FF
-    .byte $02,$10
-    .byte $FF,$FF
-    .byte $02,$20
+    .byte MC____,MN____
+    .byte    $02,MN_C2_
+    .byte MC____,MN____
+    .byte MC____,MN_C1_
+    .byte MC____,MN____
+    .byte MC____,MN_C2_
+    .byte MC____,MN____
+    .byte MC____,MN_C1_
+    .byte MC____,MN____
+    .byte MC____,MN_G2_
+    .byte MC____,MN____
+    .byte MC____,MN_G1_
+    .byte MC____,MN____
+    .byte MC____,MN_G2_
+    .byte MC____,MN____
+    .byte MC_LOP,MN_G1_
     
-    .byte $FF,$FF
-    .byte $FF,$14
-    .byte $FF,$FF
-    .byte $FF,$24
-    
-    .byte $FF,$FF
-    .byte $FF,$16
-    .byte $FF,$FF
-    .byte $FF,$26
-    
-    .byte $FF,$FF
-    .byte $FF,$12
-    .byte $FF,$FF
-    .byte <[[testBassSequence-.]>>1],$22
-
 instruments:
     .word bassDrum
-    .word hihat
+    .word snareDrum
     .word bass
+    .word hihat
 
 
 periodTableLo:
-  .byte $f1,$7f,$13,$ad,$4d,$f3,$9d,$4c,$00,$b8,$74,$34,0,0,0,0
-  .byte $f8,$bf,$89,$56,$26,$f9,$ce,$a6,$80,$5c,$3a,$1a,0,0,0,0
-  .byte $fb,$df,$c4,$ab,$93,$7c,$67,$52,$3f,$2d,$1c,$0c,0,0,0,0
-  .byte $fd,$ef,$e1,$d5,$c9,$bd,$b3,$a9,$9f,$96,$8e,$86,0,0,0,0
-  .byte $7e,$77,$70,$6a,$64,$5e,$59,$54,$4f,$4b,$46,$42,0,0,0,0
-  .byte $3f,$3b,$38,$34,$31,$2f,$2c,$29,$27,$25,$23,$21,0,0,0,0
+  .byte $f1,$7f,$13,$ad,$4d,$f3,$9d,$4c,$00,$b8,$74,$34
+  .byte $f8,$bf,$89,$56,$26,$f9,$ce,$a6,$80,$5c,$3a,$1a
+  .byte $fb,$df,$c4,$ab,$93,$7c,$67,$52,$3f,$2d,$1c,$0c
+  .byte $fd,$ef,$e1,$d5,$c9,$bd,$b3,$a9,$9f,$96,$8e,$86
+  .byte $7e,$77,$70,$6a,$64,$5e,$59,$54,$4f,$4b,$46,$42
+  .byte $3f,$3b,$38,$34,$31,$2f,$2c,$29,$27,$25,$23,$21
   .byte $1f,$1d,$1b,$1a,$18,$17,$15,$14
 periodTableHi:
-  .byte $07,$07,$07,$06,$06,$05,$05,$05,$05,$04,$04,$04,0,0,0,0
-  .byte $03,$03,$03,$03,$03,$02,$02,$02,$02,$02,$02,$02,0,0,0,0
-  .byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,0,0,0,0
-  .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,0,0,0,0
-  .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,0,0,0,0
-  .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,0,0,0,0
+  .byte $07,$07,$07,$06,$06,$05,$05,$05,$05,$04,$04,$04
+  .byte $03,$03,$03,$03,$03,$02,$02,$02,$02,$02,$02,$02
+  .byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
+  .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+  .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+  .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
   .byte $00,$00,$00,$00,$00,$00,$00,$00
 
 ;square patch: 
@@ -103,20 +108,59 @@ bassDrum subroutine
     .word .tri
     .byte -1
 .noise:
-    .byte #$3E, $00
-    .byte #$3C, $01
-    .byte #$3A, $02
-    .byte #$38, $03
-    .byte #$36, $04
-    .byte #$34, $05
-    .byte #$32, $06
-    .byte #$30, $07
+    .byte $3F, $00
+    .byte $3E, $00
+    .byte $3D, $00
+    .byte $3C, $00
+    .byte $3B, $00
+    .byte $3A, $00
+    .byte $39, $00
+    .byte $38, $00
+    .byte $37, $00
+    .byte $36, $00
+    .byte $35, $00
+    .byte $34, $00
+    .byte $33, $00
+    .byte $32, $00
+    .byte $31, $00
+    .byte $30, $00
     .byte 0
 .tri:
-    .word 0
-    .word 4
-    .word 8
     .word 16
+    .word 8
+    .word 4
+    .word TRI_END
+
+snareDrum subroutine
+    .byte NOISE_CH
+    .byte 0
+    .word .noise
+    .byte TRI_CH
+    .byte 0
+    .word .tri
+    .byte -1
+.noise:
+    .byte $3F, $08
+    .byte $3E, $08
+    .byte $3D, $08
+    .byte $3C, $08
+    .byte $3B, $08
+    .byte $3A, $08
+    .byte $39, $08
+    .byte $38, $08
+    .byte $37, $08
+    .byte $36, $08
+    .byte $35, $08
+    .byte $34, $08
+    .byte $33, $08
+    .byte $32, $08
+    .byte $31, $08
+    .byte $30, $08
+    .byte 0
+.tri:
+    .word 16
+    .word 8
+    .word 4
     .word TRI_END
 
 hihat subroutine
@@ -125,14 +169,23 @@ hihat subroutine
     .word .noise
     .byte -1
 .noise:
-    .byte #$3E, $84
-    .byte #$3C, $85
-    .byte #$3A, $86
-    .byte #$38, $87
-    .byte #$36, $88
-    .byte #$34, $89
-    .byte #$32, $8a
-    .byte #$30, $8b
+    .byte $38, $89
+    .byte $3F, $0A
+    .byte $3E, $8A
+    .byte $3D, $0B
+    .byte $3C, $8B
+    .byte $3B, $0C
+    .byte $3A, $8C
+    .byte $39, $0D
+    .byte $3A, $0D
+    .byte $37, $0E
+    .byte $38, $0E
+    .byte $35, $0D
+    .byte $36, $0D
+    .byte $33, $0E
+    .byte $35, $0E
+    .byte $31, $0F
+    .byte $33, $0F
     .byte 0
 
 

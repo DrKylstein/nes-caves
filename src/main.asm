@@ -700,17 +700,12 @@ ResetStats subroutine
     lda #255
     sta entityCount+2
 .notIntro:
-    lda #8
+    lda #12
     sta shr_tempo
-    ; lda #<testDrumSequence
-    ; sta shr_musicStreamLo
-    ; lda #>testDrumSequence
-    ; sta shr_musicStreamHi
-    ; lda #<testBassSequence
-    ; sta shr_musicStreamLo+1
-    ; lda #>testBassSequence
-    ; sta shr_musicStreamHi+1
-    
+    ; MOV16I shr_musicStream,testDrumSequence
+    ; MOV16I shr_musicRestart,testDrumSequence
+    ; MOV16I shr_musicStream+2,testBassSequence
+    ; MOV16I shr_musicRestart+2,testBassSequence    
 ResetStats_end:
 
 
