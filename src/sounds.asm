@@ -2,15 +2,13 @@
 ; Sound Data
 ;------------------------------------------------------------------------------
 
-testDrumSequence:   
-    .byte    $00,MN_C1_
-    .byte MC____,MN____
-    .byte    $03,MN_C1_
-    .byte MC____,MN____
-    .byte    $01,MN_G3_
-    .byte MC____,MN____
-    .byte    $03,MN_C1_
-    .byte MC____,MN____
+testDrumSequence subroutine
+    .word .pat1
+    .word .pat1
+    .word .pat1
+    .word .pat2
+    .word 0
+.pat1:
     .byte    $00,MN_C1_
     .byte MC____,MN____
     .byte    $03,MN_C1_
@@ -19,8 +17,20 @@ testDrumSequence:
     .byte MC____,MN____
     .byte    $03,MN_C1_
     .byte MC_LOP,MN____
+.pat2:
+    .byte    $01,MN_G3_
+    .byte MC____,MN_G3_
+    .byte    $00,MN_C1_
+    .byte MC____,MN_C1_
+    .byte    $03,MN_C1_
+    .byte MC____,MN_C1_
+    .byte MC____,MN____
+    .byte MC_LOP,MN____
 
-testBassSequence:
+testBassSequence subroutine
+    .word .pat1
+    .word 0
+.pat1:
     .byte MC____,MN____
     .byte    $02,MN_C2_
     .byte MC____,MN____
@@ -38,11 +48,6 @@ testBassSequence:
     .byte MC____,MN____
     .byte MC_LOP,MN_G1_
     
-instruments:
-    .word bassDrum
-    .word snareDrum
-    .word bass
-    .word hihat
 
 
 periodTableLo:
@@ -61,6 +66,13 @@ periodTableHi:
   .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
   .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
   .byte $00,$00,$00,$00,$00,$00,$00,$00
+
+instruments:
+    .word bassDrum
+    .word snareDrum
+    .word bass
+    .word hihat
+
 
 ;square patch: 
 ;.byte duty | vol, relative freq

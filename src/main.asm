@@ -702,10 +702,8 @@ ResetStats subroutine
 .notIntro:
     lda #12
     sta shr_tempo
-    ; MOV16I shr_musicStream,testDrumSequence
-    ; MOV16I shr_musicRestart,testDrumSequence
-    ; MOV16I shr_musicStream+2,testBassSequence
-    ; MOV16I shr_musicRestart+2,testBassSequence    
+    ; MOV16I shr_musicSequence,testDrumSequence
+    ; MOV16I shr_musicSequence+2,testBassSequence
 ResetStats_end:
 
 

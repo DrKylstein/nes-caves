@@ -239,28 +239,46 @@ nmi_DoMusic subroutine
 .tick:
     ldx #6
 .loop:
-    lda shr_musicStream+1,x
-    beq .end
+    lda shr_musicSequence+1,x
+    bne .validSequence
+    jmp .end
+.validSequence:
     
-    lda (shr_musicStream,x)
+    lda nmi_musicStream+1,x
+    bne .notStart
+    lda shr_musicSequence,x
+    sta nmi_tmp+2
+    lda shr_musicSequence+1,x
+    sta nmi_tmp+3
+    ldy nmi_musicIndex,x
+    lda (nmi_tmp+2),y
+    sta nmi_musicStream,x
+    iny
+    lda (nmi_tmp+2),y
+    sta nmi_musicStream+1,x
+    iny
+    sty nmi_musicIndex,x
+.notStart:
+    
+    lda (nmi_musicStream,x)
     sta nmi_tmp
-    lda shr_musicStream,x
+    lda nmi_musicStream,x
     clc
     adc #1
-    sta shr_musicStream,x
-    lda shr_musicStream+1,x
+    sta nmi_musicStream,x
+    lda nmi_musicStream+1,x
     adc #0
-    sta shr_musicStream+1,x
+    sta nmi_musicStream+1,x
 
-    lda (shr_musicStream,x)
+    lda (nmi_musicStream,x)
     sta nmi_tmp+1
-    lda shr_musicStream,x
+    lda nmi_musicStream,x
     clc
     adc #1
-    sta shr_musicStream,x
-    lda shr_musicStream+1,x
+    sta nmi_musicStream,x
+    lda nmi_musicStream+1,x
     adc #0
-    sta shr_musicStream+1,x
+    sta nmi_musicStream+1,x
     
     lda nmi_tmp
     cmp #MC____
@@ -275,11 +293,25 @@ nmi_DoMusic subroutine
     sta nmi_instrument+1,x
     jmp .note
 .effect:
-    ;#$FE loop
-    lda shr_musicRestart,x
-    sta shr_musicStream,x
-    lda shr_musicRestart+1,x
-    sta shr_musicStream+1,x
+    ;#$FE end
+    lda shr_musicSequence,x
+    sta nmi_tmp+2
+    lda shr_musicSequence+1,x
+    sta nmi_tmp+3
+    ldy nmi_musicIndex,x
+    iny
+    lda (nmi_tmp+2),y
+    bne .notEnd
+    ldy #1
+.notEnd:
+    lda (nmi_tmp+2),y
+    sta nmi_musicStream+1,x
+    dey
+    lda (nmi_tmp+2),y
+    sta nmi_musicStream,x
+    iny
+    iny
+    sty nmi_musicIndex,x
     
 .note:
     lda nmi_tmp+1

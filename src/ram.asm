@@ -43,8 +43,9 @@ nmi_sq2Freq      ds 2
 nmi_triFreq      ds 2
 nmi_noiseFreq    ds 2
 
-shr_musicStream ds 8
-shr_musicRestart ds 8
+shr_musicSequence ds 8
+nmi_musicIndex ds 8 ;only even bytes used
+nmi_musicStream ds 8
 nmi_instrument ds 8
 shr_tempo ds 1
 nmi_beatTimer ds 1
