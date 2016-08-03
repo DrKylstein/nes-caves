@@ -302,7 +302,10 @@ nmi_DoMusic subroutine
     iny
     lda (nmi_tmp+2),y
     bne .notEnd
-    ldy #1
+    dey
+    lda (nmi_tmp+2),y
+    tay
+    iny
 .notEnd:
     lda (nmi_tmp+2),y
     sta nmi_musicStream+1,x

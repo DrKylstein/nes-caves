@@ -3,11 +3,13 @@
 ;------------------------------------------------------------------------------
 
 testDrumSequence subroutine
+    .word .pat2
+    .word .pat2
     .word .pat1
     .word .pat1
     .word .pat1
     .word .pat2
-    .word 0
+    .word 2<<1
 .pat1:
     .byte    $00,MN_C1_
     .byte MC____,MN____
