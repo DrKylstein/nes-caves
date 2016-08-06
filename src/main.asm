@@ -979,6 +979,10 @@ TileInteraction subroutine
     lsr
     lsr
     sta sav+3
+    cmp #TB_MAPDOOR
+    bcc .notEntrance
+    jmp TC_Entrance
+.notEntrance:
     asl
     tay
     lda TileCollision,y
@@ -994,8 +998,8 @@ TileCollision:
     .word TC_Exit
     .word TC_Harmful
     .word TC_Deadly
-    .word TC_Nop;TC_LightsOn
-    .word TC_Nop;TC_LightsOff
+    .word TC_Hidden
+    .word TC_Nop;TC_Air
     .word TC_Nop;TC_WeakBlock
     .word TC_Ammo
     .word TC_Strength
@@ -1010,40 +1014,16 @@ TileCollision:
     .word TC_Points ;1000
     .word TC_Points ;5000
     .word TC_Points ;bonus
-    .word TC_Nop
-    .word TC_Nop
-    .word TC_Hidden
-    .word TC_Nop
-    .word TC_Nop
-    .word TC_Lock
-    .word TC_Lock
-    .word TC_Lock
-    .word TC_Nop
-    .word TC_Nop
-    .word TC_Nop ;air
     .word TC_Foreground
-    .word TC_Nop
-    .word TC_Nop
-    .word TC_Nop
-    .word TC_Nop
-    .word TC_Nop
-    .word TC_Nop
-    .word TC_Entrance
-    .word TC_Entrance
-    .word TC_Entrance
-    .word TC_Entrance
-    .word TC_Entrance
-    .word TC_Entrance
-    .word TC_Entrance
-    .word TC_Entrance
-    .word TC_Entrance
-    .word TC_Entrance
-    .word TC_Entrance
-    .word TC_Entrance
-    .word TC_Entrance
-    .word TC_Entrance
-    .word TC_Entrance
-    .word TC_Entrance
+    .word TC_Nop ; unused
+    .word TC_Nop ; girder
+    .word TC_Nop ;"
+    .word TC_Nop ;"
+    .word TC_Lock
+    .word TC_Lock
+    .word TC_Lock
+    .word TC_Nop ;unused
+    .word TC_Nop ;unused
     .word TC_Off
     .word TC_Off
     .word TC_Off

@@ -438,6 +438,24 @@ EntFall subroutine
     sta entityYHi,x
     rts
 
+EntDieInOneShot subroutine
+    jsr EntIsBulletNear
+    bcc .alive
+    lda #$80
+    sta entityXHi
+    sta entityXHi,x
+    lda #10
+    sta arg
+    lda #0
+    sta arg+1
+    sta arg+2
+    stx sav
+    jsr AddScore
+    ldx sav
+.alive:
+    rts
+
+
 ER_Player subroutine
     lda playerFlags
     and #PLY_LOCKED
@@ -1050,20 +1068,7 @@ ER_Spider subroutine
     sbc #1
     sta entityCount,x
 .noDecrement
-    jsr EntIsBulletNear
-    bcc .alive
-    lda #$80
-    sta entityXHi
-    sta entityXHi,x
-    lda #10
-    sta arg
-    lda #0
-    sta arg+1
-    sta arg+2
-    stx sav
-    jsr AddScore
-    ldx sav
-.alive:
+    jsr EntDieInOneShot
     jmp ER_Return
     
 ER_SpiderWeb subroutine
@@ -1088,20 +1093,7 @@ ER_Bat subroutine
 .nohit
     jsr EntTryMelee
     jsr EntMoveHorizontally
-    jsr EntIsBulletNear
-    bcc .alive
-    lda #$80
-    sta entityXHi
-    sta entityXHi,x
-    lda #10
-    sta arg
-    lda #0
-    sta arg+1
-    sta arg+2
-    stx sav
-    jsr AddScore
-    ldx sav
-.alive:
+    jsr EntDieInOneShot
     jmp ER_Return
 
 
@@ -1336,10 +1328,34 @@ ER_Cart subroutine
 
 
 ER_SlimeHorizontal subroutine
+    jsr EntTestFlyingCollision
+    bcs .hit
+    jmp .nohit
+.hit:
+    lda entityVelocity,x
+    eor #$FF
+    clc
+    adc #1
+    sta entityVelocity,x
+.nohit
+    jsr EntMoveHorizontally
     jsr EntTryMelee
+    jsr EntDieInOneShot
     jmp ER_Return
 ER_SlimeVertical subroutine
+    jsr EntTestVerticalCollision
+    bcs .hit
+    jmp .nohit
+.hit:
+    lda entityVelocity,x
+    eor #$FF
+    clc
+    adc #1
+    sta entityVelocity,x
+.nohit
+    jsr EntMoveVertically
     jsr EntTryMelee
+    jsr EntDieInOneShot
     jmp ER_Return
     
 ER_Hammer subroutine    
