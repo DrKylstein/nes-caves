@@ -1,6 +1,9 @@
 ;------------------------------------------------------------------------------
 ; MAIN THREAD
 ;------------------------------------------------------------------------------
+;issues:
+;unmoving, unkillable slimes
+;sound/music causing nmi overruns[?]
 
 ;sprites:
 ;falling rocks
@@ -16,8 +19,8 @@
 ;flying alien wrench
 ;hidden crystal
 
-;low gravity
 ;rex chasing
+;low gravity
 ;moving cannon
 ;strength mushroom melee
 ;more sounds
@@ -27,17 +30,16 @@
 ;death animations
 ;correct animation in intro
 ;ending
-;test on hardware!
 ;enter animation
+;message screens during game
 
 ;???
+;orbiting moon on map -- allow entities to switch between upper and lower 32?
 ;music
 ;full dump independent of nmi for brk handler?
 ;passwords?
-;message screens during game
 ;parallaxing tiled backgrounds
 ;Hilltop style clouds on main map
-;orbiting moon on map -- allow entities to switch between upper and lower 32?
 ;separate top and bottom of main map to enable separate effects
 ;animated background objects
 ;use grayscale and/or emphasis on hud? 
@@ -395,6 +397,10 @@ LoadLevelTileset subroutine
     jsr PagesToPPU
 
 LoadLevel subroutine
+    ;to be calculated from tile map
+    lda #0
+    sta crystalsLeft
+
     lda currLevel
     tax
     ldy levelBanks,x
@@ -687,7 +693,6 @@ ResetStats subroutine
     sta powerSeconds
     sta powerType
     sta bonusCount
-    sta crystalsLeft
     sta playerFlags
     sta playerYVel
     sta playerYVel+2
@@ -830,6 +835,8 @@ doExit:
     sta exitTriggered
     jmp EnterLevel
 .noExit:
+
+    jsr UpdateInput
 
 Paused subroutine
     lda paused
@@ -3345,6 +3352,7 @@ QColorEffect subroutine
     rts
 ;------------------------------------------------------------------------------
 WaitForPress subroutine
+    jsr UpdateInput
     lda pressed
     cmp #0
     beq WaitForPress
@@ -3362,3 +3370,34 @@ ClearNameTable subroutine
     dex
     bne .loop
     rts
+;------------------------------------------------------------------------------
+UpdateInput subroutine
+    lda ctrl
+    sta oldCtrl
+    
+    ;; Strobe controller
+    lda #1
+    sta JOYPAD1
+    lda #0
+    sta JOYPAD1
+    ;; Read all 8 buttons
+    REPEAT 8
+    sta ctrl
+    ;; Read next button state and mask off low 2 bits.
+    ;; Compare with $01, which will set carry flag if
+    ;; either or both bits are set.
+    lda JOYPAD1
+    and #$03
+    cmp #$01
+    ;; Now, rotate the carry flag into the top of A,
+    ;; land shift all the other buttons to the right
+    lda ctrl
+    ror
+    REPEND
+    
+    sta ctrl
+    and oldCtrl
+    eor ctrl
+    sta pressed
+    rts
+UpdateInput_end:
