@@ -113,6 +113,8 @@ bass subroutine
     .word 0
     .word TRI_END
 
+sfxHeavyImpact:
+    .word $713
 bassDrum subroutine
     .byte NOISE_CH
     .byte 0

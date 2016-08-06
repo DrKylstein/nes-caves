@@ -1365,6 +1365,8 @@ ER_Hammer subroutine
     sta entityCount,x
     lda #<-1
     sta entityVelocity,x
+    MOV16I arg,sfxHeavyImpact
+    jsr PlaySound
     jmp ER_Return
 .notLanded:
     jsr EntFall

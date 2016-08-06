@@ -2,10 +2,6 @@
 ; MAIN THREAD
 ;------------------------------------------------------------------------------
 
-;map:
-;underground bg element
-;torch glow?
-
 ;sprites:
 ;falling rocks
 ;full-size hammers?
@@ -25,22 +21,25 @@
 ;moving cannon
 ;strength mushroom melee
 ;more sounds
-;music
+;-pickups
+;-bullet impacts
+;-flames
 ;death animations
-;full dump independent of nmi for brk handler?
-;passwords?
-;intro and ending
+;correct animation in intro
+;ending
 ;test on hardware!
-;enter/exit animation
+;enter animation
 
 ;???
+;music
+;full dump independent of nmi for brk handler?
+;passwords?
+;message screens during game
 ;parallaxing tiled backgrounds
 ;Hilltop style clouds on main map
 ;orbiting moon on map -- allow entities to switch between upper and lower 32?
-;dynamically load small messages, e.g.: paused, hints
 ;separate top and bottom of main map to enable separate effects
 ;animated background objects
-;flickering torch/pulsing lava emphasis effect
 ;use grayscale and/or emphasis on hud? 
 ;hold ER pointer in ram so that entities can change routines dynamically?
 ;hold frame pointer/index in entity filed instead of animation? 
