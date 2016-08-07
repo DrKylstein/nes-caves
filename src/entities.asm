@@ -1,5 +1,5 @@
 entityRoutine:
-    .word ER_Player ; player
+    .word ER_Player
     .word ER_VerticalPlatform
     .word ER_HorizontalPlatform
     .word ER_Spider
@@ -21,7 +21,7 @@ entityRoutine:
     .word ER_RightCannon
     .word ER_RightLaser
     .word ER_LeftCannon
-    .word ER_Girder ; girder
+    .word ER_Girder
     .word ER_Rex
     .word ER_Stalactite
     .word ER_SpiderWeb
@@ -29,9 +29,10 @@ entityRoutine:
     .word ER_PipeRight
     .word ER_PipeLeft
     .word ER_Return ; torch
-    .word ER_Spike ; spike
-    .word ER_Planet ; planet
-    .word ER_Bullet; bullet
+    .word ER_Spike
+    .word ER_Planet
+    .word ER_Bullet
+    .word ER_Explosion
     
 entityFlags:
     .byte 1 ; player
@@ -67,6 +68,7 @@ entityFlags:
     .byte 0 ;spike
     .byte 0 ; planet
     .byte ENT_F_ISTEMPORARY | 2; bullet
+    .byte ENT_F_ISTEMPORARY | 1; explosion
         
 entityTiles:
     .byte 0 ; player
@@ -102,6 +104,7 @@ entityTiles:
     .byte 32*3 + 16 + 1; spike
     .byte 32*4 + 24 + 1;planet
     .byte 14*2 ; bullet
+    .byte 24*2 ; explosion
     
 entitySpeeds:
     .byte 0 ; player
@@ -137,6 +140,7 @@ entitySpeeds:
     .byte 0 ; spike
     .byte 0 ; planet
     .byte 4 ; bullet
+    .byte 0 ; explosion
     
 entityInitialAnims:
     .byte ANIM_SMALL_NONE ; player
@@ -146,7 +150,7 @@ entityInitialAnims:
     .byte ANIM_SYMMETRICAL_OSCILLATE ; bat
     .byte ANIM_POWERSHOT ; power shot
     .byte ANIM_SMALL_OSCILLATE ; rock
-    .byte ANIM_SMALL_OSCILLATE ; cart
+    .byte ANIM_SYMMETRICAL_OSCILLATE ; cart
     .byte ANIM_SMALL_NONE ; caterpillar head
     .byte ANIM_SMALL_NONE ; caterpillar front
     .byte ANIM_SMALL_NONE ; caterpillar back
@@ -172,6 +176,7 @@ entityInitialAnims:
     .byte ANIM_SPIKE
     .byte ANIM_PLANET
     .byte ANIM_ROCKET ; bullet
+    .byte ANIM_SYMMETRICAL_OSCILLATE ; explosion
 
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
@@ -286,14 +291,53 @@ EntIsStrongPlayerNear subroutine
 .no:
     clc
     rts
+    
+EntIsStrongPlayerNearTall subroutine
+    lda powerType
+    cmp #POWER_STRENGTH
+    beq .maybe
+    jmp .no
+.maybe:
+    lda entityXLo,x
+    sta tmp
+    lda entityXHi,x
+    and #ENT_X_POS
+    sta tmp+1
+    lda entityYLo,x
+    sta tmp+2
+    lda entityYHi,x
+    and #ENT_Y_POS
+    sta tmp+3
+    
+    SUB16 tmp+4, tmp, playerX
+    ABS16 tmp+4, tmp+4
+    CMP16I tmp+4, 12
+    bcs .no
+    
+    SUB16I tmp+2, tmp+2, 8
+    SUB16 tmp+4, tmp+2, playerY
+    ABS16 tmp+4, tmp+4
+    CMP16I tmp+4, [12+8]
+    bcs .no
+    
+    sec
+    rts
+.no:
+    clc
+    rts
 
 
 EntIsBulletNear subroutine
     lda entityXHi
-    bpl .exists
-    clc
-    rts
-.exists
+    bpl .Exists
+    jmp .no
+.Exists:
+    lda entityYHi
+    lsr
+    cmp #EXPLOSION_ID
+    bne .NotExplosion
+    jmp .no
+.NotExplosion:
     lda entityXLo,x
     sta tmp
     lda entityXHi,x
@@ -325,6 +369,57 @@ EntIsBulletNear subroutine
     SUB16 tmp, tmp, tmp+2
     ABS16 tmp, tmp
     CMP16I tmp, 14
+    bcs .no
+    sec
+    rts
+    
+.no:
+    clc
+    rts
+
+EntIsBulletNearTall subroutine
+    lda entityXHi
+    bpl .Exists
+    jmp .no
+.Exists:
+    lda entityYHi
+    lsr
+    cmp #EXPLOSION_ID
+    bne .NotExplosion
+    jmp .no
+.NotExplosion:
+    lda entityXLo,x
+    sta tmp
+    lda entityXHi,x
+    and #ENT_X_POS
+    sta tmp+1
+    lda entityXLo
+    sta tmp+2
+    lda entityXHi
+    and #ENT_X_POS
+    sta tmp+3
+    
+    SUB16 tmp, tmp, tmp+2
+    ABS16 tmp, tmp
+    CMP16I tmp, 14
+    bcs .no
+    
+    
+    lda entityYLo,x
+    sta tmp
+    lda entityYHi,x
+    and #ENT_Y_POS
+    sta tmp+1
+    lda entityYLo
+    sta tmp+2
+    lda entityYHi
+    and #ENT_Y_POS
+    sta tmp+3
+    
+    SUB16I tmp,tmp,8
+    SUB16 tmp, tmp, tmp+2
+    ABS16 tmp, tmp
+    CMP16I tmp, [14+8]
     bcs .no
     sec
     rts
@@ -484,8 +579,14 @@ EntDieByPowerOnly subroutine
     lda #$80
     sta entityXHi
 .Melee:
-    lda #$80
-    sta entityXHi,x
+    ;lda #$80
+    ;sta entityXHi,x
+    lda entityYHi,x
+    and #1
+    ora #EXPLOSION_ID<<1
+    sta entityYHi,x
+    lda #ANIM_SYMMETRICAL_OSCILLATE
+    sta entityAnim,x
     lda #10
     sta arg
     lda #0
@@ -505,8 +606,14 @@ EntDieInOneShot subroutine
     lda #$80
     sta entityXHi
 .Melee:
-    lda #$80
-    sta entityXHi,x
+    ;lda #$80
+    ;sta entityXHi,x
+    lda entityYHi,x
+    and #1
+    ora #EXPLOSION_ID<<1
+    sta entityYHi,x
+    lda #ANIM_SYMMETRICAL_OSCILLATE
+    sta entityAnim,x
     lda #10
     sta arg
     lda #0
@@ -518,6 +625,17 @@ EntDieInOneShot subroutine
 .alive:
     rts
 
+ER_Explosion subroutine
+    lda entityCount,x
+    clc
+    adc #1
+    sta entityCount,x
+    cmp #12
+    bcc .alive
+    lda #$80
+    sta entityXHi,x
+.alive:
+    jmp ER_Return
 
 ER_Player subroutine
     lda playerFlags
@@ -1029,8 +1147,12 @@ ER_Bullet subroutine
     jsr SetTile
     ldx sav
 .die:
-    lda #$80
-    sta entityXHi,x
+    lda entityYHi,x
+    and #1
+    ora #EXPLOSION_ID<<1
+    sta entityYHi,x
+    lda #ANIM_SYMMETRICAL_OSCILLATE
+    sta entityAnim,x
     jmp ER_Return
 .notEgg:
 
@@ -1182,46 +1304,10 @@ ER_Rex subroutine
     bcs .noMelee
     jsr DamagePlayer
 .noMelee:
-
-    lda entityXHi
-    bpl .exists
-    jmp .noBullet
-.exists
-    lda entityXLo,x
-    sta tmp
-    lda entityXHi,x
-    and #ENT_X_POS
-    sta tmp+1
-    lda entityXLo
-    sta tmp+2
-    lda entityXHi
-    and #ENT_X_POS
-    sta tmp+3
-    
-    SUB16 tmp, tmp, tmp+2
-    ABS16 tmp, tmp
-    CMP16I tmp, 14
-    bcc .maybeBullet
-    jmp .noBullet
-.maybeBullet:
-    
-    lda entityYLo,x
-    sta tmp
-    lda entityYHi,x
-    and #ENT_Y_POS
-    sta tmp+1
-    lda entityYLo
-    sta tmp+2
-    lda entityYHi
-    and #ENT_Y_POS
-    sta tmp+3
-    ADD16I tmp+2,tmp+2,8
-
-    SUB16 tmp, tmp, tmp+2
-    ABS16 tmp,tmp
-    CMP16I tmp, 24
-    bcs .noBullet
-    
+    jsr EntIsStrongPlayerNearTall
+    bcs .dead
+    jsr EntIsBulletNearTall
+    bcc .noBullet
     lda #$80
     sta entityXHi
     lda entityYHi
@@ -1236,8 +1322,15 @@ ER_Rex subroutine
     sta entityCount,x
     jmp .noBullet
 .dead
-    lda #$80
-    sta entityXHi,x
+    ;lda #$80
+    ;sta entityXHi,x
+    lda entityYHi,x
+    and #1
+    ora #EXPLOSION_ID<<1
+    sta entityYHi,x
+    lda #ANIM_SYMMETRICAL_OSCILLATE
+    sta entityAnim,x
+    
     lda #0
     sta arg
     lda #5
@@ -1259,8 +1352,15 @@ ER_CaterpillarHead:
     lda #$80
     sta entityXHi
 .MeleeDeath:
-    lda #$80
-    sta entityXHi,x
+    ;lda #$80
+    ;sta entityXHi,x
+    lda entityYHi,x
+    sta tmp
+    and #1
+    ora #EXPLOSION_ID<<1
+    sta entityYHi,x
+    lda #ANIM_SYMMETRICAL_OSCILLATE
+    sta entityAnim,x
     
     lda entityYHi+1,x
     lsr
@@ -1268,7 +1368,7 @@ ER_CaterpillarHead:
     bcc .lastOne
     cmp #CATERPILLAR_ID+4
     bcs .lastOne
-    lda entityYHi,x ;should be on same y coord, no need to extract
+    lda tmp ;should be on same y coord, no need to extract
     sta entityYHi+1,x
 .lastOne:
     lda #1

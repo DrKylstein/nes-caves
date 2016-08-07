@@ -9,7 +9,6 @@
 
 ;sprites:
 ;falling rocks
-;explosions
 ;bonus fruit
 ;hopper -> snake
 ;bird
@@ -19,6 +18,7 @@
 ;wall snake
 ;flying alien wrench
 ;hidden crystal
+;falling sign
 
 ;low gravity
 ;moving cannon
@@ -1353,8 +1353,13 @@ TC_Nop:
     lda #JOY_B_MASK
     and pressed
     JEQ TileInteraction_end
+    lda entityYHi
+    lsr
+    cmp #EXPLOSION_ID
+    beq .SlotFree
     bit entityXHi
     JPL TileInteraction_end
+.SlotFree:
     lda powerType
     cmp #POWER_SHOT
     beq .InfiniteAmmo
