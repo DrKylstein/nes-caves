@@ -22,6 +22,7 @@ PPU_DATA ds 1
 ; APU
     SEG.U APU_REGISTERS
     ORG $4000
+APU_REGISTERS:
 APU_SQ1_VOL     ds 1
 APU_SQ1_SWEEP   ds 1
 APU_SQ1_LO      ds 1
@@ -43,7 +44,8 @@ APU_DMC_RAW     ds 1
 APU_DMC_START   ds 1
 APU_DMC_LEN     ds 1
 OAM_DMA         ds 1
-                ds 1
+APU_ENABLE:
+APU_STATUS      ds 1
 JOYPAD1         ds 1
 JOYPAD2         ds 1
 APU_CTRL        ds 1

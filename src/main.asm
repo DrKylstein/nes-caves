@@ -4,6 +4,7 @@
 ;issues:
 ;unmoving, unkillable slimes
 ;sound/music causing nmi overruns[?]
+;running out of space in bank 7
 
 ;sprites:
 ;falling rocks
@@ -34,6 +35,7 @@
 ;message screens during game
 
 ;???
+;specify pitch envelopes in semitones
 ;orbiting moon on map -- allow entities to switch between upper and lower 32?
 ;music
 ;full dump independent of nmi for brk handler?
@@ -95,25 +97,7 @@ reset subroutine
     inx
     bne .clrmem
  
-init_apu subroutine
-    lda #$0F
-    sta $4015
-    ldy #0
-.loop:  
-    lda .regs,y
-    sta $4000,y
-    iny
-    cpy #$18
-    bne .loop
-    jmp init_apu_end
-.regs:
-    .byte $30,$08,$00,$00 ;sq1
-    .byte $30,$08,$00,$00 ;sq2
-    .byte $80,$00,$00,$00 ;tri
-    .byte $30,$00,$00,$00 ;noise
-    .byte $00,$00,$00,$00 ;dmc
-    .byte $00,$0F,$00,$40 ;ctrl
-init_apu_end:
+    jsr ResetAPU
 
 clearOAM subroutine
     lda #$FF
@@ -378,6 +362,7 @@ InitSprites subroutine
 ;------------------------------------------------------------------------------
 EnterLevel:
 DisableDisplay subroutine
+    jsr ResetAPU
     jsr Synchronize
     jsr QDisableDisplay
     jsr Synchronize
@@ -705,9 +690,9 @@ ResetStats subroutine
     sta entityCount+2
 .notIntro:
     lda #12
-    sta shr_tempo
-    ; MOV16I shr_musicSequence,testDrumSequence
-    ; MOV16I shr_musicSequence+2,testBassSequence
+    sta tempo
+    MOV16I musicSequence,testDrumSequence
+    MOV16I musicSequence+2,testBassSequence
 ResetStats_end:
 
 
@@ -836,7 +821,7 @@ doExit:
     jmp EnterLevel
 .noExit:
 
-    jsr UpdateInput
+    jsr UpdateInput    
 
 Paused subroutine
     lda paused
@@ -887,6 +872,9 @@ Paused subroutine
     jmp MainLoop
 Paused_end:
 
+    SELECT_BANK 3
+    jsr UpdateSound
+
 CheckInput subroutine
 .start:
     lda pressed
@@ -894,6 +882,7 @@ CheckInput subroutine
     beq .left
     lda #1
     sta paused
+    jsr ResetAPU
 .left:
     lda playerFlags
     and #PLY_LOCKED
@@ -3283,7 +3272,7 @@ TestCollision subroutine
     rts
 ;------------------------------------------------------------------------------
 PlaySound subroutine
-    MOV16 shr_sfxPtr,arg
+    MOV16 sfxPtr,arg
     rts
 ;------------------------------------------------------------------------------
 QDisableDisplay subroutine
@@ -3381,3 +3370,22 @@ UpdateInput subroutine
     sta pressed
     rts
 UpdateInput_end:
+
+ResetAPU subroutine
+    lda #$0F
+    sta APU_ENABLE
+    ldy #0
+.loop:  
+    lda .regs,y
+    sta APU_REGISTERS,y
+    iny
+    cpy #$18
+    bne .loop
+    rts
+.regs:
+    .byte $30,$08,$00,$00 ;sq1
+    .byte $30,$08,$00,$00 ;sq2
+    .byte $80,$00,$00,$00 ;tri
+    .byte $30,$00,$00,$00 ;noise
+    .byte $00,$00,$00,$00 ;dmc
+    .byte $00,$0F,$00,$40 ;ctrl

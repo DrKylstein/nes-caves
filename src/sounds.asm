@@ -1,3 +1,259 @@
+UpdateSound subroutine
+DoMusic subroutine
+    lda beatTimer
+    beq .tick
+    dec beatTimer
+    jmp DoMusic_end
+.tick:
+    ldx #6
+.loop:
+    lda musicSequence+1,x
+    bne .validSequence
+    jmp .end
+.validSequence:
+    
+    lda musicStream+1,x
+    bne .notStart
+    lda musicSequence,x
+    sta tmp+2
+    lda musicSequence+1,x
+    sta tmp+3
+    ldy musicIndex,x
+    lda (tmp+2),y
+    sta musicStream,x
+    iny
+    lda (tmp+2),y
+    sta musicStream+1,x
+    iny
+    sty musicIndex,x
+.notStart:
+    
+    lda (musicStream,x)
+    sta tmp
+    lda musicStream,x
+    clc
+    adc #1
+    sta musicStream,x
+    lda musicStream+1,x
+    adc #0
+    sta musicStream+1,x
+
+    lda (musicStream,x)
+    sta tmp+1
+    lda musicStream,x
+    clc
+    adc #1
+    sta musicStream,x
+    lda musicStream+1,x
+    adc #0
+    sta musicStream+1,x
+    
+    lda tmp
+    cmp #MC____
+    beq .note
+    bmi .effect
+    ;%0xxxxxxx change instrument
+    asl
+    tay
+    lda instruments,y
+    sta instrument,x
+    lda instruments+1,y
+    sta instrument+1,x
+    jmp .note
+.effect:
+    ;#$FE end
+    lda musicSequence,x
+    sta tmp+2
+    lda musicSequence+1,x
+    sta tmp+3
+    ldy musicIndex,x
+    iny
+    lda (tmp+2),y
+    bne .notEnd
+    dey
+    lda (tmp+2),y
+    tay
+    iny
+.notEnd:
+    lda (tmp+2),y
+    sta musicStream+1,x
+    dey
+    lda (tmp+2),y
+    sta musicStream,x
+    iny
+    iny
+    sty musicIndex,x
+    
+.note:
+    lda tmp+1
+    cmp #MN____
+    beq .end
+
+    lda instrument,x
+    sta arg
+    lda instrument+1,x
+    sta arg+1
+
+    ldy tmp+1
+    lda periodTableLo,y
+    sta arg+2
+    lda periodTableHi,y
+    sta arg+3
+        
+    txa
+    pha
+    jsr LoadSfx
+    pla
+    tax
+.end:
+    dex
+    dex
+    bmi .loopend
+    jmp .loop
+.loopend:
+    lda tempo
+    sta beatTimer
+DoMusic_end:
+
+
+doLoadSfx subroutine
+    MOV16 arg,sfxPtr
+    lda arg+1
+    beq doLoadSfx_end
+    ldy #0
+    lda (arg),y
+    sta arg+2
+    INC16 arg
+    lda (arg),y
+    sta arg+3
+    INC16 arg
+    jsr LoadSfx
+    lda #0
+    sta sfxPtr+1
+doLoadSfx_end:
+
+DoSq1 subroutine
+;update sound during wait
+    ldy #0
+    lda sq1Patch+1 ;pointer can't be in zero page, no sound must be set
+    beq .ended
+    lda (sq1Patch),y
+    beq .ended ;byte should always have %xx11xxxx, so sound has ended
+    sta APU_SQ1_VOL
+    iny
+    lda sq1Freq
+    sec
+    sbc (sq1Patch),y
+    sta APU_SQ1_LO
+.noTrigger
+    ADD16I sq1Patch, sq1Patch, 2
+.ended:
+    lda #0
+    sta sq1Priority
+DoSq1_end:
+
+DoTri subroutine
+;update sound during wait
+    ldy #0
+    lda triPatch+1 ;pointer can't be in zero page, no sound must be set
+    beq .ended
+    lda (triPatch),y
+    sta tmp
+    iny
+    lda (triPatch),y
+    sta tmp+1
+    
+    CMP16I tmp, TRI_END
+    beq .ended
+        
+    SUB16 APU_TRI_LO,triFreq,tmp
+    
+    lda #$C0
+    sta APU_TRI_LINEAR
+
+    
+    ADD16I triPatch, triPatch, 2
+    jmp DoTri_end
+.ended:
+    lda #$80
+    sta APU_TRI_LINEAR
+    lda #0
+    sta triPriority
+
+DoTri_end:
+
+DoNoise subroutine
+;update sound during wait
+    ldy #0
+    lda noisePatch+1 ;pointer can't be in zero page, no sound must be set
+    beq .ended
+    lda (noisePatch),y
+    beq .ended ;byte should always have %xx11xxxx, so sound has ended
+    sta APU_NOISE_VOL
+    iny
+    lda (noisePatch),y
+    eor #$0F
+    sta APU_NOISE_LO
+    ADD16I noisePatch, noisePatch, 2
+.ended:
+    lda #0
+    sta noisePriority
+DoNoise_end:
+
+ClockAPU subroutine
+    lda #$C0
+    sta APU_FRAME
+ClockAPU_end:
+    rts
+
+LoadSfx subroutine ; uses tmp as argument
+    ldy #0
+.loop:
+    lda (arg),y
+    bmi .end
+    tax
+    iny
+    
+    lda (arg),y
+    cmp sfxPriority,x
+    bcs .higher
+    tya
+    clc
+    adc #5
+    tay
+    jmp .loop
+.higher
+    sta sfxPriority,x
+    iny
+    txa
+    asl
+    tax
+    
+    lda (arg),y
+    iny
+    sta sfxPatch,x
+    
+    lda (arg),y
+    iny
+    sta sfxPatch+1,x
+
+    lda arg+2
+    sta sfxFreq,x
+    
+    lda arg+3
+    sta sfxFreq+1,x
+    ;set upper frequency byte for square qwaves
+    sta tmp
+    txa
+    asl
+    tax
+    lda tmp
+    sta APU_SQ1_HI,x
+    
+    jmp .loop
+.end:
+    rts
+
 ;------------------------------------------------------------------------------
 ; Sound Data
 ;------------------------------------------------------------------------------

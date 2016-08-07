@@ -23,32 +23,29 @@ shr_tileCol         ds 1
 shr_earlyExit       ds 1
 shr_copyIndex       ds 1
 
-shr_sfxPtr ds 2
+sfxPtr ds 2
+sfxPriority:
+sq1Priority  ds 1
+sq2Priority  ds 1
+triPriority  ds 1
+noisePriority ds 1
+sfxPatch:
+sq1Patch     ds 2
+sq2Patch     ds 2
+triPatch     ds 2
+noisePatch   ds 2
+sfxFreq:
+sq1Freq      ds 2
+sq2Freq      ds 2
+triFreq      ds 2
+noiseFreq    ds 2
+musicSequence ds 8
+musicIndex ds 8 ;only even bytes used
+musicStream ds 8
+instrument ds 8
+tempo ds 1
+beatTimer ds 1
 
-nmi_sfxPriority:
-nmi_sq1Priority  ds 1
-nmi_sq2Priority  ds 1
-nmi_triPriority  ds 1
-nmi_noisePriority ds 1
-
-nmi_sfxPatch:
-nmi_sq1Patch     ds 2
-nmi_sq2Patch     ds 2
-nmi_triPatch     ds 2
-nmi_noisePatch   ds 2
-
-nmi_sfxFreq:
-nmi_sq1Freq      ds 2
-nmi_sq2Freq      ds 2
-nmi_triFreq      ds 2
-nmi_noiseFreq    ds 2
-
-shr_musicSequence ds 8
-nmi_musicIndex ds 8 ;only even bytes used
-nmi_musicStream ds 8
-nmi_instrument ds 8
-shr_tempo ds 1
-nmi_beatTimer ds 1
 currBank    ds 1
 
     ECHO [$100-.]d," bytes left in page $000"
