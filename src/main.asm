@@ -2,13 +2,13 @@
 ; MAIN THREAD
 ;------------------------------------------------------------------------------
 ;issues:
-;unmoving, unkillable slimes
-;sound/music causing nmi overruns[?]
-;running out of space in bank 7
+;no slime direction changes
+;no rex chasing
+;intro animation incorrect
+;full-size hammers?
 
 ;sprites:
 ;falling rocks
-;full-size hammers?
 ;explosions
 ;bonus fruit
 ;hopper -> snake
@@ -20,16 +20,13 @@
 ;flying alien wrench
 ;hidden crystal
 
-;rex chasing
 ;low gravity
 ;moving cannon
-;strength mushroom melee
 ;more sounds
 ;-pickups
 ;-bullet impacts
 ;-flames
 ;death animations
-;correct animation in intro
 ;ending
 ;enter animation
 ;message screens during game

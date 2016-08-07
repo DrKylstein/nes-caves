@@ -253,7 +253,41 @@ EntMoveVertically subroutine
     ora tmp
     sta entityYHi,x
     rts
-   
+
+EntIsStrongPlayerNear subroutine
+    lda powerType
+    cmp #POWER_STRENGTH
+    beq .maybe
+    jmp .no
+.maybe:
+    lda entityXLo,x
+    sta tmp
+    lda entityXHi,x
+    and #ENT_X_POS
+    sta tmp+1
+    lda entityYLo,x
+    sta tmp+2
+    lda entityYHi,x
+    and #ENT_Y_POS
+    sta tmp+3
+    
+    SUB16 tmp+4, tmp, playerX
+    ABS16 tmp+4, tmp+4
+    CMP16I tmp+4, 12
+    bcs .no
+    
+    SUB16 tmp+4, tmp+2, playerY
+    ABS16 tmp+4, tmp+4
+    CMP16I tmp+4, 12
+    bcs .no
+    
+    sec
+    rts
+.no:
+    clc
+    rts
+
+
 EntIsBulletNear subroutine
     lda entityXHi
     bpl .exists
@@ -438,11 +472,40 @@ EntFall subroutine
     sta entityYHi,x
     rts
 
+EntDieByPowerOnly subroutine
+    jsr EntIsStrongPlayerNear
+    bcs .Melee
+    jsr EntIsBulletNear
+    bcc .alive
+    lda entityYHi
+    lsr
+    cmp #POWERSHOT_ID
+    bne .alive
+    lda #$80
+    sta entityXHi
+.Melee:
+    lda #$80
+    sta entityXHi,x
+    lda #10
+    sta arg
+    lda #0
+    sta arg+1
+    sta arg+2
+    stx sav
+    jsr AddScore
+    ldx sav
+.alive:
+    rts
+    
 EntDieInOneShot subroutine
+    jsr EntIsStrongPlayerNear
+    bcs .Melee
     jsr EntIsBulletNear
     bcc .alive
     lda #$80
     sta entityXHi
+.Melee:
+    lda #$80
     sta entityXHi,x
     lda #10
     sta arg
@@ -805,25 +868,6 @@ ER_Stalactite subroutine
     
 ER_Mimrock subroutine
     jsr EntTryMelee
-    jsr EntIsBulletNear
-    bcc .alive
-    lda #$80
-    sta entityXHi
-    lda entityYHi
-    lsr
-    cmp #POWERSHOT_ID
-    bne .alive
-    lda #$80
-    sta entityXHi,x
-    lda #10
-    sta arg
-    lda #0
-    sta arg+1
-    sta arg+2
-    stx sav
-    jsr AddScore
-    ldx sav
-.alive:
     MOV16I arg, 32
     jsr EntAwayFromPlayerY
     bcs .hiding
@@ -846,10 +890,12 @@ ER_Mimrock subroutine
     sta entityVelocity,x
 .noTurn:
     jsr EntMoveHorizontally
-    jmp ER_Return
+    jmp .end
 .hiding:
     lda #ANIM_ROCK_HIDING
     sta entityAnim,x
+.end:
+    jsr EntDieByPowerOnly
     jmp ER_Return
 
 ER_RightCannon subroutine
@@ -1206,10 +1252,14 @@ ER_Rex subroutine
 
 
 ER_CaterpillarHead:
+    jsr EntIsStrongPlayerNear
+    bcs .MeleeDeath
     jsr EntIsBulletNear
     bcc .alive
     lda #$80
     sta entityXHi
+.MeleeDeath:
+    lda #$80
     sta entityXHi,x
     
     lda entityYHi+1,x
@@ -1293,27 +1343,6 @@ ER_Cart subroutine
     sta entityCount,x
 .nohit:
     jsr EntTryMelee
-    jsr EntIsBulletNear
-    bcc .alive
-    lda #$80
-    sta entityXHi
-    
-    lda entityYHi
-    asl
-    cmp #POWERSHOT_ID
-    bne .alive
-    
-    lda #$80
-    sta entityXHi,x
-    lda #10
-    sta arg
-    lda #0
-    sta arg+1
-    sta arg+2
-    stx sav
-    jsr AddScore
-    ldx sav
-.alive:
     lda entityCount,x
     beq .nopause
     sec
@@ -1321,9 +1350,11 @@ ER_Cart subroutine
     sta entityCount,x
     lda #ANIM_SYMMETRICAL_NONE
     sta entityAnim,x
-    jmp ER_Return
+    jmp .end
 .nopause:
     jsr EntMoveHorizontally
+.end:
+    jsr EntDieByPowerOnly
     jmp ER_Return
 
 
