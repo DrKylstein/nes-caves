@@ -298,3 +298,4 @@ ANIM_PLAYER_JUMP_LEFTV      ds 1
 ANIM_SMALL_VFLIP_NONE       ds 1
 ANIM_SMALL_HV_NONE          ds 1
 ANIM_KIWI                   ds 1
+ANIM_HAMMER                 ds 1

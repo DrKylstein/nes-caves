@@ -170,7 +170,7 @@ entityInitialAnims:
     .byte ANIM_SMALL_NONE ; caterpillar tail
     .byte ANIM_SLIME_RIGHT ; slime horizontal
     .byte ANIM_SLIME_DOWN ; slime vertical
-    .byte ANIM_SYMMETRICAL_NONE ; hammer
+    .byte ANIM_HAMMER ; hammer
     .byte ANIM_SYMMETRICAL_NONE ; faucet
     .byte ANIM_SYMMETRICAL_NONE ; water
     .byte ANIM_SPIDER ; vertical platform
@@ -1590,12 +1590,13 @@ ER_Hammer subroutine
     lda entityYHi,x
     and #ENT_Y_POS
     sta arg+3
+    SUB16I arg+2,arg+2,16
     ADD16I arg,arg, 8
     jsr TestCollision
     bcc .notApex
-    lda #1
+    lda #4
     sta entityCount,x
-    lda #0
+    lda #2
     sta entityVelocity,x
     jmp ER_Return
 .notApex:

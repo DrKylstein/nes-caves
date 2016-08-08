@@ -67,6 +67,7 @@ animations:
     .word anim_smallVFlipNone
     .word anim_smallHVNone
     .word anim_kiwi
+    .word anim_hammer
     
 frame_small1:
     .byte 8
@@ -584,3 +585,16 @@ anim_kiwi subroutine
     .byte 2*OAM_SIZE
     .byte   0,$85,$03,  0
     .byte   0,$87,$03,  8
+
+anim_hammer subroutine
+    .byte 0
+    .word .frame
+.frame:
+    .byte 6*OAM_SIZE
+    .byte -16,  0,  0, -4
+    .byte -16,  2,  0,  4
+    .byte -16,  0,$40, 12
+    .byte   0, 64,  0, -4
+    .byte   0, 66,  0,  4
+    .byte   0, 64,$40, 12
+    

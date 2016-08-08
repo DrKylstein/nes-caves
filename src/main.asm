@@ -5,7 +5,6 @@
 ;no slime direction changes
 ;no rex chasing
 ;intro animation incorrect
-;full-size hammers?
 
 ;sprites:
 ;falling rocks
