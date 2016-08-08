@@ -237,15 +237,17 @@
     sty currBank
     ENDM
     
-    MAC NMI_SELECT_BANK
-    ldy #{1}
-    lda banktable,y
-    sta banktable,y
+    MAC PUSH_BANK
+    lda currBank
+    pha
     ENDM
-    MAC RESTORE_BANK
-    ldy currBank
+    
+    MAC POP_BANK
+    pla
+    tay
     lda banktable,y
     sta banktable,y
+    sty currBank
     ENDM
     
     MAC ENQUEUE_PPU_ADDR

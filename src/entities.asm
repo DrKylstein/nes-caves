@@ -33,6 +33,7 @@ entityRoutine:
     .word ER_Planet
     .word ER_Bullet
     .word ER_Explosion
+    .word ER_Fruit
     
 entityFlags:
     .byte 1 ; player
@@ -69,6 +70,7 @@ entityFlags:
     .byte 0 ; planet
     .byte ENT_F_ISTEMPORARY | 2; bullet
     .byte ENT_F_ISTEMPORARY | 1; explosion
+    .byte 1 ; fruit
         
 entityTiles:
     .byte 0 ; player
@@ -105,6 +107,8 @@ entityTiles:
     .byte 32*4 + 24 + 1;planet
     .byte 14*2 ; bullet
     .byte 24*2 ; explosion
+    .byte 28*2 ; fruit
+    
     
 entitySpeeds:
     .byte 0 ; player
@@ -141,6 +145,7 @@ entitySpeeds:
     .byte 0 ; planet
     .byte 4 ; bullet
     .byte 0 ; explosion
+    .byte 0 ; fruit
     
 entityInitialAnims:
     .byte ANIM_SMALL_NONE ; player
@@ -177,6 +182,7 @@ entityInitialAnims:
     .byte ANIM_PLANET
     .byte ANIM_ROCKET ; bullet
     .byte ANIM_SYMMETRICAL_OSCILLATE ; explosion
+    .byte ANIM_SMALL_NONE ; fruit
 
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
@@ -624,6 +630,51 @@ EntDieInOneShot subroutine
     ldx sav
 .alive:
     rts
+
+ER_Fruit subroutine
+    lda entityXLo,x
+    sta arg
+    lda entityXHi,x
+    and #ENT_X_POS
+    sta arg+1
+    lda entityYLo,x
+    sta arg+2
+    lda entityYHi,x
+    and #ENT_Y_POS
+    sta arg+3
+    ADD16I arg+2,arg+2,8
+    ADD16I arg,arg,8
+    jsr TestCollision
+    bcc .alive
+    lda #$80
+    sta entityXHi,x
+    jmp ER_Return
+.alive:
+    lda entityCount,x
+    bne .notStart
+    lda #1
+    sta entityCount,x
+    MOV16I arg, sfxCrystal
+    jsr PlaySound
+.notStart:
+    MOV16I arg, 12
+    jsr EntAwayFromPlayerX
+    bcs .DoNothing
+    MOV16I arg, 12
+    jsr EntAwayFromPlayerY
+    bcs .DoNothing
+    lda #$80
+    sta entityXHi,x
+    lda #5
+    sta arg+1
+    lda #0
+    sta arg
+    sta arg+2
+    stx sav
+    jsr AddScore
+    ldx sav
+.DoNothing:
+    jmp ER_Return
 
 ER_Explosion subroutine
     lda entityCount,x

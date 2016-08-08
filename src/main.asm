@@ -388,6 +388,7 @@ LoadLevel subroutine
     ldy levelBanks,x
     lda banktable,y
     sta banktable,y
+    sty currBank
     
     lda currLevel
     asl
@@ -511,6 +512,11 @@ LoadLevel subroutine
     lsr
     stx tmp+2
     tax
+    
+    sty sav
+    PUSH_BANK
+    SELECT_BANK 3
+    
     lda entityFlags,x
     and #ENT_F_CHILDREN
     REPEAT ENT_F_CHILDREN_SHIFT
@@ -521,8 +527,10 @@ LoadLevel subroutine
     tax
     cpx #MAX_ENTITIES
     bcc .noOverflow
-    brk
+    brk    
 .noOverflow:
+    POP_BANK
+    ldy sav
     jmp .entityLoop
 LoadLevel_end:
 
@@ -589,6 +597,7 @@ InitCamera subroutine
 InitCamera_end:
         
 InitEntities subroutine
+    SELECT_BANK 3
     ldy #0
     ldx #0
 .loop:
@@ -678,6 +687,10 @@ ResetStats subroutine
     sta playerFlags
     sta playerYVel
     sta playerYVel+2
+    sta fruitTime
+    sta fruitTime+1
+    sta random
+    sta random+1
     lda currLevel
     cmp #INTRO_LEVEL
     bne .notIntro
@@ -818,7 +831,8 @@ doExit:
     jmp EnterLevel
 .noExit:
 
-    jsr UpdateInput    
+    inc frame
+    jsr UpdateInput
 
 Paused subroutine
     lda paused
@@ -865,7 +879,6 @@ Paused subroutine
 .light
     jsr QColorEffect
     jsr Synchronize
-    inc frame
     jmp MainLoop
 Paused_end:
 
@@ -1439,6 +1452,58 @@ TC_UpdateTile:
     jsr SetTile
 TileInteraction_end:
 
+UpdateFruit subroutine
+    INC16 fruitTime
+    lda entityXHi+FRUIT_INDEX
+    bmi .in
+    CMP16I fruitTime, FRUIT_OUT_TIME
+    JCC UpdateFruit_end
+    lda #$80
+    sta entityXHi+FRUIT_INDEX
+.in:
+    CMP16I fruitTime, FRUIT_IN_TIME
+    JCC UpdateFruit_end
+    lda #0
+    sta fruitTime
+    sta fruitTime+1
+    lda entityXHi+FRUIT_INDEX
+    eor #$80
+    sta entityXHi+FRUIT_INDEX
+    bmi UpdateFruit_end
+    jsr Randomize
+    sta tmp
+    lda #0
+    sta tmp+1
+    ADD16 tmp, tmp, shr_cameraX
+    lda tmp
+    and #$F0
+    sta entityXLo+FRUIT_INDEX
+    lda tmp+1
+    and #3
+    sta entityXHi+FRUIT_INDEX
+    jsr Randomize
+    cmp #MT_VIEWPORT_HEIGHT*PX_MT_HEIGHT
+    bcc .NoAdjust
+    sec
+    sbc #PX_VIEWPORT_OFFSET
+.NoAdjust:
+    sta tmp
+    lda #0
+    sta tmp+1
+    ADD16 tmp, tmp, shr_cameraY
+    lda tmp
+    and #$F0
+    sta entityYLo+FRUIT_INDEX
+    lda tmp+1
+    and #1
+    ora #FRUIT_ID<<1
+    sta entityYHi+FRUIT_INDEX
+    lda #ANIM_SMALL_NONE
+    sta entityAnim+FRUIT_INDEX
+    lda #0
+    sta entityCount+FRUIT_INDEX
+UpdateFruit_end:
+
 ApplyGravity subroutine
     lda playerFlags
     and #PLY_UPSIDEDOWN
@@ -1900,6 +1965,7 @@ UpdatePower subroutine
 UpdatePower_end:
 
 UpdateEntities subroutine
+    SELECT_BANK 3
     ldx #[MAX_ENTITIES-1]
 .loop:
     lda entityXHi,x
@@ -1980,12 +2046,9 @@ ER_Return:
     JMI UpdateEntities_end
     jmp .loop
     
-    include entities.asm
-
 UpdateEntities_end:
 
     jsr UpdateSprites
-    inc frame
     jsr Synchronize
     jmp MainLoop
 
@@ -2190,7 +2253,8 @@ FadeBg subroutine
     stx shr_copyIndex
     rts
 ;------------------------------------------------------------------------------
-UpdateSprites:
+UpdateSprites subroutine
+    PUSH_BANK
     SELECT_BANK 3
     lda playerX
     sta entityXLo+2
@@ -2399,6 +2463,7 @@ UpdateEntitySprites_end
     clc
     adc #21*4
     sta startSprite
+    POP_BANK
     rts
 ;------------------------------------------------------------------------------
 KillPlayer subroutine
@@ -3372,7 +3437,7 @@ UpdateInput subroutine
     sta pressed
     rts
 UpdateInput_end:
-
+;------------------------------------------------------------------------------
 ResetAPU subroutine
     lda #$0F
     sta APU_ENABLE
@@ -3391,3 +3456,22 @@ ResetAPU subroutine
     .byte $30,$00,$00,$00 ;noise
     .byte $00,$00,$00,$00 ;dmc
     .byte $00,$0F,$00,$40 ;ctrl
+;------------------------------------------------------------------------------
+Randomize subroutine
+    lda random
+    ora random+1
+    bne .nonzero
+    lda frame
+    sta random
+    eor #$B4
+    sta random+1
+.nonzero:
+    lda random
+    lsr
+    rol random+1
+    bcc .noeor
+    eor #$B4 
+.noeor
+    sta random
+    eor random+1
+    rts   

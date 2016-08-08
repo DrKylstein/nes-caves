@@ -1,4 +1,5 @@
     include anims.asm
+    include entities.asm
     include sounds.asm
     
 openingHeader:
