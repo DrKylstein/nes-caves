@@ -33,7 +33,9 @@ entityRoutine:
     .word ER_Planet
     .word ER_Bullet
     .word ER_Explosion
-    .word ER_Fruit
+    .word ER_Fruit ;cherry
+    .word ER_Fruit ;strawberry
+    .word ER_Fruit ;peach
     
 entityFlags:
     .byte 1 ; player
@@ -70,7 +72,9 @@ entityFlags:
     .byte 0 ; planet
     .byte ENT_F_ISTEMPORARY | 2; bullet
     .byte ENT_F_ISTEMPORARY | 1; explosion
-    .byte 1 ; fruit
+    .byte 1 ; cherry
+    .byte 1 ; strawberry
+    .byte 1 ; peach
         
 entityTiles:
     .byte 0 ; player
@@ -107,7 +111,9 @@ entityTiles:
     .byte 32*4 + 24 + 1;planet
     .byte 14*2 ; bullet
     .byte 24*2 ; explosion
-    .byte 28*2 ; fruit
+    .byte 28*2 ; cherry
+    .byte 27*2 ; strawberry
+    .byte 29*2 ; peach
     
     
 entitySpeeds:
@@ -145,7 +151,9 @@ entitySpeeds:
     .byte 0 ; planet
     .byte 4 ; bullet
     .byte 0 ; explosion
-    .byte 0 ; fruit
+    .byte 0 ; cherry
+    .byte 0 ; strawberry
+    .byte 0 ; peach
     
 entityInitialAnims:
     .byte ANIM_SMALL_NONE ; player
@@ -182,7 +190,9 @@ entityInitialAnims:
     .byte ANIM_PLANET
     .byte ANIM_ROCKET ; bullet
     .byte ANIM_SYMMETRICAL_OSCILLATE ; explosion
-    .byte ANIM_SMALL_NONE ; fruit
+    .byte ANIM_SYMMETRICAL_NONE ; cherry
+    .byte ANIM_SYMMETRICAL_NONE ; strawberry
+    .byte ANIM_SYMMETRICAL_NONE ; peach
 
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry

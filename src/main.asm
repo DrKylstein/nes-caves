@@ -9,7 +9,6 @@
 
 ;sprites:
 ;falling rocks
-;bonus fruit
 ;hopper -> snake
 ;bird
 ;triceratops-> stalk-eye
@@ -1496,9 +1495,19 @@ UpdateFruit subroutine
     sta entityYLo+FRUIT_INDEX
     lda tmp+1
     and #1
-    ora #FRUIT_ID<<1
     sta entityYHi+FRUIT_INDEX
-    lda #ANIM_SMALL_NONE
+    jsr Randomize
+    and #3
+    cmp #3
+    bne .notpast
+    lda #0
+.notpast
+    clc
+    adc #FRUIT_ID
+    asl
+    ora entityYHi+FRUIT_INDEX
+    sta entityYHi+FRUIT_INDEX
+    lda #ANIM_SYMMETRICAL_NONE
     sta entityAnim+FRUIT_INDEX
     lda #0
     sta entityCount+FRUIT_INDEX
