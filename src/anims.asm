@@ -628,6 +628,6 @@ anim_ball_sleep subroutine
     .word .frame
 .frame:
     .byte 3*OAM_SIZE
-    .byte   0,  0,  0,  0
-    .byte   0,  0,$40,  8
-    .byte -16,  1,  0,  4
+    .byte   0,  8,  0,  0
+    .byte   0,  8,$40,  8
+    .byte -16, 10,  0,  4

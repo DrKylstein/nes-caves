@@ -647,6 +647,54 @@ EntDieInOneShot subroutine
     rts
 
 ER_Ball subroutine
+    jsr EntTryMelee
+    jsr EntIsStrongPlayerNear
+    bcs .Melee
+    jsr EntIsBulletNear
+    bcc .alive
+    lda #$80
+    sta entityXHi
+    lda entityCount,x
+    bmi .Melee
+    lda entityYHi
+    lsr
+    cmp #POWERSHOT_ID
+    bne .alive
+.Melee:
+    lda entityYHi,x
+    and #1
+    ora #EXPLOSION_ID<<1
+    sta entityYHi,x
+    lda #ANIM_SYMMETRICAL_OSCILLATE
+    sta entityAnim,x
+    lda #5
+    sta arg+1
+    lda #0
+    sta arg
+    sta arg+2
+    stx sav
+    jsr AddScore
+    ldx sav
+    jmp ER_Return
+.alive:
+    lda entityCount,x
+    bpl .rolling
+    sec
+    sbc #1
+    sta entityCount,x
+    lda #ANIM_BALL_SLEEP
+    sta entityAnim,x
+    jmp ER_Return
+.rolling:
+    cmp #-127
+    bne .continue
+    lda #30
+    sta entityCount,x
+.continue:
+    sec
+    sbc #1
+    sta entityCount,x
+    jsr EntMoveHorizontally
     jsr EntTestWalkingCollision
     bcc .nohit
     lda entityVelocity,x
@@ -654,17 +702,14 @@ ER_Ball subroutine
     clc
     adc #1
     sta entityVelocity,x
-.nohit
+.nohit:
     lda #ANIM_BALL_RIGHT
     sta entityAnim,x
     lda entityVelocity,x
     bpl .right
     lda #ANIM_BALL_LEFT
     sta entityAnim,x
-.right
-    jsr EntTryMelee
-    jsr EntMoveHorizontally
-    jsr EntDieInOneShot
+.right:
     jmp ER_Return
 
 
