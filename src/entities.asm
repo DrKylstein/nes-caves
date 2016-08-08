@@ -36,6 +36,7 @@ entityRoutine:
     .word ER_Fruit ;cherry
     .word ER_Fruit ;strawberry
     .word ER_Fruit ;peach
+    .word ER_Ball
     
 entityFlags:
     .byte 1 ; player
@@ -75,6 +76,7 @@ entityFlags:
     .byte 1 ; cherry
     .byte 1 ; strawberry
     .byte 1 ; peach
+    .byte 2 ; ball
         
 entityTiles:
     .byte 0 ; player
@@ -114,6 +116,7 @@ entityTiles:
     .byte 28*2 ; cherry
     .byte 27*2 ; strawberry
     .byte 29*2 ; peach
+    .byte [19+32*3]*2 ; ball
     
     
 entitySpeeds:
@@ -154,6 +157,7 @@ entitySpeeds:
     .byte 0 ; cherry
     .byte 0 ; strawberry
     .byte 0 ; peach
+    .byte 2 ; ball
     
 entityInitialAnims:
     .byte ANIM_SMALL_NONE ; player
@@ -193,6 +197,7 @@ entityInitialAnims:
     .byte ANIM_SYMMETRICAL_NONE ; cherry
     .byte ANIM_SYMMETRICAL_NONE ; strawberry
     .byte ANIM_SYMMETRICAL_NONE ; peach
+    .byte ANIM_BALL_RIGHT
 
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
@@ -495,7 +500,7 @@ EntTestWalkingCollision subroutine
     bcs .hit
     ADD16I arg+2,sav+2,8
     MOV16 arg,sav
-    jsr TestCollision
+    jsr TestCollisionTop
     bcc .hit
     jmp .nohit
 .hit:
@@ -640,6 +645,28 @@ EntDieInOneShot subroutine
     ldx sav
 .alive:
     rts
+
+ER_Ball subroutine
+    jsr EntTestWalkingCollision
+    bcc .nohit
+    lda entityVelocity,x
+    eor #$FF
+    clc
+    adc #1
+    sta entityVelocity,x
+.nohit
+    lda #ANIM_BALL_RIGHT
+    sta entityAnim,x
+    lda entityVelocity,x
+    bpl .right
+    lda #ANIM_BALL_LEFT
+    sta entityAnim,x
+.right
+    jsr EntTryMelee
+    jsr EntMoveHorizontally
+    jsr EntDieInOneShot
+    jmp ER_Return
+
 
 ER_Fruit subroutine
     lda entityXLo,x

@@ -68,6 +68,9 @@ animations:
     .word anim_smallHVNone
     .word anim_kiwi
     .word anim_hammer
+    .word anim_ball_right
+    .word anim_ball_left
+    .word anim_ball_sleep
     
 frame_small1:
     .byte 8
@@ -598,3 +601,33 @@ anim_hammer subroutine
     .byte   0, 66,  0,  4
     .byte   0, 64,$40, 12
     
+anim_ball_right subroutine
+    .byte 3
+    .word frame_small1
+    .word frame_small2
+    .word frame_smallHV1
+    .word .frame4
+.frame4:
+    .byte 2*OAM_SIZE
+    .byte   0,  6,$C0,  0
+    .byte   0,  4,$C0,  8
+    
+anim_ball_left subroutine
+    .byte 3
+    .word frame_smallHFlip1
+    .word frame_smallHFlip2
+    .word frame_smallVFlip1
+    .word .frame4
+.frame4:
+    .byte 2*OAM_SIZE
+    .byte   0,  4,$80,  0
+    .byte   0,  6,$80,  8
+    
+anim_ball_sleep subroutine
+    .byte 0
+    .word .frame
+.frame:
+    .byte 3*OAM_SIZE
+    .byte   0,  0,  0,  0
+    .byte   0,  0,$40,  8
+    .byte -16,  1,  0,  4

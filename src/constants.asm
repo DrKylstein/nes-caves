@@ -299,3 +299,6 @@ ANIM_SMALL_VFLIP_NONE       ds 1
 ANIM_SMALL_HV_NONE          ds 1
 ANIM_KIWI                   ds 1
 ANIM_HAMMER                 ds 1
+ANIM_BALL_RIGHT             ds 1
+ANIM_BALL_LEFT              ds 1
+ANIM_BALL_SLEEP             ds 1
