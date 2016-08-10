@@ -9,10 +9,9 @@ textTiles:
     incbin tileset05.pat
 textPalette:
     incbin paltx.pal
-hud:
-	incbin hud.bin
 globalTiles:
     incbin sprites.pat
+globalBgTiles:
     incbin tileset00.pat
 palettes:
 ;global

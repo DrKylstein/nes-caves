@@ -5,32 +5,34 @@
 ;no slime direction changes
 ;no rex chasing
 ;intro animation incorrect
+;rolling enemy doesn't shoot, timing could be better
 
 ;sprites:
-;falling rocks
 ;hopper -> snake
-;bird
+;flying alien wrench
 ;triceratops-> stalk-eye
-;rolling enemy
+;falling sign
+;hidden crystal
+;falling rocks
+;bird
 ;walker -> robot
 ;wall snake
-;flying alien wrench
-;hidden crystal
-;falling sign
-
-;low gravity
 ;moving cannon
+
 ;more sounds
 ;-pickups
 ;-bullet impacts
 ;-flames
-;death animations
+;shoot/just fired animation
+;death animation
 ;ending
-;enter animation
 ;message screens during game
+;low gravity
+;enter animation
 
 ;???
 ;specify pitch envelopes in semitones
+;double up channels so that long notes can resume after very short ones
 ;orbiting moon on map -- allow entities to switch between upper and lower 32?
 ;music
 ;full dump independent of nmi for brk handler?
@@ -135,7 +137,7 @@ LoadTitle subroutine
 LoadTitle_end:
 
 DoTitleScreen subroutine
-    jsr QEnableDisplay
+    jsr QEnableStaticDisplay
     MOV16I arg+2, titlePalette
     jsr FadeInBg
     jsr WaitForPress
@@ -147,124 +149,6 @@ DoTitleScreen subroutine
     jsr Synchronize
 DoTitleScreen_end:
 
-LoadOpening subroutine
-    SELECT_BANK 0
-    MOV16I arg, textTiles
-    SET_PPU_ADDR VRAM_PATTERN_R
-    ldx #8
-    jsr PagesToPPU
-LoadOpening_end
-    
-    
-DoOpeningText subroutine
-    jsr ClearNameTable
-    
-    SET_PPU_ADDR [VRAM_NAME_UL + 32*3]
-    lda #2
-    sta PPU_DATA
-    lda #3
-    ldx #29
-.topbar:
-    sta PPU_DATA
-    dex
-    bne .topbar
-    lda #4
-    sta PPU_DATA
-    
-    
-    SET_PPU_ADDR [VRAM_NAME_UL + 32*22]
-    lda #7
-    sta PPU_DATA
-    lda #8
-    ldx #29
-.bottombar:
-    sta PPU_DATA
-    dex
-    bne .bottombar
-    lda #9
-    sta PPU_DATA
-    
-    SET_PPU_ADDR [VRAM_NAME_UL + 32*23 + 1]
-    lda #1
-    ldx #30
-.bottomshadow:
-    sta PPU_DATA
-    dex
-    bne .bottomshadow
-    
-    
-    SET_PPU_ADDR [VRAM_NAME_UL + 32*4]
-    lda #PPU_CTRL_SETTING | %100
-    sta PPU_CTRL
-    lda #5
-    ldx #18
-.leftbar:
-    sta PPU_DATA
-    dex
-    bne .leftbar
-    
-    SET_PPU_ADDR [VRAM_NAME_UL + 32*4 + 30]
-    lda #6
-    ldx #18
-.rightbar:
-    sta PPU_DATA
-    dex
-    bne .rightbar
-    
-    SET_PPU_ADDR [VRAM_NAME_UL + 32*4 + 31]
-    lda #1
-    ldx #20
-.rightshadow:
-    sta PPU_DATA
-    dex
-    bne .rightshadow
-    
-    lda #PPU_CTRL_SETTING
-    sta PPU_CTRL
-    
-    SELECT_BANK 3
-    MOV16I arg,openingHeader
-    MOV16I arg+2,[VRAM_NAME_UL + 32*5 + TEXT_MARGIN]
-    jsr Print
-    MOV16I arg,pressAnyKey
-    MOV16I arg+2,[VRAM_NAME_UL + 32*20 + TEXT_MARGIN + 7]
-    jsr Print
-    MOV16I arg,openingText
-    MOV16I arg+2,[VRAM_NAME_UL + 32*8 + TEXT_MARGIN]
-    jsr Print
-    MOV16 sav,arg
-
-    MOV16I arg+2,textPalette
-    SELECT_BANK 0
-    jsr QEnableDisplay
-    jsr FadeInBg
-    jsr WaitForPress
-    
-.loop:
-    jsr QDisableDisplay
-    jsr Synchronize
-    jsr ClearBox
-    SELECT_BANK 3
-    MOV16I arg+2,[VRAM_NAME_UL + 32*7 + TEXT_MARGIN]
-    MOV16 arg,sav
-    jsr Print
-    MOV16 sav,arg
-    jsr QEnableDisplay
-    jsr Synchronize
-    jsr WaitForPress
-    ldy #0
-    lda (sav),y
-    cmp #"@"
-    bne .loop
-        
-    SELECT_BANK 0
-    MOV16I arg+2, textPalette
-    jsr FadeOutBg
-    jsr QDisableDisplay
-    jsr Synchronize
-DoOpeningText_end:
-
-
 LoadPatterns subroutine
     MOV16I arg, globalTiles
     SET_PPU_ADDR VRAM_PATTERN_L
@@ -272,32 +156,6 @@ LoadPatterns subroutine
     jsr PagesToPPU
 LoadPatterns_end:
 
-InitNametables subroutine
-    SELECT_BANK 0
-    ldy #$A0
-    SET_PPU_ADDR VRAM_NAME_UL
-.clear_upper
-    sta PPU_DATA
-    dey
-    bne .clear_upper
-
-    ldy #$00
-    SET_PPU_ADDR VRAM_NAME_UL
-.load_hud
-    lda hud,y
-    sta PPU_DATA
-    iny
-    cpy #$80
-    bne .load_hud
-
-    SET_PPU_ADDR VRAM_ATTRIB_UL
-.load_hud_attr
-    lda hud,y
-    sta PPU_DATA
-    iny
-    cpy #$88
-    bne .load_hud_attr
-    
     ;set sprite 0 for status bar
 InitSprites subroutine
     ldy #0
@@ -552,8 +410,7 @@ LoadMapState subroutine
     MOV16 playerY, mapPY
 LoadMapState_end:
 
-    jsr UpdateAmmoDisplay
-    jsr UpdateScoreDisplay
+    jsr InitHUD
 
 InitCamera subroutine
     SUB16I shr_cameraX,playerX,128
@@ -703,109 +560,7 @@ ResetStats subroutine
     MOV16I musicSequence+2,testBassSequence
 ResetStats_end:
 
-
-LoadNametables subroutine
-    MOV16 arg, shr_cameraX
-    REPEAT 4
-    LSR16 arg
-    REPEND
-    jsr MultiplyBy24
-    ADD16I sav, ret, levelMap
-    ldy #0
-    MOV16 sav+2, shr_cameraX
-    REPEAT 3
-    LSR16 sav+2
-    REPEND
-        
-.loop:
-    ;args to buffer column    
-    MOV16 arg, sav
-    tya
-    clc
-    adc arg
-    sta arg
-    lda #0
-    adc arg+1
-    sta arg+1
-    tya
-    asl
-    clc
-    adc sav+2
-    and #$1F
-    sta arg+2
-    tya
-    pha
-    jsr EvenColumn
-    jsr CopyTileCol     ;terribly unsafe
-    pla
-    tay
-    
-    MOV16 arg, sav
-    tya
-    clc
-    adc arg
-    sta arg
-    lda #0
-    adc arg+1
-    sta arg+1
-    tya
-    asl
-    sec
-    adc #0
-    adc sav+2
-    and #$1F
-    sta arg+2
-    tya
-    pha
-    jsr OddColumn
-    jsr CopyTileCol     ;ditto
-    pla
-    tay
-    
-    iny
-    ADD16I sav, sav, 23
-    cpy #16
-    bne .loop
-LoadNametables_end:
-
-InitAttributes subroutine
-    MOV16 arg, shr_cameraX
-    REPEAT 4
-    LSR16 arg
-    REPEND
-    jsr MultiplyBy24
-    ADD16I arg, ret, levelMap
-    lda shr_cameraX
-    REPEAT 5
-    lsr
-    REPEND
-    sta sav+3
-    ldy #0
-.loop:
-    tya
-    clc
-    adc sav+3
-    and #7
-    asl
-    asl
-    sta shr_tileCol
-    sty sav+2
-    jsr ColorColumn
-    jsr CopyAttrCol
-    ldy sav+2
-    lda arg
-    clc
-    adc #MT_MAP_HEIGHT*2
-    sta arg
-    lda arg+1
-    adc #0
-    sta arg+1
-    iny
-    cpy #8
-    bne .loop
-InitAttributes_end:
-
-    jsr LoadTilesOnMoveLeft
+    jsr InitialDrawLevel
 
 ReenableDisplay subroutine
     jsr QEnableSplitDisplay
@@ -2062,9 +1817,9 @@ UpdateEntities_end:
 
 ;------------------------------------------------------------------------------
 ClearBox subroutine
-    SET_PPU_ADDR [VRAM_NAME_UL + 32*8 + TEXT_MARGIN]
+    SET_PPU_ADDR [VRAM_NAME_UL + 32*5 + TEXT_MARGIN]
     lda #" "
-    ldy #11
+    ldy #14
 .outerloop:
     ldx #29
 .loop:
@@ -3361,11 +3116,11 @@ QDisableDisplay subroutine
     stx shr_copyIndex
     rts
 ;------------------------------------------------------------------------------
-QEnableDisplay subroutine
+QEnableStaticDisplay subroutine
     ldx shr_copyIndex
     lda #1
     PHXA
-    lda #PPU_MASK_SETTING | %00000010
+    lda #[PPU_MASK_SETTING | %00000010] & %11101111
     PHXA
     ENQUEUE_ROUTINE nmi_UpdateMask
     ENQUEUE_PPU_ADDR $0000
@@ -3482,4 +3237,281 @@ Randomize subroutine
 .noeor
     sta random
     eor random+1
-    rts   
+    rts 
+    
+;------------------------------------------------------------------------------
+InitHUD subroutine
+    SELECT_BANK 0
+    ldy #$A0
+    SET_PPU_ADDR VRAM_NAME_UL
+    lda #$10
+.clear_upper
+    sta PPU_DATA
+    dey
+    bne .clear_upper
+
+    ldy #0
+    SET_PPU_ADDR VRAM_ATTRIB_UL
+    lda #%11111111
+.load_hud_attr
+    sta PPU_DATA
+    iny
+    cpy #8
+    bne .load_hud_attr
+    
+    SET_PPU_ADDR [VRAM_NAME_UL+100]
+    lda #$12
+    sta PPU_DATA
+    
+    SET_PPU_ADDR [VRAM_NAME_UL+107]
+    lda #0
+    sta PPU_DATA
+    
+    SET_PPU_ADDR [VRAM_NAME_UL+111]
+    lda #$13
+    sta PPU_DATA
+    jsr UpdateAmmoDisplay
+    jmp UpdateScoreDisplay
+;------------------------------------------------------------------------------
+InitialDrawLevel subroutine
+    MOV16 arg, shr_cameraX
+    REPEAT 4
+    LSR16 arg
+    REPEND
+    jsr MultiplyBy24
+    ADD16I sav, ret, levelMap
+    ldy #0
+    MOV16 sav+2, shr_cameraX
+    REPEAT 3
+    LSR16 sav+2
+    REPEND
+        
+.loop:
+    ;args to buffer column    
+    MOV16 arg, sav
+    tya
+    clc
+    adc arg
+    sta arg
+    lda #0
+    adc arg+1
+    sta arg+1
+    tya
+    asl
+    clc
+    adc sav+2
+    and #$1F
+    sta arg+2
+    tya
+    pha
+    jsr EvenColumn
+    jsr CopyTileCol     ;terribly unsafe
+    pla
+    tay
+    
+    MOV16 arg, sav
+    tya
+    clc
+    adc arg
+    sta arg
+    lda #0
+    adc arg+1
+    sta arg+1
+    tya
+    asl
+    sec
+    adc #0
+    adc sav+2
+    and #$1F
+    sta arg+2
+    tya
+    pha
+    jsr OddColumn
+    jsr CopyTileCol     ;ditto
+    pla
+    tay
+    
+    iny
+    ADD16I sav, sav, 23
+    cpy #16
+    bne .loop
+LoadNametables_end:
+
+InitAttributes subroutine
+    MOV16 arg, shr_cameraX
+    REPEAT 4
+    LSR16 arg
+    REPEND
+    jsr MultiplyBy24
+    ADD16I arg, ret, levelMap
+    lda shr_cameraX
+    REPEAT 5
+    lsr
+    REPEND
+    sta sav+3
+    ldy #0
+.loop:
+    tya
+    clc
+    adc sav+3
+    and #7
+    asl
+    asl
+    sta shr_tileCol
+    sty sav+2
+    jsr ColorColumn
+    jsr CopyAttrCol
+    ldy sav+2
+    lda arg
+    clc
+    adc #MT_MAP_HEIGHT*2
+    sta arg
+    lda arg+1
+    adc #0
+    sta arg+1
+    iny
+    cpy #8
+    bne .loop
+InitAttributes_end:
+    jmp LoadTilesOnMoveLeft
+
+;------------------------------------------------------------------------------
+MessageBox subroutine
+    PUSH_BANK
+    PUSH16 sav
+    MOV16 sav,arg
+    
+    jsr QDisableDisplay
+    jsr Synchronize
+    SELECT_BANK 0
+    MOV16I arg, textTiles
+    SET_PPU_ADDR VRAM_PATTERN_R
+    ldx #8
+    jsr PagesToPPU
+    
+    jsr ClearNameTable
+    
+    SET_PPU_ADDR [VRAM_NAME_UL + 32*3]
+    lda #2
+    sta PPU_DATA
+    lda #3
+    ldx #29
+.topbar:
+    sta PPU_DATA
+    dex
+    bne .topbar
+    lda #4
+    sta PPU_DATA
+    
+    
+    SET_PPU_ADDR [VRAM_NAME_UL + 32*22]
+    lda #7
+    sta PPU_DATA
+    lda #8
+    ldx #29
+.bottombar:
+    sta PPU_DATA
+    dex
+    bne .bottombar
+    lda #9
+    sta PPU_DATA
+    
+    SET_PPU_ADDR [VRAM_NAME_UL + 32*23 + 1]
+    lda #1
+    ldx #30
+.bottomshadow:
+    sta PPU_DATA
+    dex
+    bne .bottomshadow
+    
+    
+    SET_PPU_ADDR [VRAM_NAME_UL + 32*4]
+    lda #PPU_CTRL_SETTING | %100
+    sta PPU_CTRL
+    lda #5
+    ldx #18
+.leftbar:
+    sta PPU_DATA
+    dex
+    bne .leftbar
+    
+    SET_PPU_ADDR [VRAM_NAME_UL + 32*4 + 30]
+    lda #6
+    ldx #18
+.rightbar:
+    sta PPU_DATA
+    dex
+    bne .rightbar
+    
+    SET_PPU_ADDR [VRAM_NAME_UL + 32*4 + 31]
+    lda #1
+    ldx #20
+.rightshadow:
+    sta PPU_DATA
+    dex
+    bne .rightshadow
+    
+    lda #PPU_CTRL_SETTING
+    sta PPU_CTRL
+    
+    SELECT_BANK 3
+    MOV16 arg,sav
+    MOV16I arg+2,[VRAM_NAME_UL + 32*5 + TEXT_MARGIN]
+    jsr Print
+    MOV16 sav,arg
+    MOV16I arg,pressAnyKey
+    MOV16I arg+2,[VRAM_NAME_UL + 32*20 + TEXT_MARGIN + 7]
+    jsr Print
+
+    SELECT_BANK 0
+    jsr QEnableStaticDisplay
+    lda #0
+    sta arg
+    sta arg+1
+    MOV16I arg+2,textPalette
+    jsr FadeBg
+    jsr Synchronize
+    jsr WaitForPress
+    
+    SELECT_BANK 3
+    ldy #0
+    lda (sav),y
+    cmp #"@"
+    beq .exit
+    
+.loop:
+    jsr QDisableDisplay
+    jsr Synchronize
+    jsr ClearBox
+    MOV16I arg+2,[VRAM_NAME_UL + 32*5 + TEXT_MARGIN]
+    MOV16 arg,sav
+    jsr Print
+    MOV16 sav,arg
+    jsr QEnableStaticDisplay
+    jsr Synchronize
+    jsr WaitForPress
+    ldy #0
+    lda (sav),y
+    cmp #"@"
+    bne .loop
+
+.exit:
+    jsr QDisableDisplay
+    jsr Synchronize
+    
+    SELECT_BANK 0
+    MOV16I arg, globalBgTiles
+    SET_PPU_ADDR VRAM_PATTERN_R
+    ldx #8
+    jsr PagesToPPU
+    
+    jsr InitHUD
+    jsr InitialDrawLevel
+    jsr QEnableSplitDisplay
+    lda #0
+    sta arg
+    jsr Fade
+    
+    POP16 sav
+    POP_BANK
+    rts

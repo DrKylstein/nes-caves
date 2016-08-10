@@ -771,6 +771,15 @@ ER_Explosion subroutine
     jmp ER_Return
 
 ER_Player subroutine
+    lda entityCount,x
+    cmp #250
+    bne .nodialog
+    stx sav
+    MOV16I arg,openingText
+    jsr MessageBox
+    ldx sav
+.nodialog:
+    
     lda playerFlags
     and #PLY_LOCKED
     beq .end
@@ -1253,6 +1262,10 @@ ER_Bullet subroutine
     lda ret
     cmp #TB_AIR
     bne .notAir
+    stx sav
+    MOV16I arg,airMsg
+    jsr MessageBox
+    ldx sav
     jsr KillPlayer
 .notAir:
     cmp #TB_SOLID
