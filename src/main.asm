@@ -26,7 +26,8 @@
 ;shoot/just fired animation
 ;death animation
 ;ending
-;message screens during game
+;pause menu
+;hints?
 ;low gravity
 ;enter animation
 
@@ -411,45 +412,7 @@ LoadMapState subroutine
 LoadMapState_end:
 
     jsr InitHUD
-
-InitCamera subroutine
-    SUB16I shr_cameraX,playerX,128
-    lda shr_cameraX+1
-    bpl .notOffLeft
-    MOV16I shr_cameraX,0
-.notOffLeft:
-    CMP16I shr_cameraX,[640-256-8]
-    bcc .notOffRight
-    MOV16I shr_cameraX,[640-256-8]
-.notOffRight:
-    
-    SUB16I shr_cameraY,playerY,104
-    lda shr_cameraY+1
-    bpl .notOffTop
-    MOV16I shr_cameraY,0
-.notOffTop:
-    CMP16I shr_cameraY,[384-208]
-    bcc .notOffBottom
-    MOV16I shr_cameraY,[384-208]
-.notOffBottom:
-    lda #0
-    sta shr_nameTable
-    ADD16I tmp,shr_cameraY,96
-    lda tmp
-    sta shr_cameraYMod
-    CMP16I tmp,240
-    bcc .notLow
-    lda #$08
-    sta shr_nameTable
-    SUB16I tmp,tmp,240
-    lda tmp
-    sta shr_cameraYMod
-.notLow:
-    lda shr_cameraX
-    and #$E0
-    sta shr_cameraX
-
-InitCamera_end:
+    jsr ResetCamera
         
 InitEntities subroutine
     SELECT_BANK 3
@@ -996,6 +959,21 @@ walkOut:
     sta arg+3
     sta arg+4
     jsr SetTile
+    
+    lda hp
+    cmp #3
+    bne .noBonus
+    MOV16I arg,perfectHealthMsg
+    jsr MessageBox
+    lda #50
+    sta arg+1
+    lda #0
+    sta arg
+    sta arg+2
+    jsr Synchronize
+    jsr AddScore
+.noBonus:
+    
     jmp TC_Return
 TC_Exit_end:
 
@@ -3374,7 +3352,44 @@ InitAttributes subroutine
     bne .loop
 InitAttributes_end:
     jmp LoadTilesOnMoveLeft
-
+;------------------------------------------------------------------------------
+ResetCamera subroutine
+    SUB16I shr_cameraX,playerX,128
+    lda shr_cameraX+1
+    bpl .notOffLeft
+    MOV16I shr_cameraX,0
+.notOffLeft:
+    CMP16I shr_cameraX,[640-256-8]
+    bcc .notOffRight
+    MOV16I shr_cameraX,[640-256-8]
+.notOffRight:
+    
+    SUB16I shr_cameraY,playerY,104
+    lda shr_cameraY+1
+    bpl .notOffTop
+    MOV16I shr_cameraY,0
+.notOffTop:
+    CMP16I shr_cameraY,[384-208]
+    bcc .notOffBottom
+    MOV16I shr_cameraY,[384-208]
+.notOffBottom:
+    lda #0
+    sta shr_nameTable
+    ADD16I tmp,shr_cameraY,96
+    lda tmp
+    sta shr_cameraYMod
+    CMP16I tmp,240
+    bcc .notLow
+    lda #$08
+    sta shr_nameTable
+    SUB16I tmp,tmp,240
+    lda tmp
+    sta shr_cameraYMod
+.notLow:
+    lda shr_cameraX
+    and #$E0
+    sta shr_cameraX
+    rts
 ;------------------------------------------------------------------------------
 MessageBox subroutine
     PUSH_BANK
@@ -3506,6 +3521,7 @@ MessageBox subroutine
     jsr PagesToPPU
     
     jsr InitHUD
+    jsr ResetCamera
     jsr InitialDrawLevel
     jsr QEnableSplitDisplay
     lda #0
