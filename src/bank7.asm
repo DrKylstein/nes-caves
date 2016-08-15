@@ -107,3 +107,23 @@ levelPalettes:
     .word volcanoPal
     .word minePal
     .word minePal
+    
+levelMusic:
+    .word testSong
+    .word testSong
+    .word testSong
+    .word testSong
+    .word testSong    
+    .word testSong
+    .word testSong
+    .word testSong
+    .word testSong
+    .word testSong
+    .word testSong
+    .word testSong
+    .word testSong
+    .word testSong
+    .word testSong
+    .word testSong
+    .word testSong
+    .word nullSong

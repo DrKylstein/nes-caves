@@ -519,8 +519,22 @@ ResetStats subroutine
 .notIntro:
     lda #12
     sta tempo
-    MOV16I musicSequence,testDrumSequence
-    MOV16I musicSequence+2,testBassSequence
+    lda currLevel
+    asl
+    tax
+    lda levelMusic,x
+    sta tmp
+    lda levelMusic+1,x
+    sta tmp+1
+    ldy #0
+.loopSequences:
+    lda (tmp),y
+    sta musicSequence,y
+    lda #0
+    sta musicIndex,y
+    iny
+    cpy #8
+    bne .loopSequences
 ResetStats_end:
 
     jsr InitialDrawLevel

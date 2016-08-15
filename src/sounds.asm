@@ -257,6 +257,17 @@ LoadSfx subroutine ; uses tmp as argument
 ;------------------------------------------------------------------------------
 ; Sound Data
 ;------------------------------------------------------------------------------
+nullSong subroutine
+    .word 0
+    .word 0
+    .word 0
+    .word 0
+
+testSong subroutine
+    .word 0
+    .word 0
+    .word testBassSequence
+    .word testDrumSequence
 
 testDrumSequence subroutine
     .word .pat2
