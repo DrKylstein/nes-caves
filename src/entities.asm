@@ -70,7 +70,7 @@ entityFlags:
     .byte 3 ;pipe left
     .byte 1 ;torch
     .byte 0 ;spike
-    .byte 0 ; planet
+    .byte ENT_F_SKIPXTEST | 0 ; planet
     .byte ENT_F_ISTEMPORARY | 2; bullet
     .byte ENT_F_ISTEMPORARY | 1; explosion
     .byte 1 ; cherry

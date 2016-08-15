@@ -3180,7 +3180,7 @@ UpdateInput subroutine
 UpdateInput_end:
 ;------------------------------------------------------------------------------
 ResetAPU subroutine
-    lda #$0F
+    lda #$00
     sta APU_ENABLE
     ldy #0
 .loop:  
@@ -3189,6 +3189,8 @@ ResetAPU subroutine
     iny
     cpy #$18
     bne .loop
+    lda #$0F
+    sta APU_ENABLE
     rts
 .regs:
     .byte $30,$08,$00,$00 ;sq1
@@ -3396,6 +3398,7 @@ MessageBox subroutine
     PUSH16 sav
     MOV16 sav,arg
     
+    jsr ResetAPU
     jsr QDisableDisplay
     jsr Synchronize
     SELECT_BANK 0
