@@ -380,8 +380,6 @@ bass subroutine
     .word 0
     .word TRI_END
 
-sfxHeavyImpact:
-    .word $713
 bassDrum subroutine
     .byte NOISE_CH
     .byte 0
@@ -391,20 +389,20 @@ bassDrum subroutine
     .word .tri
     .byte -1
 .noise:
-    .byte $3F, $00
-    .byte $3E, $00
-    .byte $3D, $00
-    .byte $3C, $00
-    .byte $3B, $00
-    .byte $3A, $00
-    .byte $39, $00
-    .byte $38, $00
+    .byte $37, $00
     .byte $37, $00
     .byte $36, $00
+    .byte $36, $00
+    .byte $35, $00
     .byte $35, $00
     .byte $34, $00
+    .byte $34, $00
+    .byte $33, $00
     .byte $33, $00
     .byte $32, $00
+    .byte $32, $00
+    .byte $31, $00
+    .byte $31, $00
     .byte $31, $00
     .byte $30, $00
     .byte 0
@@ -413,7 +411,7 @@ bassDrum subroutine
     .word 8
     .word 4
     .word TRI_END
-
+    
 snareDrum subroutine
     .byte NOISE_CH
     .byte 0
@@ -423,20 +421,20 @@ snareDrum subroutine
     .word .tri
     .byte -1
 .noise:
-    .byte $3F, $08
-    .byte $3E, $08
-    .byte $3D, $08
-    .byte $3C, $08
-    .byte $3B, $08
-    .byte $3A, $08
-    .byte $39, $08
-    .byte $38, $08
+    .byte $37, $08
     .byte $37, $08
     .byte $36, $08
+    .byte $36, $08
+    .byte $35, $08
     .byte $35, $08
     .byte $34, $08
+    .byte $34, $08
+    .byte $33, $08
     .byte $33, $08
     .byte $32, $08
+    .byte $32, $08
+    .byte $31, $08
+    .byte $31, $08
     .byte $31, $08
     .byte $30, $08
     .byte 0
@@ -471,6 +469,41 @@ hihat subroutine
     .byte $33, $0F
     .byte 0
 
+sfxHeavyImpact subroutine
+    .word $713
+    .byte NOISE_CH
+    .byte 0
+    .word .noise
+    .byte TRI_CH
+    .byte 0
+    .word .tri
+    .byte -1
+.noise:
+    .byte $3F, $00
+    .byte $3E, $00
+    .byte $3D, $00
+    .byte $3C, $00
+    .byte $3B, $00
+    .byte $3A, $00
+    .byte $39, $00
+    .byte $38, $00
+    .byte $37, $00
+    .byte $36, $00
+    .byte $35, $00
+    .byte $34, $00
+    .byte $33, $00
+    .byte $32, $00
+    .byte $31, $00
+    .byte $30, $00
+    .byte 0
+.tri:
+    .word 16
+    .word 12
+    .word 8
+    .word 6
+    .word 4
+    .word 2
+    .word TRI_END
 
 sfxLaser subroutine
     .word 0 ;note
