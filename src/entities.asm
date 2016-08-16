@@ -1605,6 +1605,27 @@ ER_Cart subroutine
 
 
 ER_SlimeHorizontal subroutine
+    lda #ANIM_SLIME_RIGHT
+    sta entityAnim,x
+    lda entityVelocity,x
+    bpl .notLeft
+    lda #ANIM_SLIME_LEFT
+    sta entityAnim,x
+.notLeft:
+    jsr Randomize
+    bne .noRotate
+    lda entityYHi,x
+    clc
+    adc #2
+    sta entityYHi,x
+    lda entityXLo,y
+    and #~15
+    sta entityXLo,y
+    jmp .end
+.noRotate:
+    jsr Randomize
+    beq .hit
+    
     jsr EntTestFlyingCollision
     bcs .hit
     jmp .nohit
@@ -1614,12 +1635,35 @@ ER_SlimeHorizontal subroutine
     clc
     adc #1
     sta entityVelocity,x
-.nohit
+.nohit:
     jsr EntMoveHorizontally
+.end:
     jsr EntTryMelee
     jsr EntDieInOneShot
     jmp ER_Return
+    
 ER_SlimeVertical subroutine
+    lda #ANIM_SLIME_DOWN
+    sta entityAnim,x
+    lda entityVelocity,x
+    bpl .notUp
+    lda #ANIM_SLIME_UP
+    sta entityAnim,x
+.notUp:
+    jsr Randomize
+    bne .noRotate
+    lda entityYHi,x
+    sec
+    sbc #2
+    sta entityYHi,x
+    lda entityYLo,x
+    and #~15
+    sta entityYLo,x
+    jmp .end
+.noRotate:
+    jsr Randomize
+    beq .hit
+    
     jsr EntTestVerticalCollision
     bcs .hit
     jmp .nohit
@@ -1629,8 +1673,9 @@ ER_SlimeVertical subroutine
     clc
     adc #1
     sta entityVelocity,x
-.nohit
+.nohit:
     jsr EntMoveVertically
+.end:
     jsr EntTryMelee
     jsr EntDieInOneShot
     jmp ER_Return

@@ -185,12 +185,12 @@ anim_slime_down subroutine
     .word frame_small1
     .word frame_smallHFlip1
     
-anim_slime_left subroutine
+anim_slime_right subroutine
     .byte 1
     .word frame_small1
     .word frame_smallVFlip1
     
-anim_slime_right subroutine
+anim_slime_left subroutine
     .byte 1
     .word frame_smallHFlip1
     .word frame_smallHV1

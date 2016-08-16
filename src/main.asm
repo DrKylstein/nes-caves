@@ -2,7 +2,6 @@
 ; MAIN THREAD
 ;------------------------------------------------------------------------------
 ;issues:
-;no slime direction changes
 ;no rex chasing
 ;intro animation incorrect
 ;rolling enemy doesn't shoot, timing could be better
