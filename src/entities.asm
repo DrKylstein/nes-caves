@@ -221,10 +221,22 @@ EntAwayFromPlayerY subroutine ; distance in arg 0-1, result in carry
     ABS16 tmp,tmp
     CMP16 tmp,arg
     rts
+    
+EntTallAwayFromPlayerY subroutine ; distance in arg 0-1, result in carry
+    lda entityYLo,x
+    sta tmp
+    lda entityYHi,x
+    and #ENT_Y_POS
+    sta tmp+1
+    SUB16I tmp, tmp, 8
+    SUB16 tmp,tmp,playerY
+    ABS16 tmp,tmp
+    CMP16 tmp,arg
+    rts
 
 EntMoveHorizontally subroutine
     lda entityVelocity,x
-    NMOS_ASR
+    ASR65
     sta tmp
     EXTEND tmp, tmp
     lda frame
@@ -253,7 +265,7 @@ EntMoveHorizontally subroutine
     
 EntMoveVertically subroutine
     lda entityVelocity,x
-    NMOS_ASR
+    ASR65
     sta tmp
     EXTEND tmp, tmp
     lda frame
@@ -1412,13 +1424,45 @@ ER_Bat subroutine
 
 
 ER_Rex subroutine
+    MOV16I arg,16
+    jsr EntTallAwayFromPlayerY
+    bcs .noChase
+    lda entityXLo,x
+    sta tmp
+    lda entityXHi,x
+    and #ENT_X_POS
+    sta tmp+1
+    lda entityVelocity,x
+    bmi .chaseLeft
+.chaseRight:
+    CMP16 tmp, playerX
+    bcs .noChase
+    lda #2
+    sta entityVelocity,x
+    jmp .continue
+.chaseLeft:
+    CMP16 tmp, playerX
+    bcc .noChase
+    lda #-2
+    sta entityVelocity,x
+    jmp .continue
+.noChase:
+
+.continue:
     jsr EntTestWalkingCollision
     bcc .nohit
     lda entityVelocity,x
     eor #$FF
     clc
     adc #1
+    cmp #1
+    beq .noshift
+    cmp #-1
+    beq .noshift
+    ASR65
+.noshift:
     sta entityVelocity,x
+    
 .nohit:
     lda #ANIM_REX
     sta entityAnim,x

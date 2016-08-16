@@ -208,15 +208,17 @@
     jmp .loop
     ENDM
 
-    MAC NMOS_ASR ; synthetic asr
+    MAC ASR65 ; synthetic asr
+    ;round towards zero, not negative infinity
     cmp #$FF
     bne .noTruncate
     lda #0
 .noTruncate:
+    ;actual shift here
     cmp #$80
     ror
-    ENDM    
-            
+    ENDM
+
     MAC PHXA ;push A onto software stack in $100:X
     sta $100,x
     dex
