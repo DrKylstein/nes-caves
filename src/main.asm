@@ -7,7 +7,6 @@
 
 ;sprites:
 ;hopper -> snake
-;flying alien wrench
 ;triceratops-> stalk-eye
 ;falling sign
 ;hidden crystal
@@ -15,7 +14,8 @@
 ;bird
 ;walker -> robot
 ;wall snake
-;moving cannon
+
+;flying alien wrench -> bat (unrandomized)
 
 ;more sounds
 ;-pickups
@@ -591,7 +591,7 @@ Paused subroutine
     bne .notGreen
     lda currLevel
     cmp #MAP_LEVEL
-    beq .notGreen
+    bcs .notGreen
     lda #ALL_CRYSTALS_EFFECT
     sta arg
 .notGreen:
@@ -610,6 +610,8 @@ Paused subroutine
     beq .ANotPressed
     lda #0
     sta crystalsLeft
+    MOV16I arg, cheatMsg
+    jsr QDisplayMessage
 .ANotPressed:
     lda #$E1
     sta arg
@@ -991,7 +993,7 @@ walkOut:
     cmp #3
     bne .noBonus
     MOV16I arg,perfectHealthMsg
-    jsr MessageBox
+    jsr QDisplayMessage
     lda #50
     sta arg+1
     lda #0
@@ -2798,6 +2800,53 @@ CentToDec subroutine ;input in A, output ones to A, tens to Y
 .end:
     rts
 ;------------------------------------------------------------------------------
+QDisplayMessage subroutine
+    PUSH_BANK
+    SELECT_BANK 3
+    jsr Synchronize
+    ldy #0
+    lda (arg),y
+    sta tmp
+    tay
+    ldx shr_copyIndex
+    
+.copyLetters:
+    lda (arg),y
+.space:
+    cmp #" "
+    bne .numeric
+    lda #HUD_BLANK
+    jmp .store
+.numeric:
+    cmp #"A"
+    bcs .letter
+    sec
+    sbc #"0"
+    jmp .store
+.letter:
+    sec
+    sbc #"A"-$0A
+.store:
+    PHXA
+    dey
+    bne .copyLetters
+    
+    lda #>nmi_Copy32
+    PHXA
+    lda tmp
+    REPEAT 2
+    asl
+    REPEND
+    eor #127
+    PHXA
+
+    ENQUEUE_PPU_ADDR [VRAM_NAME_UL+$41]   
+    stx shr_copyIndex
+    jsr Synchronize
+    POP_BANK
+    rts
+
+;------------------------------------------------------------------------------
 AddScore subroutine ; arg 3 bytes value to add, A and X trashed
     ldx #0
 .loop:
@@ -2836,7 +2885,7 @@ UpdateScoreDisplay subroutine
 .prefixloop:
     lda tmp,y
     bne .nonzero
-    lda #$10
+    lda #HUD_BLANK
     sta tmp,y
     dey
     bpl .prefixloop
@@ -2852,16 +2901,8 @@ UpdateScoreDisplay subroutine
     cpy #6
     bne .pushloop
     
-    lda #>[nmi_Copy6-1]
-    PHXA
-    lda #<[nmi_Copy6-1]
-    PHXA
-    
-    lda #$65
-    PHXA
-    lda #$20
-    PHXA 
-    
+    ENQUEUE_ROUTINE nmi_Copy6
+    ENQUEUE_PPU_ADDR $2065    
     stx shr_copyIndex
     
     
@@ -2875,20 +2916,12 @@ UpdateAmmoDisplay subroutine
     PHXA
     tya
     bne .nonzero
-    ora #$10
+    ora #HUD_BLANK
 .nonzero
     PHXA
     
-    lda #>[nmi_Copy2-1]
-    PHXA
-    lda #<[nmi_Copy2-1]
-    PHXA
-    
-    lda #$71
-    PHXA
-    lda #$20
-    PHXA 
-    
+    ENQUEUE_ROUTINE nmi_Copy2
+    ENQUEUE_PPU_ADDR $2071
     stx shr_copyIndex
 
     rts
@@ -2909,16 +2942,8 @@ UpdatePowerDisplay subroutine
     PHXA
 .finish:
 
-    lda #>[nmi_Copy2-1]
-    PHXA
-    lda #<[nmi_Copy2-1]
-    PHXA
-    
-    lda #$7A
-    PHXA
-    lda #$20
-    PHXA 
-    
+    ENQUEUE_ROUTINE nmi_Copy2
+    ENQUEUE_PPU_ADDR $207A
     stx shr_copyIndex
 
     rts
@@ -2932,27 +2957,18 @@ UpdateHeartsDisplay subroutine
     beq .heart
     bcs .no_heart
 .heart:
-    lda #$11
+    lda #HUD_HEART
     PHXA
     jmp .continue_loop
 .no_heart:
-    lda #$10
+    lda #HUD_BLANK
     PHXA
 .continue_loop:
     dey
     bne .loop
 
-    
-    lda #>[nmi_Copy3-1]
-    PHXA
-    lda #<[nmi_Copy3-1]
-    PHXA
-    
-    lda #$76
-    PHXA
-    lda #$20
-    PHXA
-    
+    ENQUEUE_ROUTINE nmi_Copy3
+    ENQUEUE_PPU_ADDR $2076
     stx shr_copyIndex
     
     rts
@@ -3265,7 +3281,7 @@ InitHUD subroutine
     SELECT_BANK 0
     ldy #$A0
     SET_PPU_ADDR VRAM_NAME_UL
-    lda #$10
+    lda #HUD_BLANK
 .clear_upper
     sta PPU_DATA
     dey
@@ -3281,7 +3297,7 @@ InitHUD subroutine
     bne .load_hud_attr
     
     SET_PPU_ADDR [VRAM_NAME_UL+100]
-    lda #$12
+    lda #HUD_DOLLAR
     sta PPU_DATA
     
     SET_PPU_ADDR [VRAM_NAME_UL+107]
@@ -3289,9 +3305,10 @@ InitHUD subroutine
     sta PPU_DATA
     
     SET_PPU_ADDR [VRAM_NAME_UL+111]
-    lda #$13
+    lda #HUD_GUN
     sta PPU_DATA
     jsr UpdateAmmoDisplay
+    jsr UpdateHeartsDisplay
     jmp UpdateScoreDisplay
 ;------------------------------------------------------------------------------
 InitialDrawLevel subroutine

@@ -5,12 +5,20 @@
 pressAnyKey:
     .byte "Press Any Key^"
     
-airMsg:
-    .byte "You hit an air generator!",$0A
-    .byte "The vacuum rushes in.","^@"
+airMsg subroutine
+.start:
+    .byte <[.end-.start-1],"EXPLOSIVE DECOMPRESSION"
+.end:
     
-perfectHealthMsg:
-    .byte "Perfect health! $50,000!","^@"
+cheatMsg subroutine
+.start:
+    .byte <[.end-.start-1],"CHEATER"
+.end:
+    
+perfectHealthMsg subroutine
+.start:
+    .byte <[.end-.start-1],"PERFECT HEALTH K50000"
+.end:
     
 openingText:
     incbin opening.txt

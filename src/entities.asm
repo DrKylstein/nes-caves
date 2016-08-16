@@ -39,6 +39,7 @@ entityRoutine:
     .word ER_Ball
     .word ER_RightCannonMoving
     .word ER_LeftCannonMoving
+    .word ER_AirGenerator
     
 entityFlags:
     .byte 1 ; player
@@ -81,6 +82,7 @@ entityFlags:
     .byte 2 ; ball
     .byte [1<<ENT_F_CHILDREN_SHIFT] | 2 ; right cannon
     .byte [1<<ENT_F_CHILDREN_SHIFT] | 2 ; left cannon
+    .byte 2 ;air generator
     
 entityTiles:
     .byte 0 ; player
@@ -123,6 +125,7 @@ entityTiles:
     .byte [19+32*3]*2 ; ball
     .byte [2+32]*2 ; right cannon
     .byte [2+32]*2 ; left cannon
+    .byte [17+32*2]*2 ; air generator
     
 entitySpeeds:
     .byte 0 ; player
@@ -165,6 +168,7 @@ entitySpeeds:
     .byte 2 ; ball
     .byte 1 ; right cannon
     .byte 1 ; left cannon
+    .byte 0 ; air_generator
     
 entityInitialAnims:
     .byte ANIM_SMALL_NONE ; player
@@ -207,6 +211,7 @@ entityInitialAnims:
     .byte ANIM_BALL_RIGHT
     .byte ANIM_SMALL_NONE ; right cannon
     .byte ANIM_SMALL_HFLIP_NONE ; left cannon
+    .byte ANIM_AIR_GENERATOR
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
     lda entityXLo,x
@@ -666,6 +671,25 @@ EntDieInOneShot subroutine
 .alive:
     rts
 
+ER_AirGenerator subroutine
+    jsr EntIsBulletNearTall
+    bcc .noBullet
+    lda #$80
+    sta entityXHi
+    lda entityYHi,x
+    and #1
+    ora #EXPLOSION_ID<<1
+    sta entityYHi,x
+    lda #ANIM_SYMMETRICAL_OSCILLATE
+    sta entityAnim,x
+    stx sav
+    MOV16I arg,airMsg
+    jsr QDisplayMessage
+    ldx sav
+    jsr KillPlayer
+.noBullet:
+    jmp ER_Return
+    
 ER_Ball subroutine
     jsr EntTryMelee
     jsr EntIsStrongPlayerNear
@@ -1300,14 +1324,14 @@ ER_Bullet subroutine
     jsr GetTileBehavior
     ldx sav+4
     lda ret
-    cmp #TB_AIR
-    bne .notAir
-    stx sav
-    MOV16I arg,airMsg
-    jsr MessageBox
-    ldx sav
-    jsr KillPlayer
-.notAir:
+    ; cmp #TB_AIR
+    ; bne .notAir
+    ; stx sav
+    ; MOV16I arg,airMsg
+    ; jsr MessageBox
+    ; ldx sav
+    ; jsr KillPlayer
+; .notAir:
     cmp #TB_SOLID
     beq .die
     cmp #TB_WEAKBLOCK

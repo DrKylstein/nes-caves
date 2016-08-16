@@ -71,6 +71,7 @@ animations:
     .word anim_ball_right
     .word anim_ball_left
     .word anim_ball_sleep
+    .word anim_air_generator
     
 frame_small1:
     .byte 8
@@ -631,3 +632,20 @@ anim_ball_sleep subroutine
     .byte   0,  8,  0,  0
     .byte   0,  8,$40,  8
     .byte -16, 10,  0,  4
+
+anim_air_generator subroutine
+    .byte 1
+    .word .frame1
+    .word .frame2
+.frame1:
+    .byte 16
+    .byte -16,  0,  0,  0
+    .byte -16,  2,  0,  8
+    .byte   0, 64,  0,  0
+    .byte   0, 66,  0,  8
+.frame2:
+    .byte 16
+    .byte -16,  2,$40,  0
+    .byte -16,  0,$40,  8
+    .byte   0, 64,  0,  0
+    .byte   0, 66,  0,  8

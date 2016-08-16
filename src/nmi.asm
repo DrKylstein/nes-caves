@@ -257,8 +257,20 @@ nmi_Exit:
     tax
     pla
     rti
-   
 ;------------------------------------------------------------------------------
+nmi_UpdateMask subroutine
+    pla
+    sta PPU_MASK
+    pla
+    sta shr_earlyExit
+    
+    pla
+    sta PPU_ADDR
+    pla
+    sta PPU_ADDR
+    rts
+;------------------------------------------------------------------------------
+    .align 256
 nmi_Copy32:
     pla
     sta PPU_DATA
@@ -361,16 +373,3 @@ nmi_Copy1:
     pla
     sta PPU_ADDR
     rts
-    
-nmi_UpdateMask subroutine
-    pla
-    sta PPU_MASK
-    pla
-    sta shr_earlyExit
-    
-    pla
-    sta PPU_ADDR
-    pla
-    sta PPU_ADDR
-    rts
-    
