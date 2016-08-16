@@ -237,6 +237,8 @@ LoadLevel subroutine
     ;to be calculated from tile map
     lda #0
     sta crystalsLeft
+    lda #[4|8] ;cannons and lights on
+    sta switches
 
     lda currLevel
     tax
@@ -270,6 +272,12 @@ LoadLevel subroutine
     bne .notCrystal
     inc crystalsLeft
 .notCrystal:
+    cmp #TB_OFF+3
+    bne .notLightswitch
+    lda switches
+    and #~8
+    sta switches
+.notLightswitch
     ldy tmp+4
     iny
     bne .loop
@@ -487,8 +495,6 @@ InitEntities subroutine
 InitEntities_end:
 
 ResetStats subroutine
-    lda #4
-    sta switches
     lda #3
     sta hp
     jsr UpdateHeartsDisplay
@@ -540,7 +546,16 @@ ResetStats_end:
 ReenableDisplay subroutine
     jsr QEnableSplitDisplay
     jsr UpdateSprites
+    lda switches
+    and #8
+    beq .dark
     jsr FadeIn
+    jmp ReenableDisplay_end
+.dark:
+    lda #$20
+    sta arg
+    jsr Fade
+    jsr Synchronize
 ReenableDisplay_end:
 
 ;------------------------------------------------------------------------------
@@ -1081,6 +1096,13 @@ TC_On:
     lda bits+1,y
     eor switches
     sta switches
+    cpy #3
+    bne .notlightsoff
+    lda #$20
+    sta arg
+    jsr Fade
+    jsr Synchronize
+.notlightsoff
     dec sav
     jmp TC_UpdateTile
 TC_On_end:
@@ -1096,6 +1118,13 @@ TC_Off:
     lda bits+1,y
     eor switches
     sta switches
+    cpy #3
+    bne .notlights
+    lda #0
+    sta arg
+    jsr Fade
+    jsr Synchronize
+.notlights
     inc sav
     jmp TC_UpdateTile
 TC_Off_end:
@@ -1880,7 +1909,6 @@ FadeOut subroutine
     rts
 ;------------------------------------------------------------------------------
 FadeIn subroutine
-    SELECT_BANK 0
     ldy #3
 .fadeloop:
     tya
@@ -1900,6 +1928,7 @@ FadeIn subroutine
 
 ;------------------------------------------------------------------------------
 Fade subroutine
+    SELECT_BANK 0
     ldx shr_copyIndex
     
     ldy #11
