@@ -12,12 +12,12 @@
  </tileset>
  <layer name="Names" width="40" height="24">
   <data encoding="base64" compression="zlib">
-   eJzVl79OAkEQxpdH4Cyh4bSgEpVerYjG3lhLiKHFJzXhBQjEhpdwNuwkk8k3e7N3glj8crc7++ebb/aOow4h3J0pNXFJ9BQv6fqcrnswBvVFto4xXkZC34L4OAOWQN93xzx/mwHwL8fwyG1PfXO5MMdu65jXv78CPR/LE+7fpb7eMxJ5J+aFe3vWt/Q1eblT7RXxme6vHft6a5Xzr+3a9x1rKn3V+kpqmtPe9hzr3KW+//Z8nIKF4cdXOPyOd9XXJ6rEBTE2+tuuaX2/lMyvxTqsb6RiJVpvQ/P3lVeT1tdLGrW+Uq0T4qagvmg/6ztS6tNjUD6IB+LRoY99s9YeJqz6ctzKEflYcv4s36YpvklIfVsxj+PyXDX56Dl/lm+s6wmMQ/WV/szE/h4f2R+kT/smPYu8gVw5Pjb6X4FHTeeR9V1lfItx+T+nb+QaGRj9aN4e+CB9XKs65N4dFRhTFZJby9ov3v8AsYRZNw==
+   eJzVl71uwkAMx8MjkI6wEDow0a+dMqFW7Ii5FapY2yet1BeogrrwEvgkW7Is+2In5Wv4Kcn57vz33xcUqqIoHi+UChgDPcESr6943StztLFE7ZjjZcT0bYCPC2Cr6PvrWOd/M1D8yzE88rOnv7laiGM/y5jXv3OhvR/bE+bv0l/vGUm8Ae/B3J79LX1NXu7E8yfwhfdTR15vr3L+td171rGn3FepL9LTnPa251jWzvVdw/tRnzj/xvDjG7VIfVH6QIncABNjvO2e1vdLZH3F9iF9IxGLaH0omr+vvJqkvh5qlPqiWu+A+0B/tXzWdyTXJ+do9Wg8A3OHPvLN2nuIWP2luFWj5mPk/Fm+PWH8F+H6araO4vxcNfnoOX+Wb6TrRZmn9Zf7s2D5PT6SP5o+6Rv3LLFWaqX4xBhfKR41nUfSd5vxLcX5/5y+UWtiYIxr6/aKD9zHH9GH3G9Hqcwpg+T2svKl+wO5BloZ
   </data>
  </layer>
  <layer name="Entities" width="40" height="24">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFIwGwMA60CwYvUKNR2IyG+cCD0TjADkbDZRTgAtI0SBv/R9PbKCAS/B5NK6MAD/gHTB9CJKQRkNo/o2kKA7COhgkDACf4BHw=
+   eJxjYBgFIwGwMA60CwYvUKNR2IyG+cCD0TjADkbDZRTgAtI0SBv/R3B6Ux/BficH/B4Nr1GAB/wDpg8hEtIISO2f0TSFAVhHw4QBAAhmBKQ=
   </data>
  </layer>
 </map>

@@ -37,6 +37,8 @@ entityRoutine:
     .word ER_Fruit ;strawberry
     .word ER_Fruit ;peach
     .word ER_Ball
+    .word ER_RightCannonMoving
+    .word ER_LeftCannonMoving
     
 entityFlags:
     .byte 1 ; player
@@ -77,7 +79,9 @@ entityFlags:
     .byte 1 ; strawberry
     .byte 1 ; peach
     .byte 2 ; ball
-        
+    .byte [1<<ENT_F_CHILDREN_SHIFT] | 2 ; right cannon
+    .byte [1<<ENT_F_CHILDREN_SHIFT] | 2 ; left cannon
+    
 entityTiles:
     .byte 0 ; player
     .byte [0+32]*2 ; vertical platform
@@ -117,7 +121,8 @@ entityTiles:
     .byte 27*2 ; strawberry
     .byte 29*2 ; peach
     .byte [19+32*3]*2 ; ball
-    
+    .byte [2+32]*2 ; right cannon
+    .byte [2+32]*2 ; left cannon
     
 entitySpeeds:
     .byte 0 ; player
@@ -158,6 +163,8 @@ entitySpeeds:
     .byte 0 ; strawberry
     .byte 0 ; peach
     .byte 2 ; ball
+    .byte 1 ; right cannon
+    .byte 1 ; left cannon
     
 entityInitialAnims:
     .byte ANIM_SMALL_NONE ; player
@@ -198,7 +205,8 @@ entityInitialAnims:
     .byte ANIM_SYMMETRICAL_NONE ; strawberry
     .byte ANIM_SYMMETRICAL_NONE ; peach
     .byte ANIM_BALL_RIGHT
-
+    .byte ANIM_SMALL_NONE ; right cannon
+    .byte ANIM_SMALL_HFLIP_NONE ; left cannon
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
     lda entityXLo,x
@@ -1170,10 +1178,30 @@ ER_Mimrock subroutine
     jsr EntDieByPowerOnly
     jmp ER_Return
 
+ER_RightCannonMoving subroutine
+    jsr EntMoveVertically
+    jsr EntTestVerticalCollision
+    bcc .nohit
+    lda entityVelocity,x
+    eor #$FF
+    clc
+    adc #1
+    sta entityVelocity,x
+.nohit:
 ER_RightCannon subroutine
     lda #4
     sta entityVelocity+1,x
     jmp ER_Cannon
+ER_LeftCannonMoving subroutine
+    jsr EntMoveVertically
+    jsr EntTestVerticalCollision
+    bcc .nohit
+    lda entityVelocity,x
+    eor #$FF
+    clc
+    adc #1
+    sta entityVelocity,x
+.nohit:
 ER_LeftCannon subroutine
     lda #<-4
     sta entityVelocity+1,x
