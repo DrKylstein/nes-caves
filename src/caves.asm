@@ -17,7 +17,14 @@
 ;------------------------------------------------------------------------------
     ORG 16 + 0*$4000
     RORG $8000
-    include bank0.asm
+    include titledata.asm
+textTiles:
+    incbin tileset-font.pat
+globalTiles:
+    incbin sprites.pat
+globalBgTiles:
+    incbin tileset-shared.pat
+    include palettes.asm
     ECHO "PRGROM Bank 0 left:",[$C000-.]d
     IF . > $C000
     ECHO "Exceeded PRGROM Bank 0 size!"
@@ -26,7 +33,7 @@
     
     ORG 16 + 1*$4000
     RORG $8000
-    include bank1.asm
+    include levels.asm
     ECHO "PRGROM Bank 1 left:",[$C000-.]d
     IF . > $C000
     ECHO "Exceeded PRGROM Bank 0 size!"
@@ -35,7 +42,7 @@
     
     ORG 16 + 2*$4000
     RORG $8000
-    include bank2.asm
+    include patterns.asm
     ECHO "PRGROM Bank 2 left:",[$C000-.]d
     IF . > $C000-6
     ECHO "Exceeded PRGROM Bank 0 size!"
@@ -44,7 +51,10 @@
     
     ORG 16 + 3*$4000
     RORG $8000
-    include bank3.asm
+    include anims.asm
+    include entities.asm
+    include sounds.asm
+    include messages.asm
     ECHO "PRGROM Bank 3 left:",[$C000-.]d
     IF . > $C000-6
     ECHO "Exceeded PRGROM Bank 0 size!"
@@ -77,7 +87,10 @@
     
     ORG 16 + 7*$4000
     RORG $C000
-    include bank7.asm
+    include main.asm
+    include nmi.asm
+    include debug.asm
+    include tables.asm
 banktable:
     .byte $00, $01, $02, $03, $04, $05, $06
     

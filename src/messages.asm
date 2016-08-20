@@ -1,7 +1,3 @@
-    include anims.asm
-    include entities.asm
-    include sounds.asm
-        
 pressAnyKey:
     .byte "Press Any Key^"
     
