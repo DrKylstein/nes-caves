@@ -461,6 +461,7 @@ InitEntities subroutine
     
     lda #0
     sta entityCount,y
+    sta entityFrame,y
     lda entitySpeeds,x
     sta entityVelocity,y
     lda entityInitialAnims,x
@@ -1996,32 +1997,15 @@ FadeBg subroutine
 UpdateSprites subroutine
     PUSH_BANK
     SELECT_BANK 3
+        
     lda playerX
-    sta entityXLo+2
+    sta entityXLo+PLAYER_INDEX
     lda playerX+1
-    sta entityXHi+2
+    sta entityXHi+PLAYER_INDEX
     lda playerY
-    sta entityYLo+2
+    sta entityYLo+PLAYER_INDEX
     lda playerY+1
-    sta entityYHi+2
-    lda currLevel
-    cmp #INTRO_LEVEL
-    bne .notintro
-    lda #ANIM_KIWI
-    sta entityAnim+2
-    jmp ClearSprites
-.notintro:
-    lda playerFlags
-    and #7
-    tay
-    lda playerXVel
-    beq .notmoving
-    tya
-    ora #8
-    tay
-.notmoving:
-    lda playerAnims,y
-    sta entityAnim+2
+    sta entityYHi+PLAYER_INDEX
     
 ClearSprites subroutine
     ldy #0
@@ -2210,14 +2194,25 @@ UpdateEntitySprites_end
     rts
 ;------------------------------------------------------------------------------
 KillPlayer subroutine
-    pla
-    pla
+    ;pla
+    ;pla
     lda mapAmmo
     sta ammo
     MOV16 score, mapScore
     lda mapScore+2
     sta score
-    jmp EnterLevel
+    lda #ANIM_PLAYER_DIE
+    sta entityAnim+PLAYER_INDEX
+    lda #0
+    sta entityFrame+PLAYER_INDEX
+    sta playerXVel
+    lda playerFlags
+    ora #PLY_LOCKED
+    sta playerFlags
+    lda #$FF
+    sta mercyTime
+    rts
+    ;jmp EnterLevel
 ;------------------------------------------------------------------------------
 DamagePlayer subroutine
     lda mercyTime

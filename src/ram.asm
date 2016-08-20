@@ -118,7 +118,7 @@ random         ds 2
 fruitTime      ds 2
 levelMap       ds 960
 entityXLo        ds MAX_ENTITIES
-entityXHi        ds MAX_ENTITIES ;active bit/unused/hi x 2 bits
+entityXHi        ds MAX_ENTITIES ;active bit/off screen bit/unused 4 bits/hi x 2 bits
 entityYLo        ds MAX_ENTITIES
 entityYHi        ds MAX_ENTITIES ;index/hi y bit
 entityVelocity   ds MAX_ENTITIES 

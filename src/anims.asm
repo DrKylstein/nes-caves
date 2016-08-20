@@ -72,6 +72,7 @@ animations:
     .word anim_ball_left
     .word anim_ball_sleep
     .word anim_air_generator
+    .word anim_player_die
     
 frame_small1:
     .byte 8
@@ -649,3 +650,54 @@ anim_air_generator subroutine
     .byte -16,  0,$40,  8
     .byte   0, 64,  0,  0
     .byte   0, 66,  0,  8
+
+anim_player_die subroutine
+    .byte 31
+    .word .frame1
+    .word .frame1
+    .word .frame2
+    .word .frame2
+    .word .frame1
+    .word .frame1
+    .word .frame2
+    .word .frame2
+    .word .frame1
+    .word .frame1
+    .word .frame2
+    .word .frame2
+    .word .frame3
+    .word .frame3
+    .word .frame4
+    .word .frame4
+    .word .frame4
+    .word .frame4
+    .word .frame4
+    .word .frame4
+    .word .frame4
+    .word .frame4
+    .word .frame4
+    .word .frame4
+    .word .frame4
+    .word .frame4
+    .word .frame4
+    .word .frame4
+    .word .frame4
+    .word .frame4
+    .word .frame4
+    .word .frame4
+.frame1:
+    .byte 2*OAM_SIZE
+    .byte   0, 20,  0,  0
+    .byte   0, 20,$40,  8
+.frame2:
+    .byte 2*OAM_SIZE
+    .byte   0, 22,  0,  0
+    .byte   0, 22,$40,  8
+.frame3:
+    .byte 2*OAM_SIZE
+    .byte   0, 24,  0,  0
+    .byte   0, 24,$40,  8
+.frame4:
+    .byte 2*OAM_SIZE
+    .byte   0, 26,  0,  0
+    .byte   0, 26,$40,  8

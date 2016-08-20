@@ -310,3 +310,4 @@ ANIM_BALL_RIGHT             ds 1
 ANIM_BALL_LEFT              ds 1
 ANIM_BALL_SLEEP             ds 1
 ANIM_AIR_GENERATOR          ds 1
+ANIM_PLAYER_DIE             ds 1

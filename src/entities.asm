@@ -42,7 +42,7 @@ entityRoutine:
     .word ER_AirGenerator
     
 entityFlags:
-    .byte 1 ; player
+    .byte ENT_F_SKIPYTEST | ENT_F_SKIPXTEST | 1 ; player
     .byte ENT_F_ISPLATFORM | ENT_F_SKIPYTEST | 2; vertical platform
     .byte ENT_F_ISPLATFORM | ENT_F_SKIPXTEST | 2; horizontal platform
     .byte [1<<ENT_F_CHILDREN_SHIFT] | 2 ; spider
@@ -799,6 +799,42 @@ ER_Explosion subroutine
     jmp ER_Return
 
 ER_Player subroutine
+    MOV16I shr_debugReg,$F00D
+    
+;death sequence
+    lda entityAnim,x
+    cmp #ANIM_PLAYER_DIE
+    bne .alive
+    lda entityFrame,x
+    cmp #[32<<2]-1
+    bcs .dead
+    jmp .noanim
+.dead:
+    jmp EnterLevel
+.alive:
+
+;normal animations
+    lda currLevel
+    cmp #INTRO_LEVEL
+    bne .notintro
+    lda #ANIM_KIWI
+    sta entityAnim,x
+    jmp .noanim
+.notintro:
+    lda playerFlags
+    and #7
+    tay
+    lda playerXVel
+    beq .notmoving
+    tya
+    ora #8
+    tay
+.notmoving:
+    lda playerAnims,y
+    sta entityAnim,x
+.noanim
+
+;intro messagebox
     lda entityCount,x
     cmp #250
     bne .nodialog
@@ -808,6 +844,7 @@ ER_Player subroutine
     ldx sav
 .nodialog:
     
+;exit sequence
     lda playerFlags
     and #PLY_LOCKED
     beq .end
