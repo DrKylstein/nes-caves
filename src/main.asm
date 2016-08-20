@@ -1997,7 +1997,8 @@ FadeBg subroutine
 UpdateSprites subroutine
     PUSH_BANK
     SELECT_BANK 3
-        
+
+;update player sprite pos
     lda playerX
     sta entityXLo+PLAYER_INDEX
     lda playerX+1
@@ -2007,17 +2008,16 @@ UpdateSprites subroutine
     lda playerY+1
     sta entityYHi+PLAYER_INDEX
     
-ClearSprites subroutine
+;clear sprites
     ldy #0
     lda #$FF
-.loop:
+.clearloop:
     sta shr_entitySprites,y
     iny
     cpy #32*OAM_SIZE
-    bne .loop
-ClearSprites_end:
+    bne .clearloop
 
-UpdateEntitySprites subroutine
+;process entities
     lda startSprite
     ora #$80
     sta arg
@@ -2025,7 +2025,7 @@ UpdateEntitySprites subroutine
 .outerloop:
     dex
     bpl .continue
-    jmp UpdateEntitySprites_end
+    jmp .exit
 .continue:
     lda entityXHi,x
     bmi .outerloop
@@ -2183,13 +2183,14 @@ UpdateEntitySprites subroutine
     stx arg ;save sprite addr
     ldx arg+4 ;reload entity index
     jmp .outerloop
+.exit:
     
-UpdateEntitySprites_end
-
+;cycle starting position
     lda startSprite
     clc
     adc #21*4
     sta startSprite
+    
     POP_BANK
     rts
 ;------------------------------------------------------------------------------
