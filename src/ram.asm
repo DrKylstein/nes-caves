@@ -114,7 +114,7 @@ crystalsLeft   ds 1
 doorsX         ds 4
 doorsY         ds 4
 exitTriggered  ds 1
-random         ds 1
+random         ds 2
 fruitTime      ds 2
 levelMap       ds 960
 entityXLo        ds MAX_ENTITIES
