@@ -124,9 +124,6 @@ entityYHi        ds MAX_ENTITIES ; bottom bit
 entityVelocity   ds MAX_ENTITIES ; 
 entityCount      ds MAX_ENTITIES
 entityAnim       ds MAX_ENTITIES
-    ECHO [$400-.]d," bytes left in page $300"
-
-    ORG $0400
 levelMap       ds 960
-    ECHO [$800-.]d,"bytes left in pages $400-$700"
+    ECHO [$800-.]d,"bytes left in pages $300-$700"
 

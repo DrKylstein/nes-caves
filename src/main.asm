@@ -1,49 +1,6 @@
 ;------------------------------------------------------------------------------
 ; MAIN THREAD
 ;------------------------------------------------------------------------------
-;issues:
-;intro animation incorrect
-;rolling enemy doesn't shoot, timing could be better
-
-;sprites:
-;hopper -> snake
-;triceratops-> stalk-eye
-;falling sign
-;hidden crystal
-;falling rocks
-;bird
-;walker -> robot
-;wall snake
-
-;flying alien wrench -> bat (unrandomized)
-
-;more sounds
-;-pickups
-;-bullet impacts
-;-flames
-;shoot/just fired animation
-;death animation
-;ending
-;pause message, hints
-;low gravity
-;enter animation
-
-;???
-;specify pitch envelopes in semitones / explicit arppeggio feature
-;double up channels so that long notes can resume after very short ones
-;orbiting moon on map -- allow entities to switch between upper and lower 32?
-;music
-;passwords?
-;parallaxing tiled backgrounds
-;Hilltop style clouds on main map
-;use grayscale and/or emphasis on hud? 
-;hold ER pointer in ram so that entities can change routines dynamically?
-;hold frame pointer/index in entity filed instead of animation? 
-;-entites would manage their own animation and  non-animated would save time
-;store size and shared offset instead of individual offsets in frames?
-;-denser, can re-use y coordinate on horizontal runs
-
-
 ;------------------------------------------------------------------------------
 ;Initial Boot
 ;------------------------------------------------------------------------------
