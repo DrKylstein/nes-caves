@@ -24,22 +24,18 @@
 ;shoot/just fired animation
 ;death animation
 ;ending
-;pause menu
-;hints?
+;pause message, hints
 ;low gravity
 ;enter animation
 
 ;???
-;specify pitch envelopes in semitones
+;specify pitch envelopes in semitones / explicit arppeggio feature
 ;double up channels so that long notes can resume after very short ones
 ;orbiting moon on map -- allow entities to switch between upper and lower 32?
 ;music
-;full dump independent of nmi for brk handler?
 ;passwords?
 ;parallaxing tiled backgrounds
 ;Hilltop style clouds on main map
-;separate top and bottom of main map to enable separate effects
-;animated background objects
 ;use grayscale and/or emphasis on hud? 
 ;hold ER pointer in ram so that entities can change routines dynamically?
 ;hold frame pointer/index in entity filed instead of animation? 
@@ -278,6 +274,30 @@ LoadLevel subroutine
     and #~8
     sta switches
 .notLightswitch
+    cmp #TB_MAPDOOR
+    bcc .notEntrance
+    sec
+    sbc #TB_MAPDOOR
+    cmp #8
+    bcc .lower
+    sbc #8
+    tay
+    lda bits+1,y
+    and cleared+1
+    beq .not_cleared
+    jmp .cleared
+.lower:
+    tay
+    lda bits+1,y
+    and cleared
+    beq .not_cleared
+.cleared:
+    lda #CLEARED_DOOR_TILE
+    ldy tmp+4
+    sta (tmp),y
+.not_cleared:
+    
+.notEntrance:
     ldy tmp+4
     iny
     bne .loop
@@ -1007,27 +1027,6 @@ walkOut:
 TC_Exit_end:
 
 TC_Entrance:
-    lda sav+3
-    sec
-    sbc #TB_MAPDOOR
-    cmp #16
-    bcs .enterUpperLevel
-    tay
-    lda bits+1,y
-    and cleared
-    beq .uncleared
-    lda sav+3
-    jmp TC_Return
-.enterUpperLevel:
-    sec
-    sbc #8
-    tay
-    lda bits+1,y
-    and cleared+1
-    beq .uncleared
-    lda sav+3
-    jmp TC_Return
-.uncleared:
     jsr FadeOut
     lda sav+3
     sec
@@ -2937,7 +2936,7 @@ UpdatePowerDisplay subroutine
     PHXA
     jmp .finish
 .none:
-    lda #$10
+    lda #HUD_BLANK
     PHXA
     PHXA
 .finish:
