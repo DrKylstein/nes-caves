@@ -13,8 +13,7 @@ globalTiles:
     incbin sprites.pat
 globalBgTiles:
     incbin tileset-shared.pat
-palettes:
-;global
+globalPalette:
     incbin palette-sprites.pal
 minePal:
     incbin palette-map.pal

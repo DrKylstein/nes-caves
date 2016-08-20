@@ -1934,7 +1934,7 @@ Fade subroutine
     
     ldy #11
 .loop
-    lda palettes,y
+    lda globalPalette,y
     sec
     sbc arg
     bpl .nn1
