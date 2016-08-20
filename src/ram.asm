@@ -116,6 +116,7 @@ doorsY         ds 4
 exitTriggered  ds 1
 random         ds 2
 fruitTime      ds 2
+messageTime    ds 1
 levelMap       ds 960
 entityXLo        ds MAX_ENTITIES
 entityXHi        ds MAX_ENTITIES ;active bit/off screen bit/unused 4 bits/hi x 2 bits

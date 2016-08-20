@@ -517,6 +517,7 @@ ResetStats subroutine
     sta fruitTime+1
     sta random
     sta random+1
+    sta messageTime
     lda currLevel
     cmp #INTRO_LEVEL
     bne .notIntro
@@ -591,14 +592,6 @@ Paused subroutine
     sta paused
     lda #0
     sta arg
-    lda crystalsLeft
-    bne .notGreen
-    lda currLevel
-    cmp #MAP_LEVEL
-    bcs .notGreen
-    lda #ALL_CRYSTALS_EFFECT
-    sta arg
-.notGreen:
     jsr QColorEffect
     jmp MainLoop
 .StartNotPressed:
@@ -614,8 +607,6 @@ Paused subroutine
     beq .ANotPressed
     lda #0
     sta crystalsLeft
-    MOV16I arg, cheatMsg
-    jsr QDisplayMessage
 .ANotPressed:
     lda #$E1
     sta arg
@@ -786,6 +777,8 @@ TC_Harmful:
     jmp TC_Nop
     
 TC_Deadly:
+    MOV16I arg,poisonMsg
+    jsr QDisplayMessage
     jsr KillPlayer
     lda #0
     sta sav
@@ -796,9 +789,8 @@ TC_Crystal:
     jsr PlaySound
     dec crystalsLeft
     bne .notDone
-    lda #ALL_CRYSTALS_EFFECT
-    sta arg
-    jsr QColorEffect
+    MOV16I arg,gotAllMsg
+    jsr QDisplayMessage
 .notDone:
     lda #0
     sta arg+2
@@ -847,6 +839,8 @@ TC_Points:
 TC_Points_end:
 
 TC_Key:
+    MOV16I arg, keyMsg
+    jsr QDisplayMessage
     lda playerFlags
     ora #PLY_HASKEY
     sta playerFlags
@@ -883,6 +877,8 @@ TC_Ammo:
 TC_Ammo_end:
 
 TC_Powershot:
+    MOV16I arg, powershotMsg
+    jsr QDisplayMessage
     lda #10
     sta powerSeconds
     lda #60
@@ -896,6 +892,8 @@ TC_Powershot:
 TC_Powershot_end:
 
 TC_Strength:
+    MOV16I arg, strengthMsg
+    jsr QDisplayMessage
     lda #15
     sta powerSeconds
     lda #60
@@ -909,6 +907,8 @@ TC_Strength:
 TC_Strength_end:
 
 TC_Gravity:
+    MOV16I arg, gravityMsg
+    jsr QDisplayMessage
     lda #10
     sta powerSeconds
     lda #60
@@ -922,6 +922,8 @@ TC_Gravity:
 TC_Gravity_end:
 
 TC_Stop:
+    MOV16I arg, stopMsg
+    jsr QDisplayMessage
     lda #20
     sta powerSeconds
     lda #60
@@ -1037,6 +1039,11 @@ TC_Hidden:
 TC_Hidden_end:
     
 TC_Lock:
+    lda messageTime
+    bne .noLeverMessage
+    MOV16I arg, switchMsg
+    jsr QDisplayMessage
+.noLeverMessage:
     lda #JOY_B_MASK
     and pressed
     JEQ TC_Return
@@ -1071,6 +1078,11 @@ TC_Lock:
 TC_Lock_end:
 
 TC_On:
+    lda messageTime
+    bne .noOnMessage
+    MOV16I arg,switchMsg
+    jsr QDisplayMessage
+.noOnMessage:
     lda #JOY_B_MASK
     and pressed
     JEQ TC_Return
@@ -1093,6 +1105,11 @@ TC_On:
 TC_On_end:
 
 TC_Off:
+    lda messageTime
+    bne .noOffMessage
+    MOV16I arg,switchMsg
+    jsr QDisplayMessage
+.noOffMessage:
     lda #JOY_B_MASK
     and pressed
     JEQ TC_Return
@@ -1730,6 +1747,14 @@ UpdatePower subroutine
     ora #PLY_UPSIDEDOWN
     sta playerFlags
 UpdatePower_end:
+
+UpdateMessage subroutine
+    lda messageTime
+    beq UpdateMessage_end
+    dec messageTime
+    bne UpdateMessage_end
+    jsr QClearMessage
+UpdateMessage_end:
 
 UpdateEntities subroutine
     SELECT_BANK 3
@@ -2783,6 +2808,23 @@ CentToDec subroutine ;input in A, output ones to A, tens to Y
 .end:
     rts
 ;------------------------------------------------------------------------------
+QClearMessage subroutine
+    jsr Synchronize
+    ldx shr_copyIndex
+    
+    ldy #30
+    lda #HUD_BLANK
+.right:
+    PHXA
+    dey
+    bne .right
+       
+    ENQUEUE_ROUTINE nmi_Copy30
+    ENQUEUE_PPU_ADDR [VRAM_NAME_UL+$41]   
+    stx shr_copyIndex
+    jsr Synchronize
+    rts
+;------------------------------------------------------------------------------
 QDisplayMessage subroutine
     PUSH_BANK
     SELECT_BANK 3
@@ -2790,9 +2832,20 @@ QDisplayMessage subroutine
     ldy #0
     lda (arg),y
     sta tmp
-    tay
     ldx shr_copyIndex
     
+    lda #30
+    sec
+    sbc tmp
+    tay
+    lda #HUD_BLANK
+.right:
+    PHXA
+    dey
+    bne .right
+
+    lda tmp
+    tay
 .copyLetters:
     lda (arg),y
 .space:
@@ -2813,19 +2866,13 @@ QDisplayMessage subroutine
     PHXA
     dey
     bne .copyLetters
-    
-    lda #>nmi_Copy32
-    PHXA
-    lda tmp
-    REPEAT 2
-    asl
-    REPEND
-    eor #127
-    PHXA
-
+       
+    ENQUEUE_ROUTINE nmi_Copy30
     ENQUEUE_PPU_ADDR [VRAM_NAME_UL+$41]   
     stx shr_copyIndex
     jsr Synchronize
+    lda #MESSAGE_TIME
+    sta messageTime
     POP_BANK
     rts
 
