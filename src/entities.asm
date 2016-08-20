@@ -1828,7 +1828,31 @@ ER_LeftLaser subroutine
     jmp ER_Return
 .notDead:
     jsr EntMoveHorizontally
-    jsr EntTryMelee
+    lda entityXLo,x
+    sta tmp
+    lda entityXHi,x
+    and #ENT_X_POS
+    sta tmp+1
+    lda entityYLo,x
+    sta tmp+2
+    lda entityYHi,x
+    and #ENT_Y_POS
+    sta tmp+3
+    
+    SUB16 tmp+4, tmp, playerX
+    ABS16 tmp+4, tmp+4
+    CMP16I tmp+4, 12
+    bcs .noMelee
+    
+    SUB16 tmp+4, tmp+2, playerY
+    ABS16 tmp+4, tmp+4
+    CMP16I tmp+4, 12
+    bcs .noMelee
+    
+    jsr DamagePlayer
+    lda #$80
+    sta entityXHi,x
+.noMelee:
     jmp ER_Return
 
 ER_VerticalPlatform subroutine
