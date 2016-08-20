@@ -7,9 +7,9 @@ bindir		:= ..
 
 romname		:= $(bindir)/$(name).nes
 
-palettes	:= $(addsuffix .pal,$(basename $(notdir $(wildcard ../gfx/pal??.png))))
+palettes	:= $(addsuffix .pal,$(basename $(notdir $(wildcard ../gfx/palette-*.png))))
 incbins		:= sprites.pat title-patterns.pat title-names.bin
-tilesets	:= $(addsuffix .pat,$(basename $(notdir $(wildcard ../gfx/tileset??.png))))
+tilesets	:= $(addsuffix .pat,$(basename $(notdir $(wildcard ../gfx/tileset-*.png))))
 sources		:= $(wildcard ../src/*.*) 
 asmflags	:= -I$(srcdir) -f3 -v0 -l$(name).lst -s$(name).sym
 

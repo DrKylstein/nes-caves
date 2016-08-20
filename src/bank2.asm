@@ -1,8 +1,8 @@
 caveTiles:
-    incbin tileset01.pat
+    incbin tileset-cave.pat
 techTiles:
-    incbin tileset02.pat
+    incbin tileset-tech.pat
 mineTiles:
-    incbin tileset03.pat
+    incbin tileset-map.pat
 introTiles:
-    incbin tileset04.pat
+    incbin tileset-intro.pat

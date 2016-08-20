@@ -2,23 +2,23 @@ titleNames:
     incbin title-names.bin
     incbin title-attr.bin
 titlePalette:
-    incbin paltl.pal
+    incbin palette-title.pal
 titleTiles:
     incbin title-patterns.pat
 textTiles:
-    incbin tileset05.pat
+    incbin tileset-font.pat
 textPalette:
-    incbin paltx.pal
+    incbin palette-text.pal
 globalTiles:
     incbin sprites.pat
 globalBgTiles:
-    incbin tileset00.pat
+    incbin tileset-shared.pat
 palettes:
 ;global
-    incbin palsp.pal
+    incbin palette-sprites.pal
 minePal:
-    incbin pal00.pal
+    incbin palette-map.pal
 volcanoPal:
-    incbin pal01.pal
+    incbin palette-volcano.pal
 cobaltPal:
-    incbin pal02.pal
+    incbin palette-cobalt.pal
