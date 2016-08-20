@@ -180,7 +180,7 @@ InitSprites subroutine
     sta shr_spriteX,y
     lda #60
     sta shr_spriteIndex,y
-    lda #1
+    lda #0
     sta shr_spriteFlags,y
     REPEAT OAM_SIZE
     iny

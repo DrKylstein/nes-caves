@@ -105,8 +105,8 @@ levelPalettes:
     .word volcanoPal
     .word volcanoPal
     .word volcanoPal
-    .word minePal
-    .word minePal
+    .word mapPal
+    .word introPal
     
 levelMusic:
     .word testSong

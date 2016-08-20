@@ -15,8 +15,12 @@ globalBgTiles:
     incbin tileset-shared.pat
 globalPalette:
     incbin palette-sprites.pal
-minePal:
+mapPal:
     incbin palette-map.pal
+introPal:
+    incbin palette-intro.pal
+minePal:
+    incbin palette-mine.pal
 volcanoPal:
     incbin palette-volcano.pal
 cobaltPal:
