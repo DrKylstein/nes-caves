@@ -109,6 +109,8 @@ HAMMER_ID = 14
 SPIDERWEB_ID = 25
 GIRDER_ID = 22
 FRUIT_ID = 34
+PLAYER_ID = 0
+KIWI_ID = 41
 
 OAM_SIZE = 4
 SPR_Y = 0
@@ -304,7 +306,6 @@ ANIM_PLAYER_JUMPV           ds 1
 ANIM_PLAYER_JUMP_LEFTV      ds 1
 ANIM_SMALL_VFLIP_NONE       ds 1
 ANIM_SMALL_HV_NONE          ds 1
-ANIM_KIWI                   ds 1
 ANIM_HAMMER                 ds 1
 ANIM_BALL_RIGHT             ds 1
 ANIM_BALL_LEFT              ds 1

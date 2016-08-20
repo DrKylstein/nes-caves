@@ -40,6 +40,7 @@ entityRoutine:
     .word ER_RightCannonMoving
     .word ER_LeftCannonMoving
     .word ER_AirGenerator
+    .word ER_Kiwi
     
 entityFlags:
     .byte ENT_F_SKIPYTEST | ENT_F_SKIPXTEST | 1 ; player
@@ -83,6 +84,7 @@ entityFlags:
     .byte [1<<ENT_F_CHILDREN_SHIFT] | 2 ; right cannon
     .byte [1<<ENT_F_CHILDREN_SHIFT] | 2 ; left cannon
     .byte 2 ;air generator
+    .byte ENT_F_SKIPYTEST | ENT_F_SKIPXTEST | 2 ; kiwi
     
 entityTiles:
     .byte 0 ; player
@@ -126,6 +128,7 @@ entityTiles:
     .byte [2+32]*2 ; right cannon
     .byte [2+32]*2 ; left cannon
     .byte [17+32*2]*2 ; air generator
+    .byte $85 ; kiwi
     
 entitySpeeds:
     .byte 0 ; player
@@ -169,6 +172,7 @@ entitySpeeds:
     .byte 1 ; right cannon
     .byte 1 ; left cannon
     .byte 0 ; air_generator
+    .byte 0 ; kiwi
     
 entityInitialAnims:
     .byte ANIM_SMALL_NONE ; player
@@ -212,6 +216,7 @@ entityInitialAnims:
     .byte ANIM_SMALL_NONE ; right cannon
     .byte ANIM_SMALL_HFLIP_NONE ; left cannon
     .byte ANIM_AIR_GENERATOR
+    .byte ANIM_SMALL_NONE ; kiwi
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
     lda entityXLo,x
@@ -799,8 +804,6 @@ ER_Explosion subroutine
     jmp ER_Return
 
 ER_Player subroutine
-    MOV16I shr_debugReg,$F00D
-    
 ;death sequence
     lda entityAnim,x
     cmp #ANIM_PLAYER_DIE
@@ -808,19 +811,12 @@ ER_Player subroutine
     lda entityFrame,x
     cmp #[32<<2]-1
     bcs .dead
-    jmp .noanim
+    jmp ER_Return
 .dead:
     jmp EnterLevel
 .alive:
 
 ;normal animations
-    lda currLevel
-    cmp #INTRO_LEVEL
-    bne .notintro
-    lda #ANIM_KIWI
-    sta entityAnim,x
-    jmp .noanim
-.notintro:
     lda playerFlags
     and #7
     tay
@@ -832,8 +828,25 @@ ER_Player subroutine
 .notmoving:
     lda playerAnims,y
     sta entityAnim,x
-.noanim
-
+    
+;exit sequence
+    lda playerFlags
+    and #PLY_LOCKED
+    beq .end
+    lda entityCount,x
+    beq .end
+    lda #1
+    sta playerXVel
+    lda entityCount,x
+    sec
+    sbc #1
+    sta entityCount,x
+    bne .end
+    inc exitTriggered
+.end:
+    jmp ER_Return
+    
+ER_Kiwi subroutine
 ;intro messagebox
     lda entityCount,x
     cmp #250
@@ -860,7 +873,7 @@ ER_Player subroutine
     inc exitTriggered
 .end:
     jmp ER_Return
-
+    
 ER_Planet subroutine
     ADD16I tmp, shr_cameraX, 160
     ; MOV16 tmp+2, shr_cameraX

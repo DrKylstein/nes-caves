@@ -300,8 +300,34 @@ LoadLevel subroutine
     REPEAT 4
     ASL16 playerY
     REPEND
+    lda #PLAYER_ID<<1
+    sta entityYHi+PLAYER_INDEX
     jmp .entityLoop
 .notPlayer:
+;get intro player start
+    cmp #$F9
+    bne .notKiwi
+    lda (tmp),y
+    iny
+    sta playerX
+    lda #0
+    sta playerX+1
+    REPEAT 4
+    ASL16 playerX
+    REPEND
+    lda (tmp),y
+    iny
+    sta playerY
+    lda #0
+    sta playerY+1
+    sta playerYFrac
+    REPEAT 4
+    ASL16 playerY
+    REPEND
+    lda #KIWI_ID<<1
+    sta entityYHi+PLAYER_INDEX
+    jmp .entityLoop
+.notKiwi:
 ;get door locations
     cmp #$FA
     bcc .notDoor
@@ -2005,7 +2031,9 @@ UpdateSprites subroutine
     sta entityXHi+PLAYER_INDEX
     lda playerY
     sta entityYLo+PLAYER_INDEX
-    lda playerY+1
+    lda entityYHi+PLAYER_INDEX
+    and #$FE
+    ora playerY+1
     sta entityYHi+PLAYER_INDEX
     
 ;clear sprites
