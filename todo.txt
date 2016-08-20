@@ -12,6 +12,7 @@
  PRGROM Bank 6 left: 16384
  PRGROM Bank 7 left: 3958
 
+death animation
 finish intro
 add ending
 exit message and/or other indicator instead of tint
@@ -33,7 +34,6 @@ add bird
 add robot (subs walker)
 add wall snake
 shoot/just fired animation
-death animation
 low gravity
 enter animation
 music

@@ -2090,6 +2090,9 @@ UpdateEntitySprites subroutine
     sta arg+3
 .noFG:
     ;get frame in sav
+    inc entityFrame,x
+    lda entityFrame,x
+    sta tmp+2
     lda entityAnim,x
     stx arg+4 ; entity index in arg+4
     asl
@@ -2099,7 +2102,7 @@ UpdateEntitySprites subroutine
     lda animations+1,x
     sta tmp+1
     ldy #0
-    lda frame
+    lda tmp+2
     lsr
     lsr
     and (tmp),y

@@ -613,6 +613,17 @@ EntFall subroutine
     sta entityYHi,x
     rts
 
+EntExplode subroutine
+    lda entityYHi,x
+    and #1
+    ora #EXPLOSION_ID<<1
+    sta entityYHi,x
+    lda #ANIM_SYMMETRICAL_OSCILLATE
+    sta entityAnim,x
+    lda #0
+    sta entityFrame,x
+    rts
+
 EntDieByPowerOnly subroutine
     jsr EntIsStrongPlayerNear
     bcs .Melee
@@ -625,14 +636,7 @@ EntDieByPowerOnly subroutine
     lda #$80
     sta entityXHi
 .Melee:
-    ;lda #$80
-    ;sta entityXHi,x
-    lda entityYHi,x
-    and #1
-    ora #EXPLOSION_ID<<1
-    sta entityYHi,x
-    lda #ANIM_SYMMETRICAL_OSCILLATE
-    sta entityAnim,x
+    jsr EntExplode
     lda #10
     sta arg
     lda #0
@@ -652,14 +656,7 @@ EntDieInOneShot subroutine
     lda #$80
     sta entityXHi
 .Melee:
-    ;lda #$80
-    ;sta entityXHi,x
-    lda entityYHi,x
-    and #1
-    ora #EXPLOSION_ID<<1
-    sta entityYHi,x
-    lda #ANIM_SYMMETRICAL_OSCILLATE
-    sta entityAnim,x
+    jsr EntExplode
     lda #10
     sta arg
     lda #0
@@ -676,12 +673,7 @@ ER_AirGenerator subroutine
     bcc .noBullet
     lda #$80
     sta entityXHi
-    lda entityYHi,x
-    and #1
-    ora #EXPLOSION_ID<<1
-    sta entityYHi,x
-    lda #ANIM_SYMMETRICAL_OSCILLATE
-    sta entityAnim,x
+    jsr EntExplode
     stx sav
     MOV16I arg,airMsg
     jsr QDisplayMessage
@@ -705,12 +697,7 @@ ER_Ball subroutine
     cmp #POWERSHOT_ID
     bne .alive
 .Melee:
-    lda entityYHi,x
-    and #1
-    ora #EXPLOSION_ID<<1
-    sta entityYHi,x
-    lda #ANIM_SYMMETRICAL_OSCILLATE
-    sta entityAnim,x
+    jsr EntExplode
     lda #5
     sta arg+1
     lda #0
@@ -803,11 +790,8 @@ ER_Fruit subroutine
     jmp ER_Return
 
 ER_Explosion subroutine
-    lda entityCount,x
-    clc
-    adc #1
-    sta entityCount,x
-    cmp #12
+    lda entityFrame,x
+    cmp #4<<2
     bcc .alive
     lda #$80
     sta entityXHi,x
@@ -1357,12 +1341,7 @@ ER_Bullet subroutine
     jsr SetTile
     ldx sav
 .die:
-    lda entityYHi,x
-    and #1
-    ora #EXPLOSION_ID<<1
-    sta entityYHi,x
-    lda #ANIM_SYMMETRICAL_OSCILLATE
-    sta entityAnim,x
+    jsr EntExplode
     jmp ER_Return
 .notEgg:
 
@@ -1564,15 +1543,7 @@ ER_Rex subroutine
     sta entityCount,x
     jmp .noBullet
 .dead
-    ;lda #$80
-    ;sta entityXHi,x
-    lda entityYHi,x
-    and #1
-    ora #EXPLOSION_ID<<1
-    sta entityYHi,x
-    lda #ANIM_SYMMETRICAL_OSCILLATE
-    sta entityAnim,x
-    
+    jsr EntExplode    
     lda #0
     sta arg
     lda #5
@@ -1594,23 +1565,16 @@ ER_CaterpillarHead:
     lda #$80
     sta entityXHi
 .MeleeDeath:
-    ;lda #$80
-    ;sta entityXHi,x
     lda entityYHi,x
-    sta tmp
-    and #1
-    ora #EXPLOSION_ID<<1
-    sta entityYHi,x
-    lda #ANIM_SYMMETRICAL_OSCILLATE
-    sta entityAnim,x
-    
+    sta sav
+    jsr EntExplode
     lda entityYHi+1,x
     lsr
     cmp #CATERPILLAR_ID
     bcc .lastOne
     cmp #CATERPILLAR_ID+4
     bcs .lastOne
-    lda tmp ;should be on same y coord, no need to extract
+    lda sav ;should be on same y coord, no need to extract
     sta entityYHi+1,x
 .lastOne:
     lda #1

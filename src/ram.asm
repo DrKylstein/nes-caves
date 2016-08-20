@@ -116,14 +116,15 @@ doorsY         ds 4
 exitTriggered  ds 1
 random         ds 1
 fruitTime      ds 2
-
+levelMap       ds 960
 entityXLo        ds MAX_ENTITIES
-entityXHi        ds MAX_ENTITIES
+entityXHi        ds MAX_ENTITIES ;active bit/unused/hi x 2 bits
 entityYLo        ds MAX_ENTITIES
-entityYHi        ds MAX_ENTITIES ; bottom bit
-entityVelocity   ds MAX_ENTITIES ; 
+entityYHi        ds MAX_ENTITIES ;index/hi y bit
+entityVelocity   ds MAX_ENTITIES 
 entityCount      ds MAX_ENTITIES
 entityAnim       ds MAX_ENTITIES
-levelMap       ds 960
+entityFrame      ds MAX_ENTITIES
+
     ECHO [$800-.]d,"bytes left in pages $300-$700"
 
