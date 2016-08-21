@@ -817,8 +817,12 @@ ER_Player subroutine
 .alive:
 
 ;normal animations
+    lda powerType
+    cmp #POWER_STRENGTH
+    beq .invincible
     lda mercyTime
     beq .visible
+.invincible:
     lda frame
     and #2
     beq .visible
