@@ -817,6 +817,15 @@ ER_Player subroutine
 .alive:
 
 ;normal animations
+    lda mercyTime
+    beq .visible
+    lda frame
+    and #2
+    beq .visible
+    lda #ANIM_NULL
+    sta entityAnim,x
+    jmp .noanim
+.visible:
     lda playerFlags
     and #7
     tay
@@ -828,7 +837,8 @@ ER_Player subroutine
 .notmoving:
     lda playerAnims,y
     sta entityAnim,x
-    
+.noanim:
+
 ;exit sequence
     lda playerFlags
     and #PLY_LOCKED

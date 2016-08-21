@@ -2155,6 +2155,9 @@ UpdateSprites subroutine
     ;get size in sav+2, def index in y
     ldy #0
     lda (sav),y
+    bne .nonzero
+    jmp .outerloop
+.nonzero:
     sta sav+2
     INC16 sav
     
