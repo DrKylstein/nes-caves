@@ -2,17 +2,20 @@
  163  bytes left for copy buffer
  32  bytes left for stack
  20  sprites left in upper table
- 41 bytes left in pages $300-$700
+ 40 bytes left in pages $300-$700
  PRGROM Bank 0 left: 3088
  PRGROM Bank 1 left: 10348
  PRGROM Bank 2 left: 8192
- PRGROM Bank 3 left: 7812
+ PRGROM Bank 3 left: 6679
  PRGROM Bank 4 left: 16384
  PRGROM Bank 5 left: 16384
  PRGROM Bank 6 left: 16384
  PRGROM Bank 7 left: 3702
 
 finish intro
+-position circle relative to stopping point of previous state
+-make crash based on actual scenery collision or move planets
+-add sounds
 add ending
 specify pitch envelopes in semitones / explicit arppeggio feature
 double up channels so that long notes can resume after very short ones
@@ -37,10 +40,7 @@ music
 Hilltop style clouds on main map?
 
 
-proper animation sequencing with per-entity counters
 hold ER pointer in ram so that entities can change routines dynamically?
 -ditch index and combine xhi/yhi
-hold frame pointer/index in entity field instead of animation? 
--entites would manage their own animation and  non-animated would save time
 store size and shared offset instead of individual offsets in frames?
--denser, can re-use y coordinate on horizontal runs
+-faster? denser, can re-use y coordinate on horizontal runs

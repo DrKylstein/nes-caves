@@ -258,6 +258,18 @@ nmi_Exit:
     pla
     rti
 ;------------------------------------------------------------------------------
+nmi_UpdateScroll subroutine
+    pla
+    sta PPU_SCROLL
+    pla
+    sta PPU_SCROLL
+    
+    pla
+    sta PPU_ADDR
+    pla
+    sta PPU_ADDR
+    rts
+;------------------------------------------------------------------------------
 nmi_UpdateMask subroutine
     pla
     sta PPU_MASK

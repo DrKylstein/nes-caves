@@ -1,6 +1,7 @@
-pressAnyKey:
-    .byte "Press Any Key^"
-    
+;------------------------------------------------------------------------------
+;in-game messages
+;------------------------------------------------------------------------------
+
 airMsg subroutine
 .start:
     .byte <[.end-.start-1],"THERE G0ES THE AIR"
@@ -51,5 +52,24 @@ poisonMsg subroutine
     .byte <[.end-.start-1],"P0IS0NED"
 .end:
 
+;------------------------------------------------------------------------------
+;opening text boxes
+;------------------------------------------------------------------------------
+
+pressAnyKey:
+    .byte "Press Any Key^"
+
 openingText:
     incbin opening.txt
+    
+steeringText:
+    .byte "Uh oh... the steering system",$0A,"is failing again!","^@"
+    
+whereText:
+    .byte "Whoa! Where'd that come from!","^@"
+    
+landText:
+    .byte "Whew...made it!  Now I",$0A
+    .byte "need to collect enough",$0A
+    .byte "crystals to trade at the",$0A
+    .byte "Galactic Trading Post.","^@"

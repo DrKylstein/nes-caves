@@ -518,14 +518,6 @@ ResetStats subroutine
     sta random
     sta random+1
     sta messageTime
-    lda currLevel
-    cmp #INTRO_LEVEL
-    bne .notIntro
-    lda #PLY_LOCKED
-    sta playerFlags
-    lda #255
-    sta entityCount+2
-.notIntro:
     lda #12
     sta tempo
     lda currLevel
@@ -1288,19 +1280,6 @@ UpdateFruit subroutine
     sta entityCount+FRUIT_INDEX
 UpdateFruit_end:
 
-ApplyGravity subroutine
-    lda playerFlags
-    and #PLY_UPSIDEDOWN
-    bne .reverseGravity
-    CMP16I playerYVel, TERMINAL_VELOCITY
-    bpl ApplyGravity_end
-    ADD16I playerYVel, playerYVel, GRAVITY
-    jmp ApplyGravity_end
-.reverseGravity:
-    CMP16I playerYVel, -TERMINAL_VELOCITY
-    bmi ApplyGravity_end
-    SUB16I playerYVel, playerYVel, GRAVITY
-ApplyGravity_end:
 
 
 CheckLeft subroutine
@@ -3192,6 +3171,13 @@ QEnableStaticDisplay subroutine
     PHXA
     ENQUEUE_ROUTINE nmi_UpdateMask
     ENQUEUE_PPU_ADDR $0000
+    
+    lda #0
+    PHXA
+    PHXA
+    ENQUEUE_ROUTINE nmi_UpdateScroll
+    ENQUEUE_PPU_ADDR $0000
+    
     stx shr_copyIndex
     rts
     ;------------------------------------------------------------------------------
