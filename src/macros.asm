@@ -45,6 +45,14 @@
     inc {1}+1
 .no_overflow:
     ENDM
+    
+    MAC INC16X
+    inc {1},x
+    bne .no_overflow
+    inc {1}+1,x
+.no_overflow:
+    ENDM
+
 
     MAC DEC16
     dec {1}

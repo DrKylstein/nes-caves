@@ -23,22 +23,18 @@ shr_tileCol         ds 1
 shr_earlyExit       ds 1
 shr_copyIndex       ds 1
 
+
 sfxPtr ds 2
-sfxPriority:
-sq1Priority  ds 1
-sq2Priority  ds 1
-triPriority  ds 1
-noisePriority ds 1
-sfxPatch:
-sq1Patch     ds 2
-sq2Patch     ds 2
-triPatch     ds 2
-noisePatch   ds 2
-sfxFreq:
-sq1Freq      ds 2
-sq2Freq      ds 2
-triFreq      ds 2
-noiseFreq    ds 2
+
+sfxPriority ds 1 ;interleaved bytes
+sfxHi       ds 1
+            ds 2 ;unused
+            ds 12
+            
+sfxPatch ds 2 ;interleaved words
+sfxFreq  ds 2
+         ds 12
+         
 musicSequence ds 8
 musicIndex ds 8 ;only even bytes used
 musicStream ds 8
