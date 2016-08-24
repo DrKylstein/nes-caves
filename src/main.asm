@@ -8,13 +8,13 @@ reset subroutine
     sei        ;; ignore IRQs
     cld        ;; disable decimal mode
     ldx #$40
-    stx $4017  ;; disable APU frame IRQ
+    stx APU_FRAME  ;; disable APU frame IRQ
     ldx #$ff
     txs        ;; Set up stack
     inx        ;; now X = 0
     stx PPU_CTRL  ;; disable NMI
     stx PPU_MASK  ;; disable rendering
-    stx $4010  ;; disable DMC IRQs
+    stx APU_DMC_FREQ  ;; disable DMC IRQs
  
     ;; Optional (omitted):
     ;; Set up mapper and jmp to further init code here.
@@ -3256,25 +3256,29 @@ UpdateInput subroutine
 UpdateInput_end:
 ;------------------------------------------------------------------------------
 ResetAPU subroutine
+    ;mute everything
     lda #$00
     sta APU_ENABLE
-    ldy #0
-.loop:  
-    lda .regs,y
-    sta APU_REGISTERS,y
-    iny
-    cpy #$18
-    bne .loop
+    
+    ;silence square and noise
+    lda #$30
+    sta APU_SQ1_VOL
+    sta APU_SQ2_VOL
+    sta APU_NOISE_VOL
+    
+    ;disable sweep
+    lda #$08
+    sta APU_SQ1_SWEEP
+    sta APU_SQ2_SWEEP
+    
+    ;silence triangle
+    lda #$80
+    sta APU_TRI_LINEAR
+    
+    ;unmute
     lda #$0F
     sta APU_ENABLE
     rts
-.regs:
-    .byte $30,$08,$00,$00 ;sq1
-    .byte $30,$08,$00,$00 ;sq2
-    .byte $80,$00,$00,$00 ;tri
-    .byte $30,$00,$00,$00 ;noise
-    .byte $00,$00,$00,$00 ;dmc
-    .byte $00,$0F,$00,$40 ;ctrl
 ;------------------------------------------------------------------------------
 Randomize subroutine
     lda random
