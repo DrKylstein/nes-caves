@@ -2559,35 +2559,15 @@ EvenColumn subroutine
     inx
     ldy tmp
     iny
-    cpx #TOP_HEIGHT
+    cpx #TOP_HEIGHT+BOTTOM_HEIGHT
     bne .first_loop
-    
-    ADD16I arg, arg, TOP_HEIGHT/2
-    
-    ldy #0
-    ldx #0
-.third_loop
-    sty tmp
-    lda (arg),y
-    tay
-    lda metatiles,y
-    sta shr_tileBuffer+TOP_HEIGHT,x
-    inx
-    lda metatiles+512,y
-    sta shr_tileBuffer+TOP_HEIGHT,x
-    inx
-    ldy tmp
-    iny
-    cpx #BOTTOM_HEIGHT
-    bne .third_loop
-    
+        
     lda arg+2
     sta shr_tileCol
     rts
 ;------------------------------------------------------------------------------
 ;arg 0..1 -> rom address
 ;arg 2 -> nametable column
-; 20 top 30 bottom, x2 right and left
 OddColumn subroutine    
     ldy #0
     ldx #0
@@ -2603,27 +2583,9 @@ OddColumn subroutine
     inx
     ldy tmp
     iny
-    cpx #TOP_HEIGHT
-    bne .second_loop  
+    cpx #TOP_HEIGHT+BOTTOM_HEIGHT
+    bne .second_loop 
     
-    ADD16I arg, arg, TOP_HEIGHT/2
-    
-    ldy #0
-    ldx #0
-.fourth_loop
-    sty tmp
-    lda (arg),y
-    tay
-    lda metatiles+256,y
-    sta shr_tileBuffer+TOP_HEIGHT,x
-    inx
-    lda metatiles+768,y
-    sta shr_tileBuffer+TOP_HEIGHT,x
-    inx
-    ldy tmp
-    iny
-    cpx #BOTTOM_HEIGHT
-    bne .fourth_loop 
     lda arg+2
     sta shr_tileCol
     
