@@ -28,11 +28,12 @@ sfxPtr ds 2
 
 sfxPriority ds 1 ;interleaved bytes
 sfxHi       ds 1
-            ds 2 ;unused
+sfxNote     ds 1
+            ds 1
             ds 12
             
 sfxPatch ds 2 ;interleaved words
-sfxFreq  ds 2
+         ds 2 ; unused
          ds 12
          
 musicSequence ds 8

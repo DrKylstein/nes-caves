@@ -94,11 +94,8 @@ DoMusic subroutine
     lda instrument+1,x
     sta arg+1
 
-    ldy tmp+1
-    lda periodTableLo,y
+    lda tmp+1
     sta arg+2
-    lda periodTableHi,y
-    sta arg+3
         
     txa
     pha
@@ -125,9 +122,9 @@ doLoadSfx subroutine
     lda (arg),y
     sta arg+2
     INC16 arg
-    lda (arg),y
-    sta arg+3
-    INC16 arg
+    ; lda (arg),y
+    ; sta arg+3
+    ; INC16 arg
     jsr LoadSfx
     lda #0
     sta sfxPtr+1
@@ -158,14 +155,12 @@ DoSfx subroutine
     jmp .next
 .notNoise:
     lda (sfxPatch,x)
-    sta tmp
-    EXTEND tmp,tmp
-    lda sfxFreq,x
-    sec
-    sbc tmp
+    clc
+    adc sfxNote,x
+    tay
+    lda periodTableLo,y
     sta APU_SQ1_LO,x
-    lda sfxFreq+1,x
-    sbc tmp+1
+    lda periodTableHi,y
     cmp sfxHi,x
     beq .nohi
     sta sfxHi,x
@@ -205,8 +200,6 @@ LoadSfx subroutine
     jmp .loop
 .higher
     sta sfxPriority,x
-    lda arg+3
-    sta sfxHi,x
     iny
     
     lda (arg),y
@@ -218,12 +211,15 @@ LoadSfx subroutine
     sta sfxPatch+1,x
 
     lda arg+2
-    sta sfxFreq,x
+    sta sfxNote,x
     
-    lda arg+3
-    sta sfxFreq+1,x
     ;set upper frequency byte
+    sty tmp
+    tay
+    lda periodTableHi,y
+    sta sfxHi,x
     sta APU_SQ1_HI,x
+    ldy tmp
     jmp .loop
 .end:
     rts
@@ -334,24 +330,24 @@ bass subroutine
     .word .tri
     .byte -1
 .tri:
+    .byte TRI_ON, 2
+    .byte TRI_ON, 1
     .byte TRI_ON, 0
-    .byte TRI_ON, -128
     .byte TRI_ON, 0
-    .byte TRI_ON, 64
     .byte TRI_ON, 0
-    .byte TRI_ON, -32
     .byte TRI_ON, 0
-    .byte TRI_ON, 16
     .byte TRI_ON, 0
-    .byte TRI_ON, -8
     .byte TRI_ON, 0
-    .byte TRI_ON, 4
     .byte TRI_ON, 0
+    .byte TRI_ON, 0
+    .byte TRI_ON, 0
+    .byte TRI_ON, 0
+    .byte TRI_ON, 0
+    .byte TRI_ON, 0
+    .byte TRI_ON, -1
     .byte TRI_ON, -2
-    .byte TRI_ON, 0
-    .byte TRI_ON, 0
-    .byte TRI_ON, 0
-    .byte TRI_ON, 0
+    .byte TRI_ON, -3
+    .byte TRI_ON, -4
     .byte TRI_OFF, 0
     .byte 0
 
@@ -382,9 +378,9 @@ bassDrum subroutine
     .byte NOISE_VOL | 0, 0
     .byte 0
 .tri:
-    .byte TRI_ON, 16
-    .byte TRI_ON, 8
-    .byte TRI_ON, 4
+    .byte TRI_ON, 3
+    .byte TRI_ON, 2
+    .byte TRI_ON, 1
     .byte TRI_OFF, 0
     .byte 0
     
@@ -415,9 +411,9 @@ snareDrum subroutine
     .byte NOISE_VOL | 0, 8
     .byte 0
 .tri:
-    .byte TRI_ON,  16
-    .byte TRI_ON,  8
-    .byte TRI_ON,  4
+    .byte TRI_ON,  3
+    .byte TRI_ON,  2
+    .byte TRI_ON,  1
     .byte TRI_OFF, 0
     .byte 0
 
@@ -447,7 +443,7 @@ hihat subroutine
     .byte 0
 
 sfxHeavyImpact subroutine
-    .word $713
+    .byte MN_C1_
     .byte NOISE_CH
     .byte 0
     .word .noise
@@ -474,17 +470,17 @@ sfxHeavyImpact subroutine
     .byte NOISE_VOL |  0, 0
     .byte 0
 .tri:
-    .byte  TRI_ON, 16
-    .byte  TRI_ON, 12
-    .byte  TRI_ON, 8
     .byte  TRI_ON, 6
+    .byte  TRI_ON, 5 
     .byte  TRI_ON, 4
+    .byte  TRI_ON, 3
     .byte  TRI_ON, 2
+    .byte  TRI_ON, 1
     .byte TRI_OFF, 0
     .byte 0
 
 sfxLaser subroutine
-    .word 0 ;note
+    .byte 0 ;note
     .byte NOISE_CH ;channel
     .byte 3 ;priority
     .word .noise ; patch
@@ -508,7 +504,7 @@ sfxLaser subroutine
     .byte 0
     
 sfxCrystal subroutine
-    .word $060
+    .byte MN_D5_
     .byte SQ1_CH
     .byte 2
     .word .sq
@@ -536,7 +532,7 @@ sfxCrystal subroutine
     .byte 0
 
 sfxJump subroutine
-    .word $00F0
+    .byte MN_A3S
     .byte SQ1_CH
     .byte 1
     .word .sqJump
@@ -576,7 +572,7 @@ sfxJump subroutine
     .byte 0
     
 sfxShoot subroutine
-    .word $0230
+    .byte MN_F2S
     .byte SQ1_CH
     .byte 1
     .word .sqShoot
