@@ -671,7 +671,7 @@ CheckInput subroutine
     lda playerFlags
     ora #PLY_ISJUMPING
     sta playerFlags
-    MOV16I arg, sfxJump
+    ldx #SFX_JUMP
     jsr PlaySound
 CheckInput_end:
 
@@ -777,7 +777,7 @@ TC_Deadly:
     jmp TC_UpdateTile
     
 TC_Crystal:
-    MOV16I arg,sfxCrystal
+    ldx #SFX_CRYSTAL
     jsr PlaySound
     dec crystalsLeft
     bne .notDone
@@ -1147,7 +1147,7 @@ TC_Nop:
     dec ammo
     jsr UpdateAmmoDisplay
 .InfiniteAmmo
-    MOV16I arg, sfxShoot
+    ldx #SFX_SHOOT
     jsr PlaySound
     lda playerX
     sta entityXLo
@@ -3110,8 +3110,21 @@ TestCollision subroutine
     sec
     rts
 ;------------------------------------------------------------------------------
-PlaySound subroutine
-    MOV16 sfxPtr,arg
+PlaySound subroutine ;argument in x, uses both index regs
+    PUSH_BANK
+    SELECT_BANK 3
+    lda sounds,x
+    sta tmp
+    lda sounds+1,x
+    sta tmp+1
+    ldy #0
+    lda (tmp),y
+    sta arg+2
+    ADD16I arg,tmp,1
+    jsr LoadSfx
+    lda #0
+    sta sfxPtr+1
+    POP_BANK
     rts
 ;------------------------------------------------------------------------------
 QDisableDisplay subroutine

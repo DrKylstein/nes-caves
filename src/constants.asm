@@ -317,3 +317,11 @@ ANIM_BALL_LEFT              ds 1
 ANIM_BALL_SLEEP             ds 1
 ANIM_AIR_GENERATOR          ds 1
 ANIM_PLAYER_DIE             ds 1
+
+    SEG.U SOUNDS
+    ORG $0000
+SFX_JUMP:    ds 2
+SFX_SHOOT:   ds 2
+SFX_CRYSTAL: ds 2
+SFX_LASER:   ds 2
+SFX_HAMMER:  ds 2

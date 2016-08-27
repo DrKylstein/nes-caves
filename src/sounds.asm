@@ -112,24 +112,6 @@ DoMusic subroutine
     sta beatTimer
 DoMusic_end:
 
-
-doLoadSfx subroutine
-    MOV16 arg,sfxPtr
-    lda arg+1
-    beq doLoadSfx_end
-    MOV16 shr_debugReg,arg
-    ldy #0
-    lda (arg),y
-    sta arg+2
-    INC16 arg
-    ; lda (arg),y
-    ; sta arg+3
-    ; INC16 arg
-    jsr LoadSfx
-    lda #0
-    sta sfxPtr+1
-doLoadSfx_end:
-
 DoSfx subroutine
     ldx #0
 .loop:
@@ -498,6 +480,13 @@ hihat subroutine
     .byte NOISE_VOL | 0, NOISE_LOOP | 15
     .byte NOISE_VOL | 1, NOISE_LOOP | 15
     .byte 0
+
+sounds:
+    .word sfxJump
+    .word sfxShoot
+    .word sfxCrystal
+    .word sfxLaser
+    .word sfxHeavyImpact
 
 sfxHeavyImpact subroutine
     .byte MN_C1_

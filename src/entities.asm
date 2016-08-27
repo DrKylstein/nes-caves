@@ -772,7 +772,7 @@ ER_Fruit subroutine
     bne .notStart
     lda #1
     sta entityCount,x
-    MOV16I arg, sfxCrystal
+    ldx #SFX_CRYSTAL
     jsr PlaySound
 .notStart:
     MOV16I arg, 12
@@ -1760,8 +1760,10 @@ ER_Cannon
     cmp #$10
     bne return$
     
-    MOV16I arg, sfxLaser
+    stx sav
+    ldx #SFX_LASER
     jsr PlaySound
+    ldx sav
     
     lda #0
     sta entityCount,x
@@ -2294,8 +2296,10 @@ ER_Hammer subroutine
     sta entityCount,x
     lda #<-1
     sta entityVelocity,x
-    MOV16I arg,sfxHeavyImpact
+    stx sav
+    ldx #SFX_HAMMER
     jsr PlaySound
+    ldx sav
     jmp ER_Return
 .notLanded:
     jsr EntFall
