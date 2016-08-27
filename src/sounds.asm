@@ -487,6 +487,8 @@ sounds:
     .word sfxCrystal
     .word sfxLaser
     .word sfxHeavyImpact
+    .word sfxAmmo
+    .word sfxPoints
 
 sfxHeavyImpact subroutine
     .byte MN_C1_
@@ -575,6 +577,28 @@ sfxCrystal subroutine
     .byte DUTY_50 | $2, 8
     .byte DUTY_50 | $1, 8
     .byte DUTY_50 | $0, 8
+    .byte 0
+    
+sfxPoints subroutine
+    .byte MN_D5_
+    .byte SQ1_CH
+    .byte 2
+    .word .sq
+    .byte <-1
+.sq:
+    .byte DUTY_50 | $8, 0
+    .byte DUTY_50 | $F, 0
+    .byte DUTY_50 | $F, 0
+    .byte DUTY_50 | $F, 0
+    .byte DUTY_50 | $D, 0
+    .byte DUTY_50 | $B, 0
+    .byte DUTY_50 | $9, 0
+    .byte DUTY_50 | $7, 0
+    .byte DUTY_50 | $5, 0
+    .byte DUTY_50 | $3, 0
+    .byte DUTY_50 | $2, 0
+    .byte DUTY_50 | $1, 0
+    .byte DUTY_50 | $0, 0
     .byte 0
 
 sfxJump subroutine
@@ -677,4 +701,33 @@ sfxShoot subroutine
     .byte NOISE_VOL |  2, 15
     .byte NOISE_VOL |  1, 15
     .byte NOISE_VOL |  0, 15
+    .byte 0
+
+sfxAmmo subroutine
+    .byte MN_C4_
+    .byte SQ1_CH
+    .byte 2
+    .word .sq
+    .byte -1
+.sq:
+    .byte DUTY_50 | $F,2
+    .byte DUTY_50 | $F,2
+    .byte DUTY_50 | $F,2
+    .byte DUTY_50 | $F,2
+    .byte DUTY_50 | $F,0
+    .byte DUTY_50 | $F,0
+    .byte DUTY_50 | $F,0
+    .byte DUTY_50 | $F,0
+    .byte DUTY_50 | $F,4
+    .byte DUTY_50 | $F,4
+    .byte DUTY_50 | $F,4
+    .byte DUTY_50 | $F,4
+    .byte DUTY_50 | $F,2
+    .byte DUTY_50 | $F,2
+    .byte DUTY_50 | $F,2
+    .byte DUTY_50 | $F,2
+    .byte DUTY_50 | $8,2
+    .byte DUTY_50 | $4,2
+    .byte DUTY_50 | $2,2
+    .byte DUTY_50 | $0,2
     .byte 0

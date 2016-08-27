@@ -325,3 +325,5 @@ SFX_SHOOT:   ds 2
 SFX_CRYSTAL: ds 2
 SFX_LASER:   ds 2
 SFX_HAMMER:  ds 2
+SFX_AMMO:    ds 2
+SFX_POINTS:  ds 2

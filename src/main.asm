@@ -825,6 +825,9 @@ TC_Points:
 .notBonus:
     jsr AddScore
     
+    ldx #SFX_POINTS
+    jsr PlaySound
+    
     lda #0
     sta sav
     jmp TC_UpdateTile
@@ -865,6 +868,8 @@ TC_Ammo:
     jsr UpdateAmmoDisplay
     lda #0
     sta sav
+    ldx #SFX_AMMO
+    jsr PlaySound
     jmp TC_UpdateTile
 TC_Ammo_end:
 

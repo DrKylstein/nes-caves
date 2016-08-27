@@ -790,6 +790,8 @@ ER_Fruit subroutine
     sta arg+2
     stx sav
     jsr AddScore
+    ldx #SFX_POINTS
+    jsr PlaySound
     ldx sav
 .DoNothing:
     jmp ER_Return
