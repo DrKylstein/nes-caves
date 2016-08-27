@@ -253,9 +253,30 @@ nullSong subroutine
 
 testSong subroutine
     .word 0
-    .word 0
+    .word testChordSequence
     .word testBassSequence
     .word testDrumSequence
+
+testChordSequence
+    .word .pat1
+    .word 0
+.pat1:
+    .byte    $04,MN_C3_
+    .byte MC____,MN_C3_
+    .byte MC____,MN_C3_
+    .byte MC____,MN_C3_
+    .byte MC____,MN_C3_
+    .byte MC____,MN_C3_
+    .byte MC____,MN_C3_
+    .byte MC____,MN_C3_
+    .byte MC____,MN_G3_
+    .byte MC____,MN_G3_
+    .byte MC____,MN_G3_
+    .byte MC____,MN_G3_
+    .byte MC____,MN_G3_
+    .byte MC____,MN_G3_
+    .byte MC____,MN_G3_
+    .byte MC_LOP,MN_G3_
 
 testDrumSequence subroutine
     .word .pat2
@@ -311,6 +332,7 @@ instruments:
     .word snareDrum
     .word bass
     .word hihat
+    .word testchord
 
 
 ;square patch: 
@@ -323,6 +345,41 @@ instruments:
 ;.byte %0011xxxx ; volume
 ;.byte %L000FFFF ;L = loop noise, F = absolute frequency
 ;.byte 0 ; end
+
+testchord subroutine
+    .byte SQ2_CH
+    .byte 0
+    .word .sq
+    .byte -1
+.sq:
+    .byte DUTY_50 | 4, 0
+    .byte DUTY_50 | 4, 4
+    .byte DUTY_50 | 4, 7
+    .byte DUTY_50 | 4, 0
+    .byte DUTY_50 | 4, 4
+    .byte DUTY_50 | 4, 7
+    .byte DUTY_50 | 4, 0
+    .byte DUTY_50 | 4, 4
+    .byte DUTY_50 | 4, 7
+    .byte DUTY_50 | 4, 0
+    .byte DUTY_50 | 4, 4
+    .byte DUTY_50 | 4, 7
+    .byte DUTY_50 | 4, 0
+    .byte DUTY_50 | 4, 4
+    .byte DUTY_50 | 4, 7
+    .byte DUTY_50 | 4, 0
+    .byte DUTY_50 | 4, 4
+    .byte DUTY_50 | 4, 7
+    .byte DUTY_50 | 4, 0
+    .byte DUTY_50 | 4, 4
+    .byte DUTY_50 | 4, 7
+    .byte DUTY_50 | 4, 0
+    .byte DUTY_50 | 4, 4
+    .byte DUTY_50 | 4, 7
+    .byte DUTY_50 | 4, 0
+    .byte DUTY_50 | 4, 4
+    .byte DUTY_50 | 4, 7
+    .byte 0
 
 bass subroutine
     .byte TRI_CH

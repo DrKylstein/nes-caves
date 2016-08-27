@@ -26,15 +26,13 @@ shr_copyIndex       ds 1
 
 sfxPtr ds 2
 
-sfxPriority ds 1 ;interleaved bytes
+sfxPriority ds 1 ;4x3 bytes unused
+            ds 15
+            
+sfxPatch    ds 2
 sfxHi       ds 1
 sfxNote     ds 1
-            ds 1
-            ds 12
-            
-sfxPatch ds 2 ;interleaved words
-         ds 2 ; unused
-         ds 12
+            ds 12 ;repeats
          
 musicSequence ds 8
 musicIndex ds 8 ;only even bytes used
