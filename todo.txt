@@ -15,7 +15,6 @@
 finish intro
 -position circle relative to stopping point of previous state
 -make crash based on actual scenery collision or move planets
-add sounds
 add ending
 double up channels so that long notes can resume after very short ones
 more sounds
@@ -23,7 +22,6 @@ more sounds
 -bullet impacts
 -flames
 push out of walls when on elevator
-make ball enemy shoot
 add snake (subs hopper)
 add stalk-eye (subs trike)
 add falling sign
@@ -36,7 +34,6 @@ shoot/just fired animation
 low gravity
 enter animation
 music
-Hilltop style clouds on main map?
 
 
 hold ER pointer in ram so that entities can change routines dynamically?

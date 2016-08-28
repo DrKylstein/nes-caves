@@ -24,6 +24,8 @@ globalTiles:
     incbin sprites.pat
 globalBgTiles:
     incbin tileset-shared.pat
+cloudsTiles:
+    incbin tileset-clouds.pat
     include palettes.asm
     ECHO "PRGROM Bank 0 left:",[$C000-.]d
     IF . > $C000

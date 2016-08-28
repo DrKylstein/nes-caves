@@ -167,6 +167,23 @@ nmi_AttrCopy_end:
     jmp nmi_Exit
 continue$:
 
+nmi_Clouds subroutine
+    PUSH_BANK
+    SELECT_BANK 0
+    lda nmi_frame
+    and #$FE
+    REPEAT 4
+    asl
+    REPEND
+    tax
+    SET_PPU_ADDR [VRAM_PATTERN_R+[254*16]]
+    REPEAT 32
+    lda cloudsTiles,x
+    inx
+    sta PPU_DATA
+    REPEND
+    POP_BANK
+
 nmi_DebugCounter subroutine
     lda #PPU_CTRL_SETTING
     sta PPU_CTRL
