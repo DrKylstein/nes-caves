@@ -228,12 +228,14 @@ periodTableHi:
 
 
 nullSong subroutine
+    .byte 255
     .word 0
     .word 0
     .word 0
     .word 0
 
 testSong subroutine
+    .byte 12
     .word 0
     .word testChordSequence
     .word testBassSequence
@@ -309,12 +311,96 @@ testBassSequence subroutine
     .byte MC_LOP,MN_G1_
     
 
+mineSong subroutine
+    .byte 12
+    .word .percussionSeq
+    .word .bassSeq
+    .word 0
+    .word 0
+    
+.percussionSeq:
+    .word .percussion1
+    .word 0
+.percussion1:
+    .byte    $03,MN_C1_
+    .byte MC____,MN_C1_
+    .byte MC____,MN_C1_
+    .byte MC____,MN_C1_
+    .byte MC____,MN_C1_
+    .byte MC____,MN_C1_
+    .byte MC____,MN_C1_
+    .byte MC_LOP,MN_C1_
+
+.bassSeq:
+    .word .bass0
+    .word .bass1
+    .word .bass1
+    .word .bass1
+    .word .bass1
+    .word .bass2
+    .word .bass2
+    .word .bass2
+    .word .bass1
+    .word .bass1
+    .word 0
+.bass0:
+    .byte    $02,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC_LOP,MN____
+.bass1:
+    .byte MC____,MN_C3_
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN_C3_
+    .byte MC____,MN_G2_
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN_C3_
+    .byte MC____,MN____
+    .byte MC____,MN_C3_
+    .byte MC____,MN____
+    .byte MC____,MN_G2_
+    .byte MC____,MN_A2S
+    .byte MC____,MN_A2S
+    .byte MC____,MN_C3_
+    .byte MC_LOP,MN_A2S
+.bass2:
+    .byte MC____,MN_D3_
+    .byte MC____,MN_G3_
+    .byte MC____,MN_D3_
+    .byte MC____,MN_G2_
+    .byte MC____,MN_C3_
+    .byte MC____,MN____
+    .byte MC____,MN_C3_
+    .byte MC____,MN_E2_
+    .byte MC____,MN____
+    .byte MC____,MN_F2_
+    .byte MC____,MN____
+    .byte MC____,MN_F2S
+    .byte MC____,MN____
+    .byte MC____,MN_G2_
+    .byte MC____,MN____
+    .byte MC_LOP,MN____
+
 instruments:
     .word bassDrum
     .word snareDrum
     .word bass
     .word hihat
-    .word testchord
+    .word majorArpeggio
 
 
 ;square patch: 
@@ -328,7 +414,7 @@ instruments:
 ;.byte %L000FFFF ;L = loop noise, F = absolute frequency
 ;.byte 0 ; end
 
-testchord subroutine
+majorArpeggio subroutine
     .byte SQ2_CH
     .byte 0
     .word .sq
@@ -369,13 +455,6 @@ bass subroutine
     .word .tri
     .byte -1
 .tri:
-    .byte TRI_ON, 2
-    .byte TRI_ON, 1
-    .byte TRI_ON, 0
-    .byte TRI_ON, 0
-    .byte TRI_ON, 0
-    .byte TRI_ON, 0
-    .byte TRI_ON, 0
     .byte TRI_ON, 0
     .byte TRI_ON, 0
     .byte TRI_ON, 0
@@ -462,23 +541,18 @@ hihat subroutine
     .word .noise
     .byte -1
 .noise:
-    .byte NOISE_VOL | 4, NOISE_LOOP | 9
-    .byte NOISE_VOL | 7, NOISE_LOOP | 10
-    .byte NOISE_VOL | 7, NOISE_LOOP | 10
-    .byte NOISE_VOL | 6, NOISE_LOOP | 11
-    .byte NOISE_VOL | 6, NOISE_LOOP | 11
-    .byte NOISE_VOL | 5, NOISE_LOOP | 12
-    .byte NOISE_VOL | 5, NOISE_LOOP | 12
-    .byte NOISE_VOL | 4, NOISE_LOOP | 13
-    .byte NOISE_VOL | 5, NOISE_LOOP | 13
-    .byte NOISE_VOL | 3, NOISE_LOOP | 14
-    .byte NOISE_VOL | 4, NOISE_LOOP | 14
-    .byte NOISE_VOL | 2, NOISE_LOOP | 13
-    .byte NOISE_VOL | 3, NOISE_LOOP | 13
-    .byte NOISE_VOL | 1, NOISE_LOOP | 14
-    .byte NOISE_VOL | 2, NOISE_LOOP | 14
-    .byte NOISE_VOL | 0, NOISE_LOOP | 15
-    .byte NOISE_VOL | 1, NOISE_LOOP | 15
+    .byte NOISE_VOL |11, 15
+    .byte NOISE_VOL |10, 15
+    .byte NOISE_VOL | 9, 15 
+    .byte NOISE_VOL | 8, 15
+    .byte NOISE_VOL | 7, 15
+    .byte NOISE_VOL | 6, 15 | NOISE_LOOP
+    .byte NOISE_VOL | 5, 15
+    .byte NOISE_VOL | 4, 15 | NOISE_LOOP
+    .byte NOISE_VOL | 3, 15
+    .byte NOISE_VOL | 2, 15 | NOISE_LOOP
+    .byte NOISE_VOL | 1, 15
+    .byte NOISE_VOL | 0, 15 | NOISE_LOOP
     .byte 0
 
 sounds:

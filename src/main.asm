@@ -518,8 +518,8 @@ ResetStats subroutine
     sta random
     sta random+1
     sta messageTime
-    lda #12
-    sta tempo
+    
+    SELECT_BANK 3
     lda currLevel
     asl
     tax
@@ -528,14 +528,19 @@ ResetStats subroutine
     lda levelMusic+1,x
     sta tmp+1
     ldy #0
+    lda (tmp),y
+    iny
+    sta tempo
 .loopSequences:
     lda (tmp),y
-    sta musicSequence,y
+    sta musicSequence-1,y
     lda #0
-    sta musicIndex,y
+    sta musicIndex-1,y
     iny
-    cpy #8
+    cpy #9
     bne .loopSequences
+    lda #0
+    sta beatTimer
 ResetStats_end:
 
     jsr InitialDrawLevel

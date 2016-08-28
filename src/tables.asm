@@ -122,5 +122,5 @@ levelMusic:
     .word testSong
     .word testSong
     .word testSong
-    .word testSong
+    .word mineSong
     .word nullSong
