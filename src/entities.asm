@@ -80,7 +80,7 @@ entityFlags:
     .byte 1 ; cherry
     .byte 1 ; strawberry
     .byte 1 ; peach
-    .byte 2 ; ball
+    .byte [1<<ENT_F_CHILDREN_SHIFT] | 2 ; ball
     .byte [1<<ENT_F_CHILDREN_SHIFT] | 2 ; right cannon
     .byte [1<<ENT_F_CHILDREN_SHIFT] | 2 ; left cannon
     .byte 2 ;air generator
@@ -695,8 +695,9 @@ ER_Ball subroutine
     bcc .alive
     lda #$80
     sta entityXHi
-    lda entityCount,x
-    bmi .Melee
+    lda entityAnim,x
+    cmp #ANIM_BALL_SLEEP
+    beq .Melee
     lda entityYHi
     lsr
     cmp #POWERSHOT_ID
@@ -713,23 +714,32 @@ ER_Ball subroutine
     ldx sav
     jmp ER_Return
 .alive:
-    lda entityCount,x
-    bpl .rolling
-    sec
-    sbc #1
-    sta entityCount,x
-    lda #ANIM_BALL_SLEEP
+    lda entityAnim,x
+    cmp #ANIM_BALL_SLEEP
+    bne .rolling
+    lda entityFrame,x
+    cmp #255
+    bne .sleep_end
+    lda #ANIM_BALL_RIGHT
     sta entityAnim,x
+    lda #0
+    sta entityFrame,x
+    lda entityVelocity,x
+    bpl .sleep_end
+    lda #ANIM_BALL_LEFT
+    sta entityAnim,x
+.sleep_end:
     jmp ER_Return
 .rolling:
-    cmp #-127
+    lda entityFrame,x
+    cmp #255
     bne .continue
-    lda #30
-    sta entityCount,x
+    lda #ANIM_BALL_SLEEP
+    sta entityAnim,x
+    lda #0
+    sta entityFrame,x
+    jmp ER_Return
 .continue:
-    sec
-    sbc #1
-    sta entityCount,x
     jsr EntMoveHorizontally
     jsr EntTestWalkingCollision
     bcc .nohit
@@ -738,14 +748,60 @@ ER_Ball subroutine
     clc
     adc #1
     sta entityVelocity,x
-.nohit:
     lda #ANIM_BALL_RIGHT
     sta entityAnim,x
     lda entityVelocity,x
-    bpl .right
+    bpl .nohit
     lda #ANIM_BALL_LEFT
     sta entityAnim,x
-.right:
+.nohit:
+    MOV16I arg, 8
+    jsr EntAwayFromPlayerY
+    bcs .noshoot
+    lda entityXHi+1,x
+    bpl .noshoot
+    lda entityCount,x
+    clc
+    adc #1
+    sta entityCount,x
+    cmp #30
+    bne .noshoot
+    
+    stx sav
+    ldx #SFX_LASER
+    jsr PlaySound
+    ldx sav
+    
+    lda #0
+    sta entityCount,x
+    lda entityXHi,x
+    sta entityXHi+1,x
+    lda entityXLo,x
+    sta entityXLo+1,x
+    lda entityYHi,x
+    and #ENT_Y_POS
+    ora #40
+    sta entityYHi+1,x
+    lda entityYLo,x
+    sta entityYLo+1,x
+    lda #ANIM_SYMMETRICAL_NONE
+    sta entityAnim+1,x
+    
+    lda #2
+    sta entityVelocity+1,x
+    
+    lda entityXLo,x
+    sta tmp
+    lda entityXHi,x
+    and #ENT_X_POS
+    sta tmp+1
+    CMP16 tmp, playerX
+    bcc .noshoot
+    lda #-2
+    sta entityVelocity+1,x
+    
+.noshoot:
+
     jmp ER_Return
 
 
