@@ -41,6 +41,7 @@ entityRoutine:
     .word ER_LeftCannonMoving
     .word ER_AirGenerator
     .word ER_Kiwi
+    .word ER_EyeMonster
     
 entityFlags:
     .byte ENT_F_SKIPYTEST | ENT_F_SKIPXTEST | 1 ; player
@@ -85,6 +86,7 @@ entityFlags:
     .byte [1<<ENT_F_CHILDREN_SHIFT] | 2 ; left cannon
     .byte 2 ;air generator
     .byte ENT_F_SKIPYTEST | ENT_F_SKIPXTEST | 2 ; kiwi
+    .byte [1<<ENT_F_CHILDREN_SHIFT] | 3 ;eyemonster
     
 entityTiles:
     .byte 0 ; player
@@ -129,6 +131,7 @@ entityTiles:
     .byte [2+32]*2 ; left cannon
     .byte [17+32*2]*2 ; air generator
     .byte $85 ; kiwi
+    .byte [0+32*3]*2 ; eyemonster
     
 entitySpeeds:
     .byte 0 ; player
@@ -173,6 +176,7 @@ entitySpeeds:
     .byte 1 ; left cannon
     .byte 0 ; air_generator
     .byte 0 ; kiwi
+    .byte 1 ; eyemonster
     
 entityInitialAnims:
     .byte ANIM_SMALL_NONE ; player
@@ -217,6 +221,7 @@ entityInitialAnims:
     .byte ANIM_SMALL_HFLIP_NONE ; left cannon
     .byte ANIM_AIR_GENERATOR
     .byte ANIM_SMALL_NONE ; kiwi
+    .byte ANIM_EYEMONSTER ; eyemonster
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
     lda entityXLo,x
@@ -672,6 +677,20 @@ EntDieInOneShot subroutine
     ldx sav
 .alive:
     rts
+
+ER_EyeMonster subroutine
+    jsr EntDieInOneShot ;placeholder
+    jsr EntTryMelee
+    jsr EntMoveHorizontally
+    jsr EntTestWalkingCollision
+    bcc .nohit
+    lda entityVelocity,x
+    eor #$FF
+    clc
+    adc #1
+    sta entityVelocity,x
+.nohit:
+    jmp ER_Return
 
 ER_AirGenerator subroutine
     jsr EntIsBulletNearTall
