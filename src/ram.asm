@@ -23,6 +23,7 @@ shr_tileCol         ds 1
 shr_earlyExit       ds 1
 shr_copyIndex       ds 1
 
+messagePtr     ds 2
 
 sfxPtr ds 2
 
@@ -112,6 +113,7 @@ exitTriggered  ds 1
 random         ds 2
 fruitTime      ds 2
 messageTime    ds 1
+messageCursor  ds 1
 levelMap       ds 960
 entityXLo        ds MAX_ENTITIES
 entityXHi        ds MAX_ENTITIES ;active bit/off screen bit/unused 4 bits/hi x 2 bits

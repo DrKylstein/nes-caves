@@ -700,7 +700,7 @@ ER_AirGenerator subroutine
     jsr EntExplode
     stx sav
     MOV16I arg,airMsg
-    jsr QDisplayMessage
+    jsr DisplayMessage
     ldx sav
     jsr KillPlayer
 .noBullet:

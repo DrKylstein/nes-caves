@@ -563,6 +563,18 @@ sounds:
     .word sfxHeavyImpact
     .word sfxAmmo
     .word sfxPoints
+    .word sfxRTTY
+
+sfxRTTY subroutine
+    .byte MN_C5_
+    .byte SQ1_CH
+    .byte 1
+    .word .sq
+    .byte -1
+.sq:
+    .byte DUTY_12 | 4, 0
+    .byte DUTY_25 | 4, 0
+    .byte DUTY_50 | 4, 0
 
 sfxHeavyImpact subroutine
     .byte MN_C1_

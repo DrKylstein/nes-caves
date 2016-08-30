@@ -328,3 +328,4 @@ SFX_LASER:   ds 2
 SFX_HAMMER:  ds 2
 SFX_AMMO:    ds 2
 SFX_POINTS:  ds 2
+SFX_RTTY:    ds 2

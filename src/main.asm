@@ -518,6 +518,8 @@ ResetStats subroutine
     sta random
     sta random+1
     sta messageTime
+    sta messagePtr+1
+    sta messageCursor
     
     SELECT_BANK 3
     lda currLevel
@@ -775,7 +777,7 @@ TC_Harmful:
     
 TC_Deadly:
     MOV16I arg,poisonMsg
-    jsr QDisplayMessage
+    jsr DisplayMessage
     jsr KillPlayer
     lda #0
     sta sav
@@ -787,7 +789,7 @@ TC_Crystal:
     dec crystalsLeft
     bne .notDone
     MOV16I arg,gotAllMsg
-    jsr QDisplayMessage
+    jsr DisplayMessage
 .notDone:
     lda #0
     sta arg+2
@@ -840,7 +842,7 @@ TC_Points_end:
 
 TC_Key:
     MOV16I arg, keyMsg
-    jsr QDisplayMessage
+    jsr DisplayMessage
     lda playerFlags
     ora #PLY_HASKEY
     sta playerFlags
@@ -880,7 +882,7 @@ TC_Ammo_end:
 
 TC_Powershot:
     MOV16I arg, powershotMsg
-    jsr QDisplayMessage
+    jsr DisplayMessage
     lda #10
     sta powerSeconds
     lda #60
@@ -895,7 +897,7 @@ TC_Powershot_end:
 
 TC_Strength:
     MOV16I arg, strengthMsg
-    jsr QDisplayMessage
+    jsr DisplayMessage
     lda #15
     sta powerSeconds
     lda #60
@@ -910,7 +912,7 @@ TC_Strength_end:
 
 TC_Gravity:
     MOV16I arg, gravityMsg
-    jsr QDisplayMessage
+    jsr DisplayMessage
     lda #10
     sta powerSeconds
     lda #60
@@ -925,7 +927,7 @@ TC_Gravity_end:
 
 TC_Stop:
     MOV16I arg, stopMsg
-    jsr QDisplayMessage
+    jsr DisplayMessage
     lda #20
     sta powerSeconds
     lda #60
@@ -1001,7 +1003,7 @@ walkOut:
     cmp #3
     bne .noBonus
     MOV16I arg,perfectHealthMsg
-    jsr QDisplayMessage
+    jsr DisplayMessage
     lda #50
     sta arg+1
     lda #0
@@ -1044,7 +1046,7 @@ TC_Lock:
     lda messageTime
     bne .noLeverMessage
     MOV16I arg, switchMsg
-    jsr QDisplayMessage
+    jsr DisplayMessage
 .noLeverMessage:
     lda #JOY_B_MASK
     and pressed
@@ -1083,7 +1085,7 @@ TC_On:
     lda messageTime
     bne .noOnMessage
     MOV16I arg,switchMsg
-    jsr QDisplayMessage
+    jsr DisplayMessage
 .noOnMessage:
     lda #JOY_B_MASK
     and pressed
@@ -1110,7 +1112,7 @@ TC_Off:
     lda messageTime
     bne .noOffMessage
     MOV16I arg,switchMsg
-    jsr QDisplayMessage
+    jsr DisplayMessage
 .noOffMessage:
     lda #JOY_B_MASK
     and pressed
@@ -1738,11 +1740,77 @@ UpdatePower subroutine
 UpdatePower_end:
 
 UpdateMessage subroutine
+    lda frame
+    and #3
+    JNE UpdateMessage_end
+    SELECT_BANK 3
+        
+    lda messagePtr+1
+    JEQ UpdateMessage_end
+    
+    ldx shr_copyIndex
+    ldy #0
+    lda (messagePtr),y
+    bne .fresh
+    
     lda messageTime
-    beq UpdateMessage_end
+    beq .stale
     dec messageTime
-    bne UpdateMessage_end
-    jsr QClearMessage
+    jmp UpdateMessage_end
+.stale:
+    dec messageCursor
+    JMI UpdateMessage_end
+    lda #HUD_BLANK
+    PHXA
+    ENQUEUE_ROUTINE nmi_Copy1
+    lda messageCursor
+    sta tmp
+    EXTEND tmp,tmp
+    ADD16I tmp, tmp, [VRAM_NAME_UL+$41]
+    lda tmp
+    PHXA
+    lda tmp+1
+    PHXA
+    stx shr_copyIndex
+    jmp UpdateMessage_end
+
+.fresh:
+.space:
+    cmp #" "
+    bne .numeric
+    lda #HUD_BLANK
+    jmp .store
+.numeric:
+    sta sav
+    stx sav+1
+    ldx #SFX_RTTY
+    jsr PlaySound
+    ldx sav+1
+    lda sav
+    
+    cmp #"A"
+    bcs .letter
+    sec
+    sbc #"0"
+    jmp .store
+.letter:
+    sec
+    sbc #"A"-$0A
+.store:
+    PHXA
+    
+    ENQUEUE_ROUTINE nmi_Copy1
+    lda messageCursor
+    sta tmp
+    EXTEND tmp,tmp
+    ADD16I tmp, tmp, [VRAM_NAME_UL+$41]
+    lda tmp
+    PHXA
+    lda tmp+1
+    PHXA
+    stx shr_copyIndex
+    INC16 messagePtr
+    inc messageCursor
 UpdateMessage_end:
 
 UpdateEntities subroutine
@@ -2762,72 +2830,12 @@ CentToDec subroutine ;input in A, output ones to A, tens to Y
 .end:
     rts
 ;------------------------------------------------------------------------------
-QClearMessage subroutine
-    jsr Synchronize
-    ldx shr_copyIndex
-    
-    ldy #30
-    lda #HUD_BLANK
-.right:
-    PHXA
-    dey
-    bne .right
-       
-    ENQUEUE_ROUTINE nmi_Copy30
-    ENQUEUE_PPU_ADDR [VRAM_NAME_UL+$41]   
-    stx shr_copyIndex
-    jsr Synchronize
-    rts
-;------------------------------------------------------------------------------
-QDisplayMessage subroutine
-    PUSH_BANK
-    SELECT_BANK 3
-    jsr Synchronize
-    ldy #0
-    lda (arg),y
-    sta tmp
-    ldx shr_copyIndex
-    
-    lda #30
-    sec
-    sbc tmp
-    tay
-    lda #HUD_BLANK
-.right:
-    PHXA
-    dey
-    bne .right
-
-    lda tmp
-    tay
-.copyLetters:
-    lda (arg),y
-.space:
-    cmp #" "
-    bne .numeric
-    lda #HUD_BLANK
-    jmp .store
-.numeric:
-    cmp #"A"
-    bcs .letter
-    sec
-    sbc #"0"
-    jmp .store
-.letter:
-    sec
-    sbc #"A"-$0A
-.store:
-    PHXA
-    dey
-    bne .copyLetters
-       
-    ENQUEUE_ROUTINE nmi_Copy30
-    ENQUEUE_PPU_ADDR [VRAM_NAME_UL+$41]   
-    stx shr_copyIndex
-    jsr Synchronize
-    lda #MESSAGE_TIME
+DisplayMessage subroutine
+    MOV16 messagePtr,arg
+    lda #0
+    sta messageCursor
+    lda #60
     sta messageTime
-    POP_BANK
     rts
 
 ;------------------------------------------------------------------------------

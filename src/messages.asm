@@ -4,52 +4,52 @@
 
 airMsg subroutine
 .start:
-    .byte <[.end-.start-1],"THERE G0ES THE AIR"
+    .byte "THERE G0ES THE AIR",$00
 .end:
 
 gotAllMsg subroutine
 .start:
-    .byte <[.end-.start-1],"LAST CRYSTAL  FIND EXIT"
+    .byte "LAST CRYSTAL  FIND EXIT",$00
 .end:
         
 perfectHealthMsg subroutine
 .start:
-    .byte <[.end-.start-1],"PERFECT HEALTH K50000"
+    .byte "PERFECT HEALTH K50000",$00
 .end:
 
 switchMsg subroutine
 .start:
-    .byte <[.end-.start-1],"PRESS B T0 FLIP SWITCH"
+    .byte "PRESS B T0 FLIP SWITCH",$00
 .end:
 
 gravityMsg subroutine
 .start:
-    .byte <[.end-.start-1],"REVERSE GRAVITY"
+    .byte "REVERSE GRAVITY",$00
 .end:
 
 powershotMsg subroutine
 .start:
-    .byte <[.end-.start-1],"P0WER SH0T"
+    .byte "P0WER SH0T",$00
 .end:
 
 stopMsg subroutine
 .start:
-    .byte <[.end-.start-1],"ST0PPED ENEMIES"
+    .byte "ST0PPED ENEMIES",$00
 .end:
 
 strengthMsg subroutine
 .start:
-    .byte <[.end-.start-1],"INVINCIBLE"
+    .byte "INVINCIBLE",$00
 .end:
 
 keyMsg subroutine
 .start:
-    .byte <[.end-.start-1],"CAN 0PEN CHESTS N0W"
+    .byte "CAN 0PEN CHESTS N0W",$00
 .end:
 
 poisonMsg subroutine
 .start:
-    .byte <[.end-.start-1],"P0IS0NED"
+    .byte "P0IS0NED",$00
 .end:
 
 ;------------------------------------------------------------------------------
