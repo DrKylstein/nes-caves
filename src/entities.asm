@@ -42,6 +42,8 @@ entityRoutine:
     .word ER_AirGenerator
     .word ER_Kiwi
     .word ER_EyeMonster
+    .word ER_Return ;eyeball
+    .word ER_Rock
     
 entityFlags:
     .byte ENT_F_SKIPYTEST | ENT_F_SKIPXTEST | 1 ; player
@@ -87,6 +89,8 @@ entityFlags:
     .byte 2 ;air generator
     .byte ENT_F_SKIPYTEST | ENT_F_SKIPXTEST | 2 ; kiwi
     .byte [1<<ENT_F_CHILDREN_SHIFT] | 3 ;eyemonster
+    .byte 3 ;eyeball
+    .byte ENT_F_SKIPXTEST | ENT_F_SKIPYTEST | 0 ; falling rock
     
 entityTiles:
     .byte 0 ; player
@@ -132,6 +136,8 @@ entityTiles:
     .byte [17+32*2]*2 ; air generator
     .byte $85 ; kiwi
     .byte [0+32*3]*2 ; eyemonster
+    .byte [31+32*2]*2 ; eyeball
+    .byte [31+32*2]*2 ; falling rock
     
 entitySpeeds:
     .byte 0 ; player
@@ -177,6 +183,8 @@ entitySpeeds:
     .byte 0 ; air_generator
     .byte 0 ; kiwi
     .byte 1 ; eyemonster
+    .byte 1 ; eyeball
+    .byte 4 ; falling rock
     
 entityInitialAnims:
     .byte ANIM_SMALL_NONE ; player
@@ -222,6 +230,8 @@ entityInitialAnims:
     .byte ANIM_AIR_GENERATOR
     .byte ANIM_SMALL_NONE ; kiwi
     .byte ANIM_EYEMONSTER ; eyemonster
+    .byte ANIM_SMALL_NONE ; eyeball
+    .byte ANIM_SYMMETRICAL_NONE ; falling rock
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
     lda entityXLo,x
@@ -823,6 +833,36 @@ ER_Ball subroutine
 
     jmp ER_Return
 
+
+ER_Rock subroutine
+    lda entityYLo,x
+    sta tmp
+    lda entityYHi,x
+    and #ENT_Y_POS
+    sta tmp+1
+    SUB16I tmp, tmp, MT_VIEWPORT_HEIGHT*PX_MT_HEIGHT
+    CMP16 tmp, shr_cameraY
+    bmi .continue
+    jsr Randomize
+    sta tmp
+    lda #0
+    sta tmp+1
+    ADD16 tmp, tmp, shr_cameraX
+    lda tmp
+    sta entityXLo,x
+    lda tmp+1
+    sta entityXHi,x
+    lda shr_cameraY
+    sta entityYLo,x
+    lda entityYHi,x
+    and #ENT_Y_INDEX
+    ora shr_cameraY+1
+    sta entityYHi,x
+    
+.continue:
+    jsr EntTryMelee
+    jsr EntMoveVertically
+    jmp ER_Return
 
 ER_Fruit subroutine
     lda entityXLo,x

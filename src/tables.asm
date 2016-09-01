@@ -50,7 +50,7 @@ levelPointers:
     .word level02
     .word level03
     .word level04
-    .word level01
+    .word level05
     .word level01
     .word level01
     .word level01

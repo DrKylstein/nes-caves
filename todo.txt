@@ -28,7 +28,6 @@ add snake (subs hopper)
 add stalk-eye (subs trike)
 add falling sign
 add hidden crystals
-falling rocks
 add bird
 add robot (subs walker)
 add wall snake

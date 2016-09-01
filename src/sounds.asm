@@ -342,7 +342,7 @@ mineSong subroutine
     .word .bass2
     .word .bass1
     .word .bass1
-    .word 0
+    .word 1 << 1
 .bass0:
     .byte    $02,MN____
     .byte MC____,MN____

@@ -913,7 +913,7 @@ TC_Strength_end:
 TC_Gravity:
     MOV16I arg, gravityMsg
     jsr DisplayMessage
-    lda #10
+    lda #20
     sta powerSeconds
     lda #60
     sta powerFrames
@@ -1467,7 +1467,11 @@ CheckCieling subroutine
     bcs .hit
     jmp CheckCieling_end
 .hit:
-    ;handle girder
+    lda powerType
+    cmp #POWER_GRAVITY
+    bne .HandleGirder
+    jmp .normal
+.HandleGirder:
     ADD16I arg, playerX, PLAYER_HCENTER
     SUB16I arg+2, playerY, 0
     REPEAT 4
@@ -1523,8 +1527,6 @@ CheckCieling subroutine
     ora #1
     sta arg+4
     jsr SetTile
-    
-    
     
 .normal:
     MOV16I playerYVel, 0
