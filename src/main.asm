@@ -1760,6 +1760,8 @@ UpdateMessage subroutine
     dec messageTime
     jmp UpdateMessage_end
 .stale:
+    lda messageCursor
+    JEQ UpdateMessage_end
     dec messageCursor
     JMI UpdateMessage_end
     lda #HUD_BLANK

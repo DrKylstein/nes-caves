@@ -13,7 +13,6 @@
  PRGROM Bank 7 left: 3446
 
 fix previous track not stopping completely when starting a new one
-fix glitches when a new message is triggered while one is still typing
 finish intro
 -position circle relative to stopping point of previous state
 -make crash based on actual scenery collision or move planets
