@@ -538,6 +538,7 @@ ResetStats subroutine
     sta musicSequence-1,y
     lda #0
     sta musicIndex-1,y
+    sta musicStream-1,y
     iny
     cpy #9
     bne .loopSequences
@@ -3271,6 +3272,17 @@ ResetAPU subroutine
     ;silence triangle
     lda #$80
     sta APU_TRI_LINEAR
+    
+    lda #0
+    sta sfxPtr
+    sta sfxPtr+1
+    
+    ldy #16
+.loop:
+    sta sfxPriority,y
+    sta sfxPatch,y
+    dey
+    bne .loop
     
     ;unmute
     lda #$0F

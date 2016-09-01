@@ -12,7 +12,6 @@
  PRGROM Bank 6 left: 16384
  PRGROM Bank 7 left: 3446
 
-fix previous track not stopping completely when starting a new one
 finish intro
 -position circle relative to stopping point of previous state
 -make crash based on actual scenery collision or move planets
