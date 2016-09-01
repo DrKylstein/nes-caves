@@ -1100,6 +1100,10 @@ IntroSputter subroutine
     lda entityFrame,x
     cmp #32*3
     bcc .continue
+    
+    MOV16 doorsX,playerX
+    MOV16 doorsY,playerY
+    
     inc entityCount,x
     lda #0
     sta entityFrame,x
@@ -1380,9 +1384,10 @@ IntroCircle subroutine
     tay
     lda sin,y
     ASR65
-    clc
-    adc #127
-    sta playerY
+    sta tmp
+    EXTEND tmp,tmp
+    ADD16 playerY, tmp, doorsY
+    
     lda entityFrame,x
     asl
     clc
@@ -1391,9 +1396,11 @@ IntroCircle subroutine
     lda sin,y
     ASR65
     ASR65
-    clc
-    adc #127
-    sta playerX
+    ASR65
+    sta tmp
+    EXTEND tmp,tmp
+    SUB16I tmp,tmp,[127>>3]
+    ADD16 playerX, tmp, doorsX
     
     lda entityFrame,x
     cmp #255
@@ -1419,9 +1426,9 @@ IntroMove subroutine
     sta playerYVel+1
     lda #1
     sta playerXVel
-    lda entityFrame,x
-    cmp #3*60
-    bne .continue
+    sta entityVelocity,x
+    jsr EntTestFlyingCollision
+    bcc .continue
     inc entityCount,x
     lda #0
     sta entityFrame,x

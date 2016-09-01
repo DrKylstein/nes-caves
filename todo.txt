@@ -12,16 +12,15 @@
  PRGROM Bank 6 left: 16384
  PRGROM Bank 7 left: 3446
 
-finish intro
--position circle relative to stopping point of previous state
--make crash based on actual scenery collision or move planets
 add ending
-double up channels so that long notes can resume after very short ones
 more sounds
--pickups
+-power ups
+-chests
 -bullet impacts
 -flames
-push out of walls when on elevator
+-getting hit
+-popup messages
+fall off elevator if pushed into ceiling
 add snake (subs hopper)
 add stalk-eye (subs trike)
 add falling sign
@@ -32,6 +31,8 @@ add wall snake
 shoot/just fired animation
 low gravity
 enter animation
+
+double up channels so that long notes can resume after very short ones
 music
 
 
