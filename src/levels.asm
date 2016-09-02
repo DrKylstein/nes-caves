@@ -12,3 +12,5 @@ mainMap:
     incbin main_map.bin
 introScene:
     incbin intro_scene.bin
+endScene:
+    incbin end_scene.bin

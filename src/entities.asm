@@ -1011,12 +1011,20 @@ ER_Kiwi subroutine
     lda entityCount,x
     asl
     tay
+    lda currLevel
+    cmp #END_LEVEL
+    beq .ending
     lda introStates,y
     sta tmp
     lda introStates+1,y
     sta tmp+1
     jmp (tmp)
-    ;jmp ER_Return
+.ending:
+    lda endStates,y
+    sta tmp
+    lda endStates+1,y
+    sta tmp+1
+    jmp (tmp)
     
 IntroLog subroutine
     stx sav
@@ -1478,6 +1486,68 @@ IntroLand subroutine
     ldx sav
     inc exitTriggered
     jmp ER_Return
+    
+endStates:
+    .word EndNextStop
+    .word EndMove
+    .word EndCount
+    .word EndScore
+    
+EndNextStop subroutine
+    MOV16I arg, nextStopText
+    stx sav
+    jsr MessageBox
+    ldx sav
+    inc entityCount,x
+    lda #0
+    sta entityFrame,x
+    jmp ER_Return
+    
+EndMove subroutine
+    lda #-1
+    sta playerXVel
+    sta entityVelocity,x
+    lda #1
+    sta playerYVel+1
+    jsr EntTestFlyingCollision
+    JCC ER_Return
+    inc entityCount,x
+    lda #0
+    sta entityFrame,x
+    MOV16I doorsX, 713
+    jmp ER_Return
+    
+EndCount subroutine
+    lda doorsX
+    ora doorsX+1
+    bne .countdown
+    inc entityCount,x
+    lda #0
+    sta entityFrame,x
+    jmp ER_Return
+.countdown:
+    lda entityFrame,x
+    and #1
+    JNE ER_Return
+    DEC16 doorsX
+    lda #10
+    sta arg
+    lda #0
+    sta arg+1
+    sta arg+2
+    stx sav
+    jsr AddScore
+    ldx #SFX_POINTS
+    jsr PlaySound
+    ldx sav
+    jmp ER_Return
+    
+EndScore subroutine
+    lda entityFrame,x
+    cmp #120
+    JCC ER_Return
+    jmp reset
+    
     
 ER_Planet subroutine
     ADD16I tmp, shr_cameraX, 160

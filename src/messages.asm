@@ -2,55 +2,34 @@
 ;in-game messages
 ;------------------------------------------------------------------------------
 
-airMsg subroutine
-.start:
-    .byte "THERE G0ES THE AIR",$00
-.end:
+airMsg: .byte "THERE G0ES THE AIR",$00
 
-gotAllMsg subroutine
-.start:
-    .byte "LAST CRYSTAL  FIND EXIT",$00
-.end:
+
+gotAllMsg: .byte "LAST CRYSTAL  FIND EXIT",$00
+
         
-perfectHealthMsg subroutine
-.start:
-    .byte "PERFECT HEALTH K50000",$00
-.end:
+perfectHealthMsg: .byte "PERFECT HEALTH K50000",$00
 
-switchMsg subroutine
-.start:
-    .byte "PRESS B T0 FLIP SWITCH",$00
-.end:
 
-gravityMsg subroutine
-.start:
-    .byte "REVERSE GRAVITY",$00
-.end:
+switchMsg: .byte "PRESS B T0 FLIP SWITCH",$00
 
-powershotMsg subroutine
-.start:
-    .byte "P0WER SH0T",$00
-.end:
 
-stopMsg subroutine
-.start:
-    .byte "ST0PPED ENEMIES",$00
-.end:
+gravityMsg: .byte "REVERSE GRAVITY",$00
 
-strengthMsg subroutine
-.start:
-    .byte "INVINCIBLE",$00
-.end:
 
-keyMsg subroutine
-.start:
-    .byte "CAN 0PEN CHESTS N0W",$00
-.end:
+powershotMsg: .byte "P0WER SH0T",$00
 
-poisonMsg subroutine
-.start:
-    .byte "P0IS0NED",$00
-.end:
+
+stopMsg: .byte "ST0PPED ENEMIES",$00
+
+
+strengthMsg: .byte "INVINCIBLE",$00
+
+
+keyMsg: .byte "CAN 0PEN CHESTS N0W",$00
+
+
+poisonMsg: .byte "P0IS0NED",$00
 
 ;------------------------------------------------------------------------------
 ;opening text boxes
@@ -73,3 +52,17 @@ landText:
     .byte "need to collect enough",$0A
     .byte "crystals to trade at the",$0A
     .byte "Galactic Trading Post.","^@"
+
+;------------------------------------------------------------------------------
+;ending text boxes
+;------------------------------------------------------------------------------
+
+nextStopText:
+    .byte "I've collected a fortune in",$0A
+    .byte "precious crystals. This",$0A
+    .byte "should be enough to buy",$0A
+    .byte "everything needed to start a",$0A
+    .byte "twibble farm!",$0A
+    .byte $0A
+    .byte "Next stop, the local",$0A
+    .byte "Galactic Trading Post!","^@"

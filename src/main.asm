@@ -568,16 +568,26 @@ ReenableDisplay_end:
 ;------------------------------------------------------------------------------
 MainLoop:
 
+HandleExit subroutine
     lda exitTriggered
-    beq .noExit
+    beq HandleExit_end
 doExit:
     jsr FadeOut
+    lda cleared
+    and cleared+1
+    cmp #$FF
+    bne .notdone
+    lda #END_LEVEL
+    sta currLevel
+    jmp .continue
+.notdone:
     lda #MAP_LEVEL
     sta currLevel
+.continue:
     lda #0
     sta exitTriggered
     jmp EnterLevel
-.noExit:
+HandleExit_end:
 
     inc frame
     jsr UpdateInput
@@ -608,6 +618,13 @@ Paused subroutine
     lda #0
     sta crystalsLeft
 .ANotPressed:
+    lda pressed
+    and #JOY_RIGHT_MASK
+    beq .RightNotPressed
+    lda #$FF
+    sta cleared
+    sta cleared+1
+.RightNotPressed:
     lda #$E1
     sta arg
     lda frame

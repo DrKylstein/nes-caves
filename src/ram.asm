@@ -71,7 +71,6 @@ girderSprite        ds OAM_SIZE*2
 shr_entitySprites:
 
     ORG $0300
-shr_debugReg   ds 2
 shr_cameraX    ds 2 
 shr_cameraY    ds 2 
 shr_cameraYMod ds 1 
@@ -114,6 +113,7 @@ random         ds 2
 fruitTime      ds 2
 messageTime    ds 1
 messageCursor  ds 1
+shr_debugReg   ds 2
 levelMap       ds 960
 entityXLo        ds MAX_ENTITIES
 entityXHi        ds MAX_ENTITIES ;active bit/off screen bit/unused 4 bits/hi x 2 bits

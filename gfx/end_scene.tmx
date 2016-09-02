@@ -12,12 +12,12 @@
  </tileset>
  <layer name="Names" width="40" height="24">
   <data encoding="base64" compression="zlib">
-   eJzdVlsOwyAMo1elx9ujB9jrANvu1OyjUoQSaiJ3bP2w1JICdhJDh5TS8OMYFSLz9PvWHD/PGeTrxbfkWQPC28opypety+qLlj0iPRXhlzvVE/FNNuJoTseVOJJrzze5sj/qG0ubN7+1F7y8ofqjfdHrbIjUlrHuWTABueyl/S54ADU6CI6CU2UtxIt6jOG/BRfBVXAj1t4a9zy5hqfgJXgH6/QvvmnJ5bc1sXzO5q3vDYYXlm+ivepxbBlHNbDOwVysUWqP/n8z61zqLmvk9YDWxNgfie/lbt87ZocWP54=
+   eJzVltkNwyAMhsmqZLxeA/QaoNcEbVepeYiEIpv8tgykD58UQBjfzhBCGFbOmGG5l69r65i+I6ivdF5TzxKI3pxPUX297eLyQvOGJacs+sVO8UTqJjLnqE/HhXPE11LdxML7aN1wtkn3tbkg+Q2135oXvXqDJbYecvfEAfBlL9svxBWI0YbYEruCLKQW8z2P+ps4Eifi7Bh7bl+qySVuxJ14GOP0L3Wj8WVrm2rPSyv53PDQr4aNXK9/Ei+lTtPc8O5/cSYrrT/EdyYfmXst/qkS7wZocyP3H2qPtSe2Yq11X/I/yg80klXD
   </data>
  </layer>
  <layer name="Entities" width="40" height="24">
   <data encoding="base64" compression="zlib">
-   eJztzjEBAAAIA6DZv7GXMXYICUgA4Ied9gAAaDrzLAD8
+   eJztzjEBAAAIA6DZv7GXLfQQEpAAAB91XQ8AYNcA6G0A/A==
   </data>
  </layer>
 </map>

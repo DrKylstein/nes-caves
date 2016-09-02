@@ -44,6 +44,7 @@ levelBanks:
     .byte 1
     .byte 1
     .byte 1
+    .byte 1
 
 levelPointers:
     .word level01
@@ -64,6 +65,7 @@ levelPointers:
     .word level01
     .word mainMap
     .word introScene
+    .word endScene
 
 levelTilesets:
     .word caveTiles
@@ -84,13 +86,14 @@ levelTilesets:
     .word caveTiles
     .word mineTiles
     .word introTiles
+    .word introTiles
 
 levelPalettes:
     .word volcanoPal
     .word cobaltPal
     .word minePal
     .word cobaltPal
-    .word volcanoPal
+    .word cobaltPal
     .word volcanoPal
     .word volcanoPal
     .word volcanoPal
@@ -104,23 +107,25 @@ levelPalettes:
     .word volcanoPal
     .word mapPal
     .word introPal
+    .word introPal
     
 levelMusic:
-    .word testSong
-    .word testSong
-    .word testSong
-    .word testSong
-    .word testSong    
-    .word testSong
-    .word testSong
-    .word testSong
-    .word testSong
-    .word testSong
-    .word testSong
-    .word testSong
-    .word testSong
-    .word testSong
-    .word testSong
-    .word testSong
+    .word nullSong
+    .word nullSong
+    .word nullSong
+    .word nullSong
+    .word nullSong    
+    .word nullSong
+    .word nullSong
+    .word nullSong
+    .word nullSong
+    .word nullSong
+    .word nullSong
+    .word nullSong
+    .word nullSong
+    .word nullSong
+    .word nullSong
+    .word nullSong
     .word mineSong
+    .word nullSong
     .word nullSong
