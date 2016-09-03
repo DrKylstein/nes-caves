@@ -13,7 +13,7 @@
  PRGROM Bank 7 left: 3181
 
 fix corrpution/bad collision in left side of level
-add ending
+add ending image
 more sounds
 -power ups
 -chests

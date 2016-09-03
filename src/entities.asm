@@ -938,13 +938,21 @@ ApplyGravity_end:
 
 ;death sequence
     lda entityAnim,x
+    cmp #ANIM_PLAYER_DEAD
+    beq .verydead
     cmp #ANIM_PLAYER_DIE
     bne .alive
     lda entityFrame,x
-    cmp #[32<<2]-1
+    cmp #[16<<2]-1
     bcs .dead
     jmp ER_Return
 .dead:
+    lda #ANIM_PLAYER_DEAD
+    sta entityAnim,x
+    jmp ER_Return
+.verydead:
+    lda messageTime
+    JNE ER_Return
     jmp EnterLevel
 .alive:
 

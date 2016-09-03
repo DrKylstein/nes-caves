@@ -73,6 +73,7 @@ animations:
     .word anim_air_generator
     .word anim_player_die
     .word anim_eyemonster
+    .word anim_player_dead
     
 frame_small1:
     .byte 8
@@ -643,8 +644,16 @@ anim_air_generator subroutine
     .byte   0, 64,  0,  0
     .byte   0, 66,  0,  8
 
+anim_player_dead subroutine
+    .byte 0
+    .word frame_player_dead
+frame_player_dead:
+    .byte 2*OAM_SIZE
+    .byte   0, 26,  0,  0
+    .byte   0, 26,$40,  8
+
 anim_player_die subroutine
-    .byte 31
+    .byte 15
     .word .frame1
     .word .frame1
     .word .frame2
@@ -659,24 +668,8 @@ anim_player_die subroutine
     .word .frame2
     .word .frame3
     .word .frame3
-    .word .frame4
-    .word .frame4
-    .word .frame4
-    .word .frame4
-    .word .frame4
-    .word .frame4
-    .word .frame4
-    .word .frame4
-    .word .frame4
-    .word .frame4
-    .word .frame4
-    .word .frame4
-    .word .frame4
-    .word .frame4
-    .word .frame4
-    .word .frame4
-    .word .frame4
-    .word .frame4
+    .word frame_player_dead
+    .word frame_player_dead
 .frame1:
     .byte 2*OAM_SIZE
     .byte   0, 20,  0,  0
@@ -689,10 +682,6 @@ anim_player_die subroutine
     .byte 2*OAM_SIZE
     .byte   0, 24,  0,  0
     .byte   0, 24,$40,  8
-.frame4:
-    .byte 2*OAM_SIZE
-    .byte   0, 26,  0,  0
-    .byte   0, 26,$40,  8
 
 anim_eyemonster subroutine
     .byte 3

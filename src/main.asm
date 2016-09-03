@@ -571,6 +571,8 @@ MainLoop:
 HandleExit subroutine
     lda exitTriggered
     beq HandleExit_end
+    lda messageTime
+    bne HandleExit_end
 doExit:
     jsr FadeOut
     lda cleared
