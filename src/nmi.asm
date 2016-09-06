@@ -170,16 +170,25 @@ continue$:
 nmi_Clouds subroutine
     PUSH_BANK
     SELECT_BANK 0
-    lda nmi_frame
-    and #$FE
+    ;lda shr_cameraX
+    lda nmi_frame;eor #$FF
     REPEAT 4
     asl
     REPEND
-    tax
+    tay
     SET_PPU_ADDR [VRAM_PATTERN_R+[254*16]]
-    REPEAT 32
-    lda cloudsTiles,x
-    inx
+    REPEAT 16
+    lda (shr_tileAnim),y
+    iny
+    sta PPU_DATA
+    REPEND
+    tya
+    clc
+    adc #128-16
+    tay
+    REPEAT 16
+    lda (shr_tileAnim),y
+    iny
     sta PPU_DATA
     REPEND
     POP_BANK

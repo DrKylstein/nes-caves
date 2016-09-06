@@ -547,6 +547,7 @@ ResetStats subroutine
 ResetStats_end:
 
     jsr InitialDrawLevel
+    MOV16I shr_tileAnim, cloudsTiles
 
 ReenableDisplay subroutine
     jsr QEnableSplitDisplay
