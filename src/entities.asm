@@ -44,6 +44,9 @@ entityRoutine:
     .word ER_EyeMonster
     .word ER_Return ;eyeball
     .word ER_Rock
+    .word ER_Snake
+    .word ER_SnakePause
+    .word ER_DeadSnake
     
 entityFlags:
     .byte ENT_F_SKIPYTEST | ENT_F_SKIPXTEST | 1 ; player
@@ -91,6 +94,9 @@ entityFlags:
     .byte [1<<ENT_F_CHILDREN_SHIFT] | 3 ;eyemonster
     .byte 3 ;eyeball
     .byte ENT_F_SKIPXTEST | ENT_F_SKIPYTEST | 0 ; falling rock
+    .byte 1 ;snake
+    .byte 1 ;snake
+    .byte 1 ;dead snake
     
 entityTiles:
     .byte 0 ; player
@@ -138,6 +144,9 @@ entityTiles:
     .byte [0+32*3]*2 ; eyemonster
     .byte [31+32*2]*2 ; eyeball
     .byte [31+32*2]*2 ; falling rock
+    .byte [0+32*2]*2 ; snake
+    .byte [6+32*2]*2 ; snake
+    .byte [9+32*3]*2 ; dead snake
     
 entitySpeeds:
     .byte 0 ; player
@@ -185,6 +194,9 @@ entitySpeeds:
     .byte 1 ; eyemonster
     .byte 1 ; eyeball
     .byte 4 ; falling rock
+    .byte 1 ; snake
+    .byte 1 ; snake
+    .byte 0 ; dead snake
     
 entityInitialAnims:
     .byte ANIM_SMALL_NONE ; player
@@ -193,7 +205,7 @@ entityInitialAnims:
     .byte ANIM_SPIDER ; spider
     .byte ANIM_SYMMETRICAL_OSCILLATE ; bat
     .byte ANIM_POWERSHOT ; power shot
-    .byte ANIM_SMALL_OSCILLATE ; rock
+    .byte ANIM_SMALL_OSCILLATE ; mimrock
     .byte ANIM_SYMMETRICAL_OSCILLATE ; cart
     .byte ANIM_SMALL_NONE ; caterpillar head
     .byte ANIM_SMALL_NONE ; caterpillar front
@@ -232,6 +244,9 @@ entityInitialAnims:
     .byte ANIM_EYEMONSTER ; eyemonster
     .byte ANIM_SMALL_NONE ; eyeball
     .byte ANIM_SYMMETRICAL_NONE ; falling rock
+    .byte ANIM_SMALL_OSCILLATE ;snake
+    .byte ANIM_SPIDER ;snake
+    .byte ANIM_SYMMETRICAL_NONE ; dead snake
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
     lda entityXLo,x
@@ -687,6 +702,102 @@ EntDieInOneShot subroutine
     ldx sav
 .alive:
     rts
+
+ER_Snake subroutine
+    jsr Randomize
+    and #127
+    bne .nopause
+    lda entityYHi,x
+    clc
+    adc #2
+    sta entityYHi,x
+    lda #0
+    sta entityFrame,x
+    lda #ANIM_SPIDER
+    sta entityAnim,x
+    jmp ER_Return
+.nopause:
+    
+    jsr EntMoveHorizontally
+    jsr EntTestWalkingCollision
+    bcc .nohit
+    lda entityVelocity,x
+    eor #$FF
+    clc
+    adc #1
+    sta entityVelocity,x
+    lda #ANIM_SMALL_OSCILLATE
+    sta entityAnim,x
+    lda entityVelocity,x
+    bpl .nohit
+    lda #ANIM_SMALL_HFLIP_OSCILLATE
+    sta entityAnim,x
+.nohit:
+    jmp SnakeShared
+    
+ER_SnakePause subroutine
+    lda entityFrame,x
+    cmp #60
+    bcc .noresume
+    lda entityYHi,x
+    sec
+    sbc #2
+    sta entityYHi,x
+    lda #0
+    sta entityFrame,x
+    lda #ANIM_SMALL_OSCILLATE
+    sta entityAnim,x
+    lda #1
+    sta entityVelocity,x
+    jsr Randomize
+    JMI ER_Return
+    lda #ANIM_SMALL_HFLIP_OSCILLATE
+    sta entityAnim,x
+    lda #-1
+    sta entityVelocity,x
+    jmp ER_Return
+.noresume:
+SnakeShared subroutine
+    jsr EntTryMelee
+    jsr EntIsStrongPlayerNear
+    bcs .Melee
+    jsr EntIsBulletNear
+    bcc .alive
+    lda #$80
+    sta entityXHi
+.Melee:
+    ;change to dead
+    lda entityYHi,x
+    and #ENT_Y_POS
+    ora #DEADSNAKE_ID<<1
+    sta entityYHi,x
+    lda #ANIM_SYMMETRICAL_NONE
+    sta entityAnim,x
+    ;make explosion
+    lda entityYHi
+    and #ENT_Y_POS
+    ora #EXPLOSION_ID<<1
+    sta entityYHi
+    lda #ANIM_SYMMETRICAL_OSCILLATE
+    sta entityAnim
+    lda #0
+    sta entityFrame
+    ;add points
+    lda #10
+    sta arg
+    lda #0
+    sta arg+1
+    sta arg+2
+    stx sav
+    jsr AddScore
+    ldx sav
+.alive:
+    jmp ER_Return
+
+ER_DeadSnake subroutine
+    jsr EntTryMelee
+    jmp ER_Return
+
 
 ER_EyeMonster subroutine
     jsr EntDieInOneShot ;placeholder
