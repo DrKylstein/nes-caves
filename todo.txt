@@ -12,6 +12,10 @@
  PRGROM Bank 6 left: 16384
  PRGROM Bank 7 left: 3181
 
+must:
+shoot away enemy shots
+add stalk-eye shots
+snake takes two hits
 fix corrpution/bad collision in left side of level
 add ending image
 more sounds
@@ -22,21 +26,22 @@ more sounds
 -getting hit
 -popup messages
 fall off elevator if pushed into ceiling
-add snake (subs hopper)
-add stalk-eye (subs trike)
 add falling sign
 add hidden crystals
 add bird
 add robot (subs walker)
 add wall snake
-shoot/just fired animation
 low gravity
 enter animation
 
+long shot:
+shoot/just fired animation
 double up channels so that long notes can resume after very short ones
 music
 
-
+optimizations:
+delete entity speeds table
+delete entity initial anim table
 hold ER pointer in ram so that entities can change routines dynamically?
 -ditch index and combine xhi/yhi
 store size and shared offset instead of individual offsets in frames?

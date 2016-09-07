@@ -319,7 +319,7 @@ ANIM_BALL_LEFT              ds 1
 ANIM_BALL_SLEEP             ds 1
 ANIM_AIR_GENERATOR          ds 1
 ANIM_PLAYER_DIE             ds 1
-ANIM_EYEMONSTER             ds 1
+ANIM_SYMMETRICAL_NONE2      ds 1
 ANIM_PLAYER_DEAD            ds 1
 
     SEG.U SOUNDS

@@ -42,7 +42,7 @@ entityRoutine:
     .word ER_AirGenerator
     .word ER_Kiwi
     .word ER_EyeMonster
-    .word ER_Return ;eyeball
+    .word ER_BigEye
     .word ER_Rock
     .word ER_Snake
     .word ER_SnakePause
@@ -91,7 +91,7 @@ entityFlags:
     .byte [1<<ENT_F_CHILDREN_SHIFT] | 2 ; left cannon
     .byte 2 ;air generator
     .byte ENT_F_SKIPYTEST | ENT_F_SKIPXTEST | 2 ; kiwi
-    .byte [1<<ENT_F_CHILDREN_SHIFT] | 3 ;eyemonster
+    .byte [3<<ENT_F_CHILDREN_SHIFT] | 3 ;eyemonster
     .byte 3 ;eyeball
     .byte ENT_F_SKIPXTEST | ENT_F_SKIPYTEST | 0 ; falling rock
     .byte 1 ;snake
@@ -141,8 +141,8 @@ entityTiles:
     .byte [2+32]*2 ; left cannon
     .byte [17+32*2]*2 ; air generator
     .byte $85 ; kiwi
-    .byte [0+32*3]*2 ; eyemonster
-    .byte [31+32*2]*2 ; eyeball
+    .byte [3+32*3]*2 ; eyemonster
+    .byte [0+32*3]*2 ; eyeball
     .byte [31+32*2]*2 ; falling rock
     .byte [0+32*2]*2 ; snake
     .byte [6+32*2]*2 ; snake
@@ -241,8 +241,8 @@ entityInitialAnims:
     .byte ANIM_SMALL_HFLIP_NONE ; left cannon
     .byte ANIM_AIR_GENERATOR
     .byte ANIM_SMALL_NONE ; kiwi
-    .byte ANIM_EYEMONSTER ; eyemonster
-    .byte ANIM_SMALL_NONE ; eyeball
+    .byte ANIM_SPIDER ; eyemonster
+    .byte ANIM_SYMMETRICAL_NONE ; eyeball
     .byte ANIM_SYMMETRICAL_NONE ; falling rock
     .byte ANIM_SMALL_OSCILLATE ;snake
     .byte ANIM_SPIDER ;snake
@@ -703,7 +703,7 @@ EntDieInOneShot subroutine
 .alive:
     rts
 
-ER_Snake subroutine
+ER_Snake subroutine ;needs to take 2 hits
     jsr Randomize
     and #127
     bne .nopause
@@ -799,10 +799,56 @@ ER_DeadSnake subroutine
     jmp ER_Return
 
 
-ER_EyeMonster subroutine
-    jsr EntDieInOneShot ;placeholder
+ER_EyeMonster subroutine ;invulnerable until blinded, then 2 hits
+    lda entityCount,x
+    bne .InitDone
+    lda entityYHi,x
+    clc
+    adc #2
+    sta entityYHi+1,x
+    sta entityYHi+2,x
+    lda entityYLo,x
+    sta entityYLo+1,x
+    sta entityYLo+2,x
+    lda #ANIM_SYMMETRICAL_NONE
+    sta entityAnim+1,x
+    sta entityAnim+2,x
+    lda #0
+    sta entityXHi+1,x
+    sta entityXHi+2,x
+    sta entityFrame+1,x
+    lda #128+8
+    sta entityFrame+2,x
+    lda #1
+    sta entityCount,x
+.InitDone:
+    
     jsr EntTryMelee
     jsr EntMoveHorizontally
+    
+    ;move eyes
+    lda entityXLo,x
+    sta tmp
+    lda entityXHi,x
+    and #ENT_X_POS
+    sta tmp+1
+    ADD16I tmp, tmp, 16
+    lda entityXHi+2,x
+    bmi .noright
+    lda tmp
+    sta entityXLo+2,x
+    lda tmp+1
+    sta entityXHi+2,x
+.noright:
+    lda entityXHi+1,x
+    bmi .noleft
+    SUB16I tmp, tmp, 32
+    lda tmp
+    sta entityXLo+1,x
+    lda tmp+1
+    sta entityXHi+1,x
+.noleft:
+    
     jsr EntTestWalkingCollision
     bcc .nohit
     lda entityVelocity,x
@@ -811,6 +857,91 @@ ER_EyeMonster subroutine
     adc #1
     sta entityVelocity,x
 .nohit:
+    lda entityXHi+1,x
+    and entityXHi+2,x
+    bpl .nomelee
+    jsr EntIsStrongPlayerNear
+    bcs .Melee
+.nomelee:
+    jsr EntIsBulletNear
+    bcc .alive
+    lda #$80
+    sta entityXHi
+    lda entityXHi+1,x
+    and entityXHi+2,x
+    bpl .alive
+    lda entityYHi
+    lsr
+    cmp #POWERSHOT_ID
+    beq .Melee
+    lda entityCount,x
+    cmp #2
+    bcs .Melee
+    clc
+    adc #1
+    sta entityCount,x
+    jmp ER_Return
+.Melee:
+    jsr EntExplode
+    lda #5
+    sta arg+1
+    lda #0
+    sta arg
+    sta arg+2
+    stx sav
+    jsr AddScore
+    ldx sav
+.alive:
+
+    jmp ER_Return
+
+ER_BigEye subroutine ;2 hits
+    jsr EntTryMelee
+    ;bob
+    lda entityYLo,x
+    and #~1
+    sta entityYLo,x
+    lda entityFrame,x
+    lsr
+    lsr
+    lsr
+    and #1
+    ora entityYLo,x
+    sta entityYLo,x
+    
+    ;blink
+    lda #ANIM_SYMMETRICAL_NONE
+    sta entityAnim,x
+    lda entityFrame,x
+    bmi .noblink
+    lda #ANIM_SYMMETRICAL_NONE2
+    sta entityAnim,x
+    jsr EntIsBulletNear
+    bcc .noBullet
+    lda #$80
+    sta entityXHi
+.noBullet:
+    jmp ER_Return
+.noblink:
+    jsr EntIsStrongPlayerNear
+    bcs .Melee
+    jsr EntIsBulletNear
+    bcc .alive
+    lda #$80
+    sta entityXHi
+    lda entityYHi
+    lsr
+    cmp #POWERSHOT_ID
+    beq .Melee
+    lda entityCount,x
+    bne .Melee
+    ora #1
+    sta entityCount,x
+    jmp ER_Return
+.Melee:
+    jsr EntExplode
+.alive:
+
     jmp ER_Return
 
 ER_AirGenerator subroutine

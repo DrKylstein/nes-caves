@@ -72,7 +72,7 @@ animations:
     .word anim_ball_sleep
     .word anim_air_generator
     .word anim_player_die
-    .word anim_eyemonster
+    .word anim_symmetrical_none2
     .word anim_player_dead
     
 frame_small1:
@@ -683,25 +683,10 @@ anim_player_die subroutine
     .byte   0, 24,  0,  0
     .byte   0, 24,$40,  8
 
-anim_eyemonster subroutine
-    .byte 3
+anim_symmetrical_none2 subroutine
+    .byte 0
     .word .frame1
-    .word .frame1
-    .word .frame2
-    .word .frame2
 .frame1:
-    .byte 6*OAM_SIZE
-    .byte  0,  0,  0,-16
-    .byte  0,  2,  0, -8
-    .byte  0,  4,  0,  0
-    .byte  0,  6,  0,  8
-    .byte  1,  0,  0, 16
-    .byte  1,  2,  0, 24
-.frame2:
-    .byte 6*OAM_SIZE
-    .byte  1,  0,  0,-16
-    .byte  1,  2,  0, -8
-    .byte  0,  6,$40,  0
-    .byte  0,  4,$40,  8
-    .byte  0,  0,  0, 16
-    .byte  0,  2,  0, 24
+    .byte 8
+    .byte   0,  2,  0,  0
+    .byte   0,  2,$40,  8
