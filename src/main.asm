@@ -1235,7 +1235,8 @@ TC_Nop:
     sbc #0
     and #ENT_X_POS
     sta entityXHi
-    inc entityAnim
+    lda #ANIM_ROCKET_HFLIP
+    sta entityAnim
     jmp TileInteraction_end
     
 TC_UpdateTile:

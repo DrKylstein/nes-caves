@@ -46,3 +46,7 @@ hold ER pointer in ram so that entities can change routines dynamically?
 -ditch index and combine xhi/yhi
 store size and shared offset instead of individual offsets in frames?
 -faster? denser, can re-use y coordinate on horizontal runs
+
+eyemonster/rex
+ball/trike
+caterpillar/hammer

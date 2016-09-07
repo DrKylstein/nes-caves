@@ -1,3 +1,50 @@
+    SEG.U ENTITY_IDS
+    ORG $0000
+PLAYER_ID                   ds 1
+VERTICALPLATFORM_ID         ds 1
+HORIZONTALPLATFORM_ID       ds 1
+SPIDER_ID                   ds 1
+BAT_ID                      ds 1
+POWERSHOT_ID                ds 1
+MIMROCK_ID                  ds 1
+CART_ID                     ds 1
+CATERPILLAR_ID              ds 4
+SLIME_ID                    ds 2
+HAMMER_ID                   ds 1
+FAUCET_ID                   ds 1
+WATER_ID                    ds 1
+VERTICALPLATFORMIDLE_ID     ds 1
+HORIZONTALPLATFORMIDLE_ID   ds 1
+RIGHTCANNON_ID              ds 1
+LASER_ID                    ds 1
+LEFTCANNON_ID               ds 1
+GIRDER_ID                   ds 1
+REX_ID                      ds 1
+STALACTITE_ID               ds 1
+SPIDERWEB_ID                ds 1
+FLAME_ID                    ds 1
+PIPERIGHT_ID                ds 1
+PIPELEFT_ID                 ds 1
+TORCH_ID                    ds 1
+SPIKE_ID                    ds 1
+PLANET_ID                   ds 1
+BULLET_ID                   ds 1
+EXPLOSION_ID                ds 1
+FRUIT_ID                    ds 3
+BALL_ID                     ds 1
+RIGHTCANNONMOVING_ID        ds 1
+LEFTCANNONMOVING_ID         ds 1
+AIRGENERATOR_ID             ds 1
+KIWI_ID                     ds 1
+EYEMONSTER_ID               ds 1
+BIGEYE_ID                   ds 1
+ROCK_ID                     ds 1
+SNAKE_ID                    ds 1
+SNAKEPAUSE_ID               ds 1
+DEADSNAKE_ID                ds 1
+ENEMYBULLET_ID              ds 1
+    SEG ROM_FILE
+
 entityRoutine:
     .word ER_Player
     .word ER_VerticalPlatform
@@ -2285,7 +2332,7 @@ ER_Cannon
     sta entityXLo+1,x
     lda entityYHi,x
     and #~ENT_Y_INDEX
-    ora #LASER_ID
+    ora #LASER_ID<<1
     sta entityYHi+1,x
     lda entityYLo,x
     sta entityYLo+1,x
