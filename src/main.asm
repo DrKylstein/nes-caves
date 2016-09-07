@@ -1538,6 +1538,7 @@ CheckCieling subroutine
     lda sav
     sec
     sbc #TB_GIRDER_LEFT
+    asl
     clc
     adc #ANIM_GIRDER_LEFT
     sta entityAnim,x
@@ -2214,7 +2215,6 @@ UpdateSprites subroutine
     sta tmp+2
     lda entityAnim,x
     stx arg+4 ; entity index in arg+4
-    asl
     tax
     lda animations,x
     sta tmp

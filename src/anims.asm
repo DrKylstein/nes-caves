@@ -1,28 +1,60 @@
 ;------------------------------------------------------------------------------
 ; Animation Data
 ;------------------------------------------------------------------------------
+    SEG.U ANIMS
+    ORG $0000
+ANIM_NULL:                  ds 2
+ANIM_SMALL_NONE:            ds 2
+ANIM_SMALL_HFLIP_NONE:      ds 2
+ANIM_SMALL_OSCILLATE:       ds 2
+ANIM_SMALL_HFLIP_OSCILLATE: ds 2
+ANIM_SMALL_VFLIP_OSCILLATE: ds 2
+ANIM_SPIDER:                ds 2
+ANIM_SPIDER_VFLIP:          ds 2
+ANIM_REX                    ds 2
+ANIM_REX_HFLIP              ds 2
+ANIM_ROCK_HIDING            ds 2
+ANIM_SYMMETRICAL_NONE       ds 2
+ANIM_SYMMETRICAL_OSCILLATE  ds 2
+ANIM_ROCKET                 ds 2
+ANIM_ROCKET_HFLIP           ds 2
+ANIM_SLIME_DOWN             ds 2
+ANIM_SLIME_UP               ds 2
+ANIM_SLIME_RIGHT            ds 2
+ANIM_SLIME_LEFT             ds 2
+ANIM_POWERSHOT              ds 2
+ANIM_POWERSHOT_HFLIP        ds 2
+ANIM_STALACTITE             ds 2
+ANIM_FLAME                  ds 2
+ANIM_PIPE_RIGHT             ds 2
+ANIM_PIPE_LEFT              ds 2
+ANIM_TORCH                  ds 2
+ANIM_GIRDER_LEFT            ds 2
+ANIM_GIRDER_MIDDLE          ds 2
+ANIM_GIRDER_RIGHT           ds 2
+ANIM_SPIKE                  ds 2
+ANIM_PLANET                 ds 2
+ANIM_PLAYER_WALK            ds 2
+ANIM_PLAYER_WALK_LEFT       ds 2
+ANIM_PLAYER_JUMP            ds 2
+ANIM_PLAYER_JUMP_LEFT       ds 2
+ANIM_PLAYER_WALKV           ds 2
+ANIM_PLAYER_WALK_LEFTV      ds 2
+ANIM_PLAYER_JUMPV           ds 2
+ANIM_PLAYER_JUMP_LEFTV      ds 2
+ANIM_SMALL_VFLIP_NONE       ds 2
+ANIM_SMALL_HV_NONE          ds 2
+ANIM_HAMMER                 ds 2
+ANIM_BALL_RIGHT             ds 2
+ANIM_BALL_LEFT              ds 2
+ANIM_BALL_SLEEP             ds 2
+ANIM_AIR_GENERATOR          ds 2
+ANIM_PLAYER_DIE             ds 2
+ANIM_SYMMETRICAL_NONE2      ds 2
+ANIM_PLAYER_DEAD            ds 2
+ANIM_LASER                  ds 2
 
-playerAnims:
-    .byte ANIM_SMALL_NONE
-    .byte ANIM_SMALL_HFLIP_NONE
-    .byte ANIM_SMALL_VFLIP_NONE
-    .byte ANIM_SMALL_HV_NONE
-    
-    .byte ANIM_PLAYER_JUMP
-    .byte ANIM_PLAYER_JUMP_LEFT
-    .byte ANIM_PLAYER_JUMPV
-    .byte ANIM_PLAYER_JUMP_LEFTV
-    
-    .byte ANIM_PLAYER_WALK
-    .byte ANIM_PLAYER_WALK_LEFT
-    .byte ANIM_PLAYER_WALKV
-    .byte ANIM_PLAYER_WALK_LEFTV
-
-    .byte ANIM_PLAYER_JUMP
-    .byte ANIM_PLAYER_JUMP_LEFT
-    .byte ANIM_PLAYER_JUMPV
-    .byte ANIM_PLAYER_JUMP_LEFTV
-
+    SEG ROM_FILE
 
 animations:
     .word anim_null
@@ -75,6 +107,30 @@ animations:
     .word anim_symmetrical_none2
     .word anim_player_dead
     .word anim_laser
+
+
+playerAnims:
+    .byte ANIM_SMALL_NONE
+    .byte ANIM_SMALL_HFLIP_NONE
+    .byte ANIM_SMALL_VFLIP_NONE
+    .byte ANIM_SMALL_HV_NONE
+    
+    .byte ANIM_PLAYER_JUMP
+    .byte ANIM_PLAYER_JUMP_LEFT
+    .byte ANIM_PLAYER_JUMPV
+    .byte ANIM_PLAYER_JUMP_LEFTV
+    
+    .byte ANIM_PLAYER_WALK
+    .byte ANIM_PLAYER_WALK_LEFT
+    .byte ANIM_PLAYER_WALKV
+    .byte ANIM_PLAYER_WALK_LEFTV
+
+    .byte ANIM_PLAYER_JUMP
+    .byte ANIM_PLAYER_JUMP_LEFT
+    .byte ANIM_PLAYER_JUMPV
+    .byte ANIM_PLAYER_JUMP_LEFTV
+
+
     
 frame_small1:
     .byte 8
