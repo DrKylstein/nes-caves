@@ -765,6 +765,15 @@ SnakeShared subroutine
     bcc .alive
     lda #$80
     sta entityXHi
+    lda entityYHi
+    lsr
+    cmp #POWERSHOT_ID
+    beq .Melee
+    lda entityCount,x
+    bne .Melee
+    ora #1
+    sta entityCount,x
+    jmp .alive
 .Melee:
     ;change to dead
     lda entityYHi,x
