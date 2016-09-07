@@ -17,7 +17,10 @@
  </layer>
  <layer name="Entities" width="40" height="24">
   <data encoding="base64" compression="zlib">
-   eJxjYBhaQICRvvaxM6LSxAA+LGr/UMndpLgDH8DmxqEM/g0z//wdwv7hGMJuHy6A3uXkYAJiQ8DvQ8GNpAAhGvmHf5iF0ygYBeSC0bwwCmDgN1pa+I8lbWiSmV44R1A6AwD9sgXt
+   eJxjYBhaQICRvvaxM6LSxAA+LGr/UMndpLgDH8DmxqEM/g0z//wdwv7hGMJuHy6AluWk2Gj8UgyGWxgK0cg//MMsnEbBKCAXjOaFUQADv9HSwn8saUOTQHrhHE1PDAANEQXt
   </data>
  </layer>
+ <imagelayer name="Image Layer 1" opacity="0.37">
+  <image source="../../../../Projects/nes caves/CAVES/maps/e1l02.gif"/>
+ </imagelayer>
 </map>

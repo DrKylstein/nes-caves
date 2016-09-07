@@ -40,6 +40,7 @@ double up channels so that long notes can resume after very short ones
 music
 
 optimizations:
+store animation ids as x2
 delete entity speeds table
 delete entity initial anim table
 hold ER pointer in ram so that entities can change routines dynamically?

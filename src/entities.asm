@@ -19,7 +19,7 @@ entityRoutine:
     .word ER_VerticalPlatformIdle
     .word ER_HorizontalPlatformIdle
     .word ER_RightCannon
-    .word ER_RightLaser
+    .word ER_Laser
     .word ER_LeftCannon
     .word ER_Girder
     .word ER_Rex
@@ -47,6 +47,7 @@ entityRoutine:
     .word ER_Snake
     .word ER_SnakePause
     .word ER_DeadSnake
+    .word ER_EnemyBullet
     
 entityFlags:
     .byte ENT_F_SKIPYTEST | ENT_F_SKIPXTEST | 1 ; player
@@ -97,6 +98,7 @@ entityFlags:
     .byte 1 ;snake
     .byte 1 ;snake
     .byte 1 ;dead snake
+    .byte 2 ;enemy bullet
     
 entityTiles:
     .byte 0 ; player
@@ -147,6 +149,7 @@ entityTiles:
     .byte [0+32*2]*2 ; snake
     .byte [6+32*2]*2 ; snake
     .byte [9+32*3]*2 ; dead snake
+    .byte [4+32*3]*2 ; enemy bullet
     
 entitySpeeds:
     .byte 0 ; player
@@ -197,6 +200,7 @@ entitySpeeds:
     .byte 1 ; snake
     .byte 1 ; snake
     .byte 0 ; dead snake
+    .byte 1 ; enemy bullet
     
 entityInitialAnims:
     .byte ANIM_SMALL_NONE ; player
@@ -219,7 +223,7 @@ entityInitialAnims:
     .byte ANIM_SPIDER ; vertical platform
     .byte ANIM_SPIDER ; horizontal platform
     .byte ANIM_SMALL_NONE ; right cannon
-    .byte ANIM_SYMMETRICAL_NONE ; laser
+    .byte ANIM_LASER ; laser
     .byte ANIM_SMALL_HFLIP_NONE ; left cannon
     .byte ANIM_GIRDER_MIDDLE ; girder
     .byte ANIM_REX ;rex
@@ -247,6 +251,7 @@ entityInitialAnims:
     .byte ANIM_SMALL_OSCILLATE ;snake
     .byte ANIM_SPIDER ;snake
     .byte ANIM_SYMMETRICAL_NONE ; dead snake
+    .byte ANIM_SYMMETRICAL_NONE ; enemy bullet
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
     lda entityXLo,x
@@ -894,7 +899,7 @@ ER_EyeMonster subroutine ;invulnerable until blinded, then 2 hits
     sta entityXLo+3,x
     lda entityYHi,x
     and #ENT_Y_POS
-    ora #40
+    ora #ENEMYBULLET_ID<<1
     sta entityYHi+3,x
     lda entityYLo,x
     sta entityYLo+3,x
@@ -1114,7 +1119,7 @@ ER_Ball subroutine
     sta entityXLo+1,x
     lda entityYHi,x
     and #ENT_Y_POS
-    ora #40
+    ora #ENEMYBULLET_ID<<1
     sta entityYHi+1,x
     lda entityYLo,x
     sta entityYLo+1,x
@@ -2280,11 +2285,11 @@ ER_Cannon
     sta entityXLo+1,x
     lda entityYHi,x
     and #~ENT_Y_INDEX
-    ora #40
+    ora #LASER_ID
     sta entityYHi+1,x
     lda entityYLo,x
     sta entityYLo+1,x
-    lda #ANIM_SYMMETRICAL_NONE
+    lda #ANIM_LASER
     sta entityAnim+1,x
 return$:
     jmp ER_Return
@@ -2861,8 +2866,16 @@ ER_Water subroutine
     jsr EntTryMelee
     jmp ER_Return
     
-ER_RightLaser subroutine
-ER_LeftLaser subroutine
+ER_EnemyBullet subroutine
+    ;player can shoot it down
+    jsr EntIsBulletNear
+    bcc ER_Laser
+    lda #$80
+    sta entityXHi
+    sta entityXHi,x
+    jmp ER_Return
+ER_Laser subroutine
+    
     jsr EntTestFlyingCollision
     bcc .notDead
     lda #$80

@@ -74,6 +74,7 @@ animations:
     .word anim_player_die
     .word anim_symmetrical_none2
     .word anim_player_dead
+    .word anim_laser
     
 frame_small1:
     .byte 8
@@ -690,3 +691,17 @@ anim_symmetrical_none2 subroutine
     .byte 8
     .byte   0,  2,  0,  0
     .byte   0,  2,$40,  8
+
+anim_laser subroutine
+    .byte 1
+    .word .frame1
+    .word .frame2
+.frame1:
+    .byte 8
+    .byte   0,  0,  0,  0
+    .byte   0,  0,  0,  8
+.frame2:
+    .byte 8
+    .byte   0,  0,$C0,  0
+    .byte   0,  0,$C0,  8
+
