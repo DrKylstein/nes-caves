@@ -141,7 +141,7 @@ entityTiles:
     .byte [2+32]*2 ; left cannon
     .byte [17+32*2]*2 ; air generator
     .byte $85 ; kiwi
-    .byte [3+32*3]*2 ; eyemonster
+    .byte [2+32*3]*2 ; eyemonster
     .byte [0+32*3]*2 ; eyeball
     .byte [31+32*2]*2 ; falling rock
     .byte [0+32*2]*2 ; snake
@@ -801,7 +801,7 @@ ER_DeadSnake subroutine
 
 ER_EyeMonster subroutine ;invulnerable until blinded, then 2 hits
     lda entityCount,x
-    bne .InitDone
+    bmi .InitDone
     lda entityYHi,x
     clc
     adc #2
@@ -819,7 +819,7 @@ ER_EyeMonster subroutine ;invulnerable until blinded, then 2 hits
     sta entityFrame+1,x
     lda #128+8
     sta entityFrame+2,x
-    lda #1
+    lda #$80
     sta entityCount,x
 .InitDone:
     
@@ -857,6 +857,60 @@ ER_EyeMonster subroutine ;invulnerable until blinded, then 2 hits
     adc #1
     sta entityVelocity,x
 .nohit:
+
+
+    MOV16I arg, 8
+    jsr EntAwayFromPlayerY
+    bcs .cantshoot
+    lda entityXHi+3,x
+    bpl .cantshoot
+    
+    lda entityCount,x
+    clc
+    adc #1
+    sta entityCount,x
+    and #63
+    cmp #63
+    bne .noshoot
+
+    
+    stx sav
+    ldx #SFX_LASER
+    jsr PlaySound
+    ldx sav
+    
+    lda entityXHi,x
+    sta entityXHi+3,x
+    lda entityXLo,x
+    sta entityXLo+3,x
+    lda entityYHi,x
+    and #ENT_Y_POS
+    ora #40
+    sta entityYHi+3,x
+    lda entityYLo,x
+    sta entityYLo+3,x
+    lda #ANIM_SYMMETRICAL_NONE
+    sta entityAnim+3,x
+    
+    lda #2
+    sta entityVelocity+3,x
+    
+    lda entityXLo,x
+    sta tmp
+    lda entityXHi,x
+    and #ENT_X_POS
+    sta tmp+1
+    CMP16 tmp, playerX
+    bcc .noshoot
+    lda #-2
+    sta entityVelocity+3,x
+.cantshoot:
+    lda entityCount,x
+    and #~63
+    sta entityCount,x
+.noshoot:
+
+
     lda entityXHi+1,x
     and entityXHi+2,x
     bpl .nomelee
@@ -875,10 +929,10 @@ ER_EyeMonster subroutine ;invulnerable until blinded, then 2 hits
     cmp #POWERSHOT_ID
     beq .Melee
     lda entityCount,x
-    cmp #2
-    bcs .Melee
-    clc
-    adc #1
+    and #$40
+    bne .Melee
+    lda entityCount,x
+    ora #$40
     sta entityCount,x
     jmp ER_Return
 .Melee:
