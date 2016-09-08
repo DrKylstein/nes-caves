@@ -8,6 +8,10 @@ level04:
     incbin level04.bin
 level05:
     incbin level05.bin
+level06:
+    incbin level06.bin
+level07:
+    incbin level07.bin
 mainMap:
     incbin main_map.bin
 introScene:

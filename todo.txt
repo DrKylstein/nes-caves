@@ -37,6 +37,7 @@ long shot:
 shoot/just fired animation
 double up channels so that long notes can resume after very short ones
 music
+enemy hit flash
 
 optimizations:
 delete entity speeds table

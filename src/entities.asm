@@ -265,7 +265,7 @@ entityInitialAnims:
     .byte ANIM_SLIME_RIGHT ; slime horizontal
     .byte ANIM_SLIME_DOWN ; slime vertical
     .byte ANIM_HAMMER ; hammer
-    .byte ANIM_SYMMETRICAL_NONE ; faucet
+    .byte ANIM_NULL ; faucet
     .byte ANIM_SYMMETRICAL_NONE ; water
     .byte ANIM_SPIDER ; vertical platform
     .byte ANIM_SPIDER ; horizontal platform

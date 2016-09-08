@@ -521,6 +521,13 @@ ResetStats subroutine
     sta messagePtr+1
     sta messageCursor
     
+    lda currLevel
+    cmp #5
+    bne .NormalGravity
+    lda #PLY_UPSIDEDOWN
+    sta playerFlags
+.NormalGravity:
+    
     SELECT_BANK 3
     lda currLevel
     asl
@@ -597,7 +604,7 @@ HandleExit_end:
 
 Paused subroutine
     lda paused
-    beq Paused_end
+    JEQ Paused_end
     lda pressed
     and #JOY_START_MASK
     beq .StartNotPressed
@@ -615,6 +622,7 @@ Paused subroutine
     sta mapPX+1
     jmp doExit
 .SelectNotPressed:
+;cheats
     lda pressed
     and #JOY_A_MASK
     beq .ANotPressed
@@ -628,6 +636,27 @@ Paused subroutine
     sta cleared
     sta cleared+1
 .RightNotPressed:
+    lda pressed
+    and #JOY_UP_MASK
+    beq .UpNotPressed
+    inc ammo
+    jsr UpdateAmmoDisplay
+.UpNotPressed:
+    lda pressed
+    and #JOY_DOWN_MASK
+    beq .DownNotPressed
+    dec ammo
+    jsr UpdateAmmoDisplay
+.DownNotPressed:
+    lda pressed
+    and #JOY_B_MASK
+    beq .BNotPressed
+    ldy ammo
+    dey
+    sty currLevel
+    jmp DoEnterLevel
+.BNotPressed:
+
     lda #$E1
     sta arg
     lda frame
@@ -940,6 +969,9 @@ TC_Gravity:
     sta powerFrames
     lda #POWER_GRAVITY
     sta powerType
+    lda #PLY_UPSIDEDOWN
+    ora playerFlags
+    sta playerFlags
     lda #0
     sta sav
     jsr UpdatePowerDisplay
@@ -1043,6 +1075,7 @@ TC_Entrance:
     sec
     sbc #TB_MAPDOOR
     sta currLevel
+DoEnterLevel:
     MOV16 mapPX, playerX
     MOV16 mapPY, playerY
     lda ammo
@@ -1368,9 +1401,9 @@ CheckGround subroutine
     CMP16I playerYVel, 0
     JMI CheckGround_end
 
-    lda powerType
-    cmp #POWER_GRAVITY
-    beq .upsideDown
+    lda playerFlags
+    and #PLY_UPSIDEDOWN
+    bne .upsideDown
     lda playerFlags
     ora #PLY_ISJUMPING
     sta playerFlags
@@ -1452,9 +1485,9 @@ CheckGround subroutine
     sta playerYVel
     sta playerYVel+1
     sta playerYFrac
-    lda powerType
-    cmp #POWER_GRAVITY
-    beq CheckGround_end
+    lda playerFlags
+    and #PLY_UPSIDEDOWN
+    bne CheckGround_end
     lda playerFlags
     and #~PLY_ISJUMPING
     sta playerFlags
@@ -1466,9 +1499,9 @@ CheckCieling subroutine
     CMP16I playerYVel, 0
     JPL CheckCieling_end
 
-    lda powerType
-    cmp #POWER_GRAVITY
-    beq .notUpsideDown
+    lda playerFlags
+    and #PLY_UPSIDEDOWN
+    bne .notUpsideDown
     lda playerFlags
     ora #PLY_ISJUMPING
     sta playerFlags
@@ -1489,9 +1522,9 @@ CheckCieling subroutine
     bcs .hit
     jmp CheckCieling_end
 .hit:
-    lda powerType
-    cmp #POWER_GRAVITY
-    bne .HandleGirder
+    lda playerFlags
+    and #PLY_UPSIDEDOWN
+    beq .HandleGirder
     jmp .normal
 .HandleGirder:
     ADD16I arg, playerX, PLAYER_HCENTER
@@ -1559,9 +1592,9 @@ CheckCieling subroutine
     and #$F0
     ora #$F
     sta playerY
-    lda powerType
-    cmp #POWER_GRAVITY
-    JNE CheckCieling_end
+    lda playerFlags
+    and #PLY_UPSIDEDOWN
+    JEQ CheckCieling_end
     lda playerFlags
     and #~PLY_ISJUMPING
     sta playerFlags
@@ -1743,25 +1776,23 @@ UpdatePower subroutine
     lda powerSeconds
     beq .end
     dec powerFrames
-    bne .end
+    bne UpdatePower_end
     lda #60
     sta powerFrames
     dec powerSeconds
     bne .display
+    lda powerType
+    cmp #POWER_GRAVITY
+    bne .NotGravity
+    lda playerFlags
+    and #~PLY_UPSIDEDOWN
+    sta playerFlags
+.NotGravity:
     lda #0
     sta powerType
 .display:
     jsr UpdatePowerDisplay
 .end:
-    lda playerFlags
-    and #~PLY_UPSIDEDOWN
-    sta playerFlags
-    lda powerType
-    cmp #POWER_GRAVITY
-    bne UpdatePower_end
-    lda playerFlags
-    ora #PLY_UPSIDEDOWN
-    sta playerFlags
 UpdatePower_end:
 
 UpdateMessage subroutine
@@ -2239,6 +2270,7 @@ UpdateSprites subroutine
     ldy #0
     lda (sav),y
     bne .nonzero
+    ldx arg+4
     jmp .outerloop
 .nonzero:
     sta sav+2
