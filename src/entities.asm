@@ -139,8 +139,8 @@ entityFlags:
     .byte [1<<ENT_F_CHILDREN_SHIFT] | 2 ; left cannon
     .byte 2 ;air generator
     .byte ENT_F_SKIPYTEST | ENT_F_SKIPXTEST | 2 ; kiwi
-    .byte [3<<ENT_F_CHILDREN_SHIFT] | 3 ;eyemonster
-    .byte 3 ;eyeball
+    .byte ENT_F_SKIPXTEST | [3<<ENT_F_CHILDREN_SHIFT] | 3 ;eyemonster
+    .byte ENT_F_SKIPXTEST | 3 ;eyeball
     .byte ENT_F_SKIPXTEST | ENT_F_SKIPYTEST | 0 ; falling rock
     .byte 1 ;snake
     .byte 1 ;snake
@@ -755,6 +755,59 @@ EntDieInOneShot subroutine
 .alive:
     rts
 
+EntShootPlayer subroutine
+    MOV16I arg, 8
+    jsr EntAwayFromPlayerY
+    bcs .cantshoot
+    lda entityXHi+1,x
+    bpl .cantshoot
+    
+    lda entityCount,x
+    clc
+    adc #1
+    sta entityCount,x
+    and #63
+    cmp #63
+    bne .noshoot
+
+    
+    stx sav
+    ldx #SFX_LASER
+    jsr PlaySound
+    ldx sav
+    
+    lda entityXHi,x
+    sta entityXHi+1,x
+    lda entityXLo,x
+    sta entityXLo+1,x
+    lda entityYHi,x
+    and #ENT_Y_POS
+    ora #ENEMYBULLET_ID<<1
+    sta entityYHi+1,x
+    lda entityYLo,x
+    sta entityYLo+1,x
+    lda #ANIM_SYMMETRICAL_NONE
+    sta entityAnim+1,x
+    
+    lda #2
+    sta entityVelocity+1,x
+    
+    lda entityXLo,x
+    sta tmp
+    lda entityXHi,x
+    and #ENT_X_POS
+    sta tmp+1
+    CMP16 tmp, playerX
+    bcc .noshoot
+    lda #-2
+    sta entityVelocity+1,x
+.cantshoot:
+    lda entityCount,x
+    and #~63
+    sta entityCount,x
+.noshoot:
+    rts
+
 ER_Snake subroutine ;needs to take 2 hits
     jsr Randomize
     and #127
@@ -866,20 +919,20 @@ ER_EyeMonster subroutine ;invulnerable until blinded, then 2 hits
     lda entityYHi,x
     clc
     adc #2
-    sta entityYHi+1,x
     sta entityYHi+2,x
+    sta entityYHi+3,x
     lda entityYLo,x
-    sta entityYLo+1,x
     sta entityYLo+2,x
+    sta entityYLo+3,x
     lda #ANIM_SYMMETRICAL_NONE
-    sta entityAnim+1,x
     sta entityAnim+2,x
+    sta entityAnim+3,x
     lda #0
-    sta entityXHi+1,x
     sta entityXHi+2,x
-    sta entityFrame+1,x
-    lda #128+8
+    sta entityXHi+3,x
     sta entityFrame+2,x
+    lda #128+8
+    sta entityFrame+3,x
     lda #$80
     sta entityCount,x
 .InitDone:
@@ -893,22 +946,22 @@ ER_EyeMonster subroutine ;invulnerable until blinded, then 2 hits
     lda entityXHi,x
     and #ENT_X_POS
     sta tmp+1
-    ADD16I tmp, tmp, 16
+    SUB16I tmp,tmp,16
     lda entityXHi+2,x
-    bmi .noright
+    bmi .noleft
     lda tmp
     sta entityXLo+2,x
     lda tmp+1
     sta entityXHi+2,x
-.noright:
-    lda entityXHi+1,x
-    bmi .noleft
-    SUB16I tmp, tmp, 32
-    lda tmp
-    sta entityXLo+1,x
-    lda tmp+1
-    sta entityXHi+1,x
 .noleft:
+    lda entityXHi+3,x
+    bmi .noright
+    ADD16I tmp,tmp,32
+    lda tmp
+    sta entityXLo+3,x
+    lda tmp+1
+    sta entityXHi+3,x
+.noright:
     
     jsr EntTestWalkingCollision
     bcc .nohit
@@ -919,61 +972,10 @@ ER_EyeMonster subroutine ;invulnerable until blinded, then 2 hits
     sta entityVelocity,x
 .nohit:
 
+    jsr EntShootPlayer
 
-    MOV16I arg, 8
-    jsr EntAwayFromPlayerY
-    bcs .cantshoot
-    lda entityXHi+3,x
-    bpl .cantshoot
-    
-    lda entityCount,x
-    clc
-    adc #1
-    sta entityCount,x
-    and #63
-    cmp #63
-    bne .noshoot
-
-    
-    stx sav
-    ldx #SFX_LASER
-    jsr PlaySound
-    ldx sav
-    
-    lda entityXHi,x
-    sta entityXHi+3,x
-    lda entityXLo,x
-    sta entityXLo+3,x
-    lda entityYHi,x
-    and #ENT_Y_POS
-    ora #ENEMYBULLET_ID<<1
-    sta entityYHi+3,x
-    lda entityYLo,x
-    sta entityYLo+3,x
-    lda #ANIM_SYMMETRICAL_NONE
-    sta entityAnim+3,x
-    
-    lda #2
-    sta entityVelocity+3,x
-    
-    lda entityXLo,x
-    sta tmp
-    lda entityXHi,x
-    and #ENT_X_POS
-    sta tmp+1
-    CMP16 tmp, playerX
-    bcc .noshoot
-    lda #-2
-    sta entityVelocity+3,x
-.cantshoot:
-    lda entityCount,x
-    and #~63
-    sta entityCount,x
-.noshoot:
-
-
-    lda entityXHi+1,x
-    and entityXHi+2,x
+    lda entityXHi+2,x
+    and entityXHi+3,x
     bpl .nomelee
     jsr EntIsStrongPlayerNear
     bcs .Melee
@@ -982,8 +984,8 @@ ER_EyeMonster subroutine ;invulnerable until blinded, then 2 hits
     bcc .alive
     lda #$80
     sta entityXHi
-    lda entityXHi+1,x
-    and entityXHi+2,x
+    lda entityXHi+2,x
+    and entityXHi+3,x
     bpl .alive
     lda entityYHi
     lsr
@@ -1081,13 +1083,22 @@ ER_Ball subroutine
     bcc .alive
     lda #$80
     sta entityXHi
-    lda entityAnim,x
-    cmp #ANIM_BALL_SLEEP
-    beq .Melee
     lda entityYHi
     lsr
     cmp #POWERSHOT_ID
+    beq .Melee
+    lda entityAnim,x
+    cmp #ANIM_BALL_SLEEP
     bne .alive
+    lda entityCount,x
+    and #$C0
+    cmp #$80
+    beq .Melee
+    lda entityCount,x
+    clc
+    adc #$40
+    sta entityCount,x
+    jmp .alive
 .Melee:
     jsr EntExplode
     lda #5
@@ -1141,52 +1152,8 @@ ER_Ball subroutine
     lda #ANIM_BALL_LEFT
     sta entityAnim,x
 .nohit:
-    MOV16I arg, 8
-    jsr EntAwayFromPlayerY
-    bcs .noshoot
-    lda entityXHi+1,x
-    bpl .noshoot
-    lda entityCount,x
-    clc
-    adc #1
-    sta entityCount,x
-    cmp #30
-    bne .noshoot
-    
-    stx sav
-    ldx #SFX_LASER
-    jsr PlaySound
-    ldx sav
-    
-    lda #0
-    sta entityCount,x
-    lda entityXHi,x
-    sta entityXHi+1,x
-    lda entityXLo,x
-    sta entityXLo+1,x
-    lda entityYHi,x
-    and #ENT_Y_POS
-    ora #ENEMYBULLET_ID<<1
-    sta entityYHi+1,x
-    lda entityYLo,x
-    sta entityYLo+1,x
-    lda #ANIM_SYMMETRICAL_NONE
-    sta entityAnim+1,x
-    
-    lda #2
-    sta entityVelocity+1,x
-    
-    lda entityXLo,x
-    sta tmp
-    lda entityXHi,x
-    and #ENT_X_POS
-    sta tmp+1
-    CMP16 tmp, playerX
-    bcc .noshoot
-    lda #-2
-    sta entityVelocity+1,x
-    
-.noshoot:
+
+    jsr EntShootPlayer
 
     jmp ER_Return
 

@@ -14,7 +14,6 @@
 
 must:
 find different substitute for trike or implement it (can't kill eye creature in that space)
-ball takes 3 shots
 fix corrpution/bad collision in left side of level
 add ending image
 more sounds
