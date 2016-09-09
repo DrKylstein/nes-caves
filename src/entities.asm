@@ -177,7 +177,7 @@ entityTiles:
     .byte [0+32]*2 ; vertical platform
     .byte [0+32]*2 ; horizontal platform
     .byte [2+32]*2 ; right cannon
-    .byte [14+32*3]*2 ; right laser
+    .byte [10+32*3]*2 ; right laser
     .byte [2+32]*2 ; left cannon
     .byte 123 ; girder
     .byte [25+32*2]*2 ; rex
@@ -205,10 +205,10 @@ entityTiles:
     .byte [0+32*2]*2 ; snake
     .byte [6+32*2]*2 ; snake
     .byte [4+32*1]*2 ; dead snake
-    .byte [4+32*3]*2 ; enemy bullet
-    .byte [8+32*3]*2 ;robot
+    .byte [15+32*2]*2 ; enemy bullet
+    .byte [4+32*3]*2 ;robot
     .byte [12+32*2]*2 ;bird
-    .byte [5+32*3]*2 ;egg
+    .byte [16+32*2]*2 ;egg
     
 entitySpeeds:
     .byte 0 ; player
