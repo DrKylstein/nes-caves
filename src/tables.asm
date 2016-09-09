@@ -54,7 +54,7 @@ levelPointers:
     .word level05
     .word level06
     .word level07
-    .word level01
+    .word level08
     .word level01
     .word level01
     .word level01
@@ -75,7 +75,7 @@ levelTilesets:
     .word caveTiles
     .word mineTiles
     .word caveTiles
-    .word caveTiles
+    .word techTiles
     .word caveTiles
     .word caveTiles
     .word caveTiles
@@ -96,7 +96,7 @@ levelPalettes:
     .word cobaltPal
     .word minePal
     .word volcanoPal
-    .word volcanoPal
+    .word cobaltPal
     .word volcanoPal
     .word volcanoPal
     .word volcanoPal
