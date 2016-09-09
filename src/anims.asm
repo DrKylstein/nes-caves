@@ -53,7 +53,8 @@ ANIM_PLAYER_DIE             ds 2
 ANIM_SYMMETRICAL_NONE2      ds 2
 ANIM_PLAYER_DEAD            ds 2
 ANIM_LASER                  ds 2
-
+ANIM_ROBOT_FIRING_RIGHT     ds 2
+ANIM_ROBOT_FIRING_LEFT      ds 2
     SEG ROM_FILE
 
 animations:
@@ -107,6 +108,8 @@ animations:
     .word anim_symmetrical_none2
     .word anim_player_dead
     .word anim_laser
+    .word anim_robot_firing_right
+    .word anim_robot_firing_left
 
 
 playerAnims:
@@ -760,4 +763,37 @@ anim_laser subroutine
     .byte 8
     .byte   0,  0,$C0,  0
     .byte   0,  0,$C0,  8
-
+    
+anim_robot_firing_right subroutine
+    .byte 1
+    .word .frame1
+    .word .frame2
+.frame1:
+    .byte 16
+    .byte   0,  0,  0,  0
+    .byte   0,  2,  0,  8
+    .byte   0, 12,  3, 16
+    .byte   0, 12,  3, 24
+.frame2:
+    .byte 16
+    .byte   0,  0,  0,  0
+    .byte   0,  2,  0,  8
+    .byte   0, 12,$C3, 16
+    .byte   0, 12,$C3, 24
+    
+anim_robot_firing_left subroutine
+    .byte 1
+    .word .frame1
+    .word .frame2
+.frame1:
+    .byte 16
+    .byte   0,  2,$40,  0
+    .byte   0,  0,$40,  8
+    .byte   0, 12,  3,-16
+    .byte   0, 12,  3, -8
+.frame2:
+    .byte 16
+    .byte   0,  2,$40,  0
+    .byte   0,  0,$40,  8
+    .byte   0, 12,$C3,-16
+    .byte   0, 12,$C3, -8

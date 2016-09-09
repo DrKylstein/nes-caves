@@ -43,6 +43,7 @@ SNAKE_ID                    ds 1
 SNAKEPAUSE_ID               ds 1
 DEADSNAKE_ID                ds 1
 ENEMYBULLET_ID              ds 1
+ROBOT_ID                    ds 1
     SEG ROM_FILE
 
 entityRoutine:
@@ -95,6 +96,7 @@ entityRoutine:
     .word ER_SnakePause
     .word ER_DeadSnake
     .word ER_EnemyBullet
+    .word ER_Robot
     
 entityFlags:
     .byte ENT_F_SKIPYTEST | ENT_F_SKIPXTEST | 1 ; player
@@ -146,6 +148,7 @@ entityFlags:
     .byte 1 ;snake
     .byte 1 ;dead snake
     .byte 2 ;enemy bullet
+    .byte 2 ; robot
     
 entityTiles:
     .byte 0 ; player
@@ -168,7 +171,7 @@ entityTiles:
     .byte [0+32]*2 ; vertical platform
     .byte [0+32]*2 ; horizontal platform
     .byte [2+32]*2 ; right cannon
-    .byte [4+32]*2 ; right laser
+    .byte [14+32*3]*2 ; right laser
     .byte [2+32]*2 ; left cannon
     .byte 123 ; girder
     .byte [25+32*2]*2 ; rex
@@ -195,8 +198,9 @@ entityTiles:
     .byte [31+32*2]*2 ; falling rock
     .byte [0+32*2]*2 ; snake
     .byte [6+32*2]*2 ; snake
-    .byte [9+32*3]*2 ; dead snake
+    .byte [2+32*1]*2 ; dead snake
     .byte [4+32*3]*2 ; enemy bullet
+    .byte [8+32*3]*2 ;robot
     
 entitySpeeds:
     .byte 0 ; player
@@ -248,6 +252,7 @@ entitySpeeds:
     .byte 1 ; snake
     .byte 0 ; dead snake
     .byte 1 ; enemy bullet
+    .byte 2 ; robot
     
 entityInitialAnims:
     .byte ANIM_SMALL_NONE ; player
@@ -299,6 +304,7 @@ entityInitialAnims:
     .byte ANIM_SPIDER ;snake
     .byte ANIM_SYMMETRICAL_NONE ; dead snake
     .byte ANIM_SYMMETRICAL_NONE ; enemy bullet
+    .byte ANIM_SMALL_OSCILLATE ; robot
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
     lda entityXLo,x
@@ -808,6 +814,100 @@ EntShootPlayer subroutine
 .noshoot:
     rts
 
+ER_Robot subroutine
+    jsr EntIsStrongPlayerNear
+    bcs .Melee
+    jsr EntIsBulletNear
+    bcc .alive
+    lda #$80
+    sta entityXHi
+    lda entityYHi
+    lsr
+    cmp #POWERSHOT_ID
+    beq .Melee
+    lda entityAnim,x
+    cmp #ANIM_ROBOT_FIRING_RIGHT
+    beq .alive
+    cmp #ANIM_ROBOT_FIRING_LEFT
+    beq .alive
+    lda entityCount,x
+    and #$C0
+    cmp #$80
+    bcs .Melee
+    lda entityCount,x
+    clc
+    adc #$40
+    sta entityCount,x
+    jmp .alive
+.Melee:
+    jsr EntExplode
+    lda #10
+    sta arg
+    lda #0
+    sta arg+1
+    sta arg+2
+    stx sav
+    jsr AddScore
+    ldx sav
+    jmp ER_Return
+.alive:
+
+    MOV16I arg,4
+    jsr EntAwayFromPlayerY
+    JCS ER_Robot_NoChase
+    MOV16I arg,24
+    jsr EntAwayFromPlayerX
+    JCS ER_Robot_NoChase
+    lda entityXLo,x
+    sta tmp
+    lda entityXHi,x
+    and #ENT_X_POS
+    sta tmp+1
+    lda entityVelocity,x
+    bmi .chaseLeft
+.chaseRight:
+    ADD16I tmp,tmp,16
+    CMP16 playerX,tmp
+    bcc ER_Robot_NoChase
+    lda #ANIM_ROBOT_FIRING_RIGHT
+    sta entityAnim,x
+    ADD16I tmp,tmp,4
+    CMP16 playerX,tmp
+    JCC ER_Return
+    jsr DamagePlayer
+    jmp ER_Return
+.chaseLeft:
+    CMP16 playerX,tmp
+    bcs ER_Robot_NoChase
+    lda #ANIM_ROBOT_FIRING_LEFT
+    sta entityAnim,x
+    SUB16I tmp,tmp,4
+    CMP16 playerX,tmp
+    JCS ER_Return
+    jsr DamagePlayer
+    jmp ER_Return
+ER_Robot_NoChase:
+
+    lda #ANIM_SMALL_OSCILLATE
+    sta entityAnim,x
+    lda entityVelocity,x
+    bpl .right
+    lda #ANIM_SMALL_HFLIP_OSCILLATE
+    sta entityAnim,x
+.right:
+    jsr EntTryMelee    
+    jsr EntMoveHorizontally
+    jsr EntTestWalkingCollision
+    bcc .nohit
+    lda entityVelocity,x
+    eor #$FF
+    clc
+    adc #1
+    sta entityVelocity,x
+.nohit:
+
+    jmp ER_Return
+
 ER_Snake subroutine ;needs to take 2 hits
     jsr Randomize
     and #127
@@ -1093,7 +1193,7 @@ ER_Ball subroutine
     lda entityCount,x
     and #$C0
     cmp #$80
-    beq .Melee
+    bcs .Melee
     lda entityCount,x
     clc
     adc #$40

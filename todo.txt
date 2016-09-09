@@ -4,7 +4,7 @@
  20  sprites left in upper table
  39 bytes left in pages $300-$700
  PRGROM Bank 0 left: 2832
- PRGROM Bank 1 left: 8363
+ PRGROM Bank 1 left: 5309
  PRGROM Bank 2 left: 8192
  PRGROM Bank 3 left: 5031
  PRGROM Bank 4 left: 16384

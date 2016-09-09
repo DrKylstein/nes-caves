@@ -45,6 +45,11 @@ beatTimer ds 1
 
 currBank    ds 1
 
+entityXLo        ds MAX_ENTITIES
+entityXHi        ds MAX_ENTITIES ;active bit/off screen bit/unused 4 bits/hi x 2 bits
+entityYLo        ds MAX_ENTITIES
+entityYHi        ds MAX_ENTITIES ;index/hi y bit
+
     ECHO [$100-.]d," bytes left in page $000"
 
     ORG $0100
@@ -116,10 +121,7 @@ messageTime    ds 1
 messageCursor  ds 1
 shr_debugReg   ds 2
 levelMap       ds 960
-entityXLo        ds MAX_ENTITIES
-entityXHi        ds MAX_ENTITIES ;active bit/off screen bit/unused 4 bits/hi x 2 bits
-entityYLo        ds MAX_ENTITIES
-entityYHi        ds MAX_ENTITIES ;index/hi y bit
+
 entityVelocity   ds MAX_ENTITIES 
 entityCount      ds MAX_ENTITIES
 entityAnim       ds MAX_ENTITIES
