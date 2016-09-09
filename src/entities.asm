@@ -46,6 +46,7 @@ ENEMYBULLET_ID              ds 1
 ROBOT_ID                    ds 1
 BIRD_ID                     ds 1
 EGG_ID                      ds 1
+SIGN_ID                     ds 1
     SEG ROM_FILE
 
 entityRoutine:
@@ -101,6 +102,7 @@ entityRoutine:
     .word ER_Robot
     .word ER_Bird
     .word ER_Egg
+    .word ER_Sign
     
 entityFlags:
     .byte ENT_F_SKIPYTEST | ENT_F_SKIPXTEST | 1 ; player
@@ -155,6 +157,7 @@ entityFlags:
     .byte 2 ; robot
     .byte [1<<ENT_F_CHILDREN_SHIFT] | 2 ; bird
     .byte 1 ; egg
+    .byte 0 ; sign
     
 entityTiles:
     .byte 0 ; player
@@ -209,6 +212,7 @@ entityTiles:
     .byte [4+32*3]*2 ;robot
     .byte [12+32*2]*2 ;bird
     .byte [16+32*2]*2 ;egg
+    .byte 32*4 + 24 + 1 + 32;sign
     
 entitySpeeds:
     .byte 0 ; player
@@ -263,6 +267,7 @@ entitySpeeds:
     .byte 2 ; robot
     .byte 1 ; bird
     .byte 0 ; egg
+    .byte 0 ;sign
     
 entityInitialAnims:
     .byte ANIM_SMALL_NONE ; player
@@ -317,6 +322,7 @@ entityInitialAnims:
     .byte ANIM_SMALL_OSCILLATE ; robot
     .byte ANIM_SYMMETRICAL_OSCILLATE ; bird
     .byte ANIM_TORCH ; egg
+    .byte ANIM_WIDE_NONE ; sign
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
     lda entityXLo,x
@@ -679,6 +685,21 @@ EntTestVerticalCollision
     ADD16I arg+2,arg+2,16
 .notDown:
     jmp TestCollision
+    
+EntTestLandingCollision
+    lda entityXLo,x
+    sta arg
+    lda entityXHi,x
+    and #ENT_X_POS
+    sta arg+1
+    lda entityYLo,x
+    sta arg+2
+    lda entityYHi,x
+    and #ENT_Y_POS
+    sta arg+3
+    ADD16I arg,arg, 8
+    ADD16I arg+2,arg+2,16
+    jmp TestCollisionTop
 
 
 EntFall subroutine
@@ -2376,6 +2397,84 @@ ER_Flame subroutine
     jsr EntTryMelee
     jmp ER_Return
 
+ER_Sign subroutine
+    lda entityCount,x
+    JEQ ER_Sign_notFalling
+    MOV16I arg,8
+    jsr EntAwayFromPlayerY
+    bcs .NoMelee
+    MOV16I arg,16
+    jsr EntAwayFromPlayerX
+    bcs .NoMelee
+    jsr DamagePlayer
+.NoMelee
+    jsr EntFall
+    jsr EntTestLandingCollision
+    bcs .hit
+    jmp .nohit
+.hit:
+    lda entityXLo,x
+    sta sav
+    lda entityXHi,x
+    and #ENT_X_POS
+    sta sav+1
+    SUB16I sav,sav,8
+    
+    lda entityYLo,x
+    sta sav+2
+    REPEAT 4
+    LSR16 sav
+    REPEND
+    lda entityYHi,x
+    and #ENT_Y_POS
+    sta sav+3
+    REPEAT 4
+    LSR16 sav+2
+    REPEND
+    MOV16 arg,sav
+    MOV16 arg+2,sav+2
+    lda #FALLEN_SIGN_TILE
+    sta arg+4
+    stx sav+5
+    jsr SetTile
+    ldx sav+5
+    
+    INC16 sav
+    MOV16 arg,sav
+    MOV16 arg+2,sav+2
+    lda #FALLEN_SIGN_TILE+1
+    sta arg+4
+    stx sav+5
+    jsr SetTile
+    ldx sav+5
+    
+    lda #$80
+    sta entityXHi,x
+.nohit:
+    jmp ER_Return
+
+ER_Sign_notFalling:
+    MOV16I arg, 16
+    jsr EntAwayFromPlayerX
+    bcs .noFall
+    
+    lda entityYLo,x
+    sta tmp
+    lda entityYHi,x
+    and #ENT_Y_POS
+    sta tmp+1
+    CMP16 playerY,tmp
+    bcc .noFall
+    ADD16I tmp,tmp,16*6
+    CMP16 playerY,tmp
+    bcs .noFall
+    lda #1
+    sta entityCount,x
+.noFall:
+    jmp ER_Return
+    
+
+
 ER_Stalactite subroutine
     jsr EntTryMelee
     lda entityCount,x
@@ -2400,7 +2499,10 @@ ER_Stalactite subroutine
     lda entityYHi,x
     and #ENT_Y_POS
     sta tmp+1
-    CMP16I tmp, playerY
+    CMP16 playerY,tmp
+    bcc .noFall
+    ADD16I tmp,tmp,16*6
+    CMP16 playerY,tmp
     bcs .noFall
     lda #1
     sta entityCount,x

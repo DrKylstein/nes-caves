@@ -473,9 +473,12 @@ InitEntities subroutine
     sta entityXHi+3,y
 .notCaterpillar:
 
-;move hammers over
+;move hammers and signs over
+    cmp #SIGN_ID
+    beq .sortahammer
     cmp #HAMMER_ID
     bne .notHammer
+.sortahammer:
     lda entityXLo,y
     clc
     adc #8

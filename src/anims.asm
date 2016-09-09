@@ -55,6 +55,7 @@ ANIM_PLAYER_DEAD            ds 2
 ANIM_LASER                  ds 2
 ANIM_ROBOT_FIRING_RIGHT     ds 2
 ANIM_ROBOT_FIRING_LEFT      ds 2
+ANIM_WIDE_NONE              ds 2
     SEG ROM_FILE
 
 animations:
@@ -110,6 +111,7 @@ animations:
     .word anim_laser
     .word anim_robot_firing_right
     .word anim_robot_firing_left
+    .word anim_wide_none
 
 
 playerAnims:
@@ -797,3 +799,14 @@ anim_robot_firing_left subroutine
     .byte   0,  0,$40,  8
     .byte   0, 12,$C3,-16
     .byte   0, 12,$C3, -8
+
+anim_wide_none subroutine
+    .byte 0
+    .word .frame1
+.frame1:
+    .byte 16
+    .byte   0,  0,  0, -8
+    .byte   0,  2,  0,  0
+    .byte   0,  4,  0,  8
+    .byte   0,  6,  0, 16
+    
