@@ -652,9 +652,9 @@ anim_hammer subroutine
     .byte -16,  0,  0, -4
     .byte -16,  2,  0,  4
     .byte -16,  0,$40, 12
-    .byte   0, 64,  0, -4
-    .byte   0, 66,  0,  4
-    .byte   0, 64,$40, 12
+    .byte   0,  4,  0, -4
+    .byte   0,  6,  0,  4
+    .byte   0,  4,$40, 12
     
 anim_ball_right subroutine
     .byte 3

@@ -13,7 +13,6 @@
  PRGROM Bank 7 left: 3181
 
 must:
-find different substitute for trike or implement it (can't kill eye creature in that space)
 fix corrpution/bad collision in left side of level
 add ending image
 more sounds
@@ -27,11 +26,11 @@ more sounds
 fall off elevator if pushed into ceiling
 add falling sign
 add hidden crystals
-add bird
-add robot (subs walker?? uses different attack)
 add wall snake
 low gravity
 enter animation
+find different substitute for trike or implement it (can't kill eye creature in that space)
+add walker? (different attack from robot)
 
 long shot:
 shoot/just fired animation

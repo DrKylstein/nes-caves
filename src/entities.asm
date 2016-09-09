@@ -44,6 +44,8 @@ SNAKEPAUSE_ID               ds 1
 DEADSNAKE_ID                ds 1
 ENEMYBULLET_ID              ds 1
 ROBOT_ID                    ds 1
+BIRD_ID                     ds 1
+EGG_ID                      ds 1
     SEG ROM_FILE
 
 entityRoutine:
@@ -97,6 +99,8 @@ entityRoutine:
     .word ER_DeadSnake
     .word ER_EnemyBullet
     .word ER_Robot
+    .word ER_Bird
+    .word ER_Egg
     
 entityFlags:
     .byte ENT_F_SKIPYTEST | ENT_F_SKIPXTEST | 1 ; player
@@ -149,6 +153,8 @@ entityFlags:
     .byte 1 ;dead snake
     .byte 2 ;enemy bullet
     .byte 2 ; robot
+    .byte [1<<ENT_F_CHILDREN_SHIFT] | 2 ; bird
+    .byte 1 ; egg
     
 entityTiles:
     .byte 0 ; player
@@ -165,7 +171,7 @@ entityTiles:
     .byte [19+32*2]*2 ; caterpillar tail
     .byte [28+32]*2 ; slime horizontal
     .byte [30+32]*2 ; slime vertical
-    .byte [15+32*2]*2 ; hammer
+    .byte 32*4 + 24 + 1;hammer
     .byte [9+32]*2 ; faucet
     .byte [8+32]*2 ; water
     .byte [0+32]*2 ; vertical platform
@@ -198,9 +204,11 @@ entityTiles:
     .byte [31+32*2]*2 ; falling rock
     .byte [0+32*2]*2 ; snake
     .byte [6+32*2]*2 ; snake
-    .byte [2+32*1]*2 ; dead snake
+    .byte [4+32*1]*2 ; dead snake
     .byte [4+32*3]*2 ; enemy bullet
     .byte [8+32*3]*2 ;robot
+    .byte [12+32*2]*2 ;bird
+    .byte [5+32*3]*2 ;egg
     
 entitySpeeds:
     .byte 0 ; player
@@ -253,6 +261,8 @@ entitySpeeds:
     .byte 0 ; dead snake
     .byte 1 ; enemy bullet
     .byte 2 ; robot
+    .byte 1 ; bird
+    .byte 0 ; egg
     
 entityInitialAnims:
     .byte ANIM_SMALL_NONE ; player
@@ -305,6 +315,8 @@ entityInitialAnims:
     .byte ANIM_SYMMETRICAL_NONE ; dead snake
     .byte ANIM_SYMMETRICAL_NONE ; enemy bullet
     .byte ANIM_SMALL_OSCILLATE ; robot
+    .byte ANIM_SYMMETRICAL_OSCILLATE ; bird
+    .byte ANIM_TORCH ; egg
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
     lda entityXLo,x
@@ -813,6 +825,91 @@ EntShootPlayer subroutine
     sta entityCount,x
 .noshoot:
     rts
+
+ER_Bird subroutine
+    jsr EntTestFlyingCollision
+    bcc .nohit
+    lda entityVelocity,x
+    eor #$FF
+    clc
+    adc #1
+    sta entityVelocity,x
+.nohit
+    lda entityCount,x
+    bne .notShoot
+    lda entityYHi+1,x
+    lsr
+    cmp #DEADSNAKE_ID
+    bne .noyolk
+    lda #$80
+    sta entityXHi+1,x
+.noyolk
+
+    MOV16I arg, 8
+    jsr EntAwayFromPlayerX
+    bcs .notShoot
+    lda entityYLo,x
+    sta tmp
+    lda entityYHi,x
+    and #ENT_Y_POS
+    sta tmp+1
+    ADD16I tmp, tmp, 16
+    CMP16 playerY,tmp
+    bcc .notShoot
+    lda entityXHi+1,x
+    bpl .notShoot
+    lda tmp
+    sta entityYLo+1,x
+    lda tmp+1
+    ora #EGG_ID<<1
+    sta entityYHi+1,x
+    lda entityXLo,x
+    sta entityXLo+1,x
+    lda entityXHi,x
+    sta entityXHi+1,x
+    lda #ANIM_TORCH
+    sta entityAnim+1,x
+    lda #2
+    sta entityVelocity+1,x
+    lda #60
+    sta entityCount,x
+.notShoot:
+    lda entityCount,x
+    beq .noDecrement
+    bmi .noDecrement
+    sec
+    sbc #1
+    sta entityCount,x
+.noDecrement
+
+    jsr EntTryMelee
+    jsr EntMoveHorizontally
+    jsr EntDieInOneShot
+    jmp ER_Return
+
+ER_Egg subroutine
+    jsr EntMoveVertically
+    jsr EntTestVerticalCollision
+    JCC ER_Return
+    jsr Randomize
+    bmi .infertile
+    lda entityYHi,x
+    and #ENT_Y_POS
+    ora #BIRD_ID<<1
+    sta entityYHi,x
+    lda #ANIM_SYMMETRICAL_OSCILLATE
+    sta entityAnim,x
+    lda #$80
+    sta entityCount,x
+    jmp ER_Return
+.infertile:
+    lda entityYHi,x
+    and #ENT_Y_POS
+    ora #DEADSNAKE_ID<<1
+    sta entityYHi,x
+    lda #ANIM_SYMMETRICAL_NONE
+    sta entityAnim,x
+    jmp ER_Return
 
 ER_Robot subroutine
     jsr EntIsStrongPlayerNear
