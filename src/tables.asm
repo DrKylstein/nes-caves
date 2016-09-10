@@ -56,13 +56,13 @@ levelPointers:
     .word level07
     .word level08
     .word level09
-    .word level01
-    .word level01
-    .word level01
-    .word level01
-    .word level01
-    .word level01
-    .word level01
+    .word level10
+    .word level11
+    .word level12
+    .word level13
+    .word level14
+    .word level15
+    .word level16
     .word mainMap
     .word introScene
     .word endScene
@@ -77,7 +77,7 @@ levelTilesets:
     .word caveTiles ;7
     .word techTiles ;8
     .word worksTiles;9
-    .word caveTiles ;10
+    .word mineTiles ;10
     .word caveTiles ;11
     .word caveTiles ;12
     .word caveTiles ;13

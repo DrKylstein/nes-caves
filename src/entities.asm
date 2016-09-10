@@ -286,7 +286,7 @@ entityInitialAnims:
     .byte ANIM_SLIME_DOWN ; slime vertical
     .byte ANIM_HAMMER ; hammer
     .byte ANIM_NULL ; faucet
-    .byte ANIM_SYMMETRICAL_NONE ; water
+    .byte ANIM_SPIKE ; water
     .byte ANIM_SPIDER ; vertical platform
     .byte ANIM_SPIDER ; horizontal platform
     .byte ANIM_SMALL_NONE ; right cannon
@@ -828,7 +828,7 @@ EntShootPlayer subroutine
     lda #ANIM_SYMMETRICAL_NONE
     sta entityAnim+1,x
     
-    lda #2
+    lda #4
     sta entityVelocity+1,x
     
     lda entityXLo,x
@@ -838,7 +838,7 @@ EntShootPlayer subroutine
     sta tmp+1
     CMP16 tmp, playerX
     bcc .noshoot
-    lda #-2
+    lda #-4
     sta entityVelocity+1,x
 .cantshoot:
     lda entityCount,x
@@ -2542,6 +2542,13 @@ ER_Mimrock subroutine
     jsr EntDieByPowerOnly
     jmp ER_Return
 
+ER_RightCannon subroutine
+ER_LeftCannon subroutine
+    lda switches
+    and #SWITCH_TURRETS
+    JEQ ER_Return
+    jmp ER_Cannon
+ER_LeftCannonMoving subroutine
 ER_RightCannonMoving subroutine
     jsr EntMoveVertically
     jsr EntTestVerticalCollision
@@ -2552,38 +2559,18 @@ ER_RightCannonMoving subroutine
     adc #1
     sta entityVelocity,x
 .nohit:
-ER_RightCannon subroutine
-    lda #4
-    sta entityVelocity+1,x
-    jmp ER_Cannon
-ER_LeftCannonMoving subroutine
-    jsr EntMoveVertically
-    jsr EntTestVerticalCollision
-    bcc .nohit
-    lda entityVelocity,x
-    eor #$FF
-    clc
-    adc #1
-    sta entityVelocity,x
-.nohit:
-ER_LeftCannon subroutine
-    lda #<-4
-    sta entityVelocity+1,x
-ER_Cannon
-    lda #SWITCH_TURRETS
-    bit switches
-    beq return$
+ER_Cannon subroutine
     MOV16I arg, 8
     jsr EntAwayFromPlayerY
-    bcs return$
+    bcs .return
     lda entityXHi+1,x
-    bpl return$
+    bpl .return
     lda entityCount,x
     clc
     adc #1
     sta entityCount,x
     cmp #$10
-    bne return$
+    bne .return
     
     stx sav
     ldx #SFX_LASER
@@ -2604,35 +2591,52 @@ ER_Cannon
     sta entityYLo+1,x
     lda #ANIM_LASER
     sta entityAnim+1,x
-return$:
+    lda #4
+    sta entityVelocity+1,x
+    lda entityYHi,x
+    lsr
+    cmp #LEFTCANNONMOVING_ID
+    beq .left
+    cmp #LEFTCANNON_ID
+    bne .return
+.left:
+    lda #-4
+    sta entityVelocity+1,x
+.return:
     jmp ER_Return
     
 ER_Faucet subroutine
     lda entityXHi+1,x
-    bpl return$
+    bpl .return
+    lda entityYLo,x
+    sta tmp
+    lda entityYHi,x
+    and #ENT_Y_POS
+    sta tmp+1
+    CMP16 playerY,tmp
+    bcc .return
     lda entityCount,x
-    clc
-    adc #1
-    sta entityCount,x
-    cmp #$30
-    bne return$
-    lda #0
+    beq .drip
+    dec entityCount,x
+    jmp ER_Return
+.drip:
+    lda #15
     sta entityCount,x
     lda entityXHi,x
     sta entityXHi+1,x
     lda entityXLo,x
     sta entityXLo+1,x
     lda entityYHi,x
-    and #~ENT_Y_INDEX
-    ora #32
+    and #ENT_Y_POS
+    ora #WATER_ID<<1
     sta entityYHi+1,x
     lda entityYLo,x
     sta entityYLo+1,x
-    lda #ANIM_SYMMETRICAL_NONE
+    lda #ANIM_SPIKE
     sta entityAnim+1,x
-    lda #4
+    lda #2
     sta entityVelocity+1,x
-return$:
+.return:
     jmp ER_Return
     
 ER_PowerShot:
