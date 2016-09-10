@@ -1413,7 +1413,7 @@ CheckGround subroutine
 .upsideDown:
     lda playerY
     and #$F
-    cmp #8
+    cmp #4
     bcs .checkSpriteHit
 
     ADD16I arg, playerX, [PLAYER_HRIGHT-1]
