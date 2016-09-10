@@ -17,13 +17,14 @@ level08:
 level09:
     incbin level09.bin
 level10:
+    incbin level10.bin
 level11:
 level12:
 level13:
 level14:
 level15:
 level16:
-    incbin level10.bin
+    incbin level11.bin
 
 mainMap:
     incbin main_map.bin

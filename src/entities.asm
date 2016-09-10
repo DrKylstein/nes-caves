@@ -47,6 +47,8 @@ ROBOT_ID                    ds 1
 BIRD_ID                     ds 1
 EGG_ID                      ds 1
 SIGN_ID                     ds 1
+WORM_RIGHT_ID               ds 1
+WORM_LEFT_ID                ds 1
     SEG ROM_FILE
 
 entityRoutine:
@@ -103,6 +105,8 @@ entityRoutine:
     .word ER_Bird
     .word ER_Egg
     .word ER_Sign
+    .word ER_Worm_Right
+    .word ER_Worm_Left
     
 entityFlags:
     .byte ENT_F_SKIPYTEST | ENT_F_SKIPXTEST | 1 ; player
@@ -158,6 +162,8 @@ entityFlags:
     .byte [1<<ENT_F_CHILDREN_SHIFT] | 2 ; bird
     .byte 1 ; egg
     .byte 0 ; sign
+    .byte 1 ;worm
+    .byte 1 ;worm
     
 entityTiles:
     .byte 0 ; player
@@ -213,6 +219,8 @@ entityTiles:
     .byte [12+32*2]*2 ;bird
     .byte [16+32*2]*2 ;egg
     .byte 32*4 + 24 + 1 + 32;sign
+    .byte [8+32*2]*2 ; worm
+    .byte [8+32*2]*2 ; worm
     
 entitySpeeds:
     .byte 0 ; player
@@ -268,6 +276,8 @@ entitySpeeds:
     .byte 1 ; bird
     .byte 0 ; egg
     .byte 0 ;sign
+    .byte 0 ;worm
+    .byte 0 ;worm
     
 entityInitialAnims:
     .byte ANIM_SMALL_NONE ; player
@@ -323,6 +333,8 @@ entityInitialAnims:
     .byte ANIM_SYMMETRICAL_OSCILLATE ; bird
     .byte ANIM_TORCH ; egg
     .byte ANIM_WIDE_NONE ; sign
+    .byte ANIM_SMALL_NONE ; worm
+    .byte ANIM_SMALL_HFLIP_NONE ; worm
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
     lda entityXLo,x
@@ -755,12 +767,12 @@ EntDieByPowerOnly subroutine
     bcs .Melee
     jsr EntIsBulletNear
     bcc .alive
+    lda #$80
+    sta entityXHi
     lda entityYHi
     lsr
     cmp #POWERSHOT_ID
     bne .alive
-    lda #$80
-    sta entityXHi
 .Melee:
     jsr EntExplode
     lda #10
@@ -846,6 +858,11 @@ EntShootPlayer subroutine
     sta entityCount,x
 .noshoot:
     rts
+
+ER_Worm subroutine
+    jsr EntTryMelee
+    jsr EntDieByPowerOnly
+    jmp ER_Return
 
 ER_Bird subroutine
     jsr EntTestFlyingCollision
