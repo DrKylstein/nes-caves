@@ -15,7 +15,6 @@
 must:
 fix corrpution/bad collision in left side of level
 slime direction change is poor
-hp display not reseting on restart/exit
 add ending image
 more sounds
 -power ups

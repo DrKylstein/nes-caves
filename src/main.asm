@@ -399,29 +399,6 @@ LoadLevel subroutine
     ldy sav
     jmp .entityLoop
 LoadLevel_end:
-
-LoadMapState subroutine
-    lda currLevel
-    cmp #MAP_LEVEL
-    bne LoadMapState_end
-    lda mapScore+2
-    cmp #INVALID_MAP_STAT
-    beq .keepStuff
-    lda mapAmmo
-    sta ammo
-    MOV16 score, mapScore
-    lda mapScore+2
-    sta score+2
-.keepStuff:
-    lda mapPX+1
-    cmp #INVALID_MAP_STAT
-    beq LoadMapState_end
-    MOV16 playerX, mapPX
-    MOV16 playerY, mapPY
-LoadMapState_end:
-
-    jsr InitHUD
-    jsr ResetCamera
         
 InitEntities subroutine
     SELECT_BANK 3
@@ -501,10 +478,30 @@ InitEntities subroutine
     jmp .loop
 InitEntities_end:
 
+LoadMapState subroutine
+    lda currLevel
+    cmp #MAP_LEVEL
+    bne LoadMapState_end
+    lda mapScore+2
+    cmp #INVALID_MAP_STAT
+    beq .keepStuff
+    lda mapAmmo
+    sta ammo
+    MOV16 score, mapScore
+    lda mapScore+2
+    sta score+2
+.keepStuff:
+    lda mapPX+1
+    cmp #INVALID_MAP_STAT
+    beq LoadMapState_end
+    MOV16 playerX, mapPX
+    MOV16 playerY, mapPY
+LoadMapState_end:
+
 ResetStats subroutine
     lda #3
     sta hp
-    jsr UpdateHeartsDisplay
+    ;jsr UpdateHeartsDisplay
     lda #MAX_ENTITIES
     sta currPlatform
     lda #0
@@ -556,6 +553,8 @@ ResetStats subroutine
     sta beatTimer
 ResetStats_end:
 
+    jsr InitHUD
+    jsr ResetCamera
     jsr InitialDrawLevel
     MOV16I shr_tileAnim, cloudsTiles
 
@@ -571,7 +570,7 @@ ReenableDisplay subroutine
     lda #$20
     sta arg
     jsr Fade
-    jsr Synchronize
+    ;jsr Synchronize
 ReenableDisplay_end:
 
 ;------------------------------------------------------------------------------
@@ -3431,7 +3430,7 @@ InitialDrawLevel subroutine
     tya
     pha
     jsr EvenColumn
-    jsr CopyTileCol     ;terribly unsafe
+    jsr CopyTileCol 
     pla
     tay
     
@@ -3453,7 +3452,7 @@ InitialDrawLevel subroutine
     tya
     pha
     jsr OddColumn
-    jsr CopyTileCol     ;ditto
+    jsr CopyTileCol
     pla
     tay
     
