@@ -6,3 +6,5 @@ mineTiles:
     incbin tileset-map.pat
 introTiles:
     incbin tileset-intro.pat
+worksTiles:
+    incbin tileset-works.pat

@@ -55,7 +55,7 @@ levelPointers:
     .word level06
     .word level07
     .word level08
-    .word level01
+    .word level09
     .word level01
     .word level01
     .word level01
@@ -68,64 +68,64 @@ levelPointers:
     .word endScene
 
 levelTilesets:
-    .word caveTiles
-    .word techTiles
-    .word mineTiles
-    .word techTiles
-    .word caveTiles
-    .word mineTiles
-    .word caveTiles
-    .word techTiles
-    .word caveTiles
-    .word caveTiles
-    .word caveTiles
-    .word caveTiles
-    .word caveTiles
-    .word caveTiles
-    .word caveTiles
-    .word caveTiles
-    .word mineTiles
-    .word introTiles
-    .word introTiles
+    .word caveTiles ;1
+    .word techTiles ;2
+    .word mineTiles ;3
+    .word techTiles ;4
+    .word caveTiles ;5
+    .word worksTiles;6
+    .word caveTiles ;7
+    .word techTiles ;8
+    .word worksTiles;9
+    .word caveTiles ;10
+    .word caveTiles ;11
+    .word caveTiles ;12
+    .word caveTiles ;13
+    .word caveTiles ;14
+    .word caveTiles ;15
+    .word caveTiles ;16
+    .word mineTiles ;map
+    .word introTiles;intro
+    .word introTiles;end
 
 levelPalettes:
-    .word volcanoPal
-    .word cobaltPal
-    .word minePal
-    .word cobaltPal
-    .word cobaltPal
-    .word minePal
-    .word volcanoPal
-    .word cobaltPal
-    .word volcanoPal
-    .word volcanoPal
-    .word volcanoPal
-    .word volcanoPal
-    .word volcanoPal
-    .word volcanoPal
-    .word volcanoPal
-    .word volcanoPal
-    .word mapPal
-    .word introPal
-    .word introPal
+    .word volcanoPal ;1
+    .word cobaltPal  ;2
+    .word minePal    ;3
+    .word cobaltPal  ;4
+    .word cobaltPal  ;5
+    .word minePal    ;6
+    .word volcanoPal ;7
+    .word cobaltPal  ;8
+    .word volcanoPal ;9
+    .word volcanoPal ;10
+    .word volcanoPal ;11
+    .word volcanoPal ;12
+    .word volcanoPal ;13
+    .word volcanoPal ;14
+    .word volcanoPal ;15
+    .word volcanoPal ;16
+    .word mapPal     ;map
+    .word introPal   ;intro
+    .word introPal   ;end
     
 levelMusic:
-    .word nullSong
-    .word nullSong
-    .word nullSong
-    .word nullSong
-    .word nullSong    
-    .word nullSong
-    .word nullSong
-    .word nullSong
-    .word nullSong
-    .word nullSong
-    .word nullSong
-    .word nullSong
-    .word nullSong
-    .word nullSong
-    .word nullSong
-    .word nullSong
-    .word mineSong
-    .word nullSong
-    .word nullSong
+    .word nullSong ;1
+    .word nullSong ;2
+    .word nullSong ;3
+    .word nullSong ;4
+    .word nullSong ;5 
+    .word nullSong ;6
+    .word nullSong ;7
+    .word nullSong ;8
+    .word nullSong ;9
+    .word nullSong ;10
+    .word nullSong ;11
+    .word nullSong ;12
+    .word nullSong ;13
+    .word nullSong ;14
+    .word nullSong ;15
+    .word nullSong ;16
+    .word mineSong ;map
+    .word nullSong ;intro
+    .word nullSong ;end
