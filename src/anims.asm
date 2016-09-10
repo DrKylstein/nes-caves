@@ -429,8 +429,8 @@ anim_stalactite subroutine
     .word .frame1
 .frame1:
     .byte 8
-    .byte  -1,  0,$20,  0
-    .byte  -1,  0,$20,  8
+    .byte  0,  0,$20,  0
+    .byte  0,  0,$20,  8
     
 anim_girder_middle subroutine
     .byte 0

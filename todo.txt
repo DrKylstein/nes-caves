@@ -14,6 +14,8 @@
 
 must:
 fix corrpution/bad collision in left side of level
+slime direction change is poor
+hp display not reseting on restart/exit
 add ending image
 more sounds
 -power ups
@@ -38,6 +40,8 @@ music
 enemy hit flash
 
 optimizations:
+condense faucet into one entity - it doesn't drip if the player is above, 
+ which is the most likely case for when it could fall offscreen.
 delete entity speeds table
 delete entity initial anim table
 hold ER pointer in ram so that entities can change routines dynamically?
