@@ -56,6 +56,11 @@ ANIM_LASER                  ds 2
 ANIM_ROBOT_FIRING_RIGHT     ds 2
 ANIM_ROBOT_FIRING_LEFT      ds 2
 ANIM_WIDE_NONE              ds 2
+ANIM_WORM_BITE_RIGHT        ds 2
+ANIM_WORM_BITE_LEFT         ds 2
+ANIM_SMALL_NONE_BG          ds 2
+ANIM_SMALL_NONE_HFLIP_BG    ds 2
+
     SEG ROM_FILE
 
 animations:
@@ -112,7 +117,10 @@ animations:
     .word anim_robot_firing_right
     .word anim_robot_firing_left
     .word anim_wide_none
-
+    .word anim_worm_bite_right
+    .word anim_worm_bite_left
+    .word anim_small_none_bg
+    .word anim_small_none_hflip_bg
 
 playerAnims:
     .byte ANIM_SMALL_NONE
@@ -142,17 +150,17 @@ frame_small1:
     .byte   0,  0,  0,  0
     .byte   0,  2,  0,  8
 
-frame_smallHFlip1:
+frame_small1_hflip:
     .byte 8
     .byte   0,  2,$40,  0
     .byte   0,  0,$40,  8
-
+    
 frame_small2:
     .byte 8
     .byte   0,  4,  0,  0
     .byte   0,  6,  0,  8
 
-frame_smallHFlip2:
+frame_small2_hflip:
     .byte 8
     .byte   0,  6,$40,  0
     .byte   0,  4,$40,  8
@@ -162,17 +170,17 @@ frame_small3:
     .byte   0,  8,  0,  0
     .byte   0, 10,  0,  8
 
-frame_smallHFlip3:
+frame_small3_hflip:
     .byte 8
     .byte   0, 10,$40,  0
     .byte   0,  8,$40,  8
 
-frame_smallVFlip1:
+frame_small1_vflip:
     .byte 8
     .byte   0,  0,$80,  0
     .byte   0,  2,$80,  8
 
-frame_smallHV1:
+frame_small1_hvflip:
     .byte 8
     .byte   0,  2,$C0,  0
     .byte   0,  0,$C0,  8
@@ -192,13 +200,31 @@ anim_smallNone subroutine
     .byte 0
     .word frame_small1
 
+anim_small_none_bg subroutine
+    .byte 0
+    .word .frame1
+.frame1:
+    .byte 8
+    .byte   0,  0,$20,  0
+    .byte   0,  2,$20,  8
+
+
+anim_small_none_hflip_bg subroutine
+    .byte 0
+    .word .frame1
+.frame1:
+    .byte 8
+    .byte   0,  2,$60,  0
+    .byte   0,  0,$60,  8
+
+
 anim_smallVFlipNone subroutine
     .byte 0
-    .word frame_smallVFlip1
+    .word frame_small1_vflip
     
 anim_smallHVNone subroutine
     .byte 0
-    .word frame_smallHV1
+    .word frame_small1_hvflip
     
 
 anim_symmetrical_none subroutine
@@ -224,7 +250,7 @@ anim_symmetrical_oscillate subroutine
 
 anim_smallHFlipNone subroutine
     .byte 0
-    .word frame_smallHFlip1
+    .word frame_small1_hflip
 
 anim_smallOscillate subroutine
     .byte 3
@@ -235,30 +261,30 @@ anim_smallOscillate subroutine
 
 anim_smallHFlipOscillate subroutine
     .byte 3
-    .word frame_smallHFlip1
-    .word frame_smallHFlip2
-    .word frame_smallHFlip3
-    .word frame_smallHFlip2
+    .word frame_small1_hflip
+    .word frame_small2_hflip
+    .word frame_small3_hflip
+    .word frame_small2_hflip
 
 anim_slime_up subroutine
     .byte 1
-    .word frame_smallVFlip1
-    .word frame_smallHV1
+    .word frame_small1_vflip
+    .word frame_small1_hvflip
     
 anim_slime_down subroutine
     .byte 1
     .word frame_small1
-    .word frame_smallHFlip1
+    .word frame_small1_hflip
     
 anim_slime_right subroutine
     .byte 1
     .word frame_small1
-    .word frame_smallVFlip1
+    .word frame_small1_vflip
     
 anim_slime_left subroutine
     .byte 1
-    .word frame_smallHFlip1
-    .word frame_smallHV1
+    .word frame_small1_hflip
+    .word frame_small1_hvflip
 
 
 anim_smallVFlipOscillate subroutine
@@ -284,14 +310,14 @@ anim_spider subroutine
     .byte 3
     .word frame_small1
     .word frame_symmetrical1
-    .word frame_smallHFlip1
+    .word frame_small1_hflip
     .word frame_symmetrical1
 
 anim_spiderVFlip subroutine
     .byte 3
-    .word frame_smallVFlip1
+    .word frame_small1_vflip
     .word .frame2
-    .word frame_smallHV1
+    .word frame_small1_hvflip
     .word .frame2
 .frame2:
     .byte 8
@@ -377,9 +403,9 @@ anim_rocket subroutine
     
 anim_rocket_hflip subroutine
     .byte 3
-    .word frame_smallHFlip1
-    .word frame_smallHFlip2
-    .word frame_smallHFlip3
+    .word frame_small1_hflip
+    .word frame_small2_hflip
+    .word frame_small3_hflip
     .word .frame4
 .frame4:
     .byte 8
@@ -552,11 +578,11 @@ anim_player_walk subroutine
     
 anim_player_walk_left subroutine
     .byte 7
-    .word frame_smallHFlip1
-    .word frame_smallHFlip2
-    .word frame_smallHFlip3
-    .word frame_smallHFlip2
-    .word frame_smallHFlip1
+    .word frame_small1_hflip
+    .word frame_small2_hflip
+    .word frame_small3_hflip
+    .word frame_small2_hflip
+    .word frame_small1_hflip
     .word .frame4
     .word .frame5
     .word .frame4
@@ -574,15 +600,15 @@ anim_player_jump subroutine
     .word frame_small3
 anim_player_jump_left subroutine
     .byte 0
-    .word frame_smallHFlip3
+    .word frame_small3_hflip
     
 anim_player_walkv subroutine
     .byte 7
-    .word frame_smallVFlip1
+    .word frame_small1_vflip
     .word .frame2
     .word .frame3
     .word .frame2
-    .word frame_smallVFlip1
+    .word frame_small1_vflip
     .word .frame4
     .word .frame5
     .word .frame4
@@ -605,11 +631,11 @@ anim_player_walkv subroutine
     
 anim_player_walk_leftv subroutine
     .byte 7
-    .word frame_smallHV1
+    .word frame_small1_hvflip
     .word .frame2
     .word .frame3
     .word .frame2
-    .word frame_smallHV1
+    .word frame_small1_hvflip
     .word .frame4
     .word .frame5
     .word .frame4
@@ -662,7 +688,7 @@ anim_ball_right subroutine
     .byte 3
     .word frame_small1
     .word frame_small2
-    .word frame_smallHV1
+    .word frame_small1_hvflip
     .word .frame4
 .frame4:
     .byte 2*OAM_SIZE
@@ -671,9 +697,9 @@ anim_ball_right subroutine
     
 anim_ball_left subroutine
     .byte 3
-    .word frame_smallHFlip1
-    .word frame_smallHFlip2
-    .word frame_smallVFlip1
+    .word frame_small1_hflip
+    .word frame_small2_hflip
+    .word frame_small1_vflip
     .word .frame4
 .frame4:
     .byte 2*OAM_SIZE
@@ -749,7 +775,7 @@ anim_symmetrical_none2 subroutine
     .byte 0
     .word .frame1
 .frame1:
-    .byte 8
+    .byte OAM_SIZE*2
     .byte   0,  2,  0,  0
     .byte   0,  2,$40,  8
 
@@ -758,11 +784,11 @@ anim_laser subroutine
     .word .frame1
     .word .frame2
 .frame1:
-    .byte 8
+    .byte OAM_SIZE*2
     .byte   0,  0,  0,  0
     .byte   0,  0,  0,  8
 .frame2:
-    .byte 8
+    .byte OAM_SIZE*2
     .byte   0,  0,$C0,  0
     .byte   0,  0,$C0,  8
     
@@ -771,13 +797,13 @@ anim_robot_firing_right subroutine
     .word .frame1
     .word .frame2
 .frame1:
-    .byte 16
+    .byte OAM_SIZE*4
     .byte   0,  0,  0,  0
     .byte   0,  2,  0,  8
     .byte   0, 12,  3, 16
     .byte   0, 12,  3, 24
 .frame2:
-    .byte 16
+    .byte OAM_SIZE*4
     .byte   0,  0,  0,  0
     .byte   0,  2,  0,  8
     .byte   0, 12,$C3, 16
@@ -788,13 +814,13 @@ anim_robot_firing_left subroutine
     .word .frame1
     .word .frame2
 .frame1:
-    .byte 16
+    .byte OAM_SIZE*4
     .byte   0,  2,$40,  0
     .byte   0,  0,$40,  8
     .byte   0, 12,  3,-16
     .byte   0, 12,  3, -8
 .frame2:
-    .byte 16
+    .byte OAM_SIZE*4
     .byte   0,  2,$40,  0
     .byte   0,  0,$40,  8
     .byte   0, 12,$C3,-16
@@ -804,9 +830,31 @@ anim_wide_none subroutine
     .byte 0
     .word .frame1
 .frame1:
-    .byte 16
+    .byte OAM_SIZE*4
     .byte   0,  0,  0, -8
     .byte   0,  2,  0,  0
     .byte   0,  4,  0,  8
     .byte   0,  6,  0, 16
+    
+anim_worm_bite_right subroutine
+    .byte 3
+    .word frame_small1
+    .word frame_small1
+    .word .frame2
+    .word .frame2
+.frame2:
+    .byte OAM_SIZE*2
+    .byte   0,  0,  0,  0
+    .byte   0,  4,  0,  8
+    
+anim_worm_bite_left subroutine
+    .byte 3
+    .word frame_small1_hflip
+    .word frame_small1_hflip
+    .word .frame2
+    .word .frame2
+.frame2:
+    .byte OAM_SIZE*2
+    .byte   0,  4,$40,  0
+    .byte   0,  0,$40,  8
     

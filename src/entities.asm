@@ -333,8 +333,8 @@ entityInitialAnims:
     .byte ANIM_SYMMETRICAL_OSCILLATE ; bird
     .byte ANIM_TORCH ; egg
     .byte ANIM_WIDE_NONE ; sign
-    .byte ANIM_SMALL_NONE ; worm
-    .byte ANIM_SMALL_HFLIP_NONE ; worm
+    .byte ANIM_SMALL_NONE_BG ; worm
+    .byte ANIM_SMALL_NONE_HFLIP_BG ; worm
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
     lda entityXLo,x
@@ -860,6 +860,114 @@ EntShootPlayer subroutine
     rts
 
 ER_Worm subroutine
+    lda entityVelocity,x
+    bne .ready
+    lda entityXLo,x
+    sta tmp
+    lda entityXHi,x
+    and #ENT_X_POS
+    sta tmp+1
+    REPEAT 4
+    LSR16 tmp
+    REPEND
+    lda tmp
+    sta entityVelocity,x
+.ready:
+    lda entityCount,x
+    beq .alert
+    dec entityCount,x
+    jmp .awake
+.alert:
+    MOV16I arg,8
+    jsr EntAwayFromPlayerY
+    bcs .JSleep
+    MOV16I arg,32
+    jsr EntAwayFromPlayerX
+    bcs .JSleep
+    lda #90
+    sta entityCount,x
+    jmp .awake
+.JSleep
+    jmp .sleep
+.awake:
+    lda entityXLo,x
+    sta tmp
+    lda entityXHi,x
+    and #ENT_X_POS
+    sta tmp+1
+    lda entityVelocity,x
+    sta tmp+2
+    lda #0
+    sta tmp+3
+    REPEAT 4
+    ASL16 tmp+2
+    REPEND
+    lda entityYHi,x
+    lsr
+    cmp #WORM_LEFT_ID
+    bne .awakeRight
+.awakeLeft:
+    CMP16 tmp,tmp+2
+    bcc .biteLeft
+    DEC16 tmp
+    jmp .awakeFinish
+.biteLeft:
+    lda #ANIM_WORM_BITE_LEFT
+    sta entityAnim,x
+    jmp .awakeFinish
+.awakeRight:
+    CMP16 tmp,tmp+2
+    bcs .biteRight
+    INC16 tmp
+    jmp .awakeFinish
+.biteRight:
+    lda #ANIM_WORM_BITE_RIGHT
+    sta entityAnim,x
+.awakeFinish:
+    lda tmp
+    sta entityXLo,x
+    lda tmp+1
+    sta entityXHi,x
+    jmp .done
+.sleep:
+    lda entityXLo,x
+    sta tmp
+    lda entityXHi,x
+    and #ENT_X_POS
+    sta tmp+1
+    lda entityVelocity,x
+    sta tmp+2
+    lda #0
+    sta tmp+3
+    REPEAT 4
+    ASL16 tmp+2
+    REPEND
+    lda entityYHi,x
+    lsr
+    cmp #WORM_LEFT_ID
+    bne .sleepRight
+.sleepLeft:
+    ADD16I tmp+2,tmp+2,12
+    CMP16 tmp,tmp+2
+    bcs .done
+    INC16 tmp
+    lda #ANIM_SMALL_NONE_HFLIP_BG
+    sta entityAnim,x
+    jmp .sleepFinish
+.sleepRight:
+    SUB16I tmp+2,tmp+2,12
+    CMP16 tmp,tmp+2
+    bcc .done
+    DEC16 tmp
+    lda #ANIM_SMALL_NONE_BG
+    sta entityAnim,x
+.sleepFinish:
+    lda tmp
+    sta entityXLo,x
+    lda tmp+1
+    sta entityXHi,x
+    jmp .done
+.done:
     jsr EntTryMelee
     jsr EntDieByPowerOnly
     jmp ER_Return
