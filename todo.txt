@@ -13,6 +13,10 @@
  PRGROM Bank 7 left: 3181
 
 must:
+fix: eyemonster walks partially inside walls, can push left eye into negative x
+jump feels too floaty vs og
+ball should probably have shorter naps, too easy to kill vs og (can only get 2 shots in usually in dos)
+fix ending triggering prematurely
 fix corrpution/bad collision in left side of level
 slime direction change is poor
 add ending image
@@ -29,10 +33,11 @@ add hidden crystals
 add wall snake
 low gravity
 enter animation
-find different substitute for trike or implement it (can't kill eye creature in that space)
-add walker? (different attack from robot)
 
 long shot:
+implement trike (can't kill eye creature in that space, ball takes fewer hits)
+add walker? (different attack from robot)
+add floating alien wrench? uses walking collision, unlike bat
 shoot/just fired animation
 double up channels so that long notes can resume after very short ones
 music

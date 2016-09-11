@@ -19,13 +19,13 @@ level09:
 level10:
     incbin level10.bin
 level11:
+    incbin level11.bin
 level12:
 level13:
 level14:
 level15:
 level16:
-    incbin level11.bin
-
+    incbin level12.bin
 mainMap:
     incbin main_map.bin
 introScene:

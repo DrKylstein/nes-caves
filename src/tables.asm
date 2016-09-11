@@ -79,7 +79,7 @@ levelTilesets:
     .word worksTiles;9
     .word mineTiles ;10
     .word techTiles ;11
-    .word caveTiles ;12
+    .word techTiles ;12
     .word caveTiles ;13
     .word caveTiles ;14
     .word caveTiles ;15
