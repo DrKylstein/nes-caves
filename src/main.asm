@@ -1898,9 +1898,9 @@ UpdateEntities subroutine
     and #ENT_X_POS
     sbc shr_cameraX+1
     sta tmp+1
-    CMP16I tmp, [MT_VIEWPORT_WIDTH*PX_MT_WIDTH + PX_MT_WIDTH]
+    CMP16I tmp, [MT_VIEWPORT_WIDTH*PX_MT_WIDTH + PX_MT_WIDTH*4]
     bpl .offScreen
-    CMP16I tmp, -PX_MT_WIDTH
+    CMP16I tmp, [-PX_MT_WIDTH*4]
     bmi .offScreen
 .ytest:
     lda entityFlags,y

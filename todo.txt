@@ -56,3 +56,54 @@ add stars to map?
 disable tile animation in other levels? (move to an entity or use level number?)
 ditch planet parallax and fix platform jitter?
 replace big spike pit in level 8 with tiles?
+
+
+Alternative entity storage
+ROM:
+-index to initialization routine ;1*Stored*Levels
+-initial tile (x,y) ;2*Stored*Levels
+RAM:
+for all entities:
+-latest tile (x,y) (some null value for dead or uninitialized?) ;2xMax
+-index to active entity fields, or null ;1xMax
+for active entities:
+-sub-tile and? sub-pixel coords? 4.4 ;2xActive
+-current routine ptr ;2xActive
+-velocity 4.4 x and y ;2xActive
+-variables ;2xActive (external physics, so can't reuse velocity, so count+velocity's worth)
+-animation index ;1xActive
+-frame counter ;1xActive
+
+3xStoredxLevels
+3xMax + 10xActive
+
+30 max, 10 active: 90+100 = 190
+30 fixed, current (x8) fields: 240
+50 saved
+save > 1.6 per max entity
+
+use bitmap to track usage of active fields (8 active or 16 active)
+
+32 max, 8 active: 96+80 = 176
+32 fixed: 256
+80 saved
+save 2.5 per entity
+break even at 16 active
+
+262v272 for 16/34 vs fixed
+
+mini:
+tile x,y, fixed routine index
+--
+tile x,y 2x
+active index 1x
+3x
+--
+fine x,y 2x
+x/y velocity 8.0 1x
+count 1x
+anim 1x
+frame 1x
+6x
+
+198v272 for 16/34 (-74)

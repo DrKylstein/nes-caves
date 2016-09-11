@@ -105,8 +105,8 @@ entityRoutine:
     .word ER_Bird
     .word ER_Egg
     .word ER_Sign
-    .word ER_Worm_Right
-    .word ER_Worm_Left
+    .word ER_Worm ;right
+    .word ER_Worm ;left
     
 entityFlags:
     .byte ENT_F_SKIPYTEST | ENT_F_SKIPXTEST | 1 ; player
