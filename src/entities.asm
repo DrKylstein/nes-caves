@@ -51,62 +51,119 @@ WORM_RIGHT_ID               ds 1
 WORM_LEFT_ID                ds 1
     SEG ROM_FILE
 
-entityRoutine:
-    .word ER_Player
-    .word ER_VerticalPlatform
-    .word ER_HorizontalPlatform
-    .word ER_Spider
-    .word ER_Bat
-    .word ER_PowerShot
-    .word ER_Mimrock
-    .word ER_Cart
-    .word ER_CaterpillarHead
-    .word ER_CaterpillarFront
-    .word ER_CaterpillarBack
-    .word ER_CaterpillarTail
-    .word ER_SlimeHorizontal
-    .word ER_SlimeVertical
-    .word ER_Hammer
-    .word ER_Faucet
-    .word ER_Water
-    .word ER_VerticalPlatformIdle
-    .word ER_HorizontalPlatformIdle
-    .word ER_RightCannon
-    .word ER_Laser
-    .word ER_LeftCannon
-    .word ER_Girder
-    .word ER_Rex
-    .word ER_Stalactite
-    .word ER_SpiderWeb
-    .word ER_Flame
-    .word ER_PipeRight
-    .word ER_PipeLeft
-    .word ER_Return ; torch
-    .word ER_Spike
-    .word ER_Planet
-    .word ER_Bullet
-    .word ER_Explosion
-    .word ER_Fruit ;cherry
-    .word ER_Fruit ;strawberry
-    .word ER_Fruit ;peach
-    .word ER_Ball
-    .word ER_RightCannonMoving
-    .word ER_LeftCannonMoving
-    .word ER_AirGenerator
-    .word ER_Kiwi
-    .word ER_EyeMonster
-    .word ER_BigEye
-    .word ER_Rock
-    .word ER_Snake
-    .word ER_SnakePause
-    .word ER_DeadSnake
-    .word ER_EnemyBullet
-    .word ER_Robot
-    .word ER_Bird
-    .word ER_Egg
-    .word ER_Sign
-    .word ER_Worm ;right
-    .word ER_Worm ;left
+entityRoutineLo:
+    .byte <ER_Player
+    .byte <ER_VerticalPlatform
+    .byte <ER_HorizontalPlatform
+    .byte <ER_Spider
+    .byte <ER_Bat
+    .byte <ER_PowerShot
+    .byte <ER_Mimrock
+    .byte <ER_Cart
+    .byte <ER_CaterpillarHead
+    .byte <ER_CaterpillarFront
+    .byte <ER_CaterpillarBack
+    .byte <ER_CaterpillarTail
+    .byte <ER_SlimeHorizontal
+    .byte <ER_SlimeVertical
+    .byte <ER_Hammer
+    .byte <ER_Faucet
+    .byte <ER_Water
+    .byte <ER_VerticalPlatformIdle
+    .byte <ER_HorizontalPlatformIdle
+    .byte <ER_RightCannon
+    .byte <ER_Laser
+    .byte <ER_LeftCannon
+    .byte <ER_Girder
+    .byte <ER_Rex
+    .byte <ER_Stalactite
+    .byte <ER_SpiderWeb
+    .byte <ER_Flame
+    .byte <ER_PipeRight
+    .byte <ER_PipeLeft
+    .byte <ER_Return ; torch
+    .byte <ER_Spike
+    .byte <ER_Planet
+    .byte <ER_Bullet
+    .byte <ER_Explosion
+    .byte <ER_Fruit ;cherry
+    .byte <ER_Fruit ;strawberry
+    .byte <ER_Fruit ;peach
+    .byte <ER_Ball
+    .byte <ER_RightCannonMoving
+    .byte <ER_LeftCannonMoving
+    .byte <ER_AirGenerator
+    .byte <ER_Kiwi
+    .byte <ER_EyeMonster
+    .byte <ER_BigEye
+    .byte <ER_Rock
+    .byte <ER_Snake
+    .byte <ER_SnakePause
+    .byte <ER_DeadSnake
+    .byte <ER_EnemyBullet
+    .byte <ER_Robot
+    .byte <ER_Bird
+    .byte <ER_Egg
+    .byte <ER_Sign
+    .byte <ER_Worm ;right
+    .byte <ER_Worm ;left
+    
+entityRoutineHi:
+    .byte >ER_Player
+    .byte >ER_VerticalPlatform
+    .byte >ER_HorizontalPlatform
+    .byte >ER_Spider
+    .byte >ER_Bat
+    .byte >ER_PowerShot
+    .byte >ER_Mimrock
+    .byte >ER_Cart
+    .byte >ER_CaterpillarHead
+    .byte >ER_CaterpillarFront
+    .byte >ER_CaterpillarBack
+    .byte >ER_CaterpillarTail
+    .byte >ER_SlimeHorizontal
+    .byte >ER_SlimeVertical
+    .byte >ER_Hammer
+    .byte >ER_Faucet
+    .byte >ER_Water
+    .byte >ER_VerticalPlatformIdle
+    .byte >ER_HorizontalPlatformIdle
+    .byte >ER_RightCannon
+    .byte >ER_Laser
+    .byte >ER_LeftCannon
+    .byte >ER_Girder
+    .byte >ER_Rex
+    .byte >ER_Stalactite
+    .byte >ER_SpiderWeb
+    .byte >ER_Flame
+    .byte >ER_PipeRight
+    .byte >ER_PipeLeft
+    .byte >ER_Return ; torch
+    .byte >ER_Spike
+    .byte >ER_Planet
+    .byte >ER_Bullet
+    .byte >ER_Explosion
+    .byte >ER_Fruit ;cherry
+    .byte >ER_Fruit ;strawberry
+    .byte >ER_Fruit ;peach
+    .byte >ER_Ball
+    .byte >ER_RightCannonMoving
+    .byte >ER_LeftCannonMoving
+    .byte >ER_AirGenerator
+    .byte >ER_Kiwi
+    .byte >ER_EyeMonster
+    .byte >ER_BigEye
+    .byte >ER_Rock
+    .byte >ER_Snake
+    .byte >ER_SnakePause
+    .byte >ER_DeadSnake
+    .byte >ER_EnemyBullet
+    .byte >ER_Robot
+    .byte >ER_Bird
+    .byte >ER_Egg
+    .byte >ER_Sign
+    .byte >ER_Worm ;right
+    .byte >ER_Worm ;left
     
 entityFlags:
     .byte ENT_F_SKIPYTEST | ENT_F_SKIPXTEST | 1 ; player

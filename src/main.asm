@@ -1271,7 +1271,6 @@ TC_Nop:
     and #ENT_X_POS
     sta entityXHi
     inc entityAnim
-    inc entityAnim
     jmp TileInteraction_end
     
 TC_UpdateTile:
@@ -1942,12 +1941,9 @@ UpdateEntities subroutine
     beq ER_Return
 .noStop:
 
-    tya
-    asl
-    tay
-    lda entityRoutine,y
+    lda entityRoutineLo,y
     sta tmp
-    lda entityRoutine+1,y
+    lda entityRoutineHi,y
     sta tmp+1
     jmp (tmp)
 ER_Return:
@@ -2250,9 +2246,9 @@ UpdateSprites subroutine
     lda entityAnim,x
     stx arg+4 ; entity index in arg+4
     tax
-    lda animations,x
+    lda animsLo,x
     sta tmp
-    lda animations+1,x
+    lda animsHi,x
     sta tmp+1
     ldy #0
     lda tmp+2
