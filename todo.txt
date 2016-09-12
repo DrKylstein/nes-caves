@@ -56,9 +56,7 @@ eyemonster/rex
 ball/trike
 caterpillar/hammer
 
-add stars to map?
 disable tile animation in other levels? (move to an entity or use level number?)
-ditch planet parallax and fix platform jitter?
 replace big spike pit in level 8 with tiles?
 
 -----------------------------
