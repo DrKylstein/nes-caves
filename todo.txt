@@ -61,7 +61,7 @@ disable tile animation in other levels? (move to an entity or use level number?)
 ditch planet parallax and fix platform jitter?
 replace big spike pit in level 8 with tiles?
 
-
+-----------------------------
 Alternative entity storage
 ROM:
 -index to initialization routine ;1*Stored*Levels
@@ -86,7 +86,7 @@ for active entities:
 50 saved
 save > 1.6 per max entity
 
-use bitmap to track usage of active fields (8 active or 16 active)
+[don't! would have to iterate either way, just check for null pointers]use bitmap to track usage of active fields (8 active or 16 active)
 
 32 max, 8 active: 96+80 = 176
 32 fixed: 256

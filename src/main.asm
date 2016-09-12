@@ -1630,149 +1630,6 @@ ApplyVelocity subroutine
     ADD16 playerX, playerX, tmp
 ApplyVelocity_end:
 
-UpdateCameraX subroutine
-.Scroll_Left:
-    ;no scrolling because player is not close to screen edge
-    SUB16 sav, playerX, shr_cameraX
-    lda sav ;player's on-screen x
-    cmp #[MT_HSCROLL_MARGIN*PX_MT_WIDTH]
-    bcs .Scroll_Left_end
-    
-    ;no scrolling because screen is at map edge
-    lda shr_cameraX
-    ora shr_cameraX+1
-    beq .Scroll_Left_end
-    
-    ;scroll left one pixel
-    DEC16 shr_cameraX
-    inc sav
-    
-    ;no loading tiles if not at tile boundary
-    lda shr_cameraX
-    and #7
-    bne .noTiles
-    jsr LoadTilesOnMoveLeft
-.noTiles:
-    
-    ;no loading attributes if not at attributes boundary
-    lda shr_cameraX
-    and #15
-    cmp #15
-    bne .Scroll_Left_end
-    
-    jsr LoadColorsOnMoveLeft
-.Scroll_Left_end:
-
-.Scroll_Right:
-    ;no scrolling right because player not near screen edge
-    lda sav ;player's on-screen x
-    cmp #[[MT_VIEWPORT_WIDTH - MT_HSCROLL_MARGIN]*PX_MT_WIDTH]
-    bcc .Scroll_Right_end
-    
-    ;no scrolling becuse screen is at map edge
-    CMP16I shr_cameraX, [[MT_MAP_WIDTH - MT_VIEWPORT_WIDTH]*PX_MT_WIDTH]
-    bcs .Scroll_Right_end
-    
-    ;scroll right 1 pixel
-    INC16 shr_cameraX
-    dec sav
-    
-    ;no loading tiles if not at tile boundary
-    lda shr_cameraX
-    and #7 ; 8-pixel boundaries
-    cmp #1
-    bne .Scroll_Right_end
-    
-    jsr LoadTilesOnMoveRight
-    
-    ;no loading tiles if not at tile boundary
-    lda shr_cameraX
-    and #15 ; 16-pixel boundaries
-    cmp #1
-    bne .Scroll_Right_end
-
-    jsr LoadColorsOnMoveRight
-.Scroll_Right_end:
-UpdateCameraX_end:
-
-UpdateCameraY subroutine
-.Scroll_Up:
-    SUB16 sav, playerY, shr_cameraY
-    ;no scrolling because player not near screen edge
-    lda sav ;player's on-screen y
-    cmp #[MT_VSCROLL_MARGIN*PX_MT_HEIGHT]
-    bcs .Scroll_Up_end
-    
-    ;no scrolling becuse screen is at map edge
-    lda shr_cameraY
-    ora shr_cameraY+1
-    beq .Scroll_Up_end
-    
-    lda #[MT_VSCROLL_MARGIN*PX_MT_HEIGHT]
-    sec
-    sbc sav
-    sta tmp
-    lda #0
-    sta tmp+1
-    SUB16 shr_cameraY, shr_cameraY, tmp
-    lda shr_cameraY+1
-    bpl .notminus
-    lda #0
-    sta shr_cameraY
-    sta shr_cameraY+1
-.notminus:
-    lda #0
-    sta shr_nameTable
-    ADD16I tmp,shr_cameraY,96
-    lda tmp
-    sta shr_cameraYMod
-    CMP16I tmp,240
-    bcc .notLow
-    lda #$08
-    sta shr_nameTable
-    SUB16I tmp,tmp,240
-    lda tmp
-    sta shr_cameraYMod
-.notLow:
-    
-.Scroll_Up_end:
-    
-.Scroll_Down:
-    ;no scrolling because player not near screen edge
-    SUB16 sav, playerY, shr_cameraY
-    lda sav
-    cmp #[[MT_VIEWPORT_HEIGHT - MT_VSCROLL_MARGIN]*PX_MT_HEIGHT]
-    bcc .Scroll_Down_end
-    
-    ;no scrolling becuse screen is at map edge
-    CMP16I shr_cameraY, [[MT_MAP_HEIGHT - MT_VIEWPORT_HEIGHT]*PX_MT_HEIGHT]
-    bcs .Scroll_Down_end
-    
-    ;scroll down one pixel
-    lda sav ;player's on-screen y
-    sec
-    sbc #[[MT_VIEWPORT_HEIGHT - MT_VSCROLL_MARGIN]*PX_MT_HEIGHT]
-    sta tmp
-    lda #0
-    sta tmp+1
-    ADD16 shr_cameraY, shr_cameraY, tmp
-    lda shr_cameraYMod
-    clc
-    adc tmp
-    sta shr_cameraYMod
-    
-    ;handle nametable boundary
-    cmp #240
-    bcc .Scroll_Down_end
-    sec
-    sbc #240
-    sta shr_cameraYMod
-	lda #8
-	eor shr_nameTable
-	sta shr_nameTable
-.Scroll_Down_end:
-UpdateCameraY_end:
-
 UpdatePower subroutine
     lda powerSeconds
     beq .end
@@ -1952,6 +1809,149 @@ ER_Return:
     jmp .loop
     
 UpdateEntities_end:
+
+UpdateCameraX subroutine
+.Scroll_Left:
+    ;no scrolling because player is not close to screen edge
+    SUB16 sav, playerX, shr_cameraX
+    lda sav ;player's on-screen x
+    cmp #[MT_HSCROLL_MARGIN*PX_MT_WIDTH]
+    bcs .Scroll_Left_end
+    
+    ;no scrolling because screen is at map edge
+    lda shr_cameraX
+    ora shr_cameraX+1
+    beq .Scroll_Left_end
+    
+    ;scroll left one pixel
+    DEC16 shr_cameraX
+    inc sav
+    
+    ;no loading tiles if not at tile boundary
+    lda shr_cameraX
+    and #7
+    bne .noTiles
+    jsr LoadTilesOnMoveLeft
+.noTiles:
+    
+    ;no loading attributes if not at attributes boundary
+    lda shr_cameraX
+    and #15
+    cmp #15
+    bne .Scroll_Left_end
+    
+    jsr LoadColorsOnMoveLeft
+.Scroll_Left_end:
+
+.Scroll_Right:
+    ;no scrolling right because player not near screen edge
+    lda sav ;player's on-screen x
+    cmp #[[MT_VIEWPORT_WIDTH - MT_HSCROLL_MARGIN]*PX_MT_WIDTH]
+    bcc .Scroll_Right_end
+    
+    ;no scrolling becuse screen is at map edge
+    CMP16I shr_cameraX, [[MT_MAP_WIDTH - MT_VIEWPORT_WIDTH]*PX_MT_WIDTH]
+    bcs .Scroll_Right_end
+    
+    ;scroll right 1 pixel
+    INC16 shr_cameraX
+    dec sav
+    
+    ;no loading tiles if not at tile boundary
+    lda shr_cameraX
+    and #7 ; 8-pixel boundaries
+    cmp #1
+    bne .Scroll_Right_end
+    
+    jsr LoadTilesOnMoveRight
+    
+    ;no loading tiles if not at tile boundary
+    lda shr_cameraX
+    and #15 ; 16-pixel boundaries
+    cmp #1
+    bne .Scroll_Right_end
+
+    jsr LoadColorsOnMoveRight
+.Scroll_Right_end:
+UpdateCameraX_end:
+
+UpdateCameraY subroutine
+.Scroll_Up:
+    SUB16 sav, playerY, shr_cameraY
+    ;no scrolling because player not near screen edge
+    lda sav ;player's on-screen y
+    cmp #[MT_VSCROLL_MARGIN*PX_MT_HEIGHT]
+    bcs .Scroll_Up_end
+    
+    ;no scrolling becuse screen is at map edge
+    lda shr_cameraY
+    ora shr_cameraY+1
+    beq .Scroll_Up_end
+    
+    lda #[MT_VSCROLL_MARGIN*PX_MT_HEIGHT]
+    sec
+    sbc sav
+    sta tmp
+    lda #0
+    sta tmp+1
+    SUB16 shr_cameraY, shr_cameraY, tmp
+    lda shr_cameraY+1
+    bpl .notminus
+    lda #0
+    sta shr_cameraY
+    sta shr_cameraY+1
+.notminus:
+    lda #0
+    sta shr_nameTable
+    ADD16I tmp,shr_cameraY,96
+    lda tmp
+    sta shr_cameraYMod
+    CMP16I tmp,240
+    bcc .notLow
+    lda #$08
+    sta shr_nameTable
+    SUB16I tmp,tmp,240
+    lda tmp
+    sta shr_cameraYMod
+.notLow:
+    
+.Scroll_Up_end:
+    
+.Scroll_Down:
+    ;no scrolling because player not near screen edge
+    SUB16 sav, playerY, shr_cameraY
+    lda sav
+    cmp #[[MT_VIEWPORT_HEIGHT - MT_VSCROLL_MARGIN]*PX_MT_HEIGHT]
+    bcc .Scroll_Down_end
+    
+    ;no scrolling becuse screen is at map edge
+    CMP16I shr_cameraY, [[MT_MAP_HEIGHT - MT_VIEWPORT_HEIGHT]*PX_MT_HEIGHT]
+    bcs .Scroll_Down_end
+    
+    ;scroll down one pixel
+    lda sav ;player's on-screen y
+    sec
+    sbc #[[MT_VIEWPORT_HEIGHT - MT_VSCROLL_MARGIN]*PX_MT_HEIGHT]
+    sta tmp
+    lda #0
+    sta tmp+1
+    ADD16 shr_cameraY, shr_cameraY, tmp
+    lda shr_cameraYMod
+    clc
+    adc tmp
+    sta shr_cameraYMod
+    
+    ;handle nametable boundary
+    cmp #240
+    bcc .Scroll_Down_end
+    sec
+    sbc #240
+    sta shr_cameraYMod
+	lda #8
+	eor shr_nameTable
+	sta shr_nameTable
+.Scroll_Down_end:
+UpdateCameraY_end:
 
     jsr UpdateSprites
     jsr Synchronize
@@ -3671,6 +3671,7 @@ MessageBox subroutine
     lda #0
     sta arg
     jsr Fade
+    jsr Synchronize
     
     POP16 sav
     POP_BANK

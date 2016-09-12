@@ -254,7 +254,7 @@ entityTiles:
     .byte [10+32]*2 ; pipe left
     .byte [31+32*3]*2 ; torch
     .byte 32*3 + 16 + 1; spike
-    .byte 32*4 + 24 + 1;planet
+    .byte 32*4 + 28 + 1;planet
     .byte 14*2 ; bullet
     .byte 24*2 ; explosion
     .byte 28*2 ; cherry
@@ -368,7 +368,7 @@ entityInitialAnims:
     .byte ANIM_PIPE_LEFT
     .byte ANIM_TORCH
     .byte ANIM_SPIKE
-    .byte ANIM_PLANET
+    .byte ANIM_SMALL_NONE ; planet
     .byte ANIM_ROCKET ; bullet
     .byte ANIM_SYMMETRICAL_OSCILLATE ; explosion
     .byte ANIM_SYMMETRICAL_NONE ; cherry
@@ -2282,17 +2282,57 @@ EndScore subroutine
     
     
 ER_Planet subroutine
-    ADD16I tmp, shr_cameraX, 160
-    ; MOV16 tmp+2, shr_cameraX
-    ; REPEAT 1
-    ; LSR16 tmp+2
-    ; REPEND
-    ; SUB16 tmp, tmp, tmp+2
-    
+    lda entityCount,x
+    bne .ready
+    lda entityXLo,x
+    sta tmp
+    lda entityXHi,x
+    and #ENT_X_POS
+    sta tmp+1
+    REPEAT 4
+    LSR16 tmp
+    REPEND
+    lda tmp
+    sta entityCount,x
+    lda entityYLo,x
+    sec
+    sbc #8
+    sta entityYLo,x
+    lda entityYHi,x
+    sbc #0
+    sta entityYHi,x
+.ready:
+    lda entityFrame,x
+    tay
+    lda sin,y
+    ASR65
+    ASR65
+    sta tmp
+    EXTEND tmp,tmp
+    lda entityCount,x
+    sta tmp+2
+    EXTEND tmp+2,tmp+2
+    REPEAT 4
+    ASL16 tmp+2,tmp+2
+    REPEND
+    ADD16 tmp,tmp,tmp+2
+    ADD16I tmp,tmp,8
     lda tmp
     sta entityXLo,x
     lda tmp+1
     sta entityXHi,x
+    cpy #192
+    beq .goFront
+    cpy #64
+    beq .goBack
+    jmp ER_Return
+.goFront
+    lda #ANIM_SMALL_NONE
+    sta entityAnim,x
+    jmp ER_Return
+.goBack:
+    lda #ANIM_SMALL_NONE_BG
+    sta entityAnim,x
     jmp ER_Return
 
 ER_Spike subroutine
