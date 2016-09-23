@@ -3206,8 +3206,6 @@ PlaySound subroutine ;argument in x, uses both index regs
     sta arg+2
     ADD16I arg,tmp,1
     jsr LoadSfx
-    lda #0
-    sta sfxPtr+1
     POP_BANK
     rts
 ;------------------------------------------------------------------------------
@@ -3334,10 +3332,7 @@ ResetAPU subroutine
     lda #$80
     sta APU_TRI_LINEAR
     
-    lda #0
-    sta sfxPtr
-    sta sfxPtr+1
-    
+    lda #0    
     ldy #16
 .loop:
     sta sfxPriority,y

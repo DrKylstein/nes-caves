@@ -9,7 +9,6 @@ sav            ds 8 ;MIPS-style $s#
 ret            ds 4 ;MIPS-style $p#
 
 nmi_tmp             ds 4
-nmi_arg             ds 4
 nmi_splitBits       ds 1
 nmi_scrollY         ds 1
 nmi_nametable       ds 1
@@ -24,10 +23,6 @@ shr_earlyExit       ds 1
 shr_copyIndex       ds 1
 shr_tileAnim        ds 2
 
-messagePtr     ds 2
-
-sfxPtr ds 2
-
 sfxPriority ds 1 ;4x3 bytes unused
             ds 15
             
@@ -40,8 +35,8 @@ musicSequence ds 8
 musicIndex ds 8 ;only even bytes used
 musicStream ds 8
 instrument ds 8
-tempo ds 1
-beatTimer ds 1
+
+messagePtr     ds 2
 
 currBank    ds 1
 
@@ -119,6 +114,8 @@ random         ds 2
 fruitTime      ds 2
 messageTime    ds 1
 messageCursor  ds 1
+tempo ds 1
+beatTimer ds 1
 shr_debugReg   ds 2
 levelMap       ds 960
 

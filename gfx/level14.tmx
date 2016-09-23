@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="24" tilewidth="16" tileheight="16" nextobjectid="31">
+ <properties>
+  <property name="__script__" value="nescave"/>
+  <property name="crystals" value="25"/>
+ </properties>
+ <tileset firstgid="1" name="metatiles" tilewidth="16" tileheight="16">
+  <image source="metatiles.png" width="256" height="256"/>
+ </tileset>
+ <tileset firstgid="257" name="entities" tilewidth="16" tileheight="16">
+  <image source="../../../../Projects/nes caves/gfx/entities.png" width="256" height="256"/>
+ </tileset>
+ <layer name="Tiles" width="40" height="24">
+  <data encoding="base64" compression="zlib">
+   eJzNlz1uAjEQhc0RSIsbRAo6Qi4AFQmigApCFe7MCdBKnINZaS09Pc3ggfVqt/iE/P88M89i9yGE74FyEGZCJYx6wjp7K0wbfdg/7whLnzU2yeiLsHaujPPZkdr179Wp0SLpuxk6bqQ35QPn4VpNQwl9XeaU42oRFTh+2r0xZrGZGzPtd+Kn3Q/jVxlzSnom58F67KzkN8VTW6PVPebklTvE4Itb2tOjT9NjjcXMuTk/WPXXhS9q6velon7NB9advPo8b4HXv979q4w+fuesvbE22PdcD957cfxwbjT2Zg13Q+szn2r+QHbURn2la9CTx9x8jl/b/zFc721hfUMD/dG3Fgb9m2qh7Z6ThtL6PgcQr7HwQVzC8/qzPFeqD726DPb3R18xQ30b4Uf4FRbCF+S3r+8j1HcUTsKfsBLWjb5/Je9D4SI8AB7QXhc=
+  </data>
+ </layer>
+ <layer name="Entities" width="40" height="24">
+  <data encoding="base64" compression="zlib">
+   eJxjYBj8gJURP59eduNiDwbATMA9g8W91HTHYPETrcFI8ecoGHxgpKU9Wvt3pIUnNcBomI2CUYAf6DGi0rjAYMxLQoPQTYMN/AGG0V8g/gfEv7GE138yw1CTgD6JYR43AOq4BgM=
+  </data>
+ </layer>
+ <imagelayer name="Image Layer 1" y="8" opacity="0.4">
+  <image source="../../../../Projects/nes caves/CAVES/maps/e1l14.gif"/>
+ </imagelayer>
+</map>
