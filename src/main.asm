@@ -553,7 +553,12 @@ ResetStats subroutine
     sta beatTimer
 ResetStats_end:
 
+    jsr ClearStatusBar
+    lda currLevel
+    cmp #MAP_LEVEL+1
+    bcs .noHUD
     jsr InitHUD
+.noHUD:
     jsr ResetCamera
     jsr InitialDrawLevel
     MOV16I shr_tileAnim, cloudsTiles
@@ -2933,6 +2938,8 @@ UpdateScoreDisplay subroutine
 .prefixloop:
     lda tmp,y
     bne .nonzero
+    cpy #0
+    beq .nonzero
     lda #HUD_BLANK
     sta tmp,y
     dey
@@ -2982,6 +2989,9 @@ UpdatePowerDisplay subroutine
     jsr CentToDec
     PHXA
     tya
+    bne .nonzero
+    ora #HUD_BLANK
+.nonzero:
     PHXA
     jmp .finish
 .none:
@@ -3360,8 +3370,7 @@ Randomize subroutine
     rts 
     
 ;------------------------------------------------------------------------------
-InitHUD subroutine
-    SELECT_BANK 0
+ClearStatusBar subroutine
     ldy #$A0
     SET_PPU_ADDR VRAM_NAME_UL
     lda #HUD_BLANK
@@ -3378,15 +3387,12 @@ InitHUD subroutine
     iny
     cpy #8
     bne .load_hud_attr
+    rts
     
+InitHUD subroutine
     SET_PPU_ADDR [VRAM_NAME_UL+100]
     lda #HUD_DOLLAR
     sta PPU_DATA
-    
-    SET_PPU_ADDR [VRAM_NAME_UL+107]
-    lda #0
-    sta PPU_DATA
-    
     SET_PPU_ADDR [VRAM_NAME_UL+111]
     lda #HUD_GUN
     sta PPU_DATA
@@ -3664,7 +3670,17 @@ MessageBox subroutine
     ldx #8
     jsr PagesToPPU
     
-    jsr InitHUD
+    ;jsr InitHUD
+    jsr ClearStatusBar
+    lda currLevel
+    cmp #END_LEVEL
+    bne .noHUD
+    SET_PPU_ADDR [VRAM_NAME_UL+100]
+    lda #HUD_DOLLAR
+    sta PPU_DATA
+    jsr UpdateScoreDisplay
+.noHUD:
+    
     jsr ResetCamera
     jsr InitialDrawLevel
     jsr QEnableSplitDisplay
