@@ -8,3 +8,5 @@ introTiles:
     incbin tileset-intro.pat
 worksTiles:
     incbin tileset-works.pat
+alphaTiles:
+    incbin tileset-alpha.pat

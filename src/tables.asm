@@ -43,8 +43,8 @@ levelBanks:
     .byte 1
     .byte 1
     .byte 1
-    .byte 1
-    .byte 1
+    .byte 0
+    .byte 0
 
 levelPointers:
     .word level01
@@ -82,7 +82,7 @@ levelTilesets:
     .word techTiles ;12
     .word caveTiles ;13
     .word caveTiles ;14
-    .word caveTiles ;15
+    .word alphaTiles ;15
     .word caveTiles ;16
     .word mineTiles ;map
     .word introTiles;intro

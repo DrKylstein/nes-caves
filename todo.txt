@@ -36,6 +36,7 @@ fall off elevator if pushed into ceiling
 add hidden crystals
 low gravity - no change to jump height [not sure about fall speed?], but gun recoil, about 8px in l14, 24-32px in l13
 enter animation
+did I forget that chests vary in points? probably, because I still don't know how or why.
 
 long shot:
 implement trike (can't kill eye creature in that space, ball takes fewer hits)
