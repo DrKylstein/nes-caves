@@ -1578,7 +1578,6 @@ CheckCieling subroutine
     lda sav
     sec
     sbc #TB_GIRDER_LEFT
-    asl
     clc
     adc #ANIM_GIRDER_LEFT
     sta entityAnim,x
