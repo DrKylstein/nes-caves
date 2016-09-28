@@ -235,8 +235,8 @@ entityTiles:
     .byte [21+32*2]*2 ; caterpillar front
     .byte [21+32*2]*2 ; caterpillar back
     .byte [19+32*2]*2 ; caterpillar tail
-    .byte [28+32]*2 ; slime horizontal
-    .byte [30+32]*2 ; slime vertical
+    .byte [11+32*3]*2 ; slime horizontal
+    .byte [13+32*3]*2 ; slime vertical
     .byte 32*4 + 24 + 1;hammer
     .byte [9+32]*2 ; faucet
     .byte [8+32]*2 ; water
@@ -343,7 +343,7 @@ entityInitialAnims:
     .byte ANIM_SPIDER ; spider
     .byte ANIM_SYMMETRICAL_OSCILLATE ; bat
     .byte ANIM_POWERSHOT ; power shot
-    .byte ANIM_SMALL_OSCILLATE ; mimrock
+    .byte ANIM_PLAYER_WALK ; mimrock
     .byte ANIM_SYMMETRICAL_OSCILLATE ; cart
     .byte ANIM_SMALL_NONE ; caterpillar head
     .byte ANIM_SMALL_NONE ; caterpillar front
@@ -1218,7 +1218,7 @@ ER_Snake subroutine ;needs to take 2 hits
     sta entityYHi,x
     lda #0
     sta entityFrame,x
-    lda #ANIM_SPIDER
+    lda #ANIM_SLIME_DOWN
     sta entityAnim,x
     jmp ER_Return
 .nopause:
@@ -2740,11 +2740,11 @@ ER_Mimrock subroutine
     MOV16I arg, 64
     jsr EntAwayFromPlayerX
     bcs .hiding
-    lda #ANIM_SMALL_OSCILLATE
+    lda #ANIM_PLAYER_WALK
     sta entityAnim,x
     lda entityVelocity,x
     bpl .notLeft
-    lda #ANIM_SMALL_HFLIP_OSCILLATE
+    lda #ANIM_PLAYER_WALK_LEFT
     sta entityAnim,x
 .notLeft:
     jsr EntTestWalkingCollision
