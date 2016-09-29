@@ -454,6 +454,63 @@ EntMoveHorizontally subroutine
     and #~ENT_X_POS
     ora tmp
     sta entityXHi,x
+    
+EntCheckPriority subroutine
+    PUSH16 sav
+    PUSH16 sav+2
+    lda sav+4
+    pha
+    
+    lda entityXLo,x
+    sta sav
+    lda entityXHi,x
+    and #ENT_X_POS
+    sta sav+1
+    lda entityYLo,x
+    sta sav+2
+    lda entityYHi,x
+    and #ENT_Y_POS
+    sta sav+3
+    ADD16I sav+2,sav+2,8
+    ADD16I arg,sav,16
+
+    REPEAT 4
+    LSR16 arg
+    LSR16 sav+2
+    REPEND
+    MOV16 arg+2,sav+2
+    stx sav+4
+    jsr GetTileBehavior
+    ldx sav+4
+    lda ret
+    cmp #TB_FOREGROUND
+    bne .high
+.low:
+    lda entityXHi,x
+    ora #ENT_X_PRIORITY
+    sta entityXHi,x
+    jmp .end
+.high:
+    MOV16 arg,sav
+    REPEAT 4
+    LSR16 arg
+    REPEND
+    MOV16 arg+2,sav+2
+    stx sav+4
+    jsr GetTileBehavior
+    ldx sav+4
+    lda ret
+    cmp #TB_FOREGROUND
+    beq .low
+.definitelyhigh:
+    lda entityXHi,x
+    and #~ENT_X_PRIORITY
+    sta entityXHi,x
+.end:
+    pla
+    sta sav+3
+    POP16 sav+2
+    POP16 sav
     rts
     
 EntMoveVertically subroutine
@@ -1645,6 +1702,8 @@ ER_Explosion subroutine
     jmp ER_Return
 
 ER_Player subroutine
+    jsr EntCheckPriority
+
 ;gravity
     lda playerFlags
     and #PLY_UPSIDEDOWN

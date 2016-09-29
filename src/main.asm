@@ -740,9 +740,9 @@ CheckInput subroutine
 CheckInput_end:
 
 TileInteraction subroutine
-    lda playerFlags
-    and #~PLY_ISBEHIND
-    sta playerFlags
+    ; lda entityXHi+PLAYER_INDEX
+    ; and #~ENT_X_PRIORITY
+    ; sta entityXHi+PLAYER_INDEX
 
     ;a0 = x in tiles
     ADD16I arg, playerX, 7
@@ -809,7 +809,7 @@ TileCollision:
     .word TC_Points ;1000
     .word TC_Points ;5000
     .word TC_Points ;bonus
-    .word TC_Foreground
+    .word TC_Nop;TC_Foreground
     .word TC_Nop ; unused
     .word TC_Nop ; girder
     .word TC_Nop ;"
@@ -1001,9 +1001,9 @@ TC_Stop:
 TC_Stop_end:
 
 TC_Foreground:
-    lda playerFlags
-    ora #PLY_ISBEHIND
-    sta playerFlags
+    lda entityXHi+PLAYER_INDEX
+    ora #ENT_X_PRIORITY
+    sta entityXHi+PLAYER_INDEX
     jmp TC_Return
 TC_Foreground_end:
 
@@ -2169,7 +2169,9 @@ UpdateSprites subroutine
 ;update player sprite pos
     lda playerX
     sta entityXLo+PLAYER_INDEX
-    lda playerX+1
+    lda entityXHi+PLAYER_INDEX
+    and #~[ENT_X_POS|ENT_X_DEAD]
+    ora playerX+1
     sta entityXHi+PLAYER_INDEX
     lda playerY
     sta entityYLo+PLAYER_INDEX
@@ -2232,17 +2234,13 @@ UpdateSprites subroutine
     tax
     lda entityFlags,x
     and #ENT_F_COLOR
-    ldx tmp
+    ldx tmp    
     sta arg+3
-    cpx #2
-    bne .noFG
-    lda playerFlags
-    and #PLY_ISBEHIND
-    beq .noFG
-    lda arg+3
-    ora #$20
+    lda entityXHi,x
+    and #ENT_X_PRIORITY
+    ora arg+3
     sta arg+3
-.noFG:
+
     ;get frame in sav
     lda entityFrame,x
     sta tmp+2
