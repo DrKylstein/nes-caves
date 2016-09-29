@@ -1576,7 +1576,7 @@ ER_Ball subroutine
     cmp #ANIM_BALL_SLEEP
     bne .rolling
     lda entityFrame,x
-    cmp #255
+    cmp #128
     bne .sleep_end
     lda #ANIM_BALL_RIGHT
     sta entityAnim,x

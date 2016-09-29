@@ -14,13 +14,16 @@
 
 must:
 level 13
+-low gravity - no change to jump height [not sure about fall speed?], but gun recoil, about 8px in l14, 24-32px in l13
 fix: narrow switch collision changes level 14 dynamic
-fix: eyemonster walks partially inside walls, can push left eye into negative x
 jump feels too floaty vs og
-ball should probably have shorter naps, too easy to kill vs og (can only get 2 shots in usually in dos)
 fix corrpution/bad collision in left side of level
 slime direction change is poor
 add ending image
+fall off elevator if pushed into ceiling
+add hidden crystals
+did I forget that chests vary in points? probably, because I still don't know how or why.
+eyemonster blink pattern doesn't seem right
 more sounds
 -power ups
 -chests
@@ -29,11 +32,17 @@ more sounds
 -getting hit
 -popup messages
 -enemy shots
-fall off elevator if pushed into ceiling
-add hidden crystals
-low gravity - no change to jump height [not sure about fall speed?], but gun recoil, about 8px in l14, 24-32px in l13
-did I forget that chests vary in points? probably, because I still don't know how or why.
-eyemonster blink pattern doesn't seem right
+
+optimizations:
+condense faucet into one entity - it doesn't drip if the player is above, 
+ which is the most likely case for when it could fall offscreen.
+delete entity speeds table
+delete entity initial anim table
+store size and shared offset instead of individual offsets in frames?
+-faster? denser, can re-use y coordinate on horizontal runs
+convert most player variables to entity variables, move player code to player entity?
+use tile type to find door/exit positions? (store as 16-bit pointers) would save 3 bytes per door/exit
+disable tile animation in other levels? (move to an entity or use level number?)
 
 long shot:
 enter animation
@@ -45,20 +54,8 @@ double up channels so that long notes can resume after very short ones
 music
 enemy hit flash
 
-optimizations:
-condense faucet into one entity - it doesn't drip if the player is above, 
- which is the most likely case for when it could fall offscreen.
-delete entity speeds table
-delete entity initial anim table
-store size and shared offset instead of individual offsets in frames?
--faster? denser, can re-use y coordinate on horizontal runs
-convert most player variables to entity variables, move player code to player entity?
-
-eyemonster/rex
-ball/trike
-caterpillar/hammer
-
-disable tile animation in other levels? (move to an entity or use level number?)
+for sequel/level pack:
+fix: eyemonster walks partially inside walls, can push left eye into negative x
 
 -----------------------------
 Alternative entity storage
