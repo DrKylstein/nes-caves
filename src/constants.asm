@@ -140,11 +140,11 @@ POWER_STOP      ds 1
 TB_EMPTY:      ds 1
 TB_SOLID:      ds 1
 TB_PLATFORM:   ds 1
-TB_EXIT:       ds 1
-TB_HAZARD:     ds 1
+TB_FOREGROUND: ds 1
+TB_FGPLATFORM: ds 1
 TB_DEATH:      ds 1
 TB_HIDDEN:     ds 1
-TB_AIR:        ds 1
+TB_EXIT:       ds 1
 TB_WEAKBLOCK:  ds 1
 TB_AMMO:       ds 1
 TB_STRENGTH:   ds 1
@@ -160,7 +160,7 @@ TB_800:        ds 1
 TB_1000:       ds 1
 TB_5000:       ds 1
 TB_BONUS:      ds 1
-TB_FOREGROUND: ds 1
+TB_HAZARD:     ds 1
                ds 1
 TB_GIRDER_LEFT ds 1
 TB_GIRDER_MIDDLE ds 1

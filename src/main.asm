@@ -790,11 +790,11 @@ TileCollision:
     .word TC_Nop;TC_Empty
     .word TC_Nop;TC_Solid
     .word TC_Nop;TC_Platform
-    .word TC_Exit
-    .word TC_Harmful
+    .word TC_Nop;TC_Foreground
+    .word TC_Nop;TC_FgPlatform
     .word TC_Deadly
     .word TC_Hidden
-    .word TC_Nop;TC_Air
+    .word TC_Exit
     .word TC_Nop;TC_WeakBlock
     .word TC_Ammo
     .word TC_Strength
@@ -809,7 +809,7 @@ TileCollision:
     .word TC_Points ;1000
     .word TC_Points ;5000
     .word TC_Points ;bonus
-    .word TC_Nop;TC_Foreground
+    .word TC_Harmful
     .word TC_Nop ; unused
     .word TC_Nop ; girder
     .word TC_Nop ;"
@@ -3149,6 +3149,8 @@ TestCollisionTop subroutine
     cmp #TB_WEAKBLOCK
     beq .hit
     cmp #TB_PLATFORM
+    beq .hit
+    cmp #TB_FGPLATFORM
     beq .hit
     cmp #TB_EXIT
     bne .nohit

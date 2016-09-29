@@ -483,6 +483,8 @@ EntCheckPriority subroutine
     jsr GetTileBehavior
     ldx sav+4
     lda ret
+    cmp #TB_FGPLATFORM
+    beq .low
     cmp #TB_FOREGROUND
     bne .high
 .low:
@@ -500,6 +502,8 @@ EntCheckPriority subroutine
     jsr GetTileBehavior
     ldx sav+4
     lda ret
+    cmp #TB_FGPLATFORM
+    beq .low
     cmp #TB_FOREGROUND
     beq .low
 .definitelyhigh:

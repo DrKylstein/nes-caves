@@ -34,7 +34,6 @@ add hidden crystals
 low gravity - no change to jump height [not sure about fall speed?], but gun recoil, about 8px in l14, 24-32px in l13
 did I forget that chests vary in points? probably, because I still don't know how or why.
 eyemonster blink pattern doesn't seem right
-player should go behind pipe crossing platform
 
 long shot:
 enter animation
