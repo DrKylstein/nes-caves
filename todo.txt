@@ -36,7 +36,6 @@ low gravity - no change to jump height [not sure about fall speed?], but gun rec
 enter animation
 did I forget that chests vary in points? probably, because I still don't know how or why.
 eyemonster blink pattern doesn't seem right
-pause entityframes while stopped
 player should go behind pipe crossing platform
 
 long shot:

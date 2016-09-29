@@ -1801,7 +1801,7 @@ UpdateEntities subroutine
     cmp #POWER_STOP
     beq ER_Return
 .noStop:
-
+    inc entityFrame,x
     lda entityRoutineLo,y
     sta tmp
     lda entityRoutineHi,y
@@ -2244,7 +2244,6 @@ UpdateSprites subroutine
     sta arg+3
 .noFG:
     ;get frame in sav
-    inc entityFrame,x
     lda entityFrame,x
     sta tmp+2
     lda entityAnim,x
