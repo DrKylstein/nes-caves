@@ -14,8 +14,6 @@
 
 must:
 level 13
-level 15
-level 16
 fix: narrow switch collision changes level 14 dynamic
 fix player going behind foreground while on platform that goes in front
 fix: eyemonster walks partially inside walls, can push left eye into negative x
@@ -37,6 +35,9 @@ add hidden crystals
 low gravity - no change to jump height [not sure about fall speed?], but gun recoil, about 8px in l14, 24-32px in l13
 enter animation
 did I forget that chests vary in points? probably, because I still don't know how or why.
+eyemonster blink pattern doesn't seem right
+pause entityframes while stopped
+player should go behind pipe crossing platform
 
 long shot:
 implement trike (can't kill eye creature in that space, ball takes fewer hits)

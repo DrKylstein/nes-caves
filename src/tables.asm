@@ -83,7 +83,7 @@ levelTilesets:
     .word caveTiles ;13
     .word caveTiles ;14
     .word alphaTiles ;15
-    .word caveTiles ;16
+    .word worksTiles ;16
     .word mineTiles ;map
     .word introTiles;intro
     .word introTiles;end
