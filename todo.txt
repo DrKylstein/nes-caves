@@ -13,6 +13,7 @@
  PRGROM Bank 7 left: 3181
  
 must:
+dead zero is missing
 raise hiding rock a few pixels
 more lines on mimrock, cart, dead snake
 pause breaks music routine?
