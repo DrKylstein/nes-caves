@@ -1,24 +1,25 @@
- 138  bytes left in page $000
+ 18  bytes left in page $000
  163  bytes left for copy buffer
  32  bytes left for stack
  20  sprites left in upper table
- 39 bytes left in pages $300-$700
- PRGROM Bank 0 left: 2832
- PRGROM Bank 1 left: 5309
- PRGROM Bank 2 left: 8192
- PRGROM Bank 3 left: 5031
+ 125 bytes left in pages $300-$700
+ PRGROM Bank 0 left: 898
+ PRGROM Bank 1 left: 87
+ PRGROM Bank 2 left: 4096
+ PRGROM Bank 3 left: 3660
  PRGROM Bank 4 left: 16384
  PRGROM Bank 5 left: 16384
  PRGROM Bank 6 left: 16384
  PRGROM Bank 7 left: 3181
-
+ 
 must:
+pause breaks music routine?
+level palettes
+slime direction change is poor
 level 13
 -low gravity - no change to jump height [not sure about fall speed?], but gun recoil, about 8px in l14, 24-32px in l13
 fix: narrow switch collision changes level 14 dynamic
 jump feels too floaty vs og
-fix corrpution/bad collision in left side of level
-slime direction change is poor
 add ending image
 fall off elevator if pushed into ceiling
 add hidden crystals
@@ -32,6 +33,7 @@ more sounds
 -getting hit
 -popup messages
 -enemy shots
+fix corrpution/bad collision in left side of level
 
 optimizations:
 condense faucet into one entity - it doesn't drip if the player is above, 
