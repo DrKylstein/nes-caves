@@ -14,3 +14,5 @@ textPalette:
     incbin palette-text.pal
 l12Pal:
     incbin palette-l12.pal
+l04Pal:
+    incbin palette-l04.pal
