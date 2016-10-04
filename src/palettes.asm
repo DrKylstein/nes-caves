@@ -16,3 +16,5 @@ l12Pal:
     incbin palette-l12.pal
 l04Pal:
     incbin palette-l04.pal
+l05Pal:
+    incbin palette-l05.pal

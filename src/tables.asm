@@ -93,7 +93,7 @@ levelPalettes:
     .word cobaltPal  ;2
     .word minePal    ;3
     .word l04Pal  ;4
-    .word cobaltPal  ;5
+    .word l05Pal  ;5
     .word minePal    ;6
     .word volcanoPal ;7
     .word cobaltPal  ;8
