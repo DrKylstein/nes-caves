@@ -13,6 +13,8 @@
  PRGROM Bank 7 left: 3181
  
 must:
+raise hiding rock a few pixels
+more lines on mimrock, cart, dead snake
 pause breaks music routine?
 level palettes
 slime direction change is poor

@@ -172,7 +172,7 @@ entityFlags:
     .byte [1<<ENT_F_CHILDREN_SHIFT] | 2 ; spider
     .byte 2 ; bat
     .byte ENT_F_ISTEMPORARY | 1; power shot
-    .byte 1; rock
+    .byte 2; rock
     .byte 2 ; cart
     .byte ENT_F_SKIPXTEST | [3<<ENT_F_CHILDREN_SHIFT] | 3 ; caterpillar head
     .byte ENT_F_SKIPXTEST | 3 ; caterpillar front
