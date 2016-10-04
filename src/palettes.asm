@@ -12,3 +12,5 @@ cobaltPal:
     incbin palette-cobalt.pal
 textPalette:
     incbin palette-text.pal
+l12Pal:
+    incbin palette-l12.pal

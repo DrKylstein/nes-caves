@@ -100,7 +100,7 @@ levelPalettes:
     .word volcanoPal ;9
     .word volcanoPal ;10
     .word volcanoPal ;11
-    .word volcanoPal ;12
+    .word l12Pal ;12
     .word volcanoPal ;13
     .word volcanoPal ;14
     .word volcanoPal ;15
