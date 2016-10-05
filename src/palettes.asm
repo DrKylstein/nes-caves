@@ -32,3 +32,5 @@ l12Pal:
     incbin palette-l12.pal
 l14Pal:
     incbin palette-l14.pal
+l15Pal:
+    incbin palette-l15.pal
