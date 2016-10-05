@@ -1501,11 +1501,8 @@ CheckGround subroutine
 CheckGround_end:
 
 CheckCieling subroutine
-
-    ;skip if not moving up (>= 0)
     CMP16I playerYVel, 0
-    JPL CheckCieling_end
-
+    beq .notUpsideDown
     lda playerFlags
     and #PLY_UPSIDEDOWN
     bne .notUpsideDown
@@ -1591,21 +1588,22 @@ CheckCieling subroutine
     jsr SetTile
     
 .normal:
-    MOV16I playerYVel, 0
     lda #0
     sta playerYFrac
     lda playerY
     and #$F0
     ora #$F
     sta playerY
+    
+    CMP16I playerYVel, 0
+    bpl CheckCieling_end
+    MOV16I playerYVel, 192
     lda playerFlags
     and #PLY_UPSIDEDOWN
-    JEQ CheckCieling_end
+    beq CheckCieling_end
     lda playerFlags
     and #~PLY_ISJUMPING
     sta playerFlags
-    
-    
 CheckCieling_end:
     
 CheckHurt subroutine

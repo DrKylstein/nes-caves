@@ -19,7 +19,7 @@ level 13
 fix: narrow switch collision changes level 14 dynamic
 jump feels too floaty vs og
 add ending image
-fall off elevator if pushed into ceiling
+push out of wall when on horizontal platform
 add hidden crystals
 did I forget that chests vary in points? probably, because I still don't know how or why.
 eyemonster blink pattern doesn't seem right
