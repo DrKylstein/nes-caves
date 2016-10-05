@@ -24,3 +24,5 @@ l07Pal:
     incbin palette-l07.pal
 l08Pal:
     incbin palette-l08.pal
+l09Pal:
+    incbin palette-l09.pal
