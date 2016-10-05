@@ -2935,8 +2935,6 @@ UpdateScoreDisplay subroutine
 .prefixloop:
     lda tmp,y
     bne .nonzero
-    cpy #0
-    beq .nonzero
     lda #HUD_BLANK
     sta tmp,y
     dey
@@ -2944,6 +2942,9 @@ UpdateScoreDisplay subroutine
 .nonzero    
 
     ldx shr_copyIndex
+    
+    lda #0
+    PHXA
     
     ldy #0
 .pushloop:
@@ -2953,7 +2954,7 @@ UpdateScoreDisplay subroutine
     cpy #6
     bne .pushloop
     
-    ENQUEUE_ROUTINE nmi_Copy6
+    ENQUEUE_ROUTINE nmi_Copy7
     ENQUEUE_PPU_ADDR $2065    
     stx shr_copyIndex
     
