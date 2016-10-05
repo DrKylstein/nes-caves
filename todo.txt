@@ -14,7 +14,6 @@
  
 must:
 dead zero is missing
-raise hiding rock a few pixels
 pause breaks music routine?
 slime direction change is poor
 level 13

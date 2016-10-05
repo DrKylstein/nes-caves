@@ -446,8 +446,8 @@ anim_rock_hiding subroutine
     .word .frame1
 .frame1:
     .byte 8
-    .byte   8,  0,$20,  0
-    .byte   8,  2,$20,  8    
+    .byte   6,  0,$20,  0
+    .byte   6,  2,$20,  8    
     
 anim_rocket subroutine
     .byte 3
