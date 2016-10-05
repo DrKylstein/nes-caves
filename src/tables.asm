@@ -95,7 +95,7 @@ levelPalettes:
     .word l04Pal  ;4
     .word l05Pal  ;5
     .word l06Pal    ;6
-    .word volcanoPal ;7
+    .word l07Pal ;7
     .word cobaltPal  ;8
     .word volcanoPal ;9
     .word volcanoPal ;10
