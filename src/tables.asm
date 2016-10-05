@@ -101,8 +101,8 @@ levelPalettes:
     .word l10Pal ;10
     .word l11Pal ;11
     .word l12Pal ;12
-    .word volcanoPal ;13
-    .word volcanoPal ;14
+    .word l14Pal ;13
+    .word l14Pal ;14
     .word volcanoPal ;15
     .word volcanoPal ;16
     .word mapPal     ;map

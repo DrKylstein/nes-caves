@@ -4,16 +4,14 @@ mapPal:
     incbin palette-map.pal
 introPal:
     incbin palette-intro.pal
-minePal:
-    incbin palette-mine.pal
+textPalette:
+    incbin palette-text.pal
 volcanoPal:
     incbin palette-volcano.pal
 cobaltPal:
     incbin palette-cobalt.pal
-textPalette:
-    incbin palette-text.pal
-l12Pal:
-    incbin palette-l12.pal
+minePal:
+    incbin palette-mine.pal
 l04Pal:
     incbin palette-l04.pal
 l05Pal:
@@ -30,3 +28,7 @@ l10Pal:
     incbin palette-l10.pal
 l11Pal:
     incbin palette-l11.pal
+l12Pal:
+    incbin palette-l12.pal
+l14Pal:
+    incbin palette-l14.pal
