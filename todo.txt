@@ -15,9 +15,7 @@
 must:
 dead zero is missing
 raise hiding rock a few pixels
-more lines on mimrock, cart, dead snake
 pause breaks music routine?
-level palettes
 slime direction change is poor
 level 13
 -low gravity - no change to jump height [not sure about fall speed?], but gun recoil, about 8px in l14, 24-32px in l13
