@@ -98,7 +98,7 @@ levelPalettes:
     .word l07Pal ;7
     .word l08Pal  ;8
     .word l09Pal ;9
-    .word volcanoPal ;10
+    .word l10Pal ;10
     .word volcanoPal ;11
     .word l12Pal ;12
     .word volcanoPal ;13
