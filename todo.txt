@@ -14,7 +14,6 @@
  
 must:
 dead zero is missing
-pause breaks music routine?
 slime direction change is poor
 level 13
 -low gravity - no change to jump height [not sure about fall speed?], but gun recoil, about 8px in l14, 24-32px in l13

@@ -167,6 +167,7 @@ InitSprites subroutine
 ;------------------------------------------------------------------------------
 EnterLevel:
 DisableDisplay subroutine
+    jsr ClearSounds
     jsr ResetAPU
     jsr Synchronize
     jsr QDisableDisplay
@@ -3329,7 +3330,13 @@ ResetAPU subroutine
     ;silence triangle
     lda #$80
     sta APU_TRI_LINEAR
+        
+    ;unmute
+    lda #$0F
+    sta APU_ENABLE
+    rts
     
+ClearSounds subroutine
     lda #0    
     ldy #16
 .loop:
@@ -3337,10 +3344,6 @@ ResetAPU subroutine
     sta sfxPatch,y
     dey
     bne .loop
-    
-    ;unmute
-    lda #$0F
-    sta APU_ENABLE
     rts
 ;------------------------------------------------------------------------------
 Randomize subroutine
