@@ -208,7 +208,7 @@ entityFlags:
     .byte [1<<ENT_F_CHILDREN_SHIFT] | 2 ; left cannon
     .byte 2 ;air generator
     .byte ENT_F_SKIPYTEST | ENT_F_SKIPXTEST | 2 ; kiwi
-    .byte ENT_F_SKIPXTEST | [3<<ENT_F_CHILDREN_SHIFT] | 3 ;eyemonster
+    .byte [3<<ENT_F_CHILDREN_SHIFT] | 3 ;eyemonster
     .byte ENT_F_SKIPXTEST | 3 ;eyeball
     .byte ENT_F_SKIPXTEST | ENT_F_SKIPYTEST | 0 ; falling rock
     .byte 1 ;snake
