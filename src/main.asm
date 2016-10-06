@@ -1357,11 +1357,6 @@ UpdateFruit_end:
 
 
 CheckLeft subroutine
-    ;skip if not moving left (>= 0)
-    lda playerXVel
-    cmp #0
-    bpl CheckLeft_end
-
     CMP16I playerX, 1
     bcc .hit
     
@@ -1375,16 +1370,19 @@ CheckLeft subroutine
     bcs .hit
     jmp CheckLeft_end
 .hit:
+    lda playerX
+    and #$F0
+    ora #15-PLAYER_HLEFT
+    sta playerX
+    ;skip if not moving left (-x)
+    lda playerXVel
+    cmp #0
+    bpl CheckLeft_end
     lda #0
     sta playerXVel
 CheckLeft_end:
 
 CheckRight subroutine
-    ;skip if not moving right (<= 0)
-    lda playerXVel
-    cmp #0
-    bmi CheckRight_end
-    beq CheckRight_end
 
     CMP16I playerX, [MT_MAP_WIDTH*PX_MT_WIDTH - 16]
     bcs .hit
@@ -1399,15 +1397,21 @@ CheckRight subroutine
     bcs .hit
     jmp CheckRight_end
 .hit:
+    lda playerX
+    and #$F0
+    ora #16-PLAYER_HRIGHT
+    sta playerX
+    
+    ;skip if not moving right (+x)
+    lda playerXVel
+    cmp #0
+    bmi CheckRight_end
+    beq CheckRight_end
     lda #0
     sta playerXVel
 CheckRight_end:
 
 CheckGround subroutine
-    ;skip if not moving down (< 0)
-    CMP16I playerYVel, 0
-    JMI CheckGround_end
-
     lda playerFlags
     and #PLY_UPSIDEDOWN
     bne .upsideDown
@@ -1418,7 +1422,7 @@ CheckGround subroutine
     lda playerY
     and #$F
     cmp #4
-    bcs .checkSpriteHit
+    bcs .GoToCheckSpriteHit
 
     ADD16I arg, playerX, [PLAYER_HRIGHT-1]
     ADD16I arg+2, playerY, 16
@@ -1428,9 +1432,11 @@ CheckGround subroutine
     ADD16I arg+2, playerY, 16
     jsr TestCollisionTop
     bcs .hitGroundTile
-    
+.GoToCheckSpriteHit
     jmp .checkSpriteHit
 .hitGroundTile:
+    EXTEND tmp,playerYVel+1
+    ADD16 tmp,tmp,playerY
     lda playerY
     and #$F0
     sta playerY
@@ -1476,7 +1482,7 @@ CheckGround subroutine
     CMP16 tmp, playerY
     bmi .longLoop
 
-    SUB16I tmp, tmp, 2
+    SUB16I tmp, tmp, 4
     CMP16 tmp, playerY
     bpl .longLoop
     
@@ -1487,7 +1493,10 @@ CheckGround subroutine
     
     ADD16I playerY, tmp, 1
     sty currPlatform
-.hit_ground: ;stop if moving down
+.hit_ground:
+    ;skip if not moving down (< 0)
+    CMP16I playerYVel, 0
+    JMI CheckGround_end
     lda #0
     sta playerYVel
     sta playerYVel+1
