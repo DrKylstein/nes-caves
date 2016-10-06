@@ -1412,6 +1412,9 @@ CheckRight subroutine
 CheckRight_end:
 
 CheckGround subroutine
+    ;skip if not moving down (< 0)
+    CMP16I playerYVel, 0
+    JMI CheckGround_end
     lda playerFlags
     and #PLY_UPSIDEDOWN
     bne .upsideDown
@@ -1491,12 +1494,9 @@ CheckGround subroutine
     jmp .loop
 .hitSprite:
     
-    ADD16I playerY, tmp, 1
+    ADD16I playerY, tmp, 2
     sty currPlatform
 .hit_ground:
-    ;skip if not moving down (< 0)
-    CMP16I playerYVel, 0
-    JMI CheckGround_end
     lda #0
     sta playerYVel
     sta playerYVel+1
