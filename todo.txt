@@ -3,9 +3,9 @@
  32  bytes left for stack
  20  sprites left in upper table
  125 bytes left in pages $300-$700
- PRGROM Bank 0 left: 898
- PRGROM Bank 1 left: 87
- PRGROM Bank 2 left: 4096
+ PRGROM Bank 0 left: 587
+ PRGROM Bank 1 left: 99
+ PRGROM Bank 2 left: 1081
  PRGROM Bank 3 left: 3660
  PRGROM Bank 4 left: 16384
  PRGROM Bank 5 left: 16384
@@ -14,8 +14,7 @@
  
 must:
 slime direction change is poor
-level 13
--low gravity - no change to jump height [not sure about fall speed?], but gun recoil, about 8px in l14, 24-32px in l13
+low gravity - no change to jump height [not sure about fall speed?], but gun recoil, about 8px in l14, 24-32px in l13
 fix: narrow switch collision changes level 14 dynamic
 jump feels too floaty vs og
 add ending image
@@ -31,6 +30,7 @@ more sounds
 -popup messages
 -enemy shots
 fix corrpution/bad collision in left side of level
+elevators and cannons have been seen shifted 8 pixels away from their spot
 
 optimizations:
 condense faucet into one entity - it doesn't drip if the player is above, 
@@ -49,6 +49,8 @@ implement trike (can't kill eye creature in that space, ball takes fewer hits)
 add walker? (different attack from robot)
 add floating alien wrench? uses walking collision, unlike bat
 shoot/just fired animation
+variable length notes - patch loop point, external decay?
+different note volumes
 double up channels so that long notes can resume after very short ones
 music
 enemy hit flash

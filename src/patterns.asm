@@ -10,3 +10,5 @@ worksTiles:
     incbin tileset-works.pat
 alphaTiles:
     incbin tileset-alpha.pat
+ghzTiles:
+    incbin tileset-ghz.pat

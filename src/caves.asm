@@ -28,8 +28,8 @@ cloudsTiles:
     include palettes.asm
 introScene:
     incbin intro_scene.bin
-endScene:
-    incbin end_scene.bin
+mainMap:
+    incbin main_map.bin
     ECHO "PRGROM Bank 0 left:",[$C000-.]d
     IF . > $C000
     ECHO "Exceeded PRGROM Bank 0 size!"
@@ -63,14 +63,13 @@ level11:
 level12:
     incbin level12.bin
 level13:
+    incbin level13.bin
 level14:
     incbin level14.bin
 level15:
     incbin level15.bin
 level16:
     incbin level16.bin
-mainMap:
-    incbin main_map.bin
 
     ECHO "PRGROM Bank 1 left:",[$C000-.]d
     IF . > $C000
@@ -81,6 +80,8 @@ mainMap:
     ORG 16 + 2*$4000
     RORG $8000
     include patterns.asm
+endScene:
+    incbin end_scene.bin
     ECHO "PRGROM Bank 2 left:",[$C000-.]d
     IF . > $C000-6
     ECHO "Exceeded PRGROM Bank 2 size!"
@@ -93,6 +94,7 @@ mainMap:
     include entities.asm
     include sounds.asm
     include messages.asm
+
     ECHO "PRGROM Bank 3 left:",[$C000-.]d
     IF . > $C000-6
     ECHO "Exceeded PRGROM Bank 3 size!"

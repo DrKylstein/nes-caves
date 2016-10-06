@@ -42,9 +42,9 @@ levelBanks:
     .byte 1
     .byte 1
     .byte 1
-    .byte 1
     .byte 0
     .byte 0
+    .byte 2
 
 levelPointers:
     .word level01
@@ -80,7 +80,7 @@ levelTilesets:
     .word mineTiles ;10
     .word techTiles ;11
     .word techTiles ;12
-    .word caveTiles ;13
+    .word ghzTiles ;13
     .word caveTiles ;14
     .word alphaTiles ;15
     .word worksTiles ;16
@@ -101,7 +101,7 @@ levelPalettes:
     .word l10Pal ;10
     .word l11Pal ;11
     .word l12Pal ;12
-    .word l14Pal ;13
+    .word l13Pal ;13
     .word l14Pal ;14
     .word l15Pal ;15
     .word l16Pal ;16

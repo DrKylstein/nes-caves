@@ -30,6 +30,8 @@ l11Pal:
     incbin palette-l11.pal
 l12Pal:
     incbin palette-l12.pal
+l13Pal:
+    incbin palette-l13.pal
 l14Pal:
     incbin palette-l14.pal
 l15Pal:
