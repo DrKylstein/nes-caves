@@ -1532,6 +1532,10 @@ CheckCieling subroutine
     beq .HandleGirder
     jmp .normal
 .HandleGirder:
+    lda entityXHi+GIRDER_INDEX
+    bmi .slotFree
+    jmp .normal
+.slotFree:
     ADD16I arg, playerX, PLAYER_HCENTER
     SUB16I arg+2, playerY, 0
     REPEAT 4
@@ -1560,26 +1564,25 @@ CheckCieling subroutine
     ASL16 tmp+2
     ASL16 tmp+4
     REPEND
-    ldx #1
     lda tmp+2
-    sta entityXLo,x
+    sta entityXLo+GIRDER_INDEX
     lda tmp+3
-    sta entityXHi,x
+    sta entityXHi+GIRDER_INDEX
     lda tmp+4
-    sta entityYLo,x
+    sta entityYLo+GIRDER_INDEX
     lda tmp+5
     ora #GIRDER_ID<<1
-    sta entityYHi,x
+    sta entityYHi+GIRDER_INDEX
     lda #0
-    sta entityCount,x
+    sta entityCount+GIRDER_INDEX
     lda arg+2
-    sta entityVelocity,x
+    sta entityVelocity+GIRDER_INDEX
     lda sav
     sec
     sbc #TB_GIRDER_LEFT
     clc
     adc #ANIM_GIRDER_LEFT
-    sta entityAnim,x
+    sta entityAnim+GIRDER_INDEX
 
     
     ldy #0
