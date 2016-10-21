@@ -17,6 +17,7 @@ fix girder being interrupted by neighbor
 add hidden crystals
 low gravity - no change to jump height [not sure about fall speed?], but gun recoil, about 8px in l14, 24-32px in l13
 slime direction change is poor
+jump feels too floaty vs og
 add ending image
 more sounds
 -power ups
@@ -28,7 +29,6 @@ more sounds
 -enemy shots
 
 fix: narrow switch collision changes level 14 dynamic
-jump feels too floaty vs og
 eyemonster blink pattern doesn't seem right
 fix corrpution/bad collision in left side of level
 elevators and cannons have been seen shifted 8 pixels away from their spot

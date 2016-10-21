@@ -49,6 +49,7 @@ EGG_ID                      ds 1
 SIGN_ID                     ds 1
 WORM_RIGHT_ID               ds 1
 WORM_LEFT_ID                ds 1
+HIDDEN_GEM_ID               ds 1
     SEG ROM_FILE
 
 entityRoutineLo:
@@ -107,6 +108,7 @@ entityRoutineLo:
     .byte <ER_Sign
     .byte <ER_Worm ;right
     .byte <ER_Worm ;left
+    .byte <ER_HiddenGem
     
 entityRoutineHi:
     .byte >ER_Player
@@ -164,6 +166,7 @@ entityRoutineHi:
     .byte >ER_Sign
     .byte >ER_Worm ;right
     .byte >ER_Worm ;left
+    .byte >ER_HiddenGem
     
 entityFlags:
     .byte ENT_F_SKIPYTEST | ENT_F_SKIPXTEST | 1 ; player
@@ -221,6 +224,7 @@ entityFlags:
     .byte 0 ; sign
     .byte 1 ;worm
     .byte 1 ;worm
+    .byte 0 ;hidden gem
     
 entityTiles:
     .byte 0 ; player
@@ -278,6 +282,7 @@ entityTiles:
     .byte 32*4 + 24 + 1 + 32;sign
     .byte [8+32*2]*2 ; worm
     .byte [8+32*2]*2 ; worm
+    .byte [11+32*2]*2 ;hidden gem
     
 entitySpeeds:
     .byte 0 ; player
@@ -335,6 +340,7 @@ entitySpeeds:
     .byte 0 ;sign
     .byte 0 ;worm
     .byte 0 ;worm
+    .byte 0 ;hidden gem
     
 entityInitialAnims:
     .byte ANIM_SMALL_NONE ; player
@@ -392,6 +398,7 @@ entityInitialAnims:
     .byte ANIM_WIDE_NONE ; sign
     .byte ANIM_SMALL_NONE_BG ; worm
     .byte ANIM_SMALL_NONE_HFLIP_BG ; worm
+    .byte ANIM_NULL ; hidden gem
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
     lda entityXLo,x
@@ -976,6 +983,54 @@ EntShootPlayer subroutine
     sta entityCount,x
 .noshoot:
     rts
+
+ER_HiddenGem subroutine
+    lda entityAnim,x
+    bne .active ;0 = ANIM_NULL
+    lda entityXLo,x
+    sta arg
+    lda entityXHi,x
+    and #ENT_X_POS
+    sta arg+1
+    lda entityYLo,x
+    sta arg+2
+    lda entityYHi,x
+    and #ENT_Y_POS
+    sta arg+3
+    ;ADD16I arg,arg, 8
+    ;ADD16I arg+2,arg+2,8
+    REPEAT 4
+    LSR16 arg
+    LSR16 arg+2
+    REPEND
+    jsr GetTileBehavior
+    lda ret
+    ;don't activate unless behavior is less than girder left
+    ;only switches and map doors are higher, it should never be hidden there
+    cmp #TB_GIRDER_LEFT
+    JCS ER_Return
+    lda #ANIM_SYMMETRICAL_NONE
+    sta entityAnim,x
+    lda #-4
+    sta entityVelocity,x
+.active:
+    jsr EntFall
+    jsr EntTestVerticalCollision
+    bcs .hit
+    jmp .nohit
+.hit:
+    lda #$80
+    sta entityXHi,x
+    lda #5
+    sta arg+1
+    lda #0
+    sta arg
+    sta arg+2
+    jsr AddScore
+    ldx #SFX_CRYSTAL
+    jsr PlaySound
+.nohit:
+    jmp ER_Return
 
 ER_Worm subroutine
     lda entityVelocity,x
