@@ -13,14 +13,11 @@
  PRGROM Bank 7 left: 3181
  
 must:
-slime direction change is poor
-low gravity - no change to jump height [not sure about fall speed?], but gun recoil, about 8px in l14, 24-32px in l13
-fix: narrow switch collision changes level 14 dynamic
-jump feels too floaty vs og
-add ending image
+fix girder being interrupted by neighbor
 add hidden crystals
-did I forget that chests vary in points? probably, because I still don't know how or why.
-eyemonster blink pattern doesn't seem right
+low gravity - no change to jump height [not sure about fall speed?], but gun recoil, about 8px in l14, 24-32px in l13
+slime direction change is poor
+add ending image
 more sounds
 -power ups
 -chests
@@ -29,6 +26,10 @@ more sounds
 -getting hit
 -popup messages
 -enemy shots
+
+fix: narrow switch collision changes level 14 dynamic
+jump feels too floaty vs og
+eyemonster blink pattern doesn't seem right
 fix corrpution/bad collision in left side of level
 elevators and cannons have been seen shifted 8 pixels away from their spot
 
@@ -42,6 +43,7 @@ store size and shared offset instead of individual offsets in frames?
 convert most player variables to entity variables, move player code to player entity?
 use tile type to find door/exit positions? (store as 16-bit pointers) would save 3 bytes per door/exit
 disable tile animation in other levels? (move to an entity or use level number?)
+-or cut it, there's not much synergy
 
 long shot:
 enter animation

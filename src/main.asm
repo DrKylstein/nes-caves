@@ -892,12 +892,21 @@ TC_Key:
     jmp TC_UpdateTile
 TC_Key_end:
 
+chestValues:
+    .byte 1
+    .byte 2
+    .byte 5
+    .byte 5
+
 TC_Chest:
     lda #PLY_HASKEY
     and playerFlags
     JEQ TC_Return
     
-    lda #2
+    jsr Randomize
+    and #3
+    tax
+    lda chestValues,x
     sta arg+1
     lda #0
     sta arg
