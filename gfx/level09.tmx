@@ -17,7 +17,7 @@
  </layer>
  <layer name="Entities" width="40" height="24">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFowACWBkH2gUDC5hHuP9HwdAGo+l3aAOm0fjDCYyIDBvt0TAcBaMALxjodp7EMM2jtArXP0Bz/wLxP6j5vymwR49EvZqMuPX9HwbxCAABPQYU
+   eJxjYBgFowACWBkH2gUDC5hHuP9HwdAGo+l3cAILIuOFaTT+cAIjIsNGm85hiBy3xMYzseZS07xRMApgYKDbeRLDNF3TKlz/AM39C8T/oOb/psAePRL1ajLi1vd/GMQjAKeOBzE=
   </data>
  </layer>
  <imagelayer name="Image Layer 1" y="8" opacity="0.4">
