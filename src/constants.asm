@@ -53,6 +53,10 @@ FADE_DELAY = 4
 
 MESSAGE_TIME = 60*3
 
+RECOIL13 = 6
+RECOIL14 = 3
+
+
 ;sound
 SQ1_CH = 0
 SQ2_CH = 1

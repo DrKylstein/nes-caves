@@ -669,6 +669,16 @@ Paused subroutine
 Paused_end:    
     jsr UpdateSound
 
+Decelerrate subroutine
+    lda playerXVel
+    bmi .negative
+    beq Decelerrate_end
+    dec playerXVel
+    jmp Decelerrate_end
+.negative
+    inc playerXVel
+Decelerrate_end:
+
 CheckInput subroutine
 .start:
     lda pressed
@@ -681,8 +691,7 @@ CheckInput subroutine
     lda playerFlags
     and #PLY_LOCKED
     bne CheckInput_end
-    lda #0
-    sta playerXVel
+    
     lda ctrl
     and #JOY_LEFT_MASK
     beq .left_end
@@ -1245,6 +1254,18 @@ TC_Nop:
     and #PLY_ISFLIPPED
     bne .shootLeft
 .shootRight:
+    lda currLevel
+    cmp #13-1
+    bne .noRecoilR
+    lda #-RECOIL13
+    sta playerXVel
+.noRecoilR:
+    lda currLevel
+    cmp #14-1
+    bne .noRecoilR14
+    lda #-RECOIL14
+    sta playerXVel
+.noRecoilR14:
     lda #2
     sta entityVelocity
     clc
@@ -1258,6 +1279,18 @@ TC_Nop:
     
     jmp TileInteraction_end
 .shootLeft:
+    lda currLevel
+    cmp #13-1
+    bne .noRecoilL
+    lda #RECOIL13
+    sta playerXVel
+.noRecoilL:
+    lda currLevel
+    cmp #14-1
+    bne .noRecoilL14
+    lda #RECOIL14
+    sta playerXVel
+.noRecoilL14:
     lda #<-2
     sta entityVelocity
     lda entityXLo
