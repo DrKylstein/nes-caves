@@ -92,8 +92,15 @@ DoTitleScreen subroutine
     jsr QEnableStaticDisplay
     MOV16I arg+2, titlePalette
     jsr FadeInBg
-    jsr WaitForPress
-    
+    ldx #TITLE_LEVEL<<1
+    jsr StartMusic
+.WaitForPress:
+    jsr UpdateInput
+    jsr UpdateSound
+    jsr Synchronize
+    lda pressed
+    beq .WaitForPress
+    jsr ResetAPU
     MOV16I arg+2, titlePalette
     jsr FadeOutBg
     
@@ -533,25 +540,7 @@ ResetStats subroutine
     lda currLevel
     asl
     tax
-    lda levelMusic,x
-    sta tmp
-    lda levelMusic+1,x
-    sta tmp+1
-    ldy #0
-    lda (tmp),y
-    iny
-    sta tempo
-.loopSequences:
-    lda (tmp),y
-    sta musicSequence-1,y
-    lda #0
-    sta musicIndex-1,y
-    sta musicStream-1,y
-    iny
-    cpy #9
-    bne .loopSequences
-    lda #0
-    sta beatTimer
+    jsr StartMusic
 ResetStats_end:
 
     jsr ClearStatusBar
@@ -677,9 +666,7 @@ Paused subroutine
     jsr QColorEffect
     jsr Synchronize
     jmp MainLoop
-Paused_end:
-
-    SELECT_BANK 3
+Paused_end:    
     jsr UpdateSound
 
 CheckInput subroutine
@@ -741,10 +728,6 @@ CheckInput subroutine
 CheckInput_end:
 
 TileInteraction subroutine
-    ; lda entityXHi+PLAYER_INDEX
-    ; and #~ENT_X_PRIORITY
-    ; sta entityXHi+PLAYER_INDEX
-
     ;a0 = x in tiles
     ADD16I arg, playerX, 7
     REPEAT 4
@@ -3694,5 +3677,37 @@ MessageBox subroutine
     jsr Synchronize
     
     POP16 sav
+    POP_BANK
+    rts
+    
+StartMusic subroutine
+    PUSH_BANK
+    SELECT_BANK 3
+    lda levelMusic,x
+    sta tmp
+    lda levelMusic+1,x
+    sta tmp+1
+    ldy #0
+    lda (tmp),y
+    iny
+    sta tempo
+.loopSequences:
+    lda (tmp),y
+    sta musicSequence-1,y
+    lda #0
+    sta musicIndex-1,y
+    sta musicStream-1,y
+    iny
+    cpy #9
+    bne .loopSequences
+    lda #0
+    sta beatTimer
+    POP_BANK
+    rts
+    
+UpdateSound subroutine
+    PUSH_BANK
+    SELECT_BANK 3
+    jsr SoundRoutine
     POP_BANK
     rts

@@ -129,3 +129,4 @@ levelMusic:
     .word mineSong ;map
     .word nullSong ;intro
     .word nullSong ;end
+    .word testSong ;title

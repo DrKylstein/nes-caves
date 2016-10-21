@@ -1,4 +1,4 @@
-UpdateSound subroutine
+SoundRoutine subroutine
 DoMusic subroutine
     lda beatTimer
     beq .tick
