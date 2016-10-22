@@ -1547,7 +1547,7 @@ CheckCieling subroutine
     beq .notUpsideDown
     lda playerFlags
     and #PLY_UPSIDEDOWN
-    bne .notUpsideDown
+    beq .notUpsideDown
     lda playerFlags
     ora #PLY_ISJUMPING
     sta playerFlags
@@ -1634,7 +1634,6 @@ CheckCieling subroutine
     
 .normal:
     lda #0
-    sta playerYFrac
     lda playerY
     and #$F0
     ora #$F
@@ -1642,7 +1641,10 @@ CheckCieling subroutine
     
     CMP16I playerYVel, 0
     bpl CheckCieling_end
-    MOV16I playerYVel, 192
+    lda #0
+    sta playerYFrac
+    sta playerYVel
+    sta playerYVel+1
     lda playerFlags
     and #PLY_UPSIDEDOWN
     beq CheckCieling_end

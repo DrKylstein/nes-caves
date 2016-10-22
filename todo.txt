@@ -1,20 +1,19 @@
- 18  bytes left in page $000
+ 10  bytes left in page $000
  163  bytes left for copy buffer
  32  bytes left for stack
  20  sprites left in upper table
- 125 bytes left in pages $300-$700
+ 117 bytes left in pages $300-$700
  PRGROM Bank 0 left: 587
- PRGROM Bank 1 left: 99
+ PRGROM Bank 1 left: 18
  PRGROM Bank 2 left: 1081
- PRGROM Bank 3 left: 3660
+ PRGROM Bank 3 left: 3414
  PRGROM Bank 4 left: 16384
  PRGROM Bank 5 left: 16384
  PRGROM Bank 6 left: 16384
- PRGROM Bank 7 left: 3181
+ PRGROM Bank 7 left: 3179 
  
 must:
-fix upside-down ceiling collision
-add ending image
+eyemonster blink pattern doesn't seem right
 more sounds
 -power ups
 -chests
@@ -23,9 +22,9 @@ more sounds
 -getting hit
 -popup messages
 -enemy shots
+add ending image
 
 fix: narrow switch collision changes level 14 dynamic
-eyemonster blink pattern doesn't seem right
 fix corrpution/bad collision in left side of level
 elevators and cannons have been seen shifted 8 pixels away from their spot
 
