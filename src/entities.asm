@@ -1542,13 +1542,22 @@ ER_BigEye subroutine ;2 hits
     ora entityYLo,x
     sta entityYLo,x
     
-    ;blink
+    jsr Randomize
+    bne .NoChange
+    lda entityAnim,x
+    cmp #ANIM_SYMMETRICAL_NONE
+    beq .close
     lda #ANIM_SYMMETRICAL_NONE
     sta entityAnim,x
-    lda entityFrame,x
-    bmi .noblink
+    jmp .NoChange
+.close
     lda #ANIM_SYMMETRICAL_NONE2
     sta entityAnim,x
+.NoChange:
+    
+    lda entityAnim,x
+    cmp #ANIM_SYMMETRICAL_NONE
+    beq .noblink
     jsr EntIsBulletNear
     bcc .noBullet
     lda #$80
