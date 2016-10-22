@@ -929,6 +929,9 @@ TC_Chest:
     sta arg+2
     jsr AddScore
     
+    ldx #SFX_CHEST
+    jsr PlaySound
+    
     inc sav
     jmp TC_UpdateTile
 TC_Chest_end:
@@ -2450,6 +2453,8 @@ DamagePlayer subroutine
     jsr UpdateHeartsDisplay
     lda #60
     sta mercyTime
+    ldx #SFX_HURT
+    jsr PlaySound
     lda hp
     bne .invulnerable
     jmp KillPlayer
