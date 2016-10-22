@@ -669,29 +669,40 @@ Paused subroutine
 Paused_end:    
     jsr UpdateSound
 
-Decelerrate subroutine
-    lda playerXVel
-    bmi .negative
-    beq Decelerrate_end
-    dec playerXVel
-    jmp Decelerrate_end
-.negative
-    inc playerXVel
-Decelerrate_end:
-
-CheckInput subroutine
-.start:
+CheckSpecialButtons subroutine
     lda pressed
     and #JOY_START_MASK
-    beq .left
+    beq .notstart
     lda #1
     sta paused
     jsr ResetAPU
-.left:
+.notstart:
+
+;CHEAT
+    lda pressed
+    and #JOY_SELECT_MASK
+    beq .notselect
+    lda #0
+    sta crystalsLeft
+.notselect:
+
+CheckSpecialButtons_end:
+
+CheckPlayerActions subroutine
     lda playerFlags
     and #PLY_LOCKED
-    bne CheckInput_end
+    bne CheckPlayerActions_end
     
+    lda playerXVel
+    bmi .negative
+    beq .DecelerrateEnd
+    dec playerXVel
+    jmp .DecelerrateEnd
+.negative
+    inc playerXVel
+.DecelerrateEnd
+
+.left:
     lda ctrl
     and #JOY_LEFT_MASK
     beq .left_end
@@ -701,6 +712,7 @@ CheckInput subroutine
     ora #PLY_ISFLIPPED
     sta playerFlags
 .left_end:
+
 .right:
     lda ctrl
     and #JOY_RIGHT_MASK
@@ -711,18 +723,14 @@ CheckInput subroutine
     and #~PLY_ISFLIPPED
     sta playerFlags
 .right_end:
-    lda pressed
-    and #JOY_SELECT_MASK
-    beq .jump
-    lda #0
-    sta crystalsLeft
+
 .jump:
     lda ctrl
     and #JOY_A_MASK
-    beq CheckInput_end
+    beq CheckPlayerActions_end
     lda playerFlags
     and #PLY_ISJUMPING
-    bne CheckInput_end
+    bne CheckPlayerActions_end
     MOV16I playerYVel, JUMP_VELOCITY
     lda playerFlags
     and #PLY_UPSIDEDOWN
@@ -734,7 +742,7 @@ CheckInput subroutine
     sta playerFlags
     ldx #SFX_JUMP
     jsr PlaySound
-CheckInput_end:
+CheckPlayerActions_end:
 
 TileInteraction subroutine
     ;a0 = x in tiles
