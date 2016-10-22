@@ -984,6 +984,27 @@ EntShootPlayer subroutine
 .noshoot:
     rts
 
+EntUpdateFlash subroutine
+    lda entityXHi,x
+    and #ENT_X_FLASH
+    beq .noFlash
+    lda entityFrame,x
+    cmp #16
+    bcc .noFlash
+    lda entityXHi,x
+    and #~ENT_X_FLASH
+    sta entityXHi,x
+.noFlash:
+    rts
+
+EntFlash subroutine
+    lda entityXHi,x
+    ora #ENT_X_FLASH
+    sta entityXHi,x
+    lda #0
+    sta entityFrame,x
+    rts
+
 ER_HiddenGem subroutine
     lda entityAnim,x
     bne .active ;0 = ANIM_NULL
@@ -1231,6 +1252,7 @@ ER_Egg subroutine
     jmp ER_Return
 
 ER_Robot subroutine
+    jsr EntUpdateFlash
     jsr EntIsStrongPlayerNear
     bcs .Melee
     jsr EntIsBulletNear
@@ -1254,6 +1276,7 @@ ER_Robot subroutine
     clc
     adc #$40
     sta entityCount,x
+    jsr EntFlash
     jmp .alive
 .Melee:
     jsr EntExplode
@@ -1324,7 +1347,7 @@ ER_Robot_NoChase:
 
     jmp ER_Return
 
-ER_Snake subroutine ;needs to take 2 hits
+ER_Snake subroutine
     jsr Randomize
     and #127
     bne .nopause
@@ -1379,6 +1402,7 @@ ER_SnakePause subroutine
     jmp ER_Return
 .noresume:
 SnakeShared subroutine
+    jsr EntUpdateFlash
     jsr EntTryMelee
     jsr EntIsStrongPlayerNear
     bcs .Melee
@@ -1394,6 +1418,7 @@ SnakeShared subroutine
     bne .Melee
     ora #1
     sta entityCount,x
+    jsr EntFlash
     jmp .alive
 .Melee:
     ;change to dead
@@ -1452,7 +1477,7 @@ ER_EyeMonster subroutine ;invulnerable until blinded, then 2 hits
     lda #$80
     sta entityCount,x
 .InitDone:
-    
+    jsr EntUpdateFlash
     jsr EntTryMelee
     jsr EntMoveHorizontally
     
@@ -1467,16 +1492,44 @@ ER_EyeMonster subroutine ;invulnerable until blinded, then 2 hits
     bmi .noleft
     lda tmp
     sta entityXLo+2,x
-    lda tmp+1
+    lda entityXHi+2,x
+    and #~ENT_X_POS
+    ora tmp+1
     sta entityXHi+2,x
+    
+    lda entityYLo+2,x
+    and #~1
+    sta entityYLo+2,x
+    lda entityFrame,x
+    lsr
+    lsr
+    lsr
+    and #1
+    ora entityYLo+2,x
+    sta entityYLo+2,x
 .noleft:
     lda entityXHi+3,x
     bmi .noright
     ADD16I tmp,tmp,32
     lda tmp
     sta entityXLo+3,x
-    lda tmp+1
+    lda entityXHi+3,x
+    and #~ENT_X_POS
+    ora tmp+1
     sta entityXHi+3,x
+    
+    lda entityYLo+3,x
+    ora #1
+    sta entityYLo+3,x
+    lda entityFrame,x
+    lsr
+    lsr
+    lsr
+    and #1
+    eor #$FF
+    and entityYLo+3,x
+    sta entityYLo+3,x
+
 .noright:
     
     jsr EntTestWalkingCollision
@@ -1513,6 +1566,7 @@ ER_EyeMonster subroutine ;invulnerable until blinded, then 2 hits
     lda entityCount,x
     ora #$40
     sta entityCount,x
+    jsr EntFlash
     jmp ER_Return
 .Melee:
     jsr EntExplode
@@ -1529,18 +1583,8 @@ ER_EyeMonster subroutine ;invulnerable until blinded, then 2 hits
     jmp ER_Return
 
 ER_BigEye subroutine ;2 hits
+    jsr EntUpdateFlash
     jsr EntTryMelee
-    ;bob
-    lda entityYLo,x
-    and #~1
-    sta entityYLo,x
-    lda entityFrame,x
-    lsr
-    lsr
-    lsr
-    and #1
-    ora entityYLo,x
-    sta entityYLo,x
     
     jsr Randomize
     bne .NoChange
@@ -1579,6 +1623,7 @@ ER_BigEye subroutine ;2 hits
     bne .Melee
     ora #1
     sta entityCount,x
+    jsr EntFlash
     jmp ER_Return
 .Melee:
     jsr EntExplode
@@ -1601,6 +1646,7 @@ ER_AirGenerator subroutine
     jmp ER_Return
     
 ER_Ball subroutine
+    jsr EntUpdateFlash
     jsr EntTryMelee
     jsr EntIsStrongPlayerNear
     bcs .Melee
@@ -1623,6 +1669,7 @@ ER_Ball subroutine
     clc
     adc #$40
     sta entityCount,x
+    jsr EntFlash
     jmp .alive
 .Melee:
     jsr EntExplode
@@ -1808,18 +1855,18 @@ ApplyGravity_end:
 .alive:
 
 ;normal animations
+    lda entityXHi,x
+    and #~ENT_X_FLASH
+    sta entityXHi,x
     lda powerType
     cmp #POWER_STRENGTH
     beq .invincible
     lda mercyTime
     beq .visible
 .invincible:
-    lda frame
-    and #2
-    beq .visible
-    lda #ANIM_NULL
-    sta entityAnim,x
-    jmp .noanim
+    lda entityXHi,x
+    ora #ENT_X_FLASH
+    sta entityXHi,x
 .visible:
     lda playerFlags
     and #7
@@ -3166,6 +3213,7 @@ ER_Bat subroutine
 
 
 ER_Rex subroutine
+    jsr EntUpdateFlash
     MOV16I arg,16
     jsr EntTallAwayFromPlayerY
     bcs .noChase
@@ -3252,6 +3300,7 @@ ER_Rex subroutine
     clc
     adc #1
     sta entityCount,x
+    jsr EntFlash
     jmp .noBullet
 .dead
     jsr EntExplode    

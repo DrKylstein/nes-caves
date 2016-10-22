@@ -2286,6 +2286,15 @@ UpdateSprites subroutine
     and #ENT_X_PRIORITY
     ora arg+3
     sta arg+3
+    lda entityXHi,x
+    and #ENT_X_FLASH
+    beq .noFlash
+    lda frame
+    lsr
+    and #3
+    eor arg+3
+    sta arg+3
+.noFlash:
 
     ;get frame in sav
     lda entityFrame,x

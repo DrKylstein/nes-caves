@@ -12,7 +12,6 @@
  PRGROM Bank 6 left: 16384
  PRGROM Bank 7 left: 3179 
  
-must:
 more sounds
 -power ups
 -chests
@@ -21,36 +20,27 @@ more sounds
 -getting hit
 -popup messages
 -enemy shots
-add ending image
-
-fix: narrow switch collision changes level 14 dynamic
 fix corrpution/bad collision in left side of level
 elevators and cannons have been seen shifted 8 pixels away from their spot
-
-optimizations:
+fix: narrow switch collision changes level 14 dynamic
 condense faucet into one entity - it doesn't drip if the player is above, 
  which is the most likely case for when it could fall offscreen.
 disable tile animation in other levels? (move to an entity or use level number?)
 -or cut it, there's not much synergy
 use tile type to find door/exit positions? (store as 16-bit pointers) would save 3 bytes per door/exit
+add ending image
 
+long shot:
 convert most player variables to entity variables, move player code to player entity?
 delete entity speeds table
 delete entity initial anim table
 store size and shared offset instead of individual offsets in frames?
 -faster? denser, can re-use y coordinate on horizontal runs
-
-long shot:
 enter animation
-implement trike (can't kill eye creature in that space, ball takes fewer hits)
-add walker? (different attack from robot)
-add floating alien wrench? uses walking collision, unlike bat
 shoot/just fired animation
 variable length notes - patch loop point, external decay?
 different note volumes
 double up channels so that long notes can resume after very short ones
-music
-enemy hit flash
 
 for sequel/level pack:
 fix: eyemonster walks partially inside walls, can push left eye into negative x
