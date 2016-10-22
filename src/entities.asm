@@ -1422,6 +1422,9 @@ SnakeShared subroutine
     jmp .alive
 .Melee:
     ;change to dead
+    lda entityXHi,x
+    and #~ENT_X_FLASH
+    sta entityXHi,x
     lda entityYHi,x
     and #ENT_Y_POS
     ora #DEADSNAKE_ID<<1
