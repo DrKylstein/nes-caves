@@ -13,8 +13,8 @@
  PRGROM Bank 7 left: 3181
  
 must:
-slime direction change is poor
-jump feels too floaty vs og
+fix upside-down ceiling collision
+fix intro and level exit not maintaining velocity
 add ending image
 more sounds
 -power ups

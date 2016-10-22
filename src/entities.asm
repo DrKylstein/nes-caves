@@ -3375,17 +3375,6 @@ ER_SlimeHorizontal subroutine
     sta entityAnim,x
 .notLeft:
     jsr Randomize
-    bne .noRotate
-    lda entityYHi,x
-    clc
-    adc #2
-    sta entityYHi,x
-    lda entityXLo,y
-    and #~15
-    sta entityXLo,y
-    jmp .end
-.noRotate:
-    jsr Randomize
     beq .hit
     
     jsr EntTestFlyingCollision
@@ -3397,6 +3386,17 @@ ER_SlimeHorizontal subroutine
     clc
     adc #1
     sta entityVelocity,x
+    
+    jsr Randomize
+    and #1
+    bne .noRotate
+    lda entityYHi,x
+    clc
+    adc #2
+    sta entityYHi,x
+    jmp .end
+.noRotate:
+
 .nohit:
     jsr EntMoveHorizontally
 .end:
@@ -3413,17 +3413,6 @@ ER_SlimeVertical subroutine
     sta entityAnim,x
 .notUp:
     jsr Randomize
-    bne .noRotate
-    lda entityYHi,x
-    sec
-    sbc #2
-    sta entityYHi,x
-    lda entityYLo,x
-    and #~15
-    sta entityYLo,x
-    jmp .end
-.noRotate:
-    jsr Randomize
     beq .hit
     
     jsr EntTestVerticalCollision
@@ -3435,6 +3424,16 @@ ER_SlimeVertical subroutine
     clc
     adc #1
     sta entityVelocity,x
+    jsr Randomize
+    and #1
+    bne .noRotate
+    lda entityYHi,x
+    sec
+    sbc #2
+    sta entityYHi,x
+    jmp .end
+.noRotate:
+
 .nohit:
     jsr EntMoveVertically
 .end:
