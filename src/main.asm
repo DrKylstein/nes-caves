@@ -551,7 +551,6 @@ ResetStats_end:
 .noHUD:
     jsr ResetCamera
     jsr InitialDrawLevel
-    MOV16I shr_tileAnim, cloudsTiles
 
 ReenableDisplay subroutine
     jsr QEnableSplitDisplay

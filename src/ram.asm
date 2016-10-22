@@ -21,7 +21,6 @@ shr_doAttrCol       ds 1
 shr_tileCol         ds 1
 shr_earlyExit       ds 1
 shr_copyIndex       ds 1
-shr_tileAnim        ds 2
 
 sfxPriority ds 1 ;4x3 bytes unused
             ds 15

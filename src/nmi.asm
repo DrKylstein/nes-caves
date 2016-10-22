@@ -168,6 +168,9 @@ nmi_AttrCopy_end:
 continue$:
 
 nmi_Clouds subroutine
+    lda currLevel
+    cmp #MAP_LEVEL
+    JNE nmi_Clouds_end
     PUSH_BANK
     SELECT_BANK 0
     ;lda shr_cameraX
@@ -178,7 +181,7 @@ nmi_Clouds subroutine
     tay
     SET_PPU_ADDR [VRAM_PATTERN_R+[254*16]]
     REPEAT 16
-    lda (shr_tileAnim),y
+    lda cloudsTiles,y
     iny
     sta PPU_DATA
     REPEND
@@ -187,11 +190,12 @@ nmi_Clouds subroutine
     adc #128-16
     tay
     REPEAT 16
-    lda (shr_tileAnim),y
+    lda cloudsTiles,y
     iny
     sta PPU_DATA
     REPEND
     POP_BANK
+nmi_Clouds_end:
 
 nmi_DebugCounter subroutine
     lda #PPU_CTRL_SETTING
