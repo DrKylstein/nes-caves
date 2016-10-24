@@ -11,17 +11,26 @@
  PRGROM Bank 5 left: 16384
  PRGROM Bank 6 left: 16384
  PRGROM Bank 7 left: 2923
- 
+
+passwords - cleared, score, ammo
+pause before first intro message
+hide/switch off debug display and cheats
+fix phantom elevator[?] platform in left side of level
+fix: when a long message is overwritten by a short one, the last letters remain
+ball sleep time still too long? randomized?
 more sounds
 -power ups
 -bullet impacts
 -flames
 -popup messages
--enemy shots
+-pellet shot
+-web shot
+-egg shot
+-egg crack
+-kiwi
 condense faucet into one entity - it doesn't drip if the player is above, 
 -which is the most likely case for when it could fall offscreen.
 use tile type to find door/exit positions? (store as 16-bit pointers) would save 3 bytes per door/exit
-fix corrpution/bad collision in left side of level
 elevators and cannons have been seen shifted 8 pixels away from their spot
 fix: narrow switch collision changes level 14 dynamic
 add ending image

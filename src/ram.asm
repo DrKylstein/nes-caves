@@ -98,10 +98,12 @@ ammo           ds 1
 hp             ds 1
 mapPX          ds 2
 mapPY          ds 2
-mapScore       ds 3
-mapAmmo        ds 1
+;save these
+mapScore       ds 3 ;999995 = 18 bits
+mapAmmo        ds 1 ;99 = 7 bits
+cleared        ds 2 ;16 bits
+
 currLevel      ds 1
-cleared        ds 2
 currPlatform   ds 1
 paused         ds 1
 startSprite    ds 2

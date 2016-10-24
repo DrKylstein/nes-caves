@@ -100,13 +100,114 @@ DoTitleScreen subroutine
     jsr Synchronize
     lda pressed
     beq .WaitForPress
+DoTitleScreen_end:
+
+DoMenu subroutine
     jsr ResetAPU
-    MOV16I arg+2, titlePalette
-    jsr FadeOutBg
+    jsr SetupMessageBox
+    
+    SELECT_BANK 3
+    MOV16I arg,menuText
+    MOV16I arg+2,[VRAM_NAME_UL + 32*5 + TEXT_MARGIN]
+    jsr Print
+    
+    SELECT_BANK 0
+    lda #0
+    sta arg
+    sta arg+1
+    MOV16I arg+2,textPalette
+    jsr FadeBg
+    jsr Synchronize
+    
+    lda #0
+    sta sav
+.WaitForPress:
+    jsr UpdateInput
+    jsr UpdateSound
+    jsr Synchronize
+    lda pressed
+    and #JOY_A_MASK | JOY_B_MASK | JOY_START_MASK
+    beq .CheckMove
+    jmp .select
+.CheckMove:
+    lda pressed
+    and #[JOY_DOWN_MASK | JOY_SELECT_MASK | JOY_UP_MASK]
+    bne .move
+    jmp .WaitForPress
+.move:
+    ldx shr_copyIndex
+    lda #" "
+    PHXA
+    ENQUEUE_ROUTINE nmi_Copy1
+    lda sav
+    sta tmp
+    lda #0
+    sta tmp+1
+    REPEAT 5
+    ASL16 tmp
+    REPEND
+    ADD16I tmp,tmp,[VRAM_NAME_UL + 32*8 + TEXT_MARGIN+1]
+    lda tmp
+    PHXA
+    lda tmp+1
+    PHXA
+    stx shr_copyIndex
+    
+    lda pressed
+    and #JOY_UP_MASK
+    bne .up
+    lda sav
+    clc
+    adc #1
+    and #3
+    sta sav
+    jmp .redraw
+.up:
+    lda sav
+    sec
+    sbc #1
+    and #3
+    sta sav
+.redraw:
+    ldx shr_copyIndex
+    lda #"}"
+    PHXA
+    ENQUEUE_ROUTINE nmi_Copy1
+    lda sav
+    sta tmp
+    lda #0
+    sta tmp+1
+    REPEAT 5
+    ASL16 tmp
+    REPEND
+    ADD16I tmp,tmp,[VRAM_NAME_UL + 32*8 + TEXT_MARGIN+1]
+    lda tmp
+    PHXA
+    lda tmp+1
+    PHXA
+    stx shr_copyIndex
+    
+    jmp .WaitForPress
+    
+.select:
+    lda sav
+    cmp #1
+    bne .newgame
+    jsr ResetAPU
+    jsr QDisableDisplay
+    jsr Synchronize
+    jsr ClearBox
+    jsr QEnableStaticDisplay
+    jsr Synchronize
+    jsr WaitForPress
+.newgame:
+    jsr ResetAPU
+    MOV16I arg+2, textPalette
+    jsr FadeOutBg 
     
     jsr QDisableDisplay
     jsr Synchronize
-DoTitleScreen_end:
+DoMenu_end:
 
 LoadPatterns subroutine
     MOV16I arg, globalTiles
@@ -3595,12 +3696,7 @@ ResetCamera subroutine
     sta shr_cameraX
     rts
 ;------------------------------------------------------------------------------
-MessageBox subroutine
-    PUSH_BANK
-    PUSH16 sav
-    MOV16 sav,arg
-    
-    jsr ResetAPU
+SetupMessageBox subroutine
     jsr QDisableDisplay
     jsr Synchronize
     SELECT_BANK 0
@@ -3674,6 +3770,16 @@ MessageBox subroutine
     lda #PPU_CTRL_SETTING
     sta PPU_CTRL
     
+    jmp QEnableStaticDisplay
+
+MessageBox subroutine
+    PUSH_BANK
+    PUSH16 sav
+    MOV16 sav,arg
+    
+    jsr ResetAPU
+    jsr SetupMessageBox
+    
     SELECT_BANK 3
     MOV16 arg,sav
     MOV16I arg+2,[VRAM_NAME_UL + 32*5 + TEXT_MARGIN]
@@ -3684,7 +3790,6 @@ MessageBox subroutine
     jsr Print
 
     SELECT_BANK 0
-    jsr QEnableStaticDisplay
     lda #0
     sta arg
     sta arg+1
