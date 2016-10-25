@@ -5,8 +5,8 @@
     ORG $0000
 tmp            ds 8 ;MIPS-style $t#
 arg            ds 6 ;MIPS-style $a#
-sav            ds 8 ;MIPS-style $s#
 ret            ds 4 ;MIPS-style $p#
+sav            ds 8 ;MIPS-style $s#
 
 nmi_tmp             ds 4
 nmi_splitBits       ds 1
@@ -102,14 +102,18 @@ mapPY          ds 2
 mapScore       ds 3 ;999995 = 18 bits
 mapAmmo        ds 1 ;99 = 7 bits
 cleared        ds 2 ;16 bits
+                    ;41 bits
 
 currLevel      ds 1
 currPlatform   ds 1
 paused         ds 1
 startSprite    ds 2
 crystalsLeft   ds 1
+
+menuScratch: ;8
 doorsX         ds 4
 doorsY         ds 4
+
 exitTriggered  ds 1
 random         ds 2
 fruitTime      ds 2

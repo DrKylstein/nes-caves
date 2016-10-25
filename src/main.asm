@@ -74,8 +74,8 @@ clearOAM_end:
     lda #PPU_CTRL_SETTING
     sta PPU_CTRL
 
-    SELECT_BANK 0
 LoadTitle subroutine
+    SELECT_BANK 0
     MOV16I arg, titleTiles
     SET_PPU_ADDR VRAM_PATTERN_R
     ldx #16
@@ -126,7 +126,7 @@ DoMenu subroutine
     jsr UpdateSound
     jsr Synchronize
     lda pressed
-    and #JOY_A_MASK | JOY_B_MASK | JOY_START_MASK
+    and #[JOY_A_MASK | JOY_B_MASK | JOY_START_MASK]
     beq .CheckMove
     jmp .select
 .CheckMove:
@@ -135,23 +135,11 @@ DoMenu subroutine
     bne .move
     jmp .WaitForPress
 .move:
-    ldx shr_copyIndex
-    lda #" "
-    PHXA
-    ENQUEUE_ROUTINE nmi_Copy1
     lda sav
-    sta tmp
+    sta arg
     lda #0
-    sta tmp+1
-    REPEAT 5
-    ASL16 tmp
-    REPEND
-    ADD16I tmp,tmp,[VRAM_NAME_UL + 32*8 + TEXT_MARGIN+1]
-    lda tmp
-    PHXA
-    lda tmp+1
-    PHXA
-    stx shr_copyIndex
+    sta arg+1
+    jsr ClearCursor
     
     lda pressed
     and #JOY_UP_MASK
@@ -169,46 +157,311 @@ DoMenu subroutine
     and #3
     sta sav
 .redraw:
-    ldx shr_copyIndex
-    lda #"}"
-    PHXA
-    ENQUEUE_ROUTINE nmi_Copy1
     lda sav
-    sta tmp
+    sta arg
     lda #0
-    sta tmp+1
-    REPEAT 5
-    ASL16 tmp
-    REPEND
-    ADD16I tmp,tmp,[VRAM_NAME_UL + 32*8 + TEXT_MARGIN+1]
-    lda tmp
-    PHXA
-    lda tmp+1
-    PHXA
-    stx shr_copyIndex
+    sta arg+1
+    jsr DrawCursor
     
     jmp .WaitForPress
     
 .select:
     lda sav
     cmp #1
-    bne .newgame
+    JEQ PasswordEntry
+.newgame:
+    jsr ResetAPU
+    MOV16I arg+2, textPalette
+    jsr FadeOutBg     
+    jsr QDisableDisplay
+    jsr Synchronize
+    jmp StartNewGame
+DoMenu_end:
+
+passwordChars:
+    .byte "123BCDFG456HJKLM789NPQRS#0*TVWXZ"
+PasswordEntry subroutine
     jsr ResetAPU
     jsr QDisableDisplay
     jsr Synchronize
     jsr ClearBox
+    
+    SELECT_BANK 3
+    MOV16I arg,passwordText
+    MOV16I arg+2,[VRAM_NAME_UL + 32*5 + TEXT_MARGIN]
+    jsr Print
+
     jsr QEnableStaticDisplay
     jsr Synchronize
-    jsr WaitForPress
-.newgame:
-    jsr ResetAPU
-    MOV16I arg+2, textPalette
-    jsr FadeOutBg 
     
+    lda #0
+    sta sav ;cursor y
+    sta sav+1 ;cursor x
+    sta sav+2 ;password index
+    
+    lda #"_"
+    ;password chars
+    sta menuScratch ;a
+    sta menuScratch+1 ;b
+    sta menuScratch+2 ;c
+    sta menuScratch+3 ;d
+    sta menuScratch+4 ;e
+    sta menuScratch+5 ;f
+    
+.WaitForPress:
+    jsr UpdateInput
+    jsr UpdateSound
+    jsr Synchronize
+    lda pressed
+    and #JOY_SELECT_MASK
+    beq .NotBack
+    jmp DoMenu
+.NotBack:
+    lda pressed
+    and #JOY_START_MASK
+    beq .NotEnter
+    jmp .verify
+.NotEnter:
+    lda pressed
+    and #[JOY_A_MASK | JOY_B_MASK]
+    beq .CheckMove
+    jmp .select
+.CheckMove:
+    lda pressed
+    and #[JOY_DOWN_MASK | JOY_UP_MASK | JOY_LEFT_MASK | JOY_RIGHT_MASK]
+    bne .move
+    jmp .WaitForPress
+.move:
+
+    lda sav
+    clc
+    adc #1
+    sta arg
+    lda sav+1
+    clc
+    adc #2
+    sta arg+1
+    jsr ClearCursor
+
+
+    lda pressed
+    and #JOY_UP_MASK
+    beq .NotUp
+    dec sav
+.NotUp:
+
+    lda pressed
+    and #JOY_LEFT_MASK
+    beq .NotLeft
+    dec sav+1
+.NotLeft:
+
+    lda pressed
+    and #JOY_DOWN_MASK
+    beq .NotDown
+    inc sav
+.NotDown:
+
+    lda pressed
+    and #JOY_RIGHT_MASK
+    beq .NotRight
+    inc sav+1
+.NotRight:
+    
+    lda sav+1
+    and #7
+    sta sav+1
+    lda sav
+    and #3
+    sta sav
+    
+.redraw:
+    lda sav
+    clc
+    adc #1
+    sta arg
+    lda sav+1
+    clc
+    adc #2
+    sta arg+1
+    jsr DrawCursor
+
+    jmp .WaitForPress
+    
+.select:
+    lda sav+2
+    sta tmp
+    
+    lda pressed
+    and #JOY_B_MASK
+    beq .NotDelete
+    lda sav+2
+    beq .abort
+    lda #$FF
+    sta menuScratch,x
+    lda #"_"
+    dec sav+2
+    dec tmp
+    jmp .draw
+    
+.NotDelete:
+    lda sav+2
+    cmp #8
+    bcs .abort
+    ldx sav+2    
+    lda sav
+    REPEAT 3
+    asl
+    REPEND
+    ora sav+1
+    sta menuScratch,x
+    tax
+    lda passwordChars,x
+    inc sav+2
+
+    
+.draw:
+    ldx shr_copyIndex
+    PHXA
+    ENQUEUE_ROUTINE nmi_Copy1
+    lda tmp
+    asl
+    sta tmp
+    lda #0
+    sta tmp+1
+    ADD16I tmp,tmp,[VRAM_NAME_UL + 32*8 + TEXT_MARGIN+7]
+    lda tmp
+    PHXA
+    lda tmp+1
+    PHXA
+    stx shr_copyIndex
+    
+.abort:
+    jmp .WaitForPress
+    
+.verify:
+    lda menuScratch
+    and #$F
+    sta tmp
+    lda menuScratch+1
+    and #$F
+    REPEAT 4
+    asl
+    REPEND
+    ora tmp
+    sta tmp
+    
+    lda menuScratch+2
+    and #$F
+    sta tmp+1
+    lda menuScratch+3
+    and #$F
+    REPEAT 4
+    asl
+    REPEND
+    ora tmp+1
+    sta tmp+1
+    
+    lda menuScratch+4
+    and #$F
+    sta tmp+2
+    lda menuScratch+5
+    and #$F
+    REPEAT 4
+    asl
+    REPEND
+    ora tmp+2
+    sta tmp+2
+    
+    lda menuScratch+6
+    and #$F
+    sta tmp+3
+    lda menuScratch+7
+    and #$F
+    REPEAT 4
+    asl
+    REPEND
+    ora tmp+3
+    sta tmp+3
+    
+    lda menuScratch
+    REPEAT 4
+    lsr
+    REPEND
+    sta tmp+4
+    lda menuScratch+1
+    REPEAT 3
+    lsr
+    REPEND
+    and #$02
+    ora tmp+4
+    sta tmp+4
+    lda menuScratch+2
+    lsr 
+    lsr 
+    and #$04
+    ora tmp+4
+    lda menuScratch+3
+    lsr
+    and #$08
+    ora tmp+4
+    sta tmp+4
+    lda menuScratch+4
+    and #$10
+    ora tmp+4
+    sta tmp+4
+    lda menuScratch+5
+    asl
+    and #$20
+    ora tmp+4
+    sta tmp+4
+    lda menuScratch+6
+    asl
+    asl
+    and #$40
+    ora tmp+4
+    sta tmp+4
+    lda menuScratch+7
+    REPEAT 3
+    asl
+    REPEND
+    and #$80
+    ora tmp+4
+    sta tmp+4
+    
+    lda tmp
+    clc
+    adc tmp+1
+    clc
+    adc tmp+2
+    clc
+    adc tmp+3
+    clc
+    adc tmp+4
+    bne .fail
+
+;other checks here
+
+    jmp .good
+.fail:
+    jsr ResetAPU
     jsr QDisableDisplay
     jsr Synchronize
-DoMenu_end:
+    
+    SELECT_BANK 3
+    MOV16I arg,failText
+    MOV16I arg+2,[VRAM_NAME_UL + 32*20 + TEXT_MARGIN]
+    jsr Print
 
+    jsr QEnableStaticDisplay
+    jsr Synchronize
+    jmp .WaitForPress
+.good:
+    jmp DoMenu
+
+PasswordEntry_end:
+
+StartNewGame:
 LoadPatterns subroutine
     MOV16I arg, globalTiles
     SET_PPU_ADDR VRAM_PATTERN_L
@@ -3771,7 +4024,7 @@ SetupMessageBox subroutine
     sta PPU_CTRL
     
     jmp QEnableStaticDisplay
-
+;------------------------------------------------------------------------------
 MessageBox subroutine
     PUSH_BANK
     PUSH16 sav
@@ -3852,7 +4105,7 @@ MessageBox subroutine
     POP16 sav
     POP_BANK
     rts
-    
+;------------------------------------------------------------------------------
 StartMusic subroutine
     PUSH_BANK
     SELECT_BANK 3
@@ -3877,10 +4130,58 @@ StartMusic subroutine
     sta beatTimer
     POP_BANK
     rts
-    
+;------------------------------------------------------------------------------
 UpdateSound subroutine
     PUSH_BANK
     SELECT_BANK 3
     jsr SoundRoutine
     POP_BANK
+    rts
+;------------------------------------------------------------------------------
+ClearCursor subroutine
+    ldx shr_copyIndex
+    lda #" "
+    PHXA
+    ENQUEUE_ROUTINE nmi_Copy1
+    lda arg
+    sta tmp
+    lda #0
+    sta tmp+1
+    REPEAT 6
+    ASL16 tmp
+    REPEND
+    lda arg+1
+    asl
+    ora tmp
+    sta tmp
+    ADD16I tmp,tmp,[VRAM_NAME_UL + 32*8 + TEXT_MARGIN+2]
+    lda tmp
+    PHXA
+    lda tmp+1
+    PHXA
+    stx shr_copyIndex
+    rts
+;------------------------------------------------------------------------------
+DrawCursor subroutine
+    ldx shr_copyIndex
+    lda #$10
+    PHXA
+    ENQUEUE_ROUTINE nmi_Copy1
+    lda arg
+    sta tmp
+    lda #0
+    sta tmp+1
+    REPEAT 6
+    ASL16 tmp
+    REPEND
+    lda arg+1
+    asl
+    ora tmp
+    sta tmp
+    ADD16I tmp,tmp,[VRAM_NAME_UL + 32*8 + TEXT_MARGIN+2]
+    lda tmp
+    PHXA
+    lda tmp+1
+    PHXA
+    stx shr_copyIndex
     rts
