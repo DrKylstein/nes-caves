@@ -199,18 +199,18 @@ PasswordEntry subroutine
     sta sav+1 ;cursor x
     sta sav+2 ;password index
     ;password chars
-    sta menuScratch
-    sta menuScratch+1
-    sta menuScratch+2
-    sta menuScratch+3
-    sta menuScratch+4
-    sta menuScratch+5
-    sta menuScratch+6
-    sta menuScratch+7
-    sta menuScratch+8
-    sta menuScratch+9
-    sta menuScratch+$A
-    sta menuScratch+$B
+    sta password
+    sta password+1
+    sta password+2
+    sta password+3
+    sta password+4
+    sta password+5
+    sta password+6
+    sta password+7
+    sta password+8
+    sta password+9
+    sta password+$A
+    sta password+$B
     
 .WaitForPress:
     jsr UpdateInput
@@ -302,7 +302,7 @@ PasswordEntry subroutine
     lda sav+2
     beq .abort
     lda #$FF
-    sta menuScratch,x
+    sta password,x
     lda #"_"
     dec sav+2
     dec tmp
@@ -318,7 +318,7 @@ PasswordEntry subroutine
     asl
     REPEND
     ora sav+1
-    sta menuScratch,x
+    sta password,x
     tax
     lda passwordChars,x
     inc sav+2
@@ -347,30 +347,30 @@ PasswordEntry subroutine
 ;interleave nybbles at x and x+6 into odd and even bits of a byte respectively
     ldx #11
 .spreadPairs:
-    lda menuScratch,x
+    lda password,x
     asl
     asl
-    ora menuScratch,x
+    ora password,x
     and #%00110011
-    sta menuScratch,x
+    sta password,x
     dex
     bpl .spreadPairs
     
     ldx #11
 .spreadSingles:
-    lda menuScratch,x
+    lda password,x
     asl
-    ora menuScratch,x
+    ora password,x
     and #%01010101
-    sta menuScratch,x
+    sta password,x
     dex
     bpl .spreadSingles
     
     ldx #5
 .interleave:
-    lda menuScratch,x
+    lda password,x
     asl
-    ora menuScratch+6,x
+    ora password+6,x
     sta savedStats,x
     dex
     bpl .interleave ;x = -1 at end
@@ -378,7 +378,7 @@ PasswordEntry subroutine
 ;rotate bytes
 .rotate:
     lda savedStats
-    asl
+    lsr
     ror savedStats+1
     ror savedStats+2
     ror savedStats+3
@@ -454,15 +454,15 @@ NewGame:
     sta currLevel
     lda #5
     sta ammo
+    sta mapAmmo
     lda #0
     sta score
     sta score+1
     sta score+2
+    sta mapScore+2
     lda #INVALID_MAP_STAT
     sta mapPX+1
     sta mapPY+1
-    sta mapAmmo
-    sta mapScore+2
 RestoreGame:
 LoadPatterns subroutine
     SELECT_BANK 0
@@ -938,92 +938,208 @@ HandleExit_end:
     inc frame
     jsr UpdateInput
 
-Paused subroutine
-    lda paused
-    JEQ Paused_end
-    lda pressed
-    and #JOY_START_MASK
-    beq .StartNotPressed
-    lda #0
-    sta paused
-    lda #0
-    sta arg
-    jsr QColorEffect
-    jmp MainLoop
-.StartNotPressed:
-    lda pressed
-    and #JOY_SELECT_MASK
-    beq .SelectNotPressed
-    lda #INVALID_MAP_STAT
-    sta mapPX+1
-    jmp doExit
-.SelectNotPressed:
-;cheats
-    lda pressed
-    and #JOY_A_MASK
-    beq .ANotPressed
-    lda #0
-    sta crystalsLeft
-.ANotPressed:
-    lda pressed
-    and #JOY_RIGHT_MASK
-    beq .RightNotPressed
-    lda #$FF
-    sta cleared
-    sta cleared+1
-.RightNotPressed:
-    lda pressed
-    and #JOY_UP_MASK
-    beq .UpNotPressed
-    inc ammo
-    jsr UpdateAmmoDisplay
-.UpNotPressed:
-    lda pressed
-    and #JOY_DOWN_MASK
-    beq .DownNotPressed
-    dec ammo
-    jsr UpdateAmmoDisplay
-.DownNotPressed:
-    lda pressed
-    and #JOY_B_MASK
-    beq .BNotPressed
-    ldy ammo
-    dey
-    sty currLevel
-    jmp DoEnterLevel
-.BNotPressed:
+; Paused subroutine
+    ; lda paused
+    ; JEQ Paused_end
+    ; lda pressed
+    ; and #JOY_START_MASK
+    ; beq .StartNotPressed
+    ; lda #0
+    ; sta paused
+    ; lda #0
+    ; sta arg
+    ; jsr QColorEffect
+    ; jmp MainLoop
+; .StartNotPressed:
+    ; lda pressed
+    ; and #JOY_SELECT_MASK
+    ; beq .SelectNotPressed
+    ; lda #INVALID_MAP_STAT
+    ; sta mapPX+1
+    ; jmp doExit
+; .SelectNotPressed:
+;;cheats
+    ; lda pressed
+    ; and #JOY_A_MASK
+    ; beq .ANotPressed
+    ; lda #0
+    ; sta crystalsLeft
+; .ANotPressed:
+    ; lda pressed
+    ; and #JOY_RIGHT_MASK
+    ; beq .RightNotPressed
+    ; lda #$FF
+    ; sta cleared
+    ; sta cleared+1
+; .RightNotPressed:
+    ; lda pressed
+    ; and #JOY_UP_MASK
+    ; beq .UpNotPressed
+    ; inc ammo
+    ; jsr UpdateAmmoDisplay
+; .UpNotPressed:
+    ; lda pressed
+    ; and #JOY_DOWN_MASK
+    ; beq .DownNotPressed
+    ; dec ammo
+    ; jsr UpdateAmmoDisplay
+; .DownNotPressed:
+    ; lda pressed
+    ; and #JOY_B_MASK
+    ; beq .BNotPressed
+    ; ldy ammo
+    ; dey
+    ; sty currLevel
+    ; jmp DoEnterLevel
+; .BNotPressed:
 
-    lda #$E1
-    sta arg
-    lda frame
-    and #$3F
-    cmp #$1F
-    bcs .light
-    lda #1
-    sta arg
-.light
-    jsr QColorEffect
-    jsr Synchronize
-    jmp MainLoop
-Paused_end:    
-    jsr UpdateSound
+    ; lda #$E1
+    ; sta arg
+    ; lda frame
+    ; and #$3F
+    ; cmp #$1F
+    ; bcs .light
+    ; lda #1
+    ; sta arg
+; .light
+    ; jsr QColorEffect
+    ; jsr Synchronize
+    ; jmp MainLoop
+; Paused_end:    
+    ; jsr UpdateSound
 
 CheckSpecialButtons subroutine
+    lda playerFlags
+    and #PLY_LOCKED
+    JNE CheckSpecialButtons_end
     lda pressed
     and #JOY_START_MASK
-    beq .notstart
-    lda #1
-    sta paused
+    JEQ CheckSpecialButtons_end
+    PUSH_BANK
     jsr ResetAPU
-.notstart:
+    jsr SetupMessageBox
+            
+    SELECT_BANK 3
+    lda currLevel
+    cmp #MAP_LEVEL
+    beq .MapLevel
+    MOV16I arg,pauseText
+    MOV16I arg+2,[VRAM_NAME_UL + 32*5 + TEXT_MARGIN]
+    jsr Print
+    jmp .show
+.MapLevel:
+    MOV16I arg,mapPauseText
+    MOV16I arg+2,[VRAM_NAME_UL + 32*5 + TEXT_MARGIN]
+    jsr Print
+    
+    ldx #5
+.copyStats:
+    lda savedStats,x
+    sta password,x
+    dex
+    bpl .copyStats ;x= -1 at end
 
-;CHEAT
+.rotate:
+    lda password+5
+    asl
+    rol password+4
+    rol password+3
+    rol password+2
+    rol password+1
+    rol password
+    bcc .nocarry
+    lda password+5
+    ora #1
+    sta password+5
+.nocarry:
+    inx
+    beq .rotate ;rotate twice: x = -1, x = 0
+    
+    ldx #5
+.deinterleave:
+    lda password,x
+    and #%01010101
+    sta password+6,x
+    lda password,x
+    and #%10101010
+    lsr
+    sta password,x
+    dex
+    bpl .deinterleave
+    
+    ldx #11
+.combinePairs:
+    lda password,x
+    lsr
+    ora password,x
+    and #%00110011
+    sta password,x
+    dex
+    bpl .combinePairs
+
+    ldx #11
+.combineNybbles:
+    lda password,x
+    lsr
+    lsr
+    ora password,x
+    and #%00001111
+    sta password,x
+    dex
+    bpl .combineNybbles
+
+    SET_PPU_ADDR [VRAM_NAME_UL + 32*13 + TEXT_MARGIN+8]
+    ldx #0
+.printPassword:
+    lda password,x
+    tay
+    lda passwordChars,y
+    sta PPU_DATA
+    inx
+    cpx #12
+    bne .printPassword
+    
+.show:
+    SELECT_BANK 0
+    lda #0
+    sta arg
+    sta arg+1
+    MOV16I arg+2,textPalette
+    jsr FadeBg
+    jsr Synchronize
+
+.WaitForPress:
+    jsr UpdateInput
+    lda currLevel
+    cmp #MAP_LEVEL
+    beq .NoExit
     lda pressed
     and #JOY_SELECT_MASK
-    beq .notselect
-    lda #0
-    sta crystalsLeft
-.notselect:
+    beq .NoExit
+    lda #INVALID_MAP_STAT
+    sta mapPX+1
+    inc exitTriggered
+    jmp .end
+.NoExit:
+    lda pressed
+    and #JOY_START_MASK
+    beq .WaitForPress
+.end:
+    jsr ResumeLevelFromMessageBox
+    POP_BANK
+    
+    ; lda #1
+    ; sta paused
+    ; jsr ResetAPU
+;.notstart:
+
+;;CHEAT
+    ; lda pressed
+    ; and #JOY_SELECT_MASK
+    ; beq .notselect
+    ; lda #0
+    ; sta crystalsLeft
+; .notselect:
 
 CheckSpecialButtons_end:
 
@@ -4011,6 +4127,41 @@ SetupMessageBox subroutine
     
     jmp QEnableStaticDisplay
 ;------------------------------------------------------------------------------
+ResumeLevelFromMessageBox subroutine
+    jsr QDisableDisplay
+    jsr Synchronize
+    
+    SELECT_BANK 0
+    MOV16I arg, globalBgTiles
+    SET_PPU_ADDR VRAM_PATTERN_R
+    ldx #8
+    jsr PagesToPPU
+    
+    jsr ClearStatusBar
+    lda currLevel
+    cmp #MAP_LEVEL+1
+    bcs .noHUD
+    jsr InitHUD
+    jmp .noMiniHUD
+.noHUD
+    lda currLevel
+    cmp #END_LEVEL
+    bne .noMiniHUD
+    SET_PPU_ADDR [VRAM_NAME_UL+100]
+    lda #HUD_DOLLAR
+    sta PPU_DATA
+    jsr UpdateScoreDisplay
+.noMiniHUD:
+    
+    jsr ResetCamera
+    jsr InitialDrawLevel
+    jsr QEnableSplitDisplay
+    lda #0
+    sta arg
+    jsr Fade
+    jsr Synchronize
+    rts
+;------------------------------------------------------------------------------
 MessageBox subroutine
     PUSH_BANK
     PUSH16 sav
@@ -4060,34 +4211,7 @@ MessageBox subroutine
     bne .loop
 
 .exit:
-    jsr QDisableDisplay
-    jsr Synchronize
-    
-    SELECT_BANK 0
-    MOV16I arg, globalBgTiles
-    SET_PPU_ADDR VRAM_PATTERN_R
-    ldx #8
-    jsr PagesToPPU
-    
-    ;jsr InitHUD
-    jsr ClearStatusBar
-    lda currLevel
-    cmp #END_LEVEL
-    bne .noHUD
-    SET_PPU_ADDR [VRAM_NAME_UL+100]
-    lda #HUD_DOLLAR
-    sta PPU_DATA
-    jsr UpdateScoreDisplay
-.noHUD:
-    
-    jsr ResetCamera
-    jsr InitialDrawLevel
-    jsr QEnableSplitDisplay
-    lda #0
-    sta arg
-    jsr Fade
-    jsr Synchronize
-    
+    jsr ResumeLevelFromMessageBox
     POP16 sav
     POP_BANK
     rts

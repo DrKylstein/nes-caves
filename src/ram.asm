@@ -124,11 +124,11 @@ beatTimer ds 1
 shr_debugReg   ds 2
 levelMap       ds 960
 
-menuScratch: ;4*MAX_ENTITIES[33] = >128
 entityVelocity   ds MAX_ENTITIES 
 entityCount      ds MAX_ENTITIES
 entityAnim       ds MAX_ENTITIES
 entityFrame      ds MAX_ENTITIES
 
+password        ds 12
     ECHO [$800-.]d,"bytes left in pages $300-$700"
 

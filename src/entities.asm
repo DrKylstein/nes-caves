@@ -1915,6 +1915,12 @@ introStates:
     .word IntroLand
     
 ER_Kiwi subroutine
+    lda pressed
+    beq .continue
+    inc exitTriggered
+    jmp ER_Return
+.continue:
+
     lda #PLY_LOCKED
     sta playerFlags
     lda entityCount,x
