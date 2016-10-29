@@ -52,15 +52,15 @@ passwordText:
     .byte "        Enter Password",$0A
     .byte "   -----------------------",$0A
     .byte $0A
-    .byte "       _ _ _ _ _ _ _ _",$0A
+    .byte "        ____________",$0A
     .byte $0A
-    .byte "      ",$10,"1 2 3 B C D F G",$0A
+    .byte "          ",$10,"1 2 3 A",$0A
     .byte $0A
-    .byte "       4 5 6 H J K L M",$0A
+    .byte       "           4 5 6 B",$0A
     .byte $0A
-    .byte "       7 8 9 N P Q R S",$0A
+    .byte       "           7 8 9 C",$0A
     .byte $0A
-    .byte "       # 0 * T V W X Z",$0A
+    .byte       "           # 0 * D",$0A
     .byte $0A
     .byte "  ",$11,"Delete ",$12,"Enter ",$13,"Back ",$14,"OK","^"
 

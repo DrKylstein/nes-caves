@@ -99,6 +99,7 @@ hp             ds 1
 mapPX          ds 2
 mapPY          ds 2
 ;save these
+savedStats: ;6
 mapScore       ds 3 ;999995 = 18 bits
 mapAmmo        ds 1 ;99 = 7 bits
 cleared        ds 2 ;16 bits
@@ -110,7 +111,6 @@ paused         ds 1
 startSprite    ds 2
 crystalsLeft   ds 1
 
-menuScratch: ;8
 doorsX         ds 4
 doorsY         ds 4
 
@@ -124,6 +124,7 @@ beatTimer ds 1
 shr_debugReg   ds 2
 levelMap       ds 960
 
+menuScratch: ;4*MAX_ENTITIES[33] = >128
 entityVelocity   ds MAX_ENTITIES 
 entityCount      ds MAX_ENTITIES
 entityAnim       ds MAX_ENTITIES

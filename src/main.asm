@@ -175,11 +175,11 @@ DoMenu subroutine
     jsr FadeOutBg     
     jsr QDisableDisplay
     jsr Synchronize
-    jmp StartNewGame
+    jmp NewGame
 DoMenu_end:
 
 passwordChars:
-    .byte "123BCDFG456HJKLM789NPQRS#0*TVWXZ"
+    .byte "123A456B789C#0*D"
 PasswordEntry subroutine
     jsr ResetAPU
     jsr QDisableDisplay
@@ -198,15 +198,19 @@ PasswordEntry subroutine
     sta sav ;cursor y
     sta sav+1 ;cursor x
     sta sav+2 ;password index
-    
-    lda #"_"
     ;password chars
-    sta menuScratch ;a
-    sta menuScratch+1 ;b
-    sta menuScratch+2 ;c
-    sta menuScratch+3 ;d
-    sta menuScratch+4 ;e
-    sta menuScratch+5 ;f
+    sta menuScratch
+    sta menuScratch+1
+    sta menuScratch+2
+    sta menuScratch+3
+    sta menuScratch+4
+    sta menuScratch+5
+    sta menuScratch+6
+    sta menuScratch+7
+    sta menuScratch+8
+    sta menuScratch+9
+    sta menuScratch+$A
+    sta menuScratch+$B
     
 .WaitForPress:
     jsr UpdateInput
@@ -239,7 +243,7 @@ PasswordEntry subroutine
     sta arg
     lda sav+1
     clc
-    adc #2
+    adc #4
     sta arg+1
     jsr ClearCursor
 
@@ -269,7 +273,7 @@ PasswordEntry subroutine
 .NotRight:
     
     lda sav+1
-    and #7
+    and #3
     sta sav+1
     lda sav
     and #3
@@ -282,7 +286,7 @@ PasswordEntry subroutine
     sta arg
     lda sav+1
     clc
-    adc #2
+    adc #4
     sta arg+1
     jsr DrawCursor
 
@@ -306,11 +310,11 @@ PasswordEntry subroutine
     
 .NotDelete:
     lda sav+2
-    cmp #8
+    cmp #12
     bcs .abort
     ldx sav+2    
     lda sav
-    REPEAT 3
+    REPEAT 2
     asl
     REPEND
     ora sav+1
@@ -324,12 +328,9 @@ PasswordEntry subroutine
     ldx shr_copyIndex
     PHXA
     ENQUEUE_ROUTINE nmi_Copy1
-    lda tmp
-    asl
-    sta tmp
     lda #0
     sta tmp+1
-    ADD16I tmp,tmp,[VRAM_NAME_UL + 32*8 + TEXT_MARGIN+7]
+    ADD16I tmp,tmp,[VRAM_NAME_UL + 32*8 + TEXT_MARGIN+8]
     lda tmp
     PHXA
     lda tmp+1
@@ -339,110 +340,94 @@ PasswordEntry subroutine
 .abort:
     jmp .WaitForPress
     
+    
 .verify:
-    lda menuScratch
-    and #$F
-    sta tmp
-    lda menuScratch+1
-    and #$F
-    REPEAT 4
-    asl
-    REPEND
-    ora tmp
-    sta tmp
-    
-    lda menuScratch+2
-    and #$F
-    sta tmp+1
-    lda menuScratch+3
-    and #$F
-    REPEAT 4
-    asl
-    REPEND
-    ora tmp+1
-    sta tmp+1
-    
-    lda menuScratch+4
-    and #$F
-    sta tmp+2
-    lda menuScratch+5
-    and #$F
-    REPEAT 4
-    asl
-    REPEND
-    ora tmp+2
-    sta tmp+2
-    
-    lda menuScratch+6
-    and #$F
-    sta tmp+3
-    lda menuScratch+7
-    and #$F
-    REPEAT 4
-    asl
-    REPEND
-    ora tmp+3
-    sta tmp+3
-    
-    lda menuScratch
-    REPEAT 4
-    lsr
-    REPEND
-    sta tmp+4
-    lda menuScratch+1
-    REPEAT 3
-    lsr
-    REPEND
-    and #$02
-    ora tmp+4
-    sta tmp+4
-    lda menuScratch+2
-    lsr 
-    lsr 
-    and #$04
-    ora tmp+4
-    lda menuScratch+3
-    lsr
-    and #$08
-    ora tmp+4
-    sta tmp+4
-    lda menuScratch+4
-    and #$10
-    ora tmp+4
-    sta tmp+4
-    lda menuScratch+5
-    asl
-    and #$20
-    ora tmp+4
-    sta tmp+4
-    lda menuScratch+6
-    asl
-    asl
-    and #$40
-    ora tmp+4
-    sta tmp+4
-    lda menuScratch+7
-    REPEAT 3
-    asl
-    REPEND
-    and #$80
-    ora tmp+4
-    sta tmp+4
-    
-    lda tmp
-    clc
-    adc tmp+1
-    clc
-    adc tmp+2
-    clc
-    adc tmp+3
-    clc
-    adc tmp+4
-    bne .fail
 
-;other checks here
 
-    jmp .good
+;interleave nybbles at x and x+6 into odd and even bits of a byte respectively
+    ldx #11
+.spreadPairs:
+    lda menuScratch,x
+    asl
+    asl
+    ora menuScratch,x
+    and #%00110011
+    sta menuScratch,x
+    dex
+    bpl .spreadPairs
+    
+    ldx #11
+.spreadSingles:
+    lda menuScratch,x
+    asl
+    ora menuScratch,x
+    and #%01010101
+    sta menuScratch,x
+    dex
+    bpl .spreadSingles
+    
+    ldx #5
+.interleave:
+    lda menuScratch,x
+    asl
+    ora menuScratch+6,x
+    sta savedStats,x
+    dex
+    bpl .interleave ;x = -1 at end
+    
+;rotate bytes
+.rotate:
+    lda savedStats
+    asl
+    ror savedStats+1
+    ror savedStats+2
+    ror savedStats+3
+    ror savedStats+4
+    ror savedStats+5
+    bcc .nocarry
+    lda savedStats
+    ora #$80
+    sta savedStats
+.nocarry:
+    inx
+    beq .rotate ;rotate twice: x = -1, x = 0
+    
+    lda mapAmmo
+    cmp #100
+    bcs .fail
+    lda mapScore
+    cmp #100
+    bcs .fail
+    lda mapScore+1
+    cmp #100
+    bcs .fail
+    lda mapScore+2
+    cmp #100
+    bcs .fail
+    lda cleared
+    and cleared+1
+    cmp #$FF
+    beq .fail
+    
+    ;restored game
+    lda mapAmmo
+    sta ammo
+    lda mapScore
+    sta score
+    lda mapScore+1
+    sta score+1
+    lda mapScore+2
+    sta score+2
+    lda #MAP_LEVEL
+    sta currLevel
+    lda #INVALID_MAP_STAT
+    sta mapPX+1
+    sta mapPY+1
+    jsr ResetAPU
+    jsr QDisableDisplay
+    jsr Synchronize
+    jmp RestoreGame
+    
 .fail:
     jsr ResetAPU
     jsr QDisableDisplay
@@ -461,8 +446,26 @@ PasswordEntry subroutine
 
 PasswordEntry_end:
 
-StartNewGame:
+;------------------------------------------------------------------------------
+;New Game
+;------------------------------------------------------------------------------
+NewGame:
+    lda #INTRO_LEVEL
+    sta currLevel
+    lda #5
+    sta ammo
+    lda #0
+    sta score
+    sta score+1
+    sta score+2
+    lda #INVALID_MAP_STAT
+    sta mapPX+1
+    sta mapPY+1
+    sta mapAmmo
+    sta mapScore+2
+RestoreGame:
 LoadPatterns subroutine
+    SELECT_BANK 0
     MOV16I arg, globalTiles
     SET_PPU_ADDR VRAM_PATTERN_L
     ldx #24
@@ -506,23 +509,6 @@ InitSprites subroutine
     cpy #21*OAM_SIZE
     bne .loop2
     jsr Synchronize
-;------------------------------------------------------------------------------
-;New Game
-;------------------------------------------------------------------------------
-    lda #INTRO_LEVEL
-    sta currLevel
-    lda #5
-    sta ammo
-    lda #0
-    sta score
-    sta score+1
-    sta score+2
-    lda #INVALID_MAP_STAT
-    sta mapAmmo
-    sta mapPX+1
-    sta mapPY+1
-    sta mapScore+2
-    MOV16I arg, mainMap
 ;------------------------------------------------------------------------------
 ;Start of Level
 ;------------------------------------------------------------------------------
