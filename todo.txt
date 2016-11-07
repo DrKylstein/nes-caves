@@ -12,7 +12,7 @@
  PRGROM Bank 6 left: 16384
  PRGROM Bank 7 left: 2923
 
-passwords - cleared, score, ammo
+add instructions and story?
 pause before first intro message
 hide/switch off debug display and cheats
 fix phantom elevator[?] platform in left side of level

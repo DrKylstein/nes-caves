@@ -224,6 +224,10 @@ PasswordEntry subroutine
     lda pressed
     and #JOY_START_MASK
     beq .NotEnter
+    ;must have entered a complete password
+    lda sav+2
+    cmp #$C
+    bcc .NotEnter
     jmp .verify
 .NotEnter:
     lda pressed
@@ -392,6 +396,7 @@ PasswordEntry subroutine
     inx
     beq .rotate ;rotate twice: x = -1, x = 0
     
+    ;check that centennial numbers are in range
     lda mapAmmo
     cmp #100
     bcs .fail
@@ -404,6 +409,7 @@ PasswordEntry subroutine
     lda mapScore+2
     cmp #100
     bcs .fail
+    ;no instant-win password
     lda cleared
     and cleared+1
     cmp #$FF
