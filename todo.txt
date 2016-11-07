@@ -12,9 +12,9 @@
  PRGROM Bank 6 left: 16384
  PRGROM Bank 7 left: 2923
 
+re-enable cheats for debug builds?
 add instructions and story?
 pause before first intro message
-hide/switch off debug display and cheats
 fix phantom elevator[?] platform in left side of level
 fix: when a long message is overwritten by a short one, the last letters remain
 ball sleep time still too long? randomized?

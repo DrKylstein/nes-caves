@@ -197,6 +197,7 @@ nmi_Clouds subroutine
     POP_BANK
 nmi_Clouds_end:
 
+    IFCONST DEBUG
 nmi_DebugCounter subroutine
     lda #PPU_CTRL_SETTING
     sta PPU_CTRL
@@ -223,6 +224,7 @@ nmi_DebugCounter subroutine
     and #$0F
     sta PPU_DATA
 nmi_DebugCounter_end:
+    ENDIF
 
 nmi_updateReg subroutine
     lda shr_sleeping

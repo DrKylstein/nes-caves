@@ -19,7 +19,10 @@ $(romname)		:	$(rom_depenencies)
 					dasm $(name).asm $(asmflags) -o$(romname)
 
 debug			: $(rom_depenencies)
-					dasm $(name).asm $(asmflags) -o$(romname) -DDEBUG_PC
+					dasm $(name).asm $(asmflags) -o$(romname) -DDEBUG
+					
+heavydebug			: $(rom_depenencies)
+					dasm $(name).asm $(asmflags) -o$(romname) -DDEBUG -DDEBUG_PC
 
 sprites.pat		:	$(gfxdir)/sprites.png
 					tilestrip 8 16 <$< | planarbitmap 2 --interleave 8 >$@
