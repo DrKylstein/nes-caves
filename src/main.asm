@@ -105,6 +105,7 @@ DoTitleScreen_end:
 DoMenu subroutine
     jsr ResetAPU
     jsr OpenTextBox
+.resume:
     MOV16I arg,menuText
     MOV16I arg+2,[VRAM_NAME_UL + 32*5 + TEXT_MARGIN]
     jsr Print
@@ -162,7 +163,7 @@ DoMenu subroutine
     cmp #0
     beq .newgame
     cmp #2
-    beq .story
+    beq .instructions
     cmp #3
     beq .story
     jmp PasswordEntry ;sav = 1
@@ -174,8 +175,23 @@ DoMenu subroutine
     jsr Synchronize
     jmp NewGame
 .story:
+    jsr QDisableDisplay
+    jsr Synchronize
+    MOV16I arg,storyText
+    jsr PrintPages
+    jsr QDisableDisplay
+    jsr Synchronize
+    jsr EmptyTextBox
+    jmp .resume
 .instructions:
-    jmp .WaitForPress
+    jsr QDisableDisplay
+    jsr Synchronize
+    MOV16I arg,helpText
+    jsr PrintPages
+    jsr QDisableDisplay
+    jsr Synchronize
+    jsr EmptyTextBox
+    jmp .resume
 DoMenu_end:
 
 passwordChars:
@@ -247,7 +263,7 @@ PasswordEntry subroutine
     sta arg
     lda sav+1
     clc
-    adc #4
+    adc #3
     sta arg+1
     jsr ClearCursor
 
@@ -290,7 +306,7 @@ PasswordEntry subroutine
     sta arg
     lda sav+1
     clc
-    adc #4
+    adc #3
     sta arg+1
     jsr DrawCursor
 
@@ -334,7 +350,7 @@ PasswordEntry subroutine
     ENQUEUE_ROUTINE nmi_Copy1
     lda #0
     sta tmp+1
-    ADD16I tmp,tmp,[VRAM_NAME_UL + 32*8 + TEXT_MARGIN+8]
+    ADD16I tmp,tmp,[VRAM_NAME_UL + 32*9 + TEXT_MARGIN+7]
     lda tmp
     PHXA
     lda tmp+1
@@ -2474,14 +2490,14 @@ UpdateCameraY_end:
 EmptyTextBox subroutine
     SET_PPU_ADDR [VRAM_NAME_UL + 32*5 + TEXT_MARGIN]
     lda #" "
-    ldy #14
+    ldy #[TEXTBOX_HEIGHT-2]
 .outerloop:
-    ldx #29
+    ldx #27
 .loop:
     sta PPU_DATA
     dex
     bne .loop
-    REPEAT 3
+    REPEAT 5
     bit PPU_DATA
     REPEND
     dey
@@ -4087,7 +4103,7 @@ OpenTextBox subroutine
     sta PPU_DATA
     
     
-    SET_PPU_ADDR [VRAM_NAME_UL + 32*22]
+    SET_PPU_ADDR [VRAM_NAME_UL + 32*[TEXTBOX_HEIGHT+4]]
     lda #7
     sta PPU_DATA
     lda #8
@@ -4099,7 +4115,7 @@ OpenTextBox subroutine
     lda #9
     sta PPU_DATA
     
-    SET_PPU_ADDR [VRAM_NAME_UL + 32*23 + 1]
+    SET_PPU_ADDR [VRAM_NAME_UL + 32*[TEXTBOX_HEIGHT+5] + 1]
     lda #1
     ldx #30
 .bottomshadow:
@@ -4112,7 +4128,7 @@ OpenTextBox subroutine
     lda #PPU_CTRL_SETTING | %100
     sta PPU_CTRL
     lda #5
-    ldx #18
+    ldx #TEXTBOX_HEIGHT
 .leftbar:
     sta PPU_DATA
     dex
@@ -4120,7 +4136,7 @@ OpenTextBox subroutine
     
     SET_PPU_ADDR [VRAM_NAME_UL + 32*4 + 30]
     lda #6
-    ldx #18
+    ldx #TEXTBOX_HEIGHT
 .rightbar:
     sta PPU_DATA
     dex
@@ -4128,7 +4144,7 @@ OpenTextBox subroutine
     
     SET_PPU_ADDR [VRAM_NAME_UL + 32*4 + 31]
     lda #1
-    ldx #20
+    ldx #TEXTBOX_HEIGHT+2
 .rightshadow:
     sta PPU_DATA
     dex
@@ -4188,30 +4204,35 @@ CloseTextBox subroutine
 ;------------------------------------------------------------------------------
 
 PrintPages subroutine
-    PUSH16 arg
-    MOV16I arg,pressAnyKey
-    MOV16I arg+2,[VRAM_NAME_UL + 32*20 + TEXT_MARGIN + 7]
-    jsr Print
-    POP16 arg
-    
+    PUSH_BANK
+    PUSH16 sav
+    MOV16 sav,arg    
 .loop:
     jsr QDisableDisplay
     jsr Synchronize
     jsr EmptyTextBox
     
+    MOV16I arg,pressAnyKey
+    MOV16I arg+2,[VRAM_NAME_UL + 32*[TEXTBOX_HEIGHT+2] + TEXT_MARGIN + 7]
+    jsr Print
+    
+    MOV16 arg,sav
     MOV16I arg+2,[VRAM_NAME_UL + 32*5 + TEXT_MARGIN]
     jsr Print
-    MOV16 arg,ret
+    MOV16 sav,ret
 
     jsr QEnableStaticDisplay
     jsr Synchronize
     jsr WaitForPress
+    SELECT_BANK TEXT_BANK
     ldy #0
     lda (ret),y
     cmp #"@"
     bne .loop
 
 .exit:
+    POP16 sav
+    POP_BANK
     rts
 ;------------------------------------------------------------------------------
 StartMusic subroutine
@@ -4262,7 +4283,7 @@ ClearCursor subroutine
     asl
     ora tmp
     sta tmp
-    ADD16I tmp,tmp,[VRAM_NAME_UL + 32*8 + TEXT_MARGIN+2]
+    ADD16I tmp,tmp,[VRAM_NAME_UL + 32*11 + TEXT_MARGIN+3]
     lda tmp
     PHXA
     lda tmp+1
@@ -4286,7 +4307,7 @@ DrawCursor subroutine
     asl
     ora tmp
     sta tmp
-    ADD16I tmp,tmp,[VRAM_NAME_UL + 32*8 + TEXT_MARGIN+2]
+    ADD16I tmp,tmp,[VRAM_NAME_UL + 32*11 + TEXT_MARGIN+3]
     lda tmp
     PHXA
     lda tmp+1

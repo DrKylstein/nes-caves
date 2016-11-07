@@ -1,0 +1,122 @@
+       INSTRUCTIONS
+
+The goal in Crystal Caves
+is to collect all the
+crystals in each cave you
+encounter. Once
+accomplished, you may exit
+the cave through the main
+airlock.
+
+You begin your adventure in
+the main mineshaft, where
+16 doors lead to the inner
+caves.
+
+You must complete all 16
+caves, in any order you
+choose.
+
+^       INSTRUCTIONS
+
+You'll encounter many
+dangerous alien creatures
+and hazards. You can avoid
+these creatures, or blast
+them with your rocket
+pistol. Some creatures may
+require several shots,
+while others might need a
+special weapon you'll find.
+
+To pass through a colored
+door, you will need to pull
+the lever with the matching
+color.
+
+^       MYLO'S HEALTH
+
+Mylo is given three lives
+per every new mine he
+enters. In other words,
+Mylo can be hurt twice by
+enemies or hazards, and on
+the third injury, Mylo will
+be required to restart the
+level from the beginning.
+
+Upon starting each new
+level, Mylo's three lives
+are shown as three hearts
+on the status line.
+
+^       TIMED EVENTS
+
+Certain actions within the
+game are activated for a
+short span of time,
+indicated by a timer on the
+status line at the top of
+the screen.
+
+For example, grabbing the
+power pill will turn Mylo's
+gun into a super gun for a
+short length of time. This
+is indicated on the status
+line between two asterisk
+characters, i.e. *12*.
+
+^      PLAYER CONTROLS
+
+The controls are:
+
+Walk Right  - Right D-Pad
+Walk Left   - Left D-Pad
+Jump        - A
+Fire Pistol - B
+Action Key  - B
+Pause       - Start
+
+The Action key is used to
+pull levers and flip
+switches, if you are in
+front of them.
+
+^     HINTS AND SECRETS
+
+Bump your head into certain
+platforms to find hidden
+gems.
+
+Most enemies have a
+weakness that allows you to
+defeat them.
+
+Pause the game and write 
+down the password shown.
+Enter it next time you play 
+to restore your progress.
+
+Switches and levers are
+very important. Pay
+attention to what they do.
+
+^     HINTS AND SECRETS
+
+Clear colored blocks can be
+shot away. Look for these,
+as sometimes they block 
+your path.
+
+Some caves have different 
+amounts of gravity, and 
+many have reversed gravity!
+
+Many times you can save
+shots by jumping over
+creatures.
+
+Different shaped mushrooms
+have different effects on
+Mylo.^@

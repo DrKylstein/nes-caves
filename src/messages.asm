@@ -36,33 +36,42 @@ poisonMsg: .byte "P0IS0NED",$00
 ;------------------------------------------------------------------------------
 
 menuText:
-    .byte "   Please select an option",$0A
-    .byte "   -----------------------",$0A
+    .byte "  Please select an option",$0A
+    .byte "  -----------------------",$0A
     .byte $0A
-    .byte "  ",$10,"New Game",$0A
     .byte $0A
-    .byte "   Restore Game",$0A
     .byte $0A
-    .byte "   Instructions",$0A
     .byte $0A
-    .byte "   Story",$0A
+    .byte "   ",$10,"New Game",$0A
+    .byte $0A
+    .byte "    Restore Game",$0A
+    .byte $0A
+    .byte "    Instructions",$0A
+    .byte $0A
+    .byte "    Story",$0A
     .byte "^";"  About Apogee","^"
 
 passwordText:
-    .byte "        Enter Password",$0A
-    .byte "   -----------------------",$0A
+    .byte "      Enter Password",$0A
+    .byte "  -----------------------",$0A
     .byte $0A
-    .byte "        ____________",$0A
     .byte $0A
-    .byte "          ",$10,"1 2 3 A",$0A
+    .byte "       ____________",$0A
     .byte $0A
-    .byte       "           4 5 6 B",$0A
     .byte $0A
-    .byte       "           7 8 9 C",$0A
     .byte $0A
-    .byte       "           # 0 * D",$0A
+    .byte "         ",$10,"1 2 3 A",$0A
     .byte $0A
-    .byte "  ",$11,"Delete ",$12,"Enter ",$13,"Back ",$14,"OK","^"
+    .byte       "          4 5 6 B",$0A
+    .byte $0A
+    .byte       "          7 8 9 C",$0A
+    .byte $0A
+    .byte       "          # 0 * D",$0A
+    .byte $0A
+    .byte $0A
+    .byte $0A
+    .byte $0A
+    .byte " ",$11,"Delete ",$12,"Enter  ",$13,"Back ",$14,"OK","^"
 
 failText:
     .byte "    Incorrect. Try again.","^"
@@ -79,8 +88,8 @@ pauseText:
     .byte "    ",$13,"Exit level   ",$14,"Resume","^"
     
 mapPauseText:
-    .byte "           Paused",$0A
-    .byte "   -----------------------",$0A
+    .byte "          Paused",$0A
+    .byte "  -----------------------",$0A
     .byte $0A
     .byte $0A
     .byte $0A
@@ -95,6 +104,11 @@ mapPauseText:
     .byte $0A
     .byte $0A
     .byte "  ",$14,"Resume","^"
+    
+storyText:
+    incbin story.txt
+helpText:
+    incbin instructions.txt
 ;------------------------------------------------------------------------------
 ;opening text boxes
 ;------------------------------------------------------------------------------
@@ -106,12 +120,34 @@ openingText:
     incbin opening.txt
     
 steeringText:
-    .byte "Uh oh... the steering system",$0A,"is failing again!","^@"
+    .byte $0A
+    .byte $0A
+    .byte $0A
+    .byte $0A
+    .byte $0A
+    .byte $0A
+    .byte $0A
+    .byte $0A
+    .byte "Uh oh... the steering",$0A,"system is failing again!","^@"
     
 whereText:
-    .byte "Whoa! Where'd that come from!","^@"
+    .byte $0A
+    .byte $0A
+    .byte $0A
+    .byte $0A
+    .byte $0A
+    .byte $0A
+    .byte $0A
+    .byte $0A
+    .byte "Whoa!",$0A,"Where'd that come from!","^@"
     
 landText:
+    .byte $0A
+    .byte $0A
+    .byte $0A
+    .byte $0A
+    .byte $0A
+    .byte $0A
     .byte "Whew...made it!  Now I",$0A
     .byte "need to collect enough",$0A
     .byte "crystals to trade at the",$0A
@@ -122,11 +158,11 @@ landText:
 ;------------------------------------------------------------------------------
 
 nextStopText:
-    .byte "I've collected a fortune in",$0A
-    .byte "precious crystals. This",$0A
+    .byte "I've collected a fortune",$0A
+    .byte "in precious crystals. This",$0A
     .byte "should be enough to buy",$0A
-    .byte "everything needed to start a",$0A
-    .byte "twibble farm!",$0A
+    .byte "everything needed to start",$0A
+    .byte "a twibble farm!",$0A
     .byte $0A
     .byte "Next stop, the local",$0A
     .byte "Galactic Trading Post!","^@"
