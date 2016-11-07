@@ -1943,8 +1943,10 @@ ER_Kiwi subroutine
     
 IntroLog subroutine
     stx sav
+    jsr OpenTextBox
     MOV16I arg,openingText
-    jsr MessageBox
+    jsr PrintPages
+    jsr CloseTextBox
     ldx sav
     inc entityCount,x
     lda #0
@@ -2335,9 +2337,11 @@ IntroCircle subroutine
     jmp ER_Return
     
 IntroSteering subroutine
-    MOV16I arg, steeringText
     stx sav
-    jsr MessageBox
+    jsr OpenTextBox
+    MOV16I arg, steeringText
+    jsr PrintPages
+    jsr CloseTextBox
     ldx sav
     inc entityCount,x
     lda #0
@@ -2371,9 +2375,11 @@ IntroCrash subroutine
     jmp ER_Return
     
 IntroWhere subroutine
-    MOV16I arg, whereText
     stx sav
-    jsr MessageBox
+    jsr OpenTextBox
+    MOV16I arg, whereText
+    jsr PrintPages
+    jsr CloseTextBox
     ldx sav
     inc entityCount,x
     lda #0
@@ -2395,9 +2401,11 @@ IntroSwerve subroutine
     
     
 IntroLand subroutine
-    MOV16I arg, landText
     stx sav
-    jsr MessageBox
+    jsr OpenTextBox
+    MOV16I arg, landText
+    jsr PrintPages
+    jsr CloseTextBox
     ldx sav
     inc exitTriggered
     jmp ER_Return
@@ -2409,9 +2417,11 @@ endStates:
     .word EndScore
     
 EndNextStop subroutine
-    MOV16I arg, nextStopText
     stx sav
-    jsr MessageBox
+    jsr OpenTextBox
+    MOV16I arg, nextStopText
+    jsr PrintPages
+    jsr CloseTextBox
     ldx sav
     inc entityCount,x
     lda #0
@@ -3075,14 +3085,6 @@ ER_Bullet subroutine
     jsr GetTileBehavior
     ldx sav+4
     lda ret
-    ; cmp #TB_AIR
-    ; bne .notAir
-    ; stx sav
-    ; MOV16I arg,airMsg
-    ; jsr MessageBox
-    ; ldx sav
-    ; jsr KillPlayer
-; .notAir:
     cmp #TB_SOLID
     beq .die
     cmp #TB_WEAKBLOCK

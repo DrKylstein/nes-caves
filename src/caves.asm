@@ -93,6 +93,7 @@ endScene:
     include anims.asm
     include entities.asm
     include sounds.asm
+TEXT_BANK = 3
     include messages.asm
 
     ECHO "PRGROM Bank 3 left:",[$C000-.]d

@@ -104,19 +104,11 @@ DoTitleScreen_end:
 
 DoMenu subroutine
     jsr ResetAPU
-    jsr SetupMessageBox
-    
-    SELECT_BANK 3
+    jsr OpenTextBox
     MOV16I arg,menuText
     MOV16I arg+2,[VRAM_NAME_UL + 32*5 + TEXT_MARGIN]
     jsr Print
-    
-    SELECT_BANK 0
-    lda #0
-    sta arg
-    sta arg+1
-    MOV16I arg+2,textPalette
-    jsr FadeBg
+    jsr QEnableStaticDisplay
     jsr Synchronize
     
     lda #0
@@ -167,8 +159,13 @@ DoMenu subroutine
     
 .select:
     lda sav
-    cmp #1
-    JEQ PasswordEntry
+    cmp #0
+    beq .newgame
+    cmp #2
+    beq .story
+    cmp #3
+    beq .story
+    jmp PasswordEntry ;sav = 1
 .newgame:
     jsr ResetAPU
     MOV16I arg+2, textPalette
@@ -176,6 +173,9 @@ DoMenu subroutine
     jsr QDisableDisplay
     jsr Synchronize
     jmp NewGame
+.story:
+.instructions:
+    jmp .WaitForPress
 DoMenu_end:
 
 passwordChars:
@@ -184,7 +184,7 @@ PasswordEntry subroutine
     jsr ResetAPU
     jsr QDisableDisplay
     jsr Synchronize
-    jsr ClearBox
+    jsr EmptyTextBox
     
     SELECT_BANK 3
     MOV16I arg,passwordText
@@ -909,7 +909,7 @@ ReenableDisplay subroutine
 .dark:
     lda #$20
     sta arg
-    jsr Fade
+    jsr QLoadDarkenedLevelColors
     ;jsr Synchronize
 ReenableDisplay_end:
 
@@ -1023,9 +1023,7 @@ CheckSpecialButtons subroutine
     JEQ CheckSpecialButtons_end
     PUSH_BANK
     jsr ResetAPU
-    jsr SetupMessageBox
-            
-    SELECT_BANK 3
+    jsr OpenTextBox
     lda currLevel
     cmp #MAP_LEVEL
     beq .MapLevel
@@ -1106,12 +1104,13 @@ CheckSpecialButtons subroutine
     bne .printPassword
     
 .show:
+    jsr QEnableStaticDisplay
     SELECT_BANK 0
     lda #0
     sta arg
     sta arg+1
     MOV16I arg+2,textPalette
-    jsr FadeBg
+    jsr QLoadDarkenedBgColors
     jsr Synchronize
 
 .WaitForPress:
@@ -1131,7 +1130,7 @@ CheckSpecialButtons subroutine
     and #JOY_START_MASK
     beq .WaitForPress
 .end:
-    jsr ResumeLevelFromMessageBox
+    jsr CloseTextBox
     POP_BANK
     
     ; lda #1
@@ -1636,7 +1635,7 @@ TC_On:
     bne .notlightsoff
     lda #$20
     sta arg
-    jsr Fade
+    jsr QLoadDarkenedLevelColors
     jsr Synchronize
 .notlightsoff
     dec sav
@@ -1663,7 +1662,7 @@ TC_Off:
     bne .notlights
     lda #0
     sta arg
-    jsr Fade
+    jsr QLoadDarkenedLevelColors
     jsr Synchronize
 .notlights
     inc sav
@@ -2472,7 +2471,7 @@ UpdateCameraY_end:
     jmp MainLoop
 
 ;------------------------------------------------------------------------------
-ClearBox subroutine
+EmptyTextBox subroutine
     SET_PPU_ADDR [VRAM_NAME_UL + 32*5 + TEXT_MARGIN]
     lda #" "
     ldy #14
@@ -2490,7 +2489,9 @@ ClearBox subroutine
     rts
 ;------------------------------------------------------------------------------
 ;print caret-terminated string with LF line breaks
-Print subroutine ;arg0..1 source, arg2..3 PPU dest; updated for future calls
+Print subroutine ;arg0..1 source, arg2..3 PPU dest; ret1 next page
+    PUSH_BANK
+    SELECT_BANK TEXT_BANK
     ldy #0
     lda arg+3
     bit PPU_STATUS
@@ -2501,7 +2502,8 @@ Print subroutine ;arg0..1 source, arg2..3 PPU dest; updated for future calls
     lda (arg),y
     cmp #"^"
     bne .NotEnd
-    INC16 arg
+    ADD16I ret,arg,1
+    POP_BANK
     rts
 .NotEnd:
     cmp #$0A
@@ -2535,7 +2537,7 @@ FadeOut subroutine
     REPEND
     sta arg
     sty sav
-    jsr Fade
+    jsr QLoadDarkenedLevelColors
     ldy sav
     REPEAT FADE_DELAY
     jsr Synchronize
@@ -2554,7 +2556,7 @@ FadeIn subroutine
     REPEND
     sta arg
     sty sav
-    jsr Fade
+    jsr QLoadDarkenedLevelColors
     ldy sav
     REPEAT FADE_DELAY
     jsr Synchronize
@@ -2564,7 +2566,7 @@ FadeIn subroutine
     rts
 
 ;------------------------------------------------------------------------------
-Fade subroutine
+QLoadDarkenedLevelColors subroutine
     SELECT_BANK 0
     ldx shr_copyIndex
     
@@ -2616,7 +2618,7 @@ FadeOutBg subroutine ; arg+2 passes thru to nested call
     REPEND
     sta arg
     sty sav
-    jsr FadeBg
+    jsr QLoadDarkenedBgColors
     ldy sav
     REPEAT FADE_DELAY
     jsr Synchronize
@@ -2639,7 +2641,7 @@ FadeInBg subroutine ; arg+2 passes thru to nested call
     REPEND
     sta arg
     sty sav
-    jsr FadeBg
+    jsr QLoadDarkenedBgColors
     ldy sav
     REPEAT FADE_DELAY
     jsr Synchronize
@@ -2650,7 +2652,7 @@ FadeInBg subroutine ; arg+2 passes thru to nested call
     sta sav
     rts
 ;------------------------------------------------------------------------------
-FadeBg subroutine
+QLoadDarkenedBgColors subroutine
     ldx shr_copyIndex
     
     ldy #0
@@ -3918,6 +3920,8 @@ InitHUD subroutine
     jmp UpdateScoreDisplay
 ;------------------------------------------------------------------------------
 InitialDrawLevel subroutine
+    PUSH16 sav
+    PUSH16 sav+2
     MOV16 arg, shr_cameraX
     REPEAT 4
     LSR16 arg
@@ -3979,9 +3983,8 @@ InitialDrawLevel subroutine
     ADD16I sav, sav, 23
     cpy #16
     bne .loop
-LoadNametables_end:
 
-InitAttributes subroutine
+;set attributes
     MOV16 arg, shr_cameraX
     REPEAT 4
     LSR16 arg
@@ -3994,7 +3997,7 @@ InitAttributes subroutine
     REPEND
     sta sav+3
     ldy #0
-.loop:
+.loopattr:
     tya
     clc
     adc sav+3
@@ -4015,8 +4018,10 @@ InitAttributes subroutine
     sta arg+1
     iny
     cpy #8
-    bne .loop
-InitAttributes_end:
+    bne .loopattr
+
+    POP16 sav+2
+    POP16 sav
     jmp LoadTilesOnMoveLeft
 ;------------------------------------------------------------------------------
 ResetCamera subroutine
@@ -4057,7 +4062,8 @@ ResetCamera subroutine
     sta shr_cameraX
     rts
 ;------------------------------------------------------------------------------
-SetupMessageBox subroutine
+OpenTextBox subroutine
+    PUSH_BANK
     jsr QDisableDisplay
     jsr Synchronize
     SELECT_BANK 0
@@ -4131,9 +4137,20 @@ SetupMessageBox subroutine
     lda #PPU_CTRL_SETTING
     sta PPU_CTRL
     
-    jmp QEnableStaticDisplay
+    ;jsr QEnableStaticDisplay
+    SELECT_BANK 0
+    lda #0
+    sta arg
+    sta arg+1
+    MOV16I arg+2,textPalette
+    jsr QLoadDarkenedBgColors
+    jsr Synchronize
+    
+    POP_BANK
+    rts
 ;------------------------------------------------------------------------------
-ResumeLevelFromMessageBox subroutine
+CloseTextBox subroutine
+    PUSH_BANK
     jsr QDisableDisplay
     jsr Synchronize
     
@@ -4161,65 +4178,40 @@ ResumeLevelFromMessageBox subroutine
     
     jsr ResetCamera
     jsr InitialDrawLevel
-    jsr QEnableSplitDisplay
     lda #0
     sta arg
-    jsr Fade
+    jsr QEnableSplitDisplay
+    jsr QLoadDarkenedLevelColors
     jsr Synchronize
+    POP_BANK
     rts
 ;------------------------------------------------------------------------------
-MessageBox subroutine
-    PUSH_BANK
-    PUSH16 sav
-    MOV16 sav,arg
-    
-    jsr ResetAPU
-    jsr SetupMessageBox
-    
-    SELECT_BANK 3
-    MOV16 arg,sav
-    MOV16I arg+2,[VRAM_NAME_UL + 32*5 + TEXT_MARGIN]
-    jsr Print
-    MOV16 sav,arg
+
+PrintPages subroutine
+    PUSH16 arg
     MOV16I arg,pressAnyKey
     MOV16I arg+2,[VRAM_NAME_UL + 32*20 + TEXT_MARGIN + 7]
     jsr Print
-
-    SELECT_BANK 0
-    lda #0
-    sta arg
-    sta arg+1
-    MOV16I arg+2,textPalette
-    jsr FadeBg
-    jsr Synchronize
-    jsr WaitForPress
-    
-    SELECT_BANK 3
-    ldy #0
-    lda (sav),y
-    cmp #"@"
-    beq .exit
+    POP16 arg
     
 .loop:
     jsr QDisableDisplay
     jsr Synchronize
-    jsr ClearBox
+    jsr EmptyTextBox
+    
     MOV16I arg+2,[VRAM_NAME_UL + 32*5 + TEXT_MARGIN]
-    MOV16 arg,sav
     jsr Print
-    MOV16 sav,arg
+    MOV16 arg,ret
+
     jsr QEnableStaticDisplay
     jsr Synchronize
     jsr WaitForPress
     ldy #0
-    lda (sav),y
+    lda (ret),y
     cmp #"@"
     bne .loop
 
 .exit:
-    jsr ResumeLevelFromMessageBox
-    POP16 sav
-    POP_BANK
     rts
 ;------------------------------------------------------------------------------
 StartMusic subroutine
