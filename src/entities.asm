@@ -1942,6 +1942,9 @@ ER_Kiwi subroutine
     jmp (tmp)
     
 IntroLog subroutine
+    lda entityFrame,x
+    cmp #60
+    JCC ER_Return
     stx sav
     jsr OpenTextBox
     MOV16I arg,openingText
@@ -2042,270 +2045,141 @@ IntroSputter subroutine
     lda sputterYTable,y
     sta playerYVel+1
     jmp ER_Return
-    
-    .align 256
+
 sin:
     .byte	0
-    .byte	3
     .byte	6
-    .byte	9
     .byte	12
-    .byte	16
     .byte	19
-    .byte	22
     .byte	25
-    .byte	28
     .byte	31
-    .byte	34
     .byte	37
-    .byte	40
     .byte	43
-    .byte	46
     .byte	49
-    .byte	51
     .byte	54
-    .byte	57
     .byte	60
-    .byte	63
     .byte	65
-    .byte	68
     .byte	71
-    .byte	73
     .byte	76
-    .byte	78
     .byte	81
-    .byte	83
     .byte	85
-    .byte	88
     .byte	90
-    .byte	92
     .byte	94
-    .byte	96
     .byte	98
-    .byte	100
     .byte	102
-    .byte	104
     .byte	106
-    .byte	107
     .byte	109
-    .byte	111
     .byte	112
-    .byte	113
     .byte	115
-    .byte	116
     .byte	117
-    .byte	118
     .byte	120
-    .byte	121
-    .byte	122
     .byte	122
     .byte	123
-    .byte	124
-    .byte	125
     .byte	125
     .byte	126
     .byte	126
-    .byte	126
     .byte	127
     .byte	127
     .byte	127
-    .byte	127
-    .byte	127
-    .byte	127
-    .byte	127
-    .byte	126
     .byte	126
     .byte	126
     .byte	125
-    .byte	125
-    .byte	124
     .byte	123
     .byte	122
-    .byte	122
-    .byte	121
     .byte	120
-    .byte	118
     .byte	117
-    .byte	116
     .byte	115
-    .byte	113
     .byte	112
-    .byte	111
     .byte	109
-    .byte	107
     .byte	106
-    .byte	104
     .byte	102
-    .byte	100
     .byte	98
-    .byte	96
     .byte	94
-    .byte	92
     .byte	90
-    .byte	88
     .byte	85
-    .byte	83
     .byte	81
-    .byte	78
     .byte	76
-    .byte	73
     .byte	71
-    .byte	68
     .byte	65
-    .byte	63
     .byte	60
-    .byte	57
     .byte	54
-    .byte	51
     .byte	49
-    .byte	46
     .byte	43
-    .byte	40
     .byte	37
-    .byte	34
     .byte	31
-    .byte	28
     .byte	25
-    .byte	22
     .byte	19
-    .byte	16
     .byte	12
-    .byte	9
     .byte	6
-    .byte	3
     .byte	0
-    .byte	-3
     .byte	-6
-    .byte	-9
     .byte	-12
-    .byte	-16
     .byte	-19
-    .byte	-22
     .byte	-25
-    .byte	-28
     .byte	-31
-    .byte	-34
     .byte	-37
-    .byte	-40
     .byte	-43
-    .byte	-46
     .byte	-49
-    .byte	-51
     .byte	-54
-    .byte	-57
     .byte	-60
-    .byte	-63
     .byte	-65
-    .byte	-68
     .byte	-71
-    .byte	-73
     .byte	-76
-    .byte	-78
     .byte	-81
-    .byte	-83
     .byte	-85
-    .byte	-88
     .byte	-90
-    .byte	-92
     .byte	-94
-    .byte	-96
     .byte	-98
-    .byte	-100
     .byte	-102
-    .byte	-104
     .byte	-106
-    .byte	-107
     .byte	-109
-    .byte	-111
     .byte	-112
-    .byte	-113
     .byte	-115
-    .byte	-116
     .byte	-117
-    .byte	-118
     .byte	-120
-    .byte	-121
-    .byte	-122
     .byte	-122
     .byte	-123
-    .byte	-124
-    .byte	-125
     .byte	-125
     .byte	-126
     .byte	-126
-    .byte	-126
     .byte	-127
     .byte	-127
     .byte	-127
-    .byte	-127
-    .byte	-127
-    .byte	-127
-    .byte	-127
-    .byte	-126
     .byte	-126
     .byte	-126
     .byte	-125
-    .byte	-125
-    .byte	-124
     .byte	-123
     .byte	-122
-    .byte	-122
-    .byte	-121
     .byte	-120
-    .byte	-118
     .byte	-117
-    .byte	-116
     .byte	-115
-    .byte	-113
     .byte	-112
-    .byte	-111
     .byte	-109
-    .byte	-107
     .byte	-106
-    .byte	-104
     .byte	-102
-    .byte	-100
     .byte	-98
-    .byte	-96
     .byte	-94
-    .byte	-92
     .byte	-90
-    .byte	-88
     .byte	-85
-    .byte	-83
     .byte	-81
-    .byte	-78
     .byte	-76
-    .byte	-73
     .byte	-71
-    .byte	-68
     .byte	-65
-    .byte	-63
     .byte	-60
-    .byte	-57
     .byte	-54
-    .byte	-51
     .byte	-49
-    .byte	-46
     .byte	-43
-    .byte	-40
     .byte	-37
-    .byte	-34
     .byte	-31
-    .byte	-28
     .byte	-25
-    .byte	-22
     .byte	-19
-    .byte	-16
     .byte	-12
-    .byte	-9
     .byte	-6
-    .byte	-3
 
     
 IntroCircle subroutine
     lda entityFrame,x
-    asl
+    and #127
     tay
     lda sin,y
     ASR65
@@ -2314,9 +2188,9 @@ IntroCircle subroutine
     ADD16 playerY, tmp, doorsY
     
     lda entityFrame,x
-    asl
     clc
-    adc #64
+    adc #32;64
+    and #127
     tay
     lda sin,y
     ASR65
@@ -2496,6 +2370,7 @@ ER_Planet subroutine
     sta entityYHi,x
 .ready:
     lda entityFrame,x
+    lsr
     tay
     lda sin,y
     ASR65
@@ -2514,9 +2389,9 @@ ER_Planet subroutine
     sta entityXLo,x
     lda tmp+1
     sta entityXHi,x
-    cpy #192
+    cpy #96
     beq .goFront
-    cpy #64
+    cpy #32
     beq .goBack
     jmp ER_Return
 .goFront
