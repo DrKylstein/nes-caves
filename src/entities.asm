@@ -2179,6 +2179,7 @@ sin:
     
 IntroCircle subroutine
     lda entityFrame,x
+    asl
     and #127
     tay
     lda sin,y
@@ -2188,6 +2189,7 @@ IntroCircle subroutine
     ADD16 playerY, tmp, doorsY
     
     lda entityFrame,x
+    asl
     clc
     adc #32;64
     and #127
@@ -2202,7 +2204,7 @@ IntroCircle subroutine
     ADD16 playerX, tmp, doorsX
     
     lda entityFrame,x
-    cmp #255
+    cmp #127
     bne .continue
     inc entityCount,x
     lda #0
