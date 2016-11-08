@@ -94,12 +94,7 @@ DoTitleScreen subroutine
     jsr FadeInBg
     ldx #TITLE_LEVEL<<1
     jsr StartMusic
-.WaitForPress:
-    jsr UpdateInput
-    jsr UpdateSound
-    jsr Synchronize
-    lda pressed
-    beq .WaitForPress
+    jsr WaitForPress
 DoTitleScreen_end:
 
 DoMenu subroutine
@@ -3800,6 +3795,8 @@ QColorEffect subroutine
     rts
 ;------------------------------------------------------------------------------
 WaitForPress subroutine
+    jsr Synchronize
+    jsr UpdateSound
     jsr UpdateInput
     lda pressed
     cmp #0
