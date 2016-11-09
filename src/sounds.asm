@@ -223,6 +223,7 @@ SFX_POINTS:  ds 2
 SFX_RTTY:    ds 2
 SFX_CHEST:   ds 2
 SFX_HURT:    ds 2
+SFX_TEXTBOX: ds 2
     SEG ROM_FILE
 
 sounds:
@@ -236,6 +237,34 @@ sounds:
     .word sfxRTTY
     .word sfxChest
     .word sfxHurt
+    .word sfxTextBox
+
+sfxTextBox subroutine
+    .byte MN_B3_
+    .byte SQ1_CH
+    .byte 3
+    .word .sq
+    .byte <-1
+.sq:
+    .byte DUTY_50 |  7,-4
+    .byte DUTY_50 |  0, 0
+    .byte DUTY_50 |  7,-6
+    .byte DUTY_50 |  0, 0
+
+    .byte DUTY_50 | 15,-4
+    .byte DUTY_50 |  0,-4
+    .byte DUTY_50 |  7,-4
+    .byte DUTY_50 |  0,-4
+    
+    .byte DUTY_50 | 15, 0
+    .byte DUTY_50 |  0, 0
+    .byte DUTY_50 |  7, 0
+    .byte DUTY_50 |  0, 0
+    
+    
+    .byte DUTY_50 | 0, 0
+    .byte 0
+
 
 sfxHurt subroutine
     .byte MN_C4_

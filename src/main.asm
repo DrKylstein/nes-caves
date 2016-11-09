@@ -109,6 +109,8 @@ DoMenu subroutine
     
     lda #0
     sta sav
+    ldx #SFX_TEXTBOX
+    jsr PlaySound
 .WaitForPress:
     jsr UpdateInput
     jsr UpdateSound
@@ -223,6 +225,8 @@ PasswordEntry subroutine
     sta password+$A
     sta password+$B
     
+    ldx #SFX_TEXTBOX
+    jsr PlaySound
 .WaitForPress:
     jsr UpdateInput
     jsr UpdateSound
@@ -1023,7 +1027,7 @@ HandleExit_end:
     ; jsr Synchronize
     ; jmp MainLoop
 ; Paused_end:    
-    ; jsr UpdateSound
+    jsr UpdateSound
 
 CheckSpecialButtons subroutine
     lda playerFlags
@@ -1124,7 +1128,11 @@ CheckSpecialButtons subroutine
     jsr QLoadDarkenedBgColors
     jsr Synchronize
 
+    ldx #SFX_TEXTBOX
+    jsr PlaySound
 .WaitForPress:
+    jsr Synchronize
+    jsr UpdateSound
     jsr UpdateInput
     lda currLevel
     cmp #MAP_LEVEL
@@ -3729,7 +3737,7 @@ TestCollision subroutine
 ;------------------------------------------------------------------------------
 PlaySound subroutine ;argument in x, uses both index regs
     PUSH_BANK
-    SELECT_BANK 3
+    SELECT_BANK SOUNDS_BANK
     lda sounds,x
     sta tmp
     lda sounds+1,x
@@ -4220,6 +4228,8 @@ PrintPages subroutine
 
     jsr QEnableStaticDisplay
     jsr Synchronize
+    ldx #SFX_TEXTBOX
+    jsr PlaySound
     jsr WaitForPress
     SELECT_BANK TEXT_BANK
     ldy #0
@@ -4234,7 +4244,7 @@ PrintPages subroutine
 ;------------------------------------------------------------------------------
 StartMusic subroutine
     PUSH_BANK
-    SELECT_BANK 3
+    SELECT_BANK SOUNDS_BANK
     lda levelMusic,x
     sta tmp
     lda levelMusic+1,x
@@ -4259,7 +4269,7 @@ StartMusic subroutine
 ;------------------------------------------------------------------------------
 UpdateSound subroutine
     PUSH_BANK
-    SELECT_BANK 3
+    SELECT_BANK SOUNDS_BANK
     jsr SoundRoutine
     POP_BANK
     rts

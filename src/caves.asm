@@ -96,8 +96,11 @@ endScene:
 ;------------------------------------------------------------------------------
     ORG 16 + 3*$4000
     RORG $8000
+ANIMS_BANK = 3
     include anims.asm
+ENTITIES_BANK = 3
     include entities.asm
+SOUNDS_BANK = 3
     include sounds.asm
 
     ECHO "PRGROM Bank 3 left:",[$C000-.]d
