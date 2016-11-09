@@ -1631,6 +1631,8 @@ TC_Lock:
     sta arg+4
     jsr SetTile
     inc sav
+    ldx #SFX_DOOR
+    jsr PlaySound
     jmp TC_UpdateTile
 TC_Lock_end:
 

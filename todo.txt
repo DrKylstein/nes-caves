@@ -20,7 +20,6 @@ more sounds
 -power ups
 -bullet impacts
 -flames
--popup messages
 -pellet shot
 -web shot
 -egg shot

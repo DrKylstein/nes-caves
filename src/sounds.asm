@@ -225,6 +225,7 @@ SFX_CHEST:   ds 2
 SFX_HURT:    ds 2
 SFX_TEXTBOX: ds 2
 SFX_SWITCH:  ds 2
+SFX_DOOR:    ds 2
     SEG ROM_FILE
 
 sounds:
@@ -240,6 +241,49 @@ sounds:
     .word sfxHurt
     .word sfxTextBox
     .word sfxSwitch
+    .word sfxDoor
+
+sfxDoor subroutine
+    .byte MN_E3_
+    .byte NOISE_CH
+    .byte 0
+    .word .noise
+    .byte SQ1_CH
+    .byte 0
+    .word .sq
+    .byte -1
+.noise:
+    .byte NOISE_VOL | 7, 8
+    .byte NOISE_VOL | 6, 8
+    .byte NOISE_VOL | 5, 8
+    .byte NOISE_VOL | 4, 8
+    .byte NOISE_VOL | 3, 8
+    .byte NOISE_VOL | 2, 8
+    .byte NOISE_VOL | 1, 8
+    .byte NOISE_VOL | 1, 8
+    .byte NOISE_VOL | 1, 8
+    .byte NOISE_VOL | 0, 8
+    .byte 0
+.sq:
+    .byte DUTY_50 |  7,-4
+    .byte DUTY_50 |  0, 0
+    .byte DUTY_50 |  7,-6
+    .byte DUTY_50 |  0, 0
+
+    .byte DUTY_50 | 15,-4
+    .byte DUTY_50 |  0,-4
+    .byte DUTY_50 |  7,-4
+    .byte DUTY_50 |  0,-4
+    
+    .byte DUTY_50 | 15, 0
+    .byte DUTY_50 |  0, 0
+    .byte DUTY_50 |  7, 0
+    .byte DUTY_50 |  0, 0
+    
+    
+    .byte DUTY_50 | 0, 0
+    .byte 0
+
 
 sfxSwitch subroutine
     .byte MN_E3_
