@@ -1658,6 +1658,8 @@ TC_On:
     jsr Synchronize
 .notlightsoff
     dec sav
+    ldx #SFX_SWITCH
+    jsr PlaySound
     jmp TC_UpdateTile
 TC_On_end:
 
@@ -1685,6 +1687,8 @@ TC_Off:
     jsr Synchronize
 .notlights
     inc sav
+    ldx #SFX_SWITCH
+    jsr PlaySound
     jmp TC_UpdateTile
 TC_Off_end:
 
@@ -2189,7 +2193,7 @@ UpdateMessage subroutine
     lda frame
     and #3
     JNE UpdateMessage_end
-    SELECT_BANK 3
+    SELECT_BANK TEXT_BANK
         
     lda messagePtr+1
     JEQ UpdateMessage_end

@@ -224,6 +224,7 @@ SFX_RTTY:    ds 2
 SFX_CHEST:   ds 2
 SFX_HURT:    ds 2
 SFX_TEXTBOX: ds 2
+SFX_SWITCH:  ds 2
     SEG ROM_FILE
 
 sounds:
@@ -238,6 +239,36 @@ sounds:
     .word sfxChest
     .word sfxHurt
     .word sfxTextBox
+    .word sfxSwitch
+
+sfxSwitch subroutine
+    .byte MN_E3_
+    .byte NOISE_CH
+    .byte 0
+    .word .noise
+    .byte TRI_CH
+    .byte 0
+    .word .tri
+    .byte -1
+.noise:
+    .byte NOISE_VOL | 7, 8
+    .byte NOISE_VOL | 6, 8
+    .byte NOISE_VOL | 5, 8
+    .byte NOISE_VOL | 4, 8
+    .byte NOISE_VOL | 3, 8
+    .byte NOISE_VOL | 2, 8
+    .byte NOISE_VOL | 1, 8
+    .byte NOISE_VOL | 1, 8
+    .byte NOISE_VOL | 1, 8
+    .byte NOISE_VOL | 0, 8
+    .byte 0
+.tri:
+    .byte TRI_ON,  3
+    .byte TRI_ON,  2
+    .byte TRI_ON,  1
+    .byte TRI_OFF, 0
+    .byte 0
+
 
 sfxTextBox subroutine
     .byte MN_B3_
@@ -273,19 +304,19 @@ sfxHurt subroutine
     .word .sq
     .byte <-1
 .sq:
-    .byte DUTY_50 |  0, 0
-    .byte DUTY_50 |  1, 1
-    .byte DUTY_50 |  2, 2
-    .byte DUTY_50 |  3, 3
-    .byte DUTY_50 |  4, 4
-    .byte DUTY_50 |  5, 3
-    .byte DUTY_50 |  6, 2
-    .byte DUTY_50 |  7, 1
-    .byte DUTY_50 |  8, 2
-    .byte DUTY_50 |  9, 4
-    .byte DUTY_50 | 10, 6 
-    .byte DUTY_50 | 11, 8 
-    .byte DUTY_50 | 12, 10
+    .byte DUTY_12 |  0, 0
+    .byte DUTY_12 |  1, 1
+    .byte DUTY_12 |  2, 2
+    .byte DUTY_12 |  3, 3
+    .byte DUTY_12 |  4, 4
+    .byte DUTY_12 |  5, 3
+    .byte DUTY_25 |  6, 2
+    .byte DUTY_25 |  7, 1
+    .byte DUTY_25 |  8, 2
+    .byte DUTY_25 |  9, 4
+    .byte DUTY_25 | 10, 6 
+    .byte DUTY_25 | 11, 8 
+    .byte DUTY_25 | 12, 10
     .byte DUTY_50 | 13, 12
     .byte DUTY_50 | 14, 14
     .byte DUTY_50 | 15, 16
