@@ -218,7 +218,7 @@ SFX_SHOOT:   ds 2
 SFX_CRYSTAL: ds 2
 SFX_LASER:   ds 2
 SFX_HAMMER:  ds 2
-SFX_AMMO:    ds 2
+SFX_AMMO:    
 SFX_POINTS:  ds 2
 SFX_RTTY:    ds 2
 SFX_CHEST:   ds 2
@@ -226,6 +226,7 @@ SFX_HURT:    ds 2
 SFX_TEXTBOX: ds 2
 SFX_SWITCH:  ds 2
 SFX_DOOR:    ds 2
+SFX_POWER:   ds 2
     SEG ROM_FILE
 
 sounds:
@@ -235,13 +236,67 @@ sounds:
     .word sfxLaser
     .word sfxHeavyImpact
     .word sfxAmmo
-    .word sfxPoints
+    ;.word sfxPoints
     .word sfxRTTY
     .word sfxChest
     .word sfxHurt
     .word sfxTextBox
     .word sfxSwitch
     .word sfxDoor
+    .word sfxPower
+
+sfxAmmo subroutine
+    .byte MN_C4S
+    .byte SQ1_CH
+    .byte 3
+    .word .sq
+    .byte <-1
+.sq:
+    .byte DUTY_25 | 15, 0
+    .byte DUTY_25 |  0, 0
+    .byte DUTY_25 | 15, 0
+    .byte DUTY_25 |  0, 0
+    .byte DUTY_25 | 15, 0
+    .byte DUTY_25 |  0, 0
+    .byte DUTY_25 | 15, 0
+    .byte DUTY_25 |  0, 0
+    .byte DUTY_25 | 15, 0
+    .byte DUTY_25 |  0, 0
+    .byte DUTY_25 | 15, 0
+    .byte DUTY_25 |  0, 0
+    .byte DUTY_25 | 15, 0
+    .byte DUTY_25 |  0, 0
+    .byte DUTY_25 | 15, 0
+    .byte DUTY_25 |  0, 0
+    .byte DUTY_25 | 15, 0
+    .byte DUTY_25 |  0, 0
+    .byte DUTY_25 |  0, 0
+    
+    .byte DUTY_25 | 15, 0
+    .byte DUTY_25 |  0, 0
+    .byte DUTY_25 |  0, 0
+
+    .byte DUTY_25 | 15, 0
+    .byte DUTY_25 |  0, 0
+    .byte DUTY_25 |  0, 0
+    
+    .byte DUTY_25 | 15, 4
+    .byte DUTY_25 |  0, 4
+    .byte DUTY_25 | 15, 4
+    .byte DUTY_25 |  0, 4
+    .byte DUTY_25 | 15, 4
+    .byte DUTY_25 |  0, 4
+    .byte DUTY_25 | 15, 4
+    .byte DUTY_25 |  0, 4
+    .byte DUTY_25 | 15, 4
+    .byte DUTY_25 |  0, 4
+    .byte DUTY_25 | 15, 4
+    .byte DUTY_25 |  0, 4
+    
+    
+    .byte DUTY_50 | 0, 0
+    .byte 0
+
 
 sfxDoor subroutine
     .byte MN_E3_
@@ -622,7 +677,7 @@ sfxShoot subroutine
     .byte NOISE_VOL |  0, 15
     .byte 0
 
-sfxAmmo subroutine
+sfxPower subroutine
     .byte MN_C4_
     .byte SQ1_CH
     .byte 2

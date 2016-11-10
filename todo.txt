@@ -16,15 +16,25 @@ re-enable cheats for debug builds?
 fix phantom elevator[?] platform in left side of level
 fix: when a long message is overwritten by a short one, the last letters remain
 ball sleep time still too long? randomized?
-more sounds
--power ups
--bullet impacts
--flames
--pellet shot
--web shot
--egg shot
--egg crack
--kiwi
+powershot pickup sound
+gravity pickup sound
+stop pickup sound
+strength mushroom sound
+bullet hit solid wall sound
+block explode sound
+enemy death sound
+enemy hurt sound
+enemy not hurt sound
+flame sound
+pellet shot sound
+web shot sound
+egg shot sound
+egg crack sound
+facuet drip sound
+enter level sound
+all crystals sound
+fruit appear/disappear sound
+rex should turn if shot in the back
 condense faucet into one entity - it doesn't drip if the player is above, 
 -which is the most likely case for when it could fall offscreen.
 use tile type to find door/exit positions? (store as 16-bit pointers) would save 3 bytes per door/exit

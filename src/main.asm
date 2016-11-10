@@ -1441,6 +1441,8 @@ TC_Powershot:
     lda #0
     sta sav
     jsr UpdatePowerDisplay
+    ldx #SFX_POWER
+    jsr PlaySound
     jmp TC_UpdateTile
 TC_Powershot_end:
 
@@ -1456,6 +1458,8 @@ TC_Strength:
     lda #0
     sta sav
     jsr UpdatePowerDisplay
+    ldx #SFX_POWER
+    jsr PlaySound
     jmp TC_UpdateTile
 TC_Strength_end:
 
@@ -1474,6 +1478,8 @@ TC_Gravity:
     lda #0
     sta sav
     jsr UpdatePowerDisplay
+    ldx #SFX_POWER
+    jsr PlaySound
     jmp TC_UpdateTile
 TC_Gravity_end:
 
@@ -1489,6 +1495,8 @@ TC_Stop:
     lda #0
     sta sav
     jsr UpdatePowerDisplay
+    ldx #SFX_POWER
+    jsr PlaySound
     jmp TC_UpdateTile
 TC_Stop_end:
 
