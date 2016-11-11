@@ -202,6 +202,18 @@
 ; misc
 ;------------------------------------------------------------------------------
 
+    MAC NEG
+    eor #$FF
+    clc
+    adc #1
+    ENDM
+
+    MAC ABS
+    bpl .end
+    NEG
+.end:
+    ENDM
+
     MAC MUL_BY_24
     MOV16 {1}, {2}
     ASL16 {1}

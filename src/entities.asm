@@ -3069,7 +3069,7 @@ ER_Bat subroutine
 
 ER_Rex subroutine
     jsr EntUpdateFlash
-    MOV16I arg,16
+    MOV16I arg,24
     jsr EntTallAwayFromPlayerY
     bcs .noChase
     lda entityXLo,x
@@ -3156,6 +3156,24 @@ ER_Rex subroutine
     adc #1
     sta entityCount,x
     jsr EntFlash
+    
+    lda entityXLo,x
+    sta tmp
+    lda entityXHi,x
+    and #ENT_X_POS
+    sta tmp+1
+.VengeanceRight:
+    CMP16 tmp, playerX
+    bcs .VenganceLeft
+    lda #2
+    sta entityVelocity,x
+    jmp .NoVengance
+.VenganceLeft:
+    lda #-2
+    sta entityVelocity,x
+.NoVengance:
+
+    
     jmp .noBullet
 .dead
     jsr EntExplode    

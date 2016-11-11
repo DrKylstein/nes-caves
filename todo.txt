@@ -31,10 +31,8 @@ egg shot sound
 egg crack sound
 enter level sound
 all crystals sound
-rex should turn if shot in the back
 condense faucet into one entity - it doesn't drip if the player is above, 
 -which is the most likely case for when it could fall offscreen.
-use tile type to find door/exit positions? (store as 16-bit pointers) would save 3 bytes per door/exit
 elevators and cannons have been seen shifted 8 pixels away from their spot
 fix: narrow switch collision changes level 14 dynamic
 add ending image
