@@ -12,7 +12,6 @@
  PRGROM Bank 6 left: 16384
  PRGROM Bank 7 left: 2923
 
-re-enable cheats for debug builds?
 fix: when a long message is overwritten by a short one, the last letters remain
 ball sleep time still too long? randomized?
 powershot pickup sound
@@ -22,7 +21,6 @@ strength mushroom sound
 bullet hit solid wall sound
 block explode sound
 enemy death sound
-enemy hurt sound
 enemy not hurt sound
 flame sound
 pellet shot sound
@@ -31,11 +29,12 @@ egg shot sound
 egg crack sound
 enter level sound
 all crystals sound
-condense faucet into one entity - it doesn't drip if the player is above, 
--which is the most likely case for when it could fall offscreen.
 elevators and cannons have been seen shifted 8 pixels away from their spot
 fix: narrow switch collision changes level 14 dynamic
 add ending image
+condense faucet into one entity - it doesn't drip if the player is above, 
+-which is the most likely case for when it could fall offscreen.
+re-enable cheats for debug builds?
 
 long shot:
 convert most player variables to entity variables, move player code to player entity?

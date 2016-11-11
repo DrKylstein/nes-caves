@@ -1277,6 +1277,10 @@ ER_Robot subroutine
     adc #$40
     sta entityCount,x
     jsr EntFlash
+    stx sav
+    ldx #SFX_HURT
+    jsr PlaySound
+    ldx sav
     jmp .alive
 .Melee:
     jsr EntExplode
@@ -1419,6 +1423,10 @@ SnakeShared subroutine
     ora #1
     sta entityCount,x
     jsr EntFlash
+    stx sav
+    ldx #SFX_HURT
+    jsr PlaySound
+    ldx sav
     jmp .alive
 .Melee:
     ;change to dead
@@ -1570,6 +1578,10 @@ ER_EyeMonster subroutine ;invulnerable until blinded, then 2 hits
     ora #$40
     sta entityCount,x
     jsr EntFlash
+    stx sav
+    ldx #SFX_HURT
+    jsr PlaySound
+    ldx sav
     jmp ER_Return
 .Melee:
     jsr EntExplode
@@ -1627,6 +1639,10 @@ ER_BigEye subroutine ;2 hits
     ora #1
     sta entityCount,x
     jsr EntFlash
+    stx sav
+    ldx #SFX_HURT
+    jsr PlaySound
+    ldx sav
     jmp ER_Return
 .Melee:
     jsr EntExplode
@@ -1673,6 +1689,10 @@ ER_Ball subroutine
     adc #$40
     sta entityCount,x
     jsr EntFlash
+    stx sav
+    ldx #SFX_HURT
+    jsr PlaySound
+    ldx sav
     jmp .alive
 .Melee:
     jsr EntExplode
@@ -3156,6 +3176,11 @@ ER_Rex subroutine
     adc #1
     sta entityCount,x
     jsr EntFlash
+    
+    stx sav
+    ldx #SFX_HURT
+    jsr PlaySound
+    ldx sav
     
     lda entityXLo,x
     sta tmp

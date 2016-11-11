@@ -442,31 +442,39 @@ sfxTextBox subroutine
 
 
 sfxHurt subroutine
-    .byte MN_C4_
+    .byte MN_C3_
     .byte SQ1_CH
     .byte PRI_ATTACK
     .word .sq
     .byte <-1
 .sq:
+    .byte DUTY_12 | 15, 0
     .byte DUTY_12 |  0, 0
-    .byte DUTY_12 |  1, 1
-    .byte DUTY_12 |  2, 2
-    .byte DUTY_12 |  3, 3
-    .byte DUTY_12 |  4, 4
-    .byte DUTY_12 |  5, 3
-    .byte DUTY_25 |  6, 2
-    .byte DUTY_25 |  7, 1
-    .byte DUTY_25 |  8, 2
-    .byte DUTY_25 |  9, 4
-    .byte DUTY_25 | 10, 6 
-    .byte DUTY_25 | 11, 8 
-    .byte DUTY_25 | 12, 10
-    .byte DUTY_50 | 13, 12
-    .byte DUTY_50 | 14, 14
-    .byte DUTY_50 | 15, 16
-    .byte DUTY_50 | 15, 18
-    .byte DUTY_50 | 15, 20
-    .byte DUTY_50 |  0, 20
+    .byte DUTY_12 | 15, 0
+    .byte DUTY_12 |  0, 0
+    .byte DUTY_12 |  0, 0
+        
+    .byte DUTY_12 | 15, 0
+    .byte DUTY_12 |  0, 0
+    .byte DUTY_12 | 15, 0
+    .byte DUTY_12 |  0, 0
+    .byte DUTY_12 |  0, 0
+
+    .byte DUTY_12 | 15, 0
+    .byte DUTY_12 |  0, 0
+    .byte DUTY_12 | 15, 0
+    .byte DUTY_12 |  0, 0
+    .byte DUTY_12 |  0, 0
+    
+    .byte DUTY_12 |  0, 0
+    .byte DUTY_12 |  0, 0
+    
+    .byte DUTY_12 | 15, 4
+    .byte DUTY_12 |  0, 0
+    .byte DUTY_12 | 15, 4
+    .byte DUTY_12 |  0, 0
+
+    .byte DUTY_12 |  0, 0
     .byte 0
 
 
