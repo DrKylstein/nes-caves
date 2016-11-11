@@ -3539,15 +3539,10 @@ ER_VerticalPlatform subroutine
     adc #1
     sta entityVelocity,x
 .nohit:
-    lda entityYLo,x
-    sta sav
-    lda entityYHi,x
-    and #ENT_Y_POS
-    sta sav+1
     jsr EntMoveVertically
     MOV16I arg, 8
     jsr EntAwayFromPlayerX
-    bcs .noRider
+    JCS ER_Return
     lda entityYLo,x
     sta tmp
     lda entityYHi,x
@@ -3558,13 +3553,21 @@ ER_VerticalPlatform subroutine
     ABS16 tmp,tmp
     CMP16I tmp,4
     bcs .noRider
+    lda playerYVel+1
+    bmi .noRider
+    lda #0
+    sta playerYVel
+    sta playerYVel+1
+    sta playerYFrac
+    lda playerFlags
+    and #~PLY_ISJUMPING
+    sta playerFlags
     lda entityYLo,x
-    sta tmp
+    sta playerY
     lda entityYHi,x
     and #ENT_Y_POS
-    sta tmp+1
-    SUB16 tmp, tmp, sav
-    ADD16 playerY, playerY, tmp
+    sta playerY+1
+    SUB16I playerY,playerY,16
 .noRider:
     jmp ER_Return
     
@@ -3585,7 +3588,7 @@ ER_HorizontalPlatform subroutine
     jsr EntMoveHorizontally
     MOV16I arg, 8
     jsr EntAwayFromPlayerX
-    bcs .noRider
+    JCS ER_Return
     lda entityYLo,x
     sta tmp
     lda entityYHi,x
@@ -3603,6 +3606,21 @@ ER_HorizontalPlatform subroutine
     sta tmp+1
     SUB16 tmp, tmp, sav
     ADD16 playerX, playerX, tmp
+    lda playerYVel+1
+    bmi .noRider
+    lda #0
+    sta playerYVel
+    sta playerYVel+1
+    sta playerYFrac
+    lda playerFlags
+    and #~PLY_ISJUMPING
+    sta playerFlags
+    lda entityYLo,x
+    sta playerY
+    lda entityYHi,x
+    and #ENT_Y_POS
+    sta playerY+1
+    SUB16I playerY,playerY,16
 .noRider:
     jmp ER_Return
     

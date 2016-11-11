@@ -106,8 +106,6 @@ cleared        ds 2 ;16 bits
                     ;41 bits
 
 currLevel      ds 1
-currPlatform   ds 1
-paused         ds 1
 startSprite    ds 2
 crystalsLeft   ds 1
 

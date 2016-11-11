@@ -870,11 +870,7 @@ LoadMapState_end:
 ResetStats subroutine
     lda #3
     sta hp
-    ;jsr UpdateHeartsDisplay
-    lda #MAX_ENTITIES
-    sta currPlatform
     lda #0
-    sta paused
     sta powerFrames
     sta powerSeconds
     sta powerType
@@ -958,75 +954,6 @@ HandleExit_end:
 
     inc frame
     jsr UpdateInput
-
-; Paused subroutine
-    ; lda paused
-    ; JEQ Paused_end
-    ; lda pressed
-    ; and #JOY_START_MASK
-    ; beq .StartNotPressed
-    ; lda #0
-    ; sta paused
-    ; lda #0
-    ; sta arg
-    ; jsr QColorEffect
-    ; jmp MainLoop
-; .StartNotPressed:
-    ; lda pressed
-    ; and #JOY_SELECT_MASK
-    ; beq .SelectNotPressed
-    ; lda #INVALID_MAP_STAT
-    ; sta mapPX+1
-    ; jmp doExit
-; .SelectNotPressed:
-;;cheats
-    ; lda pressed
-    ; and #JOY_A_MASK
-    ; beq .ANotPressed
-    ; lda #0
-    ; sta crystalsLeft
-; .ANotPressed:
-    ; lda pressed
-    ; and #JOY_RIGHT_MASK
-    ; beq .RightNotPressed
-    ; lda #$FF
-    ; sta cleared
-    ; sta cleared+1
-; .RightNotPressed:
-    ; lda pressed
-    ; and #JOY_UP_MASK
-    ; beq .UpNotPressed
-    ; inc ammo
-    ; jsr UpdateAmmoDisplay
-; .UpNotPressed:
-    ; lda pressed
-    ; and #JOY_DOWN_MASK
-    ; beq .DownNotPressed
-    ; dec ammo
-    ; jsr UpdateAmmoDisplay
-; .DownNotPressed:
-    ; lda pressed
-    ; and #JOY_B_MASK
-    ; beq .BNotPressed
-    ; ldy ammo
-    ; dey
-    ; sty currLevel
-    ; jmp DoEnterLevel
-; .BNotPressed:
-
-    ; lda #$E1
-    ; sta arg
-    ; lda frame
-    ; and #$3F
-    ; cmp #$1F
-    ; bcs .light
-    ; lda #1
-    ; sta arg
-; .light
-    ; jsr QColorEffect
-    ; jsr Synchronize
-    ; jmp MainLoop
-; Paused_end:    
     jsr UpdateSound
 
 CheckSpecialButtons subroutine
@@ -1965,7 +1892,7 @@ CheckGround subroutine
     jsr TestCollisionTop
     bcs .hitGroundTile
 .GoToCheckSpriteHit
-    jmp .checkSpriteHit
+    jmp CheckGround_end
 .hitGroundTile:
     EXTEND tmp,playerYVel+1
     ADD16 tmp,tmp,playerY
@@ -1973,58 +1900,6 @@ CheckGround subroutine
     and #$F0
     sta playerY
     jmp .hit_ground
-
-.checkSpriteHit:
-    ldy #MAX_ENTITIES
-    sty currPlatform
-.loop:
-    dey
-    JMI CheckGround_end
-    
-    lda entityYHi,y
-    lsr
-    tax
-    lda entityFlags,x
-    and #ENT_F_ISPLATFORM
-    beq .loop
-    
-    lda entityXLo,y
-    sta tmp
-    lda entityXHi,y
-    and #ENT_X_POS
-    sta tmp+1
-    
-    ADD16I tmp+2, playerX, 4
-    SUB16I tmp, tmp, 8
-    CMP16 tmp, tmp+2
-    bpl .loop
-    
-    SUB16I tmp+2, playerX, 4
-    ADD16I tmp, tmp, 16
-    CMP16 tmp, tmp+2
-    bmi .loop
-    
-    lda entityYLo,y
-    sta tmp
-    lda entityYHi,y
-    and #ENT_Y_POS
-    sta tmp+1
-    
-    SUB16I tmp, tmp, 15
-    CMP16 tmp, playerY
-    bmi .longLoop
-
-    SUB16I tmp, tmp, 4
-    CMP16 tmp, playerY
-    bpl .longLoop
-    
-    jmp .hitSprite
-.longLoop:
-    jmp .loop
-.hitSprite:
-    
-    ADD16I playerY, tmp, 2
-    sty currPlatform
 .hit_ground:
     lda #0
     sta playerYVel
