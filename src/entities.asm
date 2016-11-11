@@ -1786,7 +1786,7 @@ ER_Fruit subroutine
     bne .notStart
     lda #1
     sta entityCount,x
-    ldx #SFX_CRYSTAL
+    ldx #SFX_FRUIT
     jsr PlaySound
 .notStart:
     MOV16I arg, 12
@@ -2897,39 +2897,6 @@ ER_Cannon subroutine
 .return:
     jmp ER_Return
     
-ER_Faucet subroutine
-    lda entityXHi+1,x
-    bpl .return
-    lda entityYLo,x
-    sta tmp
-    lda entityYHi,x
-    and #ENT_Y_POS
-    sta tmp+1
-    CMP16 playerY,tmp
-    bcc .return
-    lda entityCount,x
-    beq .drip
-    dec entityCount,x
-    jmp ER_Return
-.drip:
-    lda #15
-    sta entityCount,x
-    lda entityXHi,x
-    sta entityXHi+1,x
-    lda entityXLo,x
-    sta entityXLo+1,x
-    lda entityYHi,x
-    and #ENT_Y_POS
-    ora #WATER_ID<<1
-    sta entityYHi+1,x
-    lda entityYLo,x
-    sta entityYLo+1,x
-    lda #ANIM_SPIKE
-    sta entityAnim+1,x
-    lda #2
-    sta entityVelocity+1,x
-.return:
-    jmp ER_Return
     
 ER_PowerShot:
 ER_Bullet subroutine
@@ -3442,6 +3409,40 @@ ER_Hammer subroutine
     jsr EntMoveVertically
     jmp ER_Return
     
+ER_Faucet subroutine
+    lda entityXHi+1,x
+    bpl .return
+    lda entityYLo,x
+    sta tmp
+    lda entityYHi,x
+    and #ENT_Y_POS
+    sta tmp+1
+    CMP16 playerY,tmp
+    bcc .return
+    lda entityCount,x
+    beq .drip
+    dec entityCount,x
+    jmp ER_Return
+.drip:
+    lda #15
+    sta entityCount,x
+    lda entityXHi,x
+    sta entityXHi+1,x
+    lda entityXLo,x
+    sta entityXLo+1,x
+    lda entityYHi,x
+    and #ENT_Y_POS
+    ora #WATER_ID<<1
+    sta entityYHi+1,x
+    lda entityYLo,x
+    sta entityYLo+1,x
+    lda #ANIM_SPIKE
+    sta entityAnim+1,x
+    lda #2
+    sta entityVelocity+1,x
+.return:
+    jmp ER_Return
+    
 ER_Water subroutine
     lda entityXLo,x
     sta arg
@@ -3454,12 +3455,13 @@ ER_Water subroutine
     and #ENT_Y_POS
     sta arg+3
     ADD16I arg,arg, 8
-    lda entityVelocity,x
-    bmi .notDown
     ADD16I arg+2,arg+2,16
-.notDown:
     jsr TestCollisionTop
     bcc .notDead
+    stx sav
+    ldx #SFX_DRIP
+    jsr PlaySound
+    ldx sav
     lda #$80
     sta entityXHi,x
     jmp ER_Return

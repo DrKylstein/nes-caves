@@ -227,7 +227,20 @@ SFX_TEXTBOX: ds 2
 SFX_SWITCH:  ds 2
 SFX_DOOR:    ds 2
 SFX_POWER:   ds 2
+SFX_DRIP:    ds 2
+SFX_FRUIT:   ds 2
     SEG ROM_FILE
+
+    SEG.U PRIORITIES
+    ORG $0000
+PRI_MUSIC:   ds 1
+PRI_BG_LOOP: ds 1
+PRI_PLAYER:  ds 1
+PRI_ITEM:    ds 1
+PRI_ATTACK:  ds 1
+PRI_UI:      ds 1
+    SEG ROM_FILE
+
 
 sounds:
     .word sfxJump
@@ -236,7 +249,6 @@ sounds:
     .word sfxLaser
     .word sfxHeavyImpact
     .word sfxAmmo
-    ;.word sfxPoints
     .word sfxRTTY
     .word sfxChest
     .word sfxHurt
@@ -244,11 +256,44 @@ sounds:
     .word sfxSwitch
     .word sfxDoor
     .word sfxPower
+    .word sfxDrip
+    .word sfxFruit
+
+sfxDrip subroutine
+    .byte MN_C4_
+    .byte SQ1_CH
+    .byte PRI_BG_LOOP
+    .word .sq
+    .byte <-1
+.sq:
+    .byte DUTY_50 | 3,-1
+    .byte DUTY_50 | 7, 0
+    .byte DUTY_50 | 15, 1
+    .byte DUTY_50 | 15, 2
+    .byte DUTY_50 | 0, 0
+    .byte 0
+.noise:
+    .byte NOISE_VOL | 0,15
+    .byte NOISE_VOL | 0,15
+    .byte NOISE_VOL | 0,15
+    .byte NOISE_VOL | 7,15
+    .byte NOISE_VOL | 6,15
+    .byte NOISE_VOL | 5,15
+    .byte NOISE_VOL | 4,15
+    .byte NOISE_VOL | 3,15
+    .byte NOISE_VOL | 2,15
+    .byte NOISE_VOL | 1,15
+    .byte NOISE_VOL | 1,15
+    .byte NOISE_VOL | 1,15
+    .byte NOISE_VOL | 0,15
+    .byte 0
+
+
 
 sfxAmmo subroutine
     .byte MN_C4S
     .byte SQ1_CH
-    .byte 3
+    .byte PRI_ITEM
     .word .sq
     .byte <-1
 .sq:
@@ -301,10 +346,10 @@ sfxAmmo subroutine
 sfxDoor subroutine
     .byte MN_E3_
     .byte NOISE_CH
-    .byte 0
+    .byte PRI_PLAYER
     .word .noise
     .byte SQ1_CH
-    .byte 0
+    .byte PRI_PLAYER
     .word .sq
     .byte -1
 .noise:
@@ -343,10 +388,10 @@ sfxDoor subroutine
 sfxSwitch subroutine
     .byte MN_E3_
     .byte NOISE_CH
-    .byte 0
+    .byte PRI_PLAYER
     .word .noise
     .byte TRI_CH
-    .byte 0
+    .byte PRI_PLAYER
     .word .tri
     .byte -1
 .noise:
@@ -372,7 +417,7 @@ sfxSwitch subroutine
 sfxTextBox subroutine
     .byte MN_B3_
     .byte SQ1_CH
-    .byte 3
+    .byte PRI_UI
     .word .sq
     .byte <-1
 .sq:
@@ -399,7 +444,7 @@ sfxTextBox subroutine
 sfxHurt subroutine
     .byte MN_C4_
     .byte SQ1_CH
-    .byte 3
+    .byte PRI_ATTACK
     .word .sq
     .byte <-1
 .sq:
@@ -428,7 +473,7 @@ sfxHurt subroutine
 sfxChest subroutine
     .byte MN_A2_
     .byte SQ1_CH
-    .byte 2
+    .byte PRI_ITEM
     .word .sq
     .byte <-1
 .sq:
@@ -456,21 +501,23 @@ sfxChest subroutine
 sfxRTTY subroutine
     .byte MN_C5_
     .byte SQ1_CH
-    .byte 1
+    .byte PRI_BG_LOOP
     .word .sq
     .byte -1
 .sq:
     .byte DUTY_12 | 4, 0
     .byte DUTY_25 | 4, 0
     .byte DUTY_50 | 4, 0
+    .byte DUTY_50 | 0, 0
+    .byte 0
 
 sfxHeavyImpact subroutine
     .byte MN_C1_
     .byte NOISE_CH
-    .byte 0
+    .byte PRI_ATTACK
     .word .noise
     .byte TRI_CH
-    .byte 0
+    .byte PRI_ATTACK
     .word .tri
     .byte -1
 .noise:
@@ -503,10 +550,10 @@ sfxHeavyImpact subroutine
 
 sfxLaser subroutine
     .byte 0 ;note
-    .byte NOISE_CH ;channel
-    .byte 3 ;priority
-    .word .noise ; patch
-    .byte <-1 ;terminator
+    .byte NOISE_CH
+    .byte PRI_ATTACK
+    .word .noise
+    .byte <-1
 .noise:
     .byte NOISE_VOL |  1, NOISE_LOOP | 13
     .byte NOISE_VOL |  2, NOISE_LOOP | 13
@@ -528,7 +575,7 @@ sfxLaser subroutine
 sfxCrystal subroutine
     .byte MN_D5_
     .byte SQ1_CH
-    .byte 2
+    .byte PRI_ITEM
     .word .sq
     .byte <-1
 .sq:
@@ -553,10 +600,10 @@ sfxCrystal subroutine
     .byte DUTY_50 | $0, 8
     .byte 0
     
-sfxPoints subroutine
+sfxFruit subroutine
     .byte MN_D5_
     .byte SQ1_CH
-    .byte 2
+    .byte PRI_ITEM
     .word .sq
     .byte <-1
 .sq:
@@ -578,7 +625,7 @@ sfxPoints subroutine
 sfxJump subroutine
     .byte MN_A3S
     .byte SQ1_CH
-    .byte 1
+    .byte PRI_PLAYER
     .word .sqJump
     .byte <-2
     
@@ -618,11 +665,11 @@ sfxJump subroutine
 sfxShoot subroutine
     .byte MN_F2S
     .byte SQ1_CH
-    .byte 1
+    .byte PRI_PLAYER
     .word .sqShoot
     
     .byte NOISE_CH
-    .byte 1
+    .byte PRI_PLAYER
     .word .noiseShoot
     
     .byte <-1
@@ -680,7 +727,7 @@ sfxShoot subroutine
 sfxPower subroutine
     .byte MN_C4_
     .byte SQ1_CH
-    .byte 2
+    .byte PRI_ITEM
     .word .sq
     .byte -1
 .sq:
