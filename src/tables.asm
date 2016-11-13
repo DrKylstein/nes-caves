@@ -110,12 +110,12 @@ levelPalettes:
     .word introPal   ;end
     
 levelMusic:
-    .word nullSong ;1
+    .word industrialSong ;1
     .word nullSong ;2
     .word nullSong ;3
     .word nullSong ;4
     .word nullSong ;5 
-    .word nullSong ;6
+    .word industrialSong ;6
     .word nullSong ;7
     .word nullSong ;8
     .word nullSong ;9
@@ -124,8 +124,8 @@ levelMusic:
     .word nullSong ;12
     .word nullSong ;13
     .word nullSong ;14
-    .word nullSong ;15
-    .word nullSong ;16
+    .word industrialSong ;15
+    .word industrialSong ;16
     .word mineSong ;map
     .word mellowSong ;intro
     .word testSong ;end

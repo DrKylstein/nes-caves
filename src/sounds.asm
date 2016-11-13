@@ -1510,6 +1510,228 @@ mellowSong subroutine
     .byte MC____,MN____
     .byte MC_LOP,MN____
 
+industrialSong subroutine
+    .byte 6
+    .word .drumTrack
+    .word .bassTrack
+    .word 0
+    .word 0
+.drumTrack:
+    .word .drum2
+    .word .drum2
+    
+    .word .drum1
+    .word .drum1
+    .word .drum1
+    .word .drum1
+    
+    .word .drum2
+    .word .drum2
+    
+    .word .drum1
+    .word .drum2
+    .word .drum1
+    
+    .word .drum2
+    .word .drum2
+    .word .drum2
+    .word 2<<1
+.drum1:
+    .byte BDRUM ,MN_C1_
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte SNARE ,MN_G3_
+    .byte MC____,MN____
+    .byte BDRUM ,MN_G3_
+    .byte BDRUM ,MN_G3_
+    .byte BDRUM ,MN_G3_
+    .byte MC____,MN____
+    .byte BDRUM ,MN_G3_
+    .byte MC____,MN____
+    .byte SNARE ,MN_G3_
+    .byte MC____,MN____
+    .byte BDRUM ,MN_G3_
+    .byte MC____,MN____
+    .byte BDRUM ,MN_G3_
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte SNARE ,MN_G3_
+    .byte MC____,MN____
+    .byte BDRUM ,MN_G3_
+    .byte BDRUM ,MN_G3_
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte BDRUM ,MN_G3_
+    .byte SNARE ,MN_G3_
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC_LOP,MN____
+.drum2:
+    .byte SNARE ,MN_G3_
+    .byte MC____,MN_G3_
+    .byte MC____,MN_G3_
+    .byte MC____,MN____
+    .byte MC____,MN_G3_
+    .byte MC____,MN_G3_
+    .byte MC____,MN____
+    .byte MC____,MN_G3_
+    .byte MC____,MN_G3_
+    .byte MC____,MN____
+    .byte MC____,MN_G3_
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC_LOP,MN____
+    
+.bassTrack:
+    .word .bass0
+    .word .bass0
+    
+    .word .bass1
+    .word .bass0
+    .word .bass1
+    .word .bass0
+    .word .bass2
+    .word .bass0
+    .word .bass2
+    .word .bass0
+    
+    .word .bass0
+    .word .bass0
+    
+    .word .bass1
+    .word .bass1
+    .word .bass2
+    .word .bass2
+    .word .bass0
+    .word .bass0
+    .word .bass2
+    
+    .word .bass0
+    .word .bass0
+    .word .bass0
+    .word 1<<2
+.bass0:
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC_LOP,MN____
+.bass1:
+    .byte GUITAR2,MN_D1S
+    .byte MC____,MN____
+    .byte MC____,MN_C1_
+    .byte MC____,MN_G1S
+    .byte MC____,MN____
+    .byte MC____,MN_D1S
+    .byte MC____,MN____
+    .byte MC____,MN_D1S
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN_G1S
+    .byte MC____,MN____
+    .byte MC____,MN_C1_
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC_LOP,MN____
+.bass2:
+    .byte GUITAR2,MN_C1_
+    .byte MC____,MN____
+    .byte MC____,MN_G1S
+    .byte MC____,MN_C1_
+    .byte MC____,MN_D1S
+    .byte MC____,MN_C1_
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN_G1S
+    .byte MC____,MN_D1S
+    .byte MC____,MN____
+    .byte MC____,MN_C1_
+    .byte MC____,MN_D1S
+    .byte MC____,MN____
+    .byte MC_LOP,MN____
+
+technoSong subroutine
+    .byte 8
+    .word .drumTrack
+    .word .bassTrack
+    .word 0
+    .word 0
+.drumTrack:
+    .word .drum1
+    .word 0
+.drum1:
+    .byte BDRUM ,MN_C1_
+    .byte    HAT,MN_C1_
+    .byte MC____,MN_C1_
+    .byte MC____,MN_C1_
+    .byte BDRUM ,MN_C1_
+    .byte    HAT,MN_C1_
+    .byte MC____,MN_C1_
+    .byte MC_LOP,MN_C1_
+    
+.bassTrack:
+    .word .bass0
+    .word .bass0
+    
+    .word .bass1
+    .word .bass1
+    .word .bass1
+    .word .bass1
+    
+    .word .bass0
+    .word .bass0
+    .word 1<<2
+.bass0:
+    .byte GUITAR2,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC_LOP,MN____
+.bass1:
+    .byte MC____,MN_C3_
+    .byte MC____,MN_D3_
+    .byte MC____,MN_E3_
+    .byte MC____,MN_D3_
+    .byte MC____,MN_C3_
+    .byte MC____,MN_D3_
+    .byte MC____,MN_E3_
+    .byte MC____,MN_D3_
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN_G3_
+    .byte MC____,MN_C3_
+    .byte MC____,MN_D3_
+    .byte MC_LOP,MN____
 
 mineSong subroutine
     .byte 12
