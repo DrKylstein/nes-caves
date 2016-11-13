@@ -1394,23 +1394,6 @@ testChordSequence subroutine
     .byte MJARP ,MN_C3_
     .byte MC_LOP,MN____
     
-    ; .byte MJPWER,MN_C2_
-    ; .byte MC____,MN____
-    ; .byte MC____,MN_F2_
-    ; .byte MC____,MN____
-    ; .byte MC____,MN_F2_
-    ; .byte MC____,MN____
-    ; .byte MC____,MN____
-    ; .byte MC____,MN_C2_
-    ; .byte MC____,MN____
-    ; .byte MC____,MN_F2_
-    ; .byte MC____,MN_F2_
-    ; .byte MC____,MN____
-    ; .byte MC____,MN_C2_
-    ; .byte MC____,MN____
-    ; .byte MC____,MN____
-    ; .byte MC_LOP,MN____
-
 testDrumSequence subroutine
     .word .pat2
     .word .pat2
@@ -1468,6 +1451,65 @@ testBassSequence subroutine
     .byte MC____,MN____
     .byte MC_LOP,MN_G1_
     
+
+mellowSong subroutine
+    .byte 12
+    .word .chordSeq
+    .word 0
+    .word 0
+    .word 0
+.chordSeq:
+    .word .chordRest
+    .word .chord1
+    .word .chord1
+    .word .chordRest
+    .word .chord2
+    .word .chord1
+    .word 0
+.chordRest:
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC_LOP,MN____
+.chord1:
+    .byte MJPWER,MN_C2_
+    .byte MC____,MN____
+    .byte MC____,MN_F2_
+    .byte MC____,MN____
+    .byte MC____,MN_F2_
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN_C2_
+    .byte MC____,MN____
+    .byte MC____,MN_F2_
+    .byte MC____,MN_F2_
+    .byte MC____,MN____
+    .byte MC____,MN_C2_
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC_LOP,MN____
+.chord2:
+    .byte MJPWER,MN_C2_
+    .byte MC____,MN_C2_
+    .byte MC____,MN____
+    .byte MC____,MN_F2_
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN_F2_
+    .byte MC____,MN_F2_
+    .byte MC____,MN____
+    .byte MC____,MN_C2_
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC____,MN____
+    .byte MC_LOP,MN____
+
 
 mineSong subroutine
     .byte 12

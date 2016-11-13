@@ -127,6 +127,6 @@ levelMusic:
     .word nullSong ;15
     .word nullSong ;16
     .word mineSong ;map
-    .word nullSong ;intro
-    .word nullSong ;end
+    .word mellowSong ;intro
+    .word testSong ;end
     .word testSong ;title
