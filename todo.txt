@@ -14,7 +14,6 @@
 
 add attenuation command?
 change to relative pitch, controlled by the sequence?
-make command field optional?
 
 fix: when a long message is overwritten by a short one, the last letters remain
 ball sleep time still too long? randomized?

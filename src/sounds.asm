@@ -758,109 +758,148 @@ sfxPower subroutine
 ;------------------------------------------------------------------------------
     SEG.U NOTES
     ORG 0
-NOTE_A0 ds 1
-NOTE_A0S  ds 1
-NOTE_B0 ds 1
-NOTE_C1 ds 1
-NOTE_C1S  ds 1
-NOTE_D1 ds 1
-NOTE_D1S  ds 1
-NOTE_E1 ds 1
-NOTE_F1 ds 1
-NOTE_F1S  ds 1
-NOTE_G1 ds 1
-NOTE_G1S  ds 1
-NOTE_A1 ds 1
-NOTE_A1S  ds 1
-NOTE_B1 ds 1
-NOTE_C2 ds 1
-NOTE_C2S  ds 1
-NOTE_D2 ds 1
-NOTE_D2S  ds 1
-NOTE_E2 ds 1
-NOTE_F2 ds 1
-NOTE_F2S  ds 1
-NOTE_G2 ds 1
-NOTE_G2S  ds 1
-NOTE_A2 ds 1
-NOTE_A2S  ds 1
-NOTE_B2 ds 1
-NOTE_C3 ds 1
-NOTE_C3S  ds 1
-NOTE_D3 ds 1
-NOTE_D3S  ds 1
-NOTE_E3 ds 1
-NOTE_F3 ds 1
-NOTE_F3S  ds 1
-NOTE_G3 ds 1
-NOTE_G3S  ds 1
-NOTE_A3 ds 1
-NOTE_A3S  ds 1
-NOTE_B3 ds 1
-NOTE_C4 ds 1
-NOTE_C4S  ds 1
-NOTE_D4 ds 1
-NOTE_D4S  ds 1
-NOTE_E4 ds 1
-NOTE_F4 ds 1
-NOTE_F4S  ds 1
-NOTE_G4 ds 1
-NOTE_G4S  ds 1
-NOTE_A4 ds 1
-NOTE_A4S  ds 1
-NOTE_B4 ds 1
-NOTE_C5 ds 1
-NOTE_C5S  ds 1
-NOTE_D5 ds 1
-NOTE_D5S  ds 1
-NOTE_E5 ds 1
-NOTE_F5 ds 1
-NOTE_F5S  ds 1
-NOTE_G5 ds 1
-NOTE_G5S  ds 1
-NOTE_A5 ds 1
-NOTE_A5S  ds 1
-NOTE_B5 ds 1
-NOTE_C6 ds 1
-NOTE_C6S  ds 1
-NOTE_D6 ds 1
-NOTE_D6S  ds 1
-NOTE_E6 ds 1
-NOTE_F6 ds 1
-NOTE_F6S  ds 1
-NOTE_G6 ds 1
-NOTE_G6S  ds 1
-NOTE_A6 ds 1
-NOTE_A6S  ds 1
-NOTE_B6 ds 1
-NOTE_C7 ds 1
-NOTE_C7S  ds 1
-NOTE_D7 ds 1
-NOTE_D7S  ds 1
-NOTE_E7 ds 1
-NOTE_F7 ds 1
-NOTE_F7S  ds 1
-NOTE_G7 ds 1
-NOTE_G7S  ds 1
-REST  ds 1
+NOTE_A0:   ds 1
+NOTE_A0S:
+NOTE_B0F:  ds 1
+NOTE_B0:   ds 1
+
+NOTE_C1:   ds 1
+NOTE_C1S:
+NOTE_D1F:  ds 1
+NOTE_D1:   ds 1
+NOTE_D1S:
+NOTE_E1F:  ds 1
+NOTE_E1:   ds 1
+NOTE_F1:   ds 1
+NOTE_F1S:
+NOTE_G1F:  ds 1
+NOTE_G1:   ds 1
+NOTE_G1S:
+NOTE_A1F:  ds 1
+NOTE_A1:   ds 1
+NOTE_A1S:
+NOTE_B1F:  ds 1
+NOTE_B1:   ds 1
+
+NOTE_C2:   ds 1
+NOTE_C2S:
+NOTE_D2F:  ds 1
+NOTE_D2:   ds 1
+NOTE_D2S:
+NOTE_E2F:  ds 1
+NOTE_E2:   ds 1
+NOTE_F2:   ds 1
+NOTE_F2S:
+NOTE_G2F:  ds 1
+NOTE_G2:   ds 1
+NOTE_G2S:
+NOTE_A2F:  ds 1
+NOTE_A2:   ds 1
+NOTE_A2S:
+NOTE_B2F:  ds 1
+NOTE_B2:   ds 1
+
+NOTE_C3:   ds 1
+NOTE_C3S:
+NOTE_D3F:  ds 1
+NOTE_D3:   ds 1
+NOTE_D3S:
+NOTE_E3F:  ds 1
+NOTE_E3:   ds 1
+NOTE_F3:   ds 1
+NOTE_F3S:
+NOTE_G3F:  ds 1
+NOTE_G3:   ds 1
+NOTE_G3S:
+NOTE_A3F:  ds 1
+NOTE_A3:   ds 1
+NOTE_A3S:
+NOTE_B3F:  ds 1
+NOTE_B3:   ds 1
+
+NOTE_C4:   ds 1
+NOTE_C4S:
+NOTE_D4F:  ds 1
+NOTE_D4:   ds 1
+NOTE_D4S:
+NOTE_E4F:  ds 1
+NOTE_E4:   ds 1
+NOTE_F4:   ds 1
+NOTE_F4S:
+NOTE_G4F:  ds 1
+NOTE_G4:   ds 1
+NOTE_G4S:
+NOTE_A4F:  ds 1
+NOTE_A4:   ds 1
+NOTE_A4S:
+NOTE_B4F:  ds 1
+NOTE_B4:   ds 1
+
+NOTE_C5:   ds 1
+NOTE_C5S:
+NOTE_D5F:  ds 1
+NOTE_D5:   ds 1
+NOTE_D5S:
+NOTE_E5F:  ds 1
+NOTE_E5:   ds 1
+NOTE_F5:   ds 1
+NOTE_F5S:
+NOTE_G5F:  ds 1
+NOTE_G5:   ds 1
+NOTE_G5S:
+NOTE_A5F:  ds 1
+NOTE_A5:   ds 1
+NOTE_A5S:
+NOTE_B5F:  ds 1
+NOTE_B5:   ds 1
+
+NOTE_C6:   ds 1
+NOTE_C6S:
+NOTE_D6F:  ds 1
+NOTE_D6:   ds 1
+NOTE_D6S:
+NOTE_E6F:  ds 1
+NOTE_E6:   ds 1
+NOTE_F6:   ds 1
+NOTE_F6S:
+NOTE_G6F:  ds 1
+NOTE_G6:   ds 1
+NOTE_G6S:
+NOTE_A6F:  ds 1
+NOTE_A6:   ds 1
+NOTE_A6S:
+NOTE_B6F:  ds 1
+NOTE_B6:   ds 1
+
+NOTE_C7:   ds 1
+NOTE_C7S:
+NOTE_D7F:  ds 1
+NOTE_D7:   ds 1
+NOTE_D7S:
+NOTE_E7F:  ds 1
+NOTE_E7:   ds 1
     SEG ROM_FILE
+
+REST = 127
     
 periodTableLo:
-  .byte $f1,$7f,$13,$ad,$4d,$f3,$9d,$4c,$00,$b8,$74,$34
-  .byte $f8,$bf,$89,$56,$26,$f9,$ce,$a6,$80,$5c,$3a,$1a
-  .byte $fb,$df,$c4,$ab,$93,$7c,$67,$52,$3f,$2d,$1c,$0c
-  .byte $fd,$ef,$e1,$d5,$c9,$bd,$b3,$a9,$9f,$96,$8e,$86
-  .byte $7e,$77,$70,$6a,$64,$5e,$59,$54,$4f,$4b,$46,$42
-  .byte $3f,$3b,$38,$34,$31,$2f,$2c,$29,$27,$25,$23,$21
-  .byte $1f,$1d,$1b,$1a,$18,$17,$15,$14
+  .byte $f1,$7f,$13
+  .byte $ad,$4d,$f3,$9d,$4c,$00,$b8,$74,$34,$f8,$bf,$89
+  .byte $56,$26,$f9,$ce,$a6,$80,$5c,$3a,$1a,$fb,$df,$c4
+  .byte $ab,$93,$7c,$67,$52,$3f,$2d,$1c,$0c,$fd,$ef,$e1
+  .byte $d5,$c9,$bd,$b3,$a9,$9f,$96,$8e,$86,$7e,$77,$70
+  .byte $6a,$64,$5e,$59,$54,$4f,$4b,$46,$42,$3f,$3b,$38
+  .byte $34,$31,$2f,$2c,$29,$27,$25,$23,$21,$1f,$1d,$1b
+  .byte $1a,$18,$17,$15,$14
 periodTableHi:
-  .byte $07,$07,$07,$06,$06,$05,$05,$05,$05,$04,$04,$04
-  .byte $03,$03,$03,$03,$03,$02,$02,$02,$02,$02,$02,$02
-  .byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
+  .byte $07,$07,$07
+  .byte $06,$06,$05,$05,$05,$05,$04,$04,$04,$03,$03,$03
+  .byte $03,$03,$02,$02,$02,$02,$02,$02,$02,$01,$01,$01
+  .byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$00,$00,$00
   .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
   .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
   .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-  .byte $00,$00,$00,$00,$00,$00,$00,$00
+  .byte $00,$00,$00,$00,$00
   
 
 END_PATTERN = $FF
