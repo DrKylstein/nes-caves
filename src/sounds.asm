@@ -13,41 +13,41 @@ DoMusic subroutine
     jmp .end
 .validSequence:
     
-    lda musicStream+1,x
+    lda musicPatternPtr+1,x
     bne .notStart
     lda musicSequence,x
     sta tmp+2
     lda musicSequence+1,x
     sta tmp+3
-    ldy musicIndex,x
+    ldy musicSequenceIndex,x
     lda (tmp+2),y
-    sta musicStream,x
+    sta musicPatternPtr,x
     iny
     lda (tmp+2),y
-    sta musicStream+1,x
+    sta musicPatternPtr+1,x
     iny
-    sty musicIndex,x
+    sty musicSequenceIndex,x
 .notStart:
     
-    lda (musicStream,x)
+    lda (musicPatternPtr,x)
     sta tmp
-    lda musicStream,x
+    lda musicPatternPtr,x
     clc
     adc #1
-    sta musicStream,x
-    lda musicStream+1,x
+    sta musicPatternPtr,x
+    lda musicPatternPtr+1,x
     adc #0
-    sta musicStream+1,x
+    sta musicPatternPtr+1,x
 
-    lda (musicStream,x)
+    lda (musicPatternPtr,x)
     sta tmp+1
-    lda musicStream,x
+    lda musicPatternPtr,x
     clc
     adc #1
-    sta musicStream,x
-    lda musicStream+1,x
+    sta musicPatternPtr,x
+    lda musicPatternPtr+1,x
     adc #0
-    sta musicStream+1,x
+    sta musicPatternPtr+1,x
     
     lda tmp
     cmp #MC____
@@ -67,23 +67,24 @@ DoMusic subroutine
     sta tmp+2
     lda musicSequence+1,x
     sta tmp+3
-    ldy musicIndex,x
+    ldy musicSequenceIndex,x
     iny
     lda (tmp+2),y
-    bne .notEnd
+    bne .notLoop
     dey
     lda (tmp+2),y
     tay
     iny
-.notEnd:
+.notLoop:
     lda (tmp+2),y
-    sta musicStream+1,x
+    sta musicPatternPtr+1,x
     dey
     lda (tmp+2),y
-    sta musicStream,x
+    sta musicPatternPtr,x
     iny
     iny
-    sty musicIndex,x
+    sty musicSequenceIndex,x
+    jmp .notStart
     
 .note:
     lda tmp+1
@@ -1217,7 +1218,8 @@ testLeadSequence subroutine
     .byte MC____,MN____
     .byte MC____,MN____
     .byte MC____,MN____
-    .byte MC_LOP,MN____
+    .byte MC____,MN____
+    .byte MC_LOP
 .pat1:
     .byte GUITAR,MN_C3_
     .byte MC____,MN____
@@ -1271,7 +1273,8 @@ testLeadSequence subroutine
     .byte MC____,MN_A3_
     .byte MC____,MN____
     .byte MC____,MN____
-    .byte MC_LOP,MN____
+    .byte MC____,MN____
+    .byte MC_LOP
     
 .pat2:
     .byte GUITAR,MN_C3_
@@ -1326,7 +1329,8 @@ testLeadSequence subroutine
     .byte MC____,MN____
     .byte MC____,MN_A3_
     .byte MC____,MN____
-    .byte MC_LOP,MN____
+    .byte MC____,MN____
+    .byte MC_LOP
 
 testChordSequence subroutine
     .word .pat0
@@ -1343,7 +1347,8 @@ testChordSequence subroutine
     .byte MC____,MN____
     .byte MC____,MN____
     .byte MC____,MN____
-    .byte MC_LOP,MN____
+    .byte MC____,MN____
+    .byte MC_LOP
 .pat1:
     .byte MJARP ,MN_C3_
     .byte MC____,MN____
@@ -1392,7 +1397,8 @@ testChordSequence subroutine
     .byte MNARP ,MN_G3_
     .byte MC____,MN____
     .byte MJARP ,MN_C3_
-    .byte MC_LOP,MN____
+    .byte MC____,MN____
+    .byte MC_LOP
     
 testDrumSequence subroutine
     .word .pat2
@@ -1419,7 +1425,8 @@ testDrumSequence subroutine
     .byte  SNARE,MN_G3_
     .byte MC____,MN____
     .byte    HAT,MN_C1_
-    .byte MC_LOP,MN____
+    .byte MC____,MN____
+    .byte MC_LOP
 .pat2:
     .byte  SNARE,MN_G3_
     .byte MC____,MN_G3_
@@ -1428,7 +1435,8 @@ testDrumSequence subroutine
     .byte    HAT,MN_C1_
     .byte MC____,MN_C1_
     .byte MC____,MN____
-    .byte MC_LOP,MN____
+    .byte MC____,MN____
+    .byte MC_LOP
 
 testBassSequence subroutine
     .word .pat1
@@ -1449,7 +1457,8 @@ testBassSequence subroutine
     .byte MC____,MN____
     .byte MC____,MN_G2_
     .byte MC____,MN____
-    .byte MC_LOP,MN_G1_
+    .byte MC____,MN_G1_
+    .byte MC_LOP
     
 
 mellowSong subroutine
@@ -1474,7 +1483,8 @@ mellowSong subroutine
     .byte MC____,MN____
     .byte MC____,MN____
     .byte MC____,MN____
-    .byte MC_LOP,MN____
+    .byte MC____,MN____
+    .byte MC_LOP
 .chord1:
     .byte MJPWER,MN_C2_
     .byte MC____,MN____
@@ -1491,7 +1501,8 @@ mellowSong subroutine
     .byte MC____,MN_C2_
     .byte MC____,MN____
     .byte MC____,MN____
-    .byte MC_LOP,MN____
+    .byte MC____,MN____
+    .byte MC_LOP
 .chord2:
     .byte MJPWER,MN_C2_
     .byte MC____,MN_C2_
@@ -1508,7 +1519,8 @@ mellowSong subroutine
     .byte MC____,MN____
     .byte MC____,MN____
     .byte MC____,MN____
-    .byte MC_LOP,MN____
+    .byte MC____,MN____
+    .byte MC_LOP
 
 industrialSong subroutine
     .byte 6
@@ -1568,7 +1580,8 @@ industrialSong subroutine
     .byte SNARE ,MN_G3_
     .byte MC____,MN____
     .byte MC____,MN____
-    .byte MC_LOP,MN____
+    .byte MC____,MN____
+    .byte MC_LOP
 .drum2:
     .byte SNARE ,MN_G3_
     .byte MC____,MN_G3_
@@ -1585,7 +1598,8 @@ industrialSong subroutine
     .byte MC____,MN____
     .byte MC____,MN____
     .byte MC____,MN____
-    .byte MC_LOP,MN____
+    .byte MC____,MN____
+    .byte MC_LOP
     
 .bassTrack:
     .word .bass0
@@ -1631,7 +1645,8 @@ industrialSong subroutine
     .byte MC____,MN____
     .byte MC____,MN____
     .byte MC____,MN____
-    .byte MC_LOP,MN____
+    .byte MC____,MN____
+    .byte MC_LOP
 .bass1:
     .byte GUITAR2,MN_D1S
     .byte MC____,MN____
@@ -1648,7 +1663,8 @@ industrialSong subroutine
     .byte MC____,MN_C1_
     .byte MC____,MN____
     .byte MC____,MN____
-    .byte MC_LOP,MN____
+    .byte MC____,MN____
+    .byte MC_LOP
 .bass2:
     .byte GUITAR2,MN_C1_
     .byte MC____,MN____
@@ -1665,7 +1681,8 @@ industrialSong subroutine
     .byte MC____,MN_C1_
     .byte MC____,MN_D1S
     .byte MC____,MN____
-    .byte MC_LOP,MN____
+    .byte MC____,MN____
+    .byte MC_LOP
 
 technoSong subroutine
     .byte 8
@@ -1714,7 +1731,8 @@ technoSong subroutine
     .byte MC____,MN____
     .byte MC____,MN____
     .byte MC____,MN____
-    .byte MC_LOP,MN____
+    .byte MC____,MN____
+    .byte MC_LOP
 .bass1:
     .byte MC____,MN_C3_
     .byte MC____,MN_D3_
@@ -1731,7 +1749,8 @@ technoSong subroutine
     .byte MC____,MN_G3_
     .byte MC____,MN_C3_
     .byte MC____,MN_D3_
-    .byte MC_LOP,MN____
+    .byte MC____,MN____
+    .byte MC_LOP
 
 mineSong subroutine
     .byte 12
@@ -1768,7 +1787,8 @@ mineSong subroutine
     .byte MC____,MN____
     .byte MC____,MN____
     .byte MC____,MN____
-    .byte MC_LOP,MN____
+    .byte MC____,MN____
+    .byte MC_LOP
 .lead1:
     .byte MC____,MN_G3_
     .byte MC____,MN____
@@ -1785,7 +1805,8 @@ mineSong subroutine
     .byte MC____,MN_A2S
     .byte MC____,MN____
     .byte MC____,MN____
-    .byte MC_LOP,MN____
+    .byte MC____,MN____
+    .byte MC_LOP
 .lead2:
     .byte MC____,MN_A3_
     .byte MC____,MN_D4_
@@ -1814,7 +1835,8 @@ mineSong subroutine
     .byte MC____,MN_C1_
     .byte MC____,MN_C1_
     .byte MC____,MN_C1_
-    .byte MC_LOP,MN_C1_
+    .byte MC____,MN_C1_
+    .byte MC_LOP
 
 .bassSeq:
     .word .bass0
@@ -1844,7 +1866,8 @@ mineSong subroutine
     .byte MC____,MN____
     .byte MC____,MN____
     .byte MC____,MN____
-    .byte MC_LOP,MN____
+    .byte MC____,MN____
+    .byte MC_LOP
 .bass1:
     .byte MC____,MN_C3_
     .byte MC____,MN____
@@ -1861,7 +1884,8 @@ mineSong subroutine
     .byte MC____,MN_A2S
     .byte MC____,MN_A2S
     .byte MC____,MN_C3_
-    .byte MC_LOP,MN_A2S
+    .byte MC____,MN_A2S
+    .byte MC_LOP
 .bass2:
     .byte MC____,MN_D3_
     .byte MC____,MN_G3_
@@ -1878,6 +1902,7 @@ mineSong subroutine
     .byte MC____,MN____
     .byte MC____,MN_G2_
     .byte MC____,MN____
-    .byte MC_LOP,MN____
+    .byte MC____,MN____
+    .byte MC_LOP
 
 ;------------------------------------------------------------------------------

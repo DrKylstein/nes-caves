@@ -31,8 +31,8 @@ sfxNote     ds 1
             ds 12 ;repeats
          
 musicSequence ds 8
-musicIndex ds 8 ;only even bytes used
-musicStream ds 8
+musicSequenceIndex ds 8 ;only even bytes used
+musicPatternPtr ds 8
 instrument ds 8
 
 messagePtr     ds 2

@@ -8,7 +8,7 @@ bindir		:= ..
 romname		:= $(bindir)/$(name).nes
 
 palettes	:= $(addsuffix .pal,$(basename $(notdir $(wildcard ../gfx/palette-*.png))))
-incbins		:= sprites.pat title-patterns.pat title-names.bin
+incbins		:= sprites.pat title-patterns.pat title-names.bin end.pat end.name
 tilesets	:= $(addsuffix .pat,$(basename $(notdir $(wildcard ../gfx/tileset-*.png))))
 sources		:= $(wildcard ../src/*.*) 
 asmflags	:= -I$(srcdir) -f3 -v0 -l$(name).lst -s$(name).sym
@@ -35,6 +35,13 @@ title-patterns.pat		:	$(gfxdir)/title-gs.png
 					
 title-names.bin			: title-patterns.pat
 					xxd -r -p title-names.txt title-names.bin
+
+end.pat		:	$(gfxdir)/end.png
+					tilestrip 8 8 <$< | deduplicate --names end-names.txt | planarbitmap 2 --interleave 8 >$@
+					
+end.name			: end.pat
+					xxd -r -p end-names.txt $@
+
 
 $(palettes):	%.pal:	$(gfxdir)/%.png
 	packedpixels <$< >$@

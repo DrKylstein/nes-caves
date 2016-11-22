@@ -4146,8 +4146,8 @@ StartMusic subroutine
     lda (tmp),y
     sta musicSequence-1,y
     lda #0
-    sta musicIndex-1,y
-    sta musicStream-1,y
+    sta musicSequenceIndex-1,y
+    sta musicPatternPtr-1,y
     iny
     cpy #9
     bne .loopSequences

@@ -12,6 +12,10 @@
  PRGROM Bank 6 left: 16384
  PRGROM Bank 7 left: 2923
 
+add attenuation command?
+change to relative pitch, controlled by the sequence?
+make command field optional?
+
 fix: when a long message is overwritten by a short one, the last letters remain
 ball sleep time still too long? randomized?
 powershot pickup sound
