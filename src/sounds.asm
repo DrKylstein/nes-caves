@@ -75,7 +75,7 @@ DoMusic subroutine
 
 .note:
     lda (musicPatternPtr,x)
-    cmp #MN____
+    cmp #REST
     beq .end
     sta arg+2
     lda instrument,x
@@ -252,7 +252,7 @@ sounds:
     .word sfxFruit
 
 sfxDrip subroutine
-    .byte MN_C4_
+    .byte NOTE_C4
     .byte SQ1_CH
     .byte PRI_BG_LOOP
     .word .sq
@@ -283,7 +283,7 @@ sfxDrip subroutine
 
 
 sfxAmmo subroutine
-    .byte MN_C4S
+    .byte NOTE_C4S
     .byte SQ1_CH
     .byte PRI_ITEM
     .word .sq
@@ -336,7 +336,7 @@ sfxAmmo subroutine
 
 
 sfxDoor subroutine
-    .byte MN_E3_
+    .byte NOTE_E3
     .byte NOISE_CH
     .byte PRI_PLAYER
     .word .noise
@@ -378,7 +378,7 @@ sfxDoor subroutine
 
 
 sfxSwitch subroutine
-    .byte MN_E3_
+    .byte NOTE_E3
     .byte NOISE_CH
     .byte PRI_PLAYER
     .word .noise
@@ -407,7 +407,7 @@ sfxSwitch subroutine
 
 
 sfxTextBox subroutine
-    .byte MN_B3_
+    .byte NOTE_B3
     .byte SQ1_CH
     .byte PRI_UI
     .word .sq
@@ -434,7 +434,7 @@ sfxTextBox subroutine
 
 
 sfxHurt subroutine
-    .byte MN_C3_
+    .byte NOTE_C3
     .byte SQ1_CH
     .byte PRI_ATTACK
     .word .sq
@@ -471,7 +471,7 @@ sfxHurt subroutine
 
 
 sfxChest subroutine
-    .byte MN_A2_
+    .byte NOTE_A2
     .byte SQ1_CH
     .byte PRI_ITEM
     .word .sq
@@ -499,7 +499,7 @@ sfxChest subroutine
     .byte 0
     
 sfxRTTY subroutine
-    .byte MN_C5_
+    .byte NOTE_C5
     .byte SQ1_CH
     .byte PRI_BG_LOOP
     .word .sq
@@ -512,7 +512,7 @@ sfxRTTY subroutine
     .byte 0
 
 sfxHeavyImpact subroutine
-    .byte MN_C1_
+    .byte NOTE_C1
     .byte NOISE_CH
     .byte PRI_ATTACK
     .word .noise
@@ -573,7 +573,7 @@ sfxLaser subroutine
     .byte 0
     
 sfxCrystal subroutine
-    .byte MN_D5_
+    .byte NOTE_D5
     .byte SQ1_CH
     .byte PRI_ITEM
     .word .sq
@@ -601,7 +601,7 @@ sfxCrystal subroutine
     .byte 0
     
 sfxFruit subroutine
-    .byte MN_D5_
+    .byte NOTE_D5
     .byte SQ1_CH
     .byte PRI_ITEM
     .word .sq
@@ -623,7 +623,7 @@ sfxFruit subroutine
     .byte 0
 
 sfxJump subroutine
-    .byte MN_A3S
+    .byte NOTE_A3S
     .byte SQ1_CH
     .byte PRI_PLAYER
     .word .sqJump
@@ -663,7 +663,7 @@ sfxJump subroutine
     .byte 0
     
 sfxShoot subroutine
-    .byte MN_F2S
+    .byte NOTE_F2S
     .byte SQ1_CH
     .byte PRI_PLAYER
     .word .sqShoot
@@ -725,7 +725,7 @@ sfxShoot subroutine
     .byte 0
 
 sfxPower subroutine
-    .byte MN_C4_
+    .byte NOTE_C4
     .byte SQ1_CH
     .byte PRI_ITEM
     .word .sq
@@ -758,91 +758,91 @@ sfxPower subroutine
 ;------------------------------------------------------------------------------
     SEG.U NOTES
     ORG 0
-MN_A0_  ds 1
-MN_A0S  ds 1
-MN_B0_  ds 1
-MN_C1_  ds 1
-MN_C1S  ds 1
-MN_D1_  ds 1
-MN_D1S  ds 1
-MN_E1_  ds 1
-MN_F1_  ds 1
-MN_F1S  ds 1
-MN_G1_  ds 1
-MN_G1S  ds 1
-MN_A1_  ds 1
-MN_A1S  ds 1
-MN_B1_  ds 1
-MN_C2_  ds 1
-MN_C2S  ds 1
-MN_D2_  ds 1
-MN_D2S  ds 1
-MN_E2_  ds 1
-MN_F2_  ds 1
-MN_F2S  ds 1
-MN_G2_  ds 1
-MN_G2S  ds 1
-MN_A2_  ds 1
-MN_A2S  ds 1
-MN_B2_  ds 1
-MN_C3_  ds 1
-MN_C3S  ds 1
-MN_D3_  ds 1
-MN_D3S  ds 1
-MN_E3_  ds 1
-MN_F3_  ds 1
-MN_F3S  ds 1
-MN_G3_  ds 1
-MN_G3S  ds 1
-MN_A3_  ds 1
-MN_A3S  ds 1
-MN_B3_  ds 1
-MN_C4_  ds 1
-MN_C4S  ds 1
-MN_D4_  ds 1
-MN_D4S  ds 1
-MN_E4_  ds 1
-MN_F4_  ds 1
-MN_F4S  ds 1
-MN_G4_  ds 1
-MN_G4S  ds 1
-MN_A4_  ds 1
-MN_A4S  ds 1
-MN_B4_  ds 1
-MN_C5_  ds 1
-MN_C5S  ds 1
-MN_D5_  ds 1
-MN_D5S  ds 1
-MN_E5_  ds 1
-MN_F5_  ds 1
-MN_F5S  ds 1
-MN_G5_  ds 1
-MN_G5S  ds 1
-MN_A5_  ds 1
-MN_A5S  ds 1
-MN_B5_  ds 1
-MN_C6_  ds 1
-MN_C6S  ds 1
-MN_D6_  ds 1
-MN_D6S  ds 1
-MN_E6_  ds 1
-MN_F6_  ds 1
-MN_F6S  ds 1
-MN_G6_  ds 1
-MN_G6S  ds 1
-MN_A6_  ds 1
-MN_A6S  ds 1
-MN_B6_  ds 1
-MN_C7_  ds 1
-MN_C7S  ds 1
-MN_D7_  ds 1
-MN_D7S  ds 1
-MN_E7_  ds 1
-MN_F7_  ds 1
-MN_F7S  ds 1
-MN_G7_  ds 1
-MN_G7S  ds 1
-MN____  ds 1
+NOTE_A0 ds 1
+NOTE_A0S  ds 1
+NOTE_B0 ds 1
+NOTE_C1 ds 1
+NOTE_C1S  ds 1
+NOTE_D1 ds 1
+NOTE_D1S  ds 1
+NOTE_E1 ds 1
+NOTE_F1 ds 1
+NOTE_F1S  ds 1
+NOTE_G1 ds 1
+NOTE_G1S  ds 1
+NOTE_A1 ds 1
+NOTE_A1S  ds 1
+NOTE_B1 ds 1
+NOTE_C2 ds 1
+NOTE_C2S  ds 1
+NOTE_D2 ds 1
+NOTE_D2S  ds 1
+NOTE_E2 ds 1
+NOTE_F2 ds 1
+NOTE_F2S  ds 1
+NOTE_G2 ds 1
+NOTE_G2S  ds 1
+NOTE_A2 ds 1
+NOTE_A2S  ds 1
+NOTE_B2 ds 1
+NOTE_C3 ds 1
+NOTE_C3S  ds 1
+NOTE_D3 ds 1
+NOTE_D3S  ds 1
+NOTE_E3 ds 1
+NOTE_F3 ds 1
+NOTE_F3S  ds 1
+NOTE_G3 ds 1
+NOTE_G3S  ds 1
+NOTE_A3 ds 1
+NOTE_A3S  ds 1
+NOTE_B3 ds 1
+NOTE_C4 ds 1
+NOTE_C4S  ds 1
+NOTE_D4 ds 1
+NOTE_D4S  ds 1
+NOTE_E4 ds 1
+NOTE_F4 ds 1
+NOTE_F4S  ds 1
+NOTE_G4 ds 1
+NOTE_G4S  ds 1
+NOTE_A4 ds 1
+NOTE_A4S  ds 1
+NOTE_B4 ds 1
+NOTE_C5 ds 1
+NOTE_C5S  ds 1
+NOTE_D5 ds 1
+NOTE_D5S  ds 1
+NOTE_E5 ds 1
+NOTE_F5 ds 1
+NOTE_F5S  ds 1
+NOTE_G5 ds 1
+NOTE_G5S  ds 1
+NOTE_A5 ds 1
+NOTE_A5S  ds 1
+NOTE_B5 ds 1
+NOTE_C6 ds 1
+NOTE_C6S  ds 1
+NOTE_D6 ds 1
+NOTE_D6S  ds 1
+NOTE_E6 ds 1
+NOTE_F6 ds 1
+NOTE_F6S  ds 1
+NOTE_G6 ds 1
+NOTE_G6S  ds 1
+NOTE_A6 ds 1
+NOTE_A6S  ds 1
+NOTE_B6 ds 1
+NOTE_C7 ds 1
+NOTE_C7S  ds 1
+NOTE_D7 ds 1
+NOTE_D7S  ds 1
+NOTE_E7 ds 1
+NOTE_F7 ds 1
+NOTE_F7S  ds 1
+NOTE_G7 ds 1
+NOTE_G7S  ds 1
+REST  ds 1
     SEG ROM_FILE
     
 periodTableLo:
@@ -863,33 +863,33 @@ periodTableHi:
   .byte $00,$00,$00,$00,$00,$00,$00,$00
   
 
-MC_LOP = $FF
+END_PATTERN = $FF
 
 ;------------------------------------------------------------------------------
 ; Instruments
 ;------------------------------------------------------------------------------
   
 instruments:
-    .word bassDrum
-    .word snareDrum
-    .word bass
-    .word hihat
-    .word majorArpeggio
-    .word majorPowerChord
-    .word minorArpeggio
-    .word guitar
-    .word guitar2
+    .word voice_kick
+    .word voice_snare
+    .word voice_bass
+    .word voice_hat
+    .word voice_majorArpeggio
+    .word voice_powerChord
+    .word voice_minorArpeggio
+    .word voice_guitar
+    .word voice_guitar2
     SEG.U INSTRUMENTS
     ORG $80
-BDRUM:   ds 1
-SNARE:   ds 1
-BASS:    ds 1
-HAT:     ds 1
-MJARP:   ds 1
-MJPWER:  ds 1
-MNARP:   ds 1
-GUITAR:  ds 1
-GUITAR2:  ds 1
+VOICE_KICK:   ds 1
+VOICE_SNARE:   ds 1
+VOICE_BASS:    ds 1
+VOICE_HAT:     ds 1
+VOICE_MAJOR_ARP:   ds 1
+VOICE_MAJOR_PCHORD:  ds 1
+VOICE_MINOR_ARP:   ds 1
+VOICE_GUITAR:  ds 1
+VOICE_GUITAR2:  ds 1
     SEG ROM_FILE
 
 ;square patch: 
@@ -903,7 +903,7 @@ GUITAR2:  ds 1
 ;.byte %L000FFFF ;L = loop noise, F = absolute frequency
 ;.byte 0 ; end
 
-guitar subroutine
+voice_guitar subroutine
     .byte SQ1_CH
     .byte PRI_MUSIC
     .word .sq2
@@ -927,7 +927,7 @@ guitar subroutine
     .byte DUTY_50 | 0, 0
     .byte 0
     
-guitar2 subroutine
+voice_guitar2 subroutine
     .byte SQ2_CH
     .byte PRI_MUSIC
     .word .sq2
@@ -952,7 +952,7 @@ guitar2 subroutine
     .byte 0
 
 
-majorPowerChord subroutine
+voice_powerChord subroutine
     .byte SQ2_CH
     .byte PRI_MUSIC
     .word .sq2
@@ -999,7 +999,7 @@ majorPowerChord subroutine
     .byte DUTY_50 | 0, 7
     .byte 0
     
-majorArpeggio subroutine
+voice_majorArpeggio subroutine
     .byte SQ2_CH
     .byte PRI_MUSIC
     .word .sq
@@ -1035,7 +1035,7 @@ majorArpeggio subroutine
     .byte DUTY_50 | 0, 7
     .byte 0
     
-minorArpeggio subroutine
+voice_minorArpeggio subroutine
     .byte SQ2_CH
     .byte PRI_MUSIC
     .word .sq
@@ -1071,7 +1071,7 @@ minorArpeggio subroutine
     .byte DUTY_50 | 0, 7
     .byte 0
 
-bass subroutine
+voice_bass subroutine
     .byte TRI_CH
     .byte 0
     .word .tri
@@ -1091,7 +1091,7 @@ bass subroutine
     .byte TRI_OFF, 0
     .byte 0
 
-bassDrum subroutine
+voice_kick subroutine
     .byte NOISE_CH
     .byte 0
     .word .noise
@@ -1124,7 +1124,7 @@ bassDrum subroutine
     .byte TRI_OFF, 0
     .byte 0
     
-snareDrum subroutine
+voice_snare subroutine
     .byte NOISE_CH
     .byte 0
     .word .noise
@@ -1157,7 +1157,7 @@ snareDrum subroutine
     .byte TRI_OFF, 0
     .byte 0
 
-hihat subroutine
+voice_hat subroutine
     .byte NOISE_CH
     .byte 0
     .word .noise
@@ -1206,126 +1206,126 @@ testLeadSequence subroutine
     .word .pat0
     .word 2<<1
 .pat0:
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MC_LOP
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte END_PATTERN
 .pat1:
-    .byte GUITAR,MN_C3_
-    .byte MN____
-    .byte MN____
-    .byte MN_A3_
-    .byte MN____
-    .byte MN_E3_
-    .byte MN____
-    .byte MN____
+    .byte VOICE_GUITAR,NOTE_C3
+    .byte REST
+    .byte REST
+    .byte NOTE_A3
+    .byte REST
+    .byte NOTE_E3
+    .byte REST
+    .byte REST
     
-    .byte MN_C3_
-    .byte MN____
-    .byte MN_E3_
-    .byte MN____
-    .byte MN_A3_
-    .byte MN____
-    .byte MN____
-    .byte MN____
+    .byte NOTE_C3
+    .byte REST
+    .byte NOTE_E3
+    .byte REST
+    .byte NOTE_A3
+    .byte REST
+    .byte REST
+    .byte REST
     
-    .byte MN_A3_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN_A3_
-    .byte MN____
-    .byte MN____
-    .byte MN____
+    .byte NOTE_A3
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte NOTE_A3
+    .byte REST
+    .byte REST
+    .byte REST
     
-    .byte MN_C3_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN_C3_
-    .byte MN____
-    .byte MN____
-    .byte MN____
+    .byte NOTE_C3
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte NOTE_C3
+    .byte REST
+    .byte REST
+    .byte REST
     
-    .byte GUITAR,MN_C3_
-    .byte MN____
-    .byte MN____
-    .byte MN_A3_
-    .byte MN____
-    .byte MN_E3_
-    .byte MN____
-    .byte MN____
+    .byte VOICE_GUITAR,NOTE_C3
+    .byte REST
+    .byte REST
+    .byte NOTE_A3
+    .byte REST
+    .byte NOTE_E3
+    .byte REST
+    .byte REST
     
-    .byte MN_C3_
-    .byte MN____
-    .byte MN_E3_
-    .byte MN____
-    .byte MN_A3_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MC_LOP
+    .byte NOTE_C3
+    .byte REST
+    .byte NOTE_E3
+    .byte REST
+    .byte NOTE_A3
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte END_PATTERN
     
 .pat2:
-    .byte GUITAR,MN_C3_
-    .byte MN____
-    .byte MN_A3_
-    .byte MN____
-    .byte MN____
-    .byte MN_E3_
-    .byte MN____
-    .byte MN____
+    .byte VOICE_GUITAR,NOTE_C3
+    .byte REST
+    .byte NOTE_A3
+    .byte REST
+    .byte REST
+    .byte NOTE_E3
+    .byte REST
+    .byte REST
     
-    .byte MN_C3_
-    .byte MN____
-    .byte MN____
-    .byte MN_E3_
-    .byte MN____
-    .byte MN_A3_
-    .byte MN____
-    .byte MN____
+    .byte NOTE_C3
+    .byte REST
+    .byte REST
+    .byte NOTE_E3
+    .byte REST
+    .byte NOTE_A3
+    .byte REST
+    .byte REST
     
-    .byte MN_E3_
-    .byte MN_F3_
-    .byte MN____
-    .byte MN____
-    .byte MN_E3_
-    .byte MN_F3_
-    .byte MN____
-    .byte MN____
+    .byte NOTE_E3
+    .byte NOTE_F3
+    .byte REST
+    .byte REST
+    .byte NOTE_E3
+    .byte NOTE_F3
+    .byte REST
+    .byte REST
     
-    .byte MN_A3_
-    .byte MN_D3_
-    .byte MN____
-    .byte MN_A3_
-    .byte MN_D3_
-    .byte MN____
-    .byte MN____
-    .byte MN____
+    .byte NOTE_A3
+    .byte NOTE_D3
+    .byte REST
+    .byte NOTE_A3
+    .byte NOTE_D3
+    .byte REST
+    .byte REST
+    .byte REST
     
-    .byte GUITAR,MN_C3_
-    .byte MN____
-    .byte MN_A3_
-    .byte MN____
-    .byte MN____
-    .byte MN_E3_
-    .byte MN____
-    .byte MN____
+    .byte VOICE_GUITAR,NOTE_C3
+    .byte REST
+    .byte NOTE_A3
+    .byte REST
+    .byte REST
+    .byte NOTE_E3
+    .byte REST
+    .byte REST
     
-    .byte MN_C3_
-    .byte MN____
-    .byte MN____
-    .byte MN_E3_
-    .byte MN____
-    .byte MN_A3_
-    .byte MN____
-    .byte MN____
-    .byte MC_LOP
+    .byte NOTE_C3
+    .byte REST
+    .byte REST
+    .byte NOTE_E3
+    .byte REST
+    .byte NOTE_A3
+    .byte REST
+    .byte REST
+    .byte END_PATTERN
 
 testChordSequence subroutine
     .word .pat0
@@ -1335,65 +1335,65 @@ testChordSequence subroutine
     .word .pat0
     .word 2<<1
 .pat0:
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MC_LOP
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte END_PATTERN
 .pat1:
-    .byte MJARP ,MN_C3_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN_C3_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN_C3_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN_C3_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN_F3_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN_F3_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN_C3_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN_C3_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MNARP ,MN_G3_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MJARP ,MN_F3_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN_C3_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MNARP ,MN_G3_
-    .byte MN____
-    .byte MJARP ,MN_C3_
-    .byte MN____
-    .byte MC_LOP
+    .byte VOICE_MAJOR_ARP ,NOTE_C3
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte NOTE_C3
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte NOTE_C3
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte NOTE_C3
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte NOTE_F3
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte NOTE_F3
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte NOTE_C3
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte NOTE_C3
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte VOICE_MINOR_ARP ,NOTE_G3
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte VOICE_MAJOR_ARP ,NOTE_F3
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte NOTE_C3
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte VOICE_MINOR_ARP ,NOTE_G3
+    .byte REST
+    .byte VOICE_MAJOR_ARP ,NOTE_C3
+    .byte REST
+    .byte END_PATTERN
     
 testDrumSequence subroutine
     .word .pat2
@@ -1413,47 +1413,47 @@ testDrumSequence subroutine
     .word .pat2
     .word 2<<1
 .pat1:
-    .byte  BDRUM,MN_C1_
-    .byte MN____
-    .byte    HAT,MN_C1_
-    .byte MN____
-    .byte  SNARE,MN_G3_
-    .byte MN____
-    .byte    HAT,MN_C1_
-    .byte MN____
-    .byte MC_LOP
+    .byte  VOICE_KICK,NOTE_C1
+    .byte REST
+    .byte    VOICE_HAT,NOTE_C1
+    .byte REST
+    .byte  VOICE_SNARE,NOTE_G3
+    .byte REST
+    .byte    VOICE_HAT,NOTE_C1
+    .byte REST
+    .byte END_PATTERN
 .pat2:
-    .byte  SNARE,MN_G3_
-    .byte MN_G3_
-    .byte  BDRUM,MN_C1_
-    .byte MN_C1_
-    .byte    HAT,MN_C1_
-    .byte MN_C1_
-    .byte MN____
-    .byte MN____
-    .byte MC_LOP
+    .byte  VOICE_SNARE,NOTE_G3
+    .byte NOTE_G3
+    .byte  VOICE_KICK,NOTE_C1
+    .byte NOTE_C1
+    .byte    VOICE_HAT,NOTE_C1
+    .byte NOTE_C1
+    .byte REST
+    .byte REST
+    .byte END_PATTERN
 
 testBassSequence subroutine
     .word .pat1
     .word 0
 .pat1:
-    .byte MN____
-    .byte   BASS,MN_C2_
-    .byte MN____
-    .byte MN_C1_
-    .byte MN____
-    .byte MN_C2_
-    .byte MN____
-    .byte MN_C1_
-    .byte MN____
-    .byte MN_G2_
-    .byte MN____
-    .byte MN_G1_
-    .byte MN____
-    .byte MN_G2_
-    .byte MN____
-    .byte MN_G1_
-    .byte MC_LOP
+    .byte REST
+    .byte   VOICE_BASS,NOTE_C2
+    .byte REST
+    .byte NOTE_C1
+    .byte REST
+    .byte NOTE_C2
+    .byte REST
+    .byte NOTE_C1
+    .byte REST
+    .byte NOTE_G2
+    .byte REST
+    .byte NOTE_G1
+    .byte REST
+    .byte NOTE_G2
+    .byte REST
+    .byte NOTE_G1
+    .byte END_PATTERN
     
 
 mellowSong subroutine
@@ -1471,51 +1471,51 @@ mellowSong subroutine
     .word .chord1
     .word 0
 .chordRest:
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MC_LOP
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte END_PATTERN
 .chord1:
-    .byte MJPWER,MN_C2_
-    .byte MN____
-    .byte MN_F2_
-    .byte MN____
-    .byte MN_F2_
-    .byte MN____
-    .byte MN____
-    .byte MN_C2_
-    .byte MN____
-    .byte MN_F2_
-    .byte MN_F2_
-    .byte MN____
-    .byte MN_C2_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MC_LOP
+    .byte VOICE_MAJOR_PCHORD,NOTE_C2
+    .byte REST
+    .byte NOTE_F2
+    .byte REST
+    .byte NOTE_F2
+    .byte REST
+    .byte REST
+    .byte NOTE_C2
+    .byte REST
+    .byte NOTE_F2
+    .byte NOTE_F2
+    .byte REST
+    .byte NOTE_C2
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte END_PATTERN
 .chord2:
-    .byte MJPWER,MN_C2_
-    .byte MN_C2_
-    .byte MN____
-    .byte MN_F2_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN_F2_
-    .byte MN_F2_
-    .byte MN____
-    .byte MN_C2_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MC_LOP
+    .byte VOICE_MAJOR_PCHORD,NOTE_C2
+    .byte NOTE_C2
+    .byte REST
+    .byte NOTE_F2
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte NOTE_F2
+    .byte NOTE_F2
+    .byte REST
+    .byte NOTE_C2
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte END_PATTERN
 
 industrialSong subroutine
     .byte 6
@@ -1544,57 +1544,57 @@ industrialSong subroutine
     .word .drum2
     .word 2<<1
 .drum1:
-    .byte BDRUM ,MN_C1_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte SNARE ,MN_G3_
-    .byte MN____
-    .byte BDRUM ,MN_G3_
-    .byte BDRUM ,MN_G3_
-    .byte BDRUM ,MN_G3_
-    .byte MN____
-    .byte BDRUM ,MN_G3_
-    .byte MN____
-    .byte SNARE ,MN_G3_
-    .byte MN____
-    .byte BDRUM ,MN_G3_
-    .byte MN____
-    .byte BDRUM ,MN_G3_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte SNARE ,MN_G3_
-    .byte MN____
-    .byte BDRUM ,MN_G3_
-    .byte BDRUM ,MN_G3_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte BDRUM ,MN_G3_
-    .byte SNARE ,MN_G3_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MC_LOP
+    .byte VOICE_KICK ,NOTE_C1
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte VOICE_SNARE ,NOTE_G3
+    .byte REST
+    .byte VOICE_KICK ,NOTE_G3
+    .byte VOICE_KICK ,NOTE_G3
+    .byte VOICE_KICK ,NOTE_G3
+    .byte REST
+    .byte VOICE_KICK ,NOTE_G3
+    .byte REST
+    .byte VOICE_SNARE ,NOTE_G3
+    .byte REST
+    .byte VOICE_KICK ,NOTE_G3
+    .byte REST
+    .byte VOICE_KICK ,NOTE_G3
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte VOICE_SNARE ,NOTE_G3
+    .byte REST
+    .byte VOICE_KICK ,NOTE_G3
+    .byte VOICE_KICK ,NOTE_G3
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte VOICE_KICK ,NOTE_G3
+    .byte VOICE_SNARE ,NOTE_G3
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte END_PATTERN
 .drum2:
-    .byte SNARE ,MN_G3_
-    .byte MN_G3_
-    .byte MN_G3_
-    .byte MN____
-    .byte MN_G3_
-    .byte MN_G3_
-    .byte MN____
-    .byte MN_G3_
-    .byte MN_G3_
-    .byte MN____
-    .byte MN_G3_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MC_LOP
+    .byte VOICE_SNARE ,NOTE_G3
+    .byte NOTE_G3
+    .byte NOTE_G3
+    .byte REST
+    .byte NOTE_G3
+    .byte NOTE_G3
+    .byte REST
+    .byte NOTE_G3
+    .byte NOTE_G3
+    .byte REST
+    .byte NOTE_G3
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte END_PATTERN
     
 .bassTrack:
     .word .bass0
@@ -1625,59 +1625,59 @@ industrialSong subroutine
     .word .bass0
     .word 1<<2
 .bass0:
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MC_LOP
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte END_PATTERN
 .bass1:
-    .byte GUITAR2,MN_D1S
-    .byte MN____
-    .byte MN_C1_
-    .byte MN_G1S
-    .byte MN____
-    .byte MN_D1S
-    .byte MN____
-    .byte MN_D1S
-    .byte MN____
-    .byte MN____
-    .byte MN_G1S
-    .byte MN____
-    .byte MN_C1_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MC_LOP
+    .byte VOICE_GUITAR2,NOTE_D1S
+    .byte REST
+    .byte NOTE_C1
+    .byte NOTE_G1S
+    .byte REST
+    .byte NOTE_D1S
+    .byte REST
+    .byte NOTE_D1S
+    .byte REST
+    .byte REST
+    .byte NOTE_G1S
+    .byte REST
+    .byte NOTE_C1
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte END_PATTERN
 .bass2:
-    .byte GUITAR2,MN_C1_
-    .byte MN____
-    .byte MN_G1S
-    .byte MN_C1_
-    .byte MN_D1S
-    .byte MN_C1_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN_G1S
-    .byte MN_D1S
-    .byte MN____
-    .byte MN_C1_
-    .byte MN_D1S
-    .byte MN____
-    .byte MN____
-    .byte MC_LOP
+    .byte VOICE_GUITAR2,NOTE_C1
+    .byte REST
+    .byte NOTE_G1S
+    .byte NOTE_C1
+    .byte NOTE_D1S
+    .byte NOTE_C1
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte NOTE_G1S
+    .byte NOTE_D1S
+    .byte REST
+    .byte NOTE_C1
+    .byte NOTE_D1S
+    .byte REST
+    .byte REST
+    .byte END_PATTERN
 
 technoSong subroutine
     .byte 8
@@ -1689,14 +1689,14 @@ technoSong subroutine
     .word .drum1
     .word 0
 .drum1:
-    .byte BDRUM ,MN_C1_
-    .byte    HAT,MN_C1_
-    .byte MN_C1_
-    .byte MN_C1_
-    .byte BDRUM ,MN_C1_
-    .byte    HAT,MN_C1_
-    .byte MN_C1_
-    .byte MC_LOP,MN_C1_
+    .byte VOICE_KICK ,NOTE_C1
+    .byte    VOICE_HAT,NOTE_C1
+    .byte NOTE_C1
+    .byte NOTE_C1
+    .byte VOICE_KICK ,NOTE_C1
+    .byte    VOICE_HAT,NOTE_C1
+    .byte NOTE_C1
+    .byte END_PATTERN,NOTE_C1
     
 .bassTrack:
     .word .bass0
@@ -1711,41 +1711,41 @@ technoSong subroutine
     .word .bass0
     .word 1<<2
 .bass0:
-    .byte GUITAR2,MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MC_LOP
+    .byte VOICE_GUITAR2,REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte END_PATTERN
 .bass1:
-    .byte MN_C3_
-    .byte MN_D3_
-    .byte MN_E3_
-    .byte MN_D3_
-    .byte MN_C3_
-    .byte MN_D3_
-    .byte MN_E3_
-    .byte MN_D3_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN_G3_
-    .byte MN_C3_
-    .byte MN_D3_
-    .byte MN____
-    .byte MC_LOP
+    .byte NOTE_C3
+    .byte NOTE_D3
+    .byte NOTE_E3
+    .byte NOTE_D3
+    .byte NOTE_C3
+    .byte NOTE_D3
+    .byte NOTE_E3
+    .byte NOTE_D3
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte NOTE_G3
+    .byte NOTE_C3
+    .byte NOTE_D3
+    .byte REST
+    .byte END_PATTERN
 
 mineSong subroutine
     .byte 12
@@ -1767,71 +1767,71 @@ mineSong subroutine
     .word .lead1
     .word 1 << 1
 .leadRest:
-    .byte GUITAR2,MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MC_LOP
+    .byte VOICE_GUITAR2,REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte END_PATTERN
 .lead1:
-    .byte MN_G3_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN_G3_
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN_A2S
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN_A2S
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MC_LOP
+    .byte NOTE_G3
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte NOTE_G3
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte NOTE_A2S
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte NOTE_A2S
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte END_PATTERN
 .lead2:
-    .byte MN_A3_
-    .byte MN_D4_
-    .byte MN_A3_
-    .byte MN_D2_
-    .byte MN_G3_
-    .byte MN____
-    .byte MN_G3_
-    .byte MN_C3_
-    .byte MN____
-    .byte MN_C3_
-    .byte MN____
-    .byte MN_D3_
-    .byte MN____
-    .byte MN_D3S
-    .byte MN____
-    .byte MC_LOP,MN____
+    .byte NOTE_A3
+    .byte NOTE_D4
+    .byte NOTE_A3
+    .byte NOTE_D2
+    .byte NOTE_G3
+    .byte REST
+    .byte NOTE_G3
+    .byte NOTE_C3
+    .byte REST
+    .byte NOTE_C3
+    .byte REST
+    .byte NOTE_D3
+    .byte REST
+    .byte NOTE_D3S
+    .byte REST
+    .byte END_PATTERN,REST
 .percussionSeq:
     .word .percussion1
     .word 0
 .percussion1:
-    .byte HAT,MN_C1_
-    .byte MN_C1_
-    .byte MN_C1_
-    .byte MN_C1_
-    .byte MN_C1_
-    .byte MN_C1_
-    .byte MN_C1_
-    .byte MN_C1_
-    .byte MC_LOP
+    .byte VOICE_HAT,NOTE_C1
+    .byte NOTE_C1
+    .byte NOTE_C1
+    .byte NOTE_C1
+    .byte NOTE_C1
+    .byte NOTE_C1
+    .byte NOTE_C1
+    .byte NOTE_C1
+    .byte END_PATTERN
 
 .bassSeq:
     .word .bass0
@@ -1846,58 +1846,58 @@ mineSong subroutine
     .word .bass1
     .word 1 << 1
 .bass0:
-    .byte BASS  ,MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MN____
-    .byte MC_LOP
+    .byte VOICE_BASS,REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte END_PATTERN
 .bass1:
-    .byte MN_C3_
-    .byte MN____
-    .byte MN____
-    .byte MN_C3_
-    .byte MN_G2_
-    .byte MN____
-    .byte MN____
-    .byte MN_C3_
-    .byte MN____
-    .byte MN_C3_
-    .byte MN____
-    .byte MN_G2_
-    .byte MN_A2S
-    .byte MN_A2S
-    .byte MN_C3_
-    .byte MN_A2S
-    .byte MC_LOP
+    .byte NOTE_C3
+    .byte REST
+    .byte REST
+    .byte NOTE_C3
+    .byte NOTE_G2
+    .byte REST
+    .byte REST
+    .byte NOTE_C3
+    .byte REST
+    .byte NOTE_C3
+    .byte REST
+    .byte NOTE_G2
+    .byte NOTE_A2S
+    .byte NOTE_A2S
+    .byte NOTE_C3
+    .byte NOTE_A2S
+    .byte END_PATTERN
 .bass2:
-    .byte MN_D3_
-    .byte MN_G3_
-    .byte MN_D3_
-    .byte MN_G2_
-    .byte MN_C3_
-    .byte MN____
-    .byte MN_C3_
-    .byte MN_E2_
-    .byte MN____
-    .byte MN_F2_
-    .byte MN____
-    .byte MN_F2S
-    .byte MN____
-    .byte MN_G2_
-    .byte MN____
-    .byte MN____
-    .byte MC_LOP
+    .byte NOTE_D3
+    .byte NOTE_G3
+    .byte NOTE_D3
+    .byte NOTE_G2
+    .byte NOTE_C3
+    .byte REST
+    .byte NOTE_C3
+    .byte NOTE_E2
+    .byte REST
+    .byte NOTE_F2
+    .byte REST
+    .byte NOTE_F2S
+    .byte REST
+    .byte NOTE_G2
+    .byte REST
+    .byte REST
+    .byte END_PATTERN
 
 ;------------------------------------------------------------------------------
