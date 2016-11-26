@@ -949,20 +949,20 @@ voice_guitar subroutine
     .byte -1
 .sq2:
     .byte DUTY_12 |15, 0
-    .byte DUTY_12 | 7, 0
-    .byte DUTY_12 | 3, 0
-    .byte DUTY_12 | 3, 0
-    .byte DUTY_25 | 7, 0
-    .byte DUTY_25 | 3, 0
-    .byte DUTY_25 | 3, 0
-    .byte DUTY_50 | 3, 0
-    .byte DUTY_25 | 7, 0
-    .byte DUTY_25 | 3, 0
-    .byte DUTY_25 | 3, 0
-    .byte DUTY_50 | 3, 0
+    .byte DUTY_12 |10, 0
+    .byte DUTY_12 | 5, 0
+    .byte DUTY_12 | 5, 0
+    .byte DUTY_25 |10, 0
+    .byte DUTY_25 | 5, 0
+    .byte DUTY_25 | 5, 0
     .byte DUTY_50 | 5, 0
+    .byte DUTY_25 |10, 0
+    .byte DUTY_25 | 5, 0
+    .byte DUTY_25 | 5, 0
+    .byte DUTY_50 | 5, 0
+    .byte DUTY_50 | 9, 0
+    .byte DUTY_50 | 4, 0
     .byte DUTY_50 | 2, 0
-    .byte DUTY_50 | 1, 0
     .byte DUTY_50 | 0, 0
     .byte 0
     
@@ -973,20 +973,20 @@ voice_guitar2 subroutine
     .byte -1
 .sq2:
     .byte DUTY_12 |15, 0
-    .byte DUTY_12 | 7, 0
-    .byte DUTY_12 | 3, 0
-    .byte DUTY_12 | 3, 0
-    .byte DUTY_25 | 7, 0
-    .byte DUTY_25 | 3, 0
-    .byte DUTY_25 | 3, 0
-    .byte DUTY_50 | 3, 0
-    .byte DUTY_25 | 7, 0
-    .byte DUTY_25 | 3, 0
-    .byte DUTY_25 | 3, 0
-    .byte DUTY_50 | 3, 0
+    .byte DUTY_12 |10, 0
+    .byte DUTY_12 | 5, 0
+    .byte DUTY_12 | 5, 0
+    .byte DUTY_25 |10, 0
+    .byte DUTY_25 | 5, 0
+    .byte DUTY_25 | 5, 0
     .byte DUTY_50 | 5, 0
+    .byte DUTY_25 |10, 0
+    .byte DUTY_25 | 5, 0
+    .byte DUTY_25 | 5, 0
+    .byte DUTY_50 | 5, 0
+    .byte DUTY_50 | 9, 0
+    .byte DUTY_50 | 4, 0
     .byte DUTY_50 | 2, 0
-    .byte DUTY_50 | 1, 0
     .byte DUTY_50 | 0, 0
     .byte 0
 
@@ -1236,15 +1236,66 @@ testSong subroutine
 
 testLeadSequence subroutine
     .word .pat0
+    
     .word .pat0
+    .word .pat0
+    .word .pat0
+    
+    
     .word .pat1
+    .word .pat2
+    .word .pat3
+
     .word .pat1
-    .word .pat0
     .word .pat2
-    .word .pat2
+    .word .pat3
+    
     .word .pat0
-    .word 2<<1
+    
+    
+    .word .pat0
+    .word .pat0
+    .word .pat0
+    
+    .word .pat0
+    .word .pat0
+    .word .pat0
+    
+    .word .pat0
+
+    
+    .word .pat4
+    .word .pat5
+    .word .pat6
+    
+    .word .pat4
+    .word .pat5
+    .word .pat6
+    
+    .word .pat0
+    
+
+    .word .pat0
+    .word .pat0
+    .word .pat0
+    
+    .word .pat0
+    .word .pat0
+    .word .pat0
+    
+    .word .pat0
+
+    
+    .word 4<<1
 .pat0:
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
     .byte REST
     .byte REST
     .byte REST
@@ -1272,7 +1323,8 @@ testLeadSequence subroutine
     .byte REST
     .byte REST
     .byte REST
-    
+    .byte END_PATTERN
+.pat2:
     .byte NOTE_A3
     .byte REST
     .byte REST
@@ -1290,7 +1342,8 @@ testLeadSequence subroutine
     .byte REST
     .byte REST
     .byte REST
-    
+    .byte END_PATTERN
+.pat3:    
     .byte VOICE_GUITAR,NOTE_C3
     .byte REST
     .byte REST
@@ -1309,8 +1362,7 @@ testLeadSequence subroutine
     .byte REST
     .byte REST
     .byte END_PATTERN
-    
-.pat2:
+.pat4:
     .byte VOICE_GUITAR,NOTE_C3
     .byte REST
     .byte NOTE_A3
@@ -1328,7 +1380,8 @@ testLeadSequence subroutine
     .byte NOTE_A3
     .byte REST
     .byte REST
-    
+    .byte END_PATTERN
+.pat5:
     .byte NOTE_E3
     .byte NOTE_F3
     .byte REST
@@ -1346,7 +1399,8 @@ testLeadSequence subroutine
     .byte REST
     .byte REST
     .byte REST
-    
+    .byte END_PATTERN
+.pat6:
     .byte VOICE_GUITAR,NOTE_C3
     .byte REST
     .byte NOTE_A3
@@ -1368,12 +1422,32 @@ testLeadSequence subroutine
 
 testChordSequence subroutine
     .word .pat0
+    
     .word .pat0
     .word .pat1
+    .word .pat2
+    
+    
     .word .pat1
+    .word .pat2
+    .word .pat3
+    
+    .word .pat1
+    .word .pat2
+    .word .pat3
+    
     .word .pat0
-    .word 2<<1
+    
+    .word 4<<1
 .pat0:
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
+    .byte REST
     .byte REST
     .byte REST
     .byte REST
@@ -1400,7 +1474,9 @@ testChordSequence subroutine
     .byte REST
     .byte REST
     .byte REST
-    .byte NOTE_F3
+    .byte END_PATTERN
+.pat2:
+    .byte VOICE_MAJOR_ARP ,NOTE_F3
     .byte REST
     .byte REST
     .byte REST
@@ -1416,6 +1492,8 @@ testChordSequence subroutine
     .byte REST
     .byte REST
     .byte REST
+    .byte END_PATTERN
+.pat3:
     .byte VOICE_MINOR_ARP ,NOTE_G3
     .byte REST
     .byte REST
@@ -1435,22 +1513,22 @@ testChordSequence subroutine
     .byte END_PATTERN
     
 testDrumSequence subroutine
-    .word .pat2
-    .word .pat2
+    .word .pat0
+    
     .word .pat1
     .word .pat1
     .word .pat1
+    
     .word .pat1
     .word .pat1
     .word .pat1
+    
     .word .pat1
     .word .pat1
     .word .pat1
-    .word .pat1
-    .word .pat1
-    .word .pat1
-    .word .pat2
-    .word 2<<1
+    
+    .word .pat0
+    .word 4<<1
 .pat1:
     .byte  VOICE_KICK,NOTE_C1
     .byte REST
@@ -1460,8 +1538,24 @@ testDrumSequence subroutine
     .byte REST
     .byte    VOICE_HAT,NOTE_C1
     .byte REST
+    .byte  VOICE_KICK,NOTE_C1
+    .byte REST
+    .byte    VOICE_HAT,NOTE_C1
+    .byte REST
+    .byte  VOICE_SNARE,NOTE_G3
+    .byte REST
+    .byte    VOICE_HAT,NOTE_C1
+    .byte REST
     .byte END_PATTERN
-.pat2:
+.pat0:
+    .byte  VOICE_SNARE,NOTE_G3
+    .byte NOTE_G3
+    .byte  VOICE_KICK,NOTE_C1
+    .byte NOTE_C1
+    .byte    VOICE_HAT,NOTE_C1
+    .byte NOTE_C1
+    .byte REST
+    .byte REST
     .byte  VOICE_SNARE,NOTE_G3
     .byte NOTE_G3
     .byte  VOICE_KICK,NOTE_C1
@@ -1563,42 +1657,37 @@ industrialSong subroutine
     .word 0
     .word 0
 .drumTrack:
-    .word .drum2
-    .word .drum2
-    
-    .word .drum1
-    .word .drum1
-    .word .drum1
-    .word .drum1
-    
-    .word .drum2
-    .word .drum2
+    .word .drum0
+    .word .drum0
     
     .word .drum1
     .word .drum2
     .word .drum1
+    .word .drum2
+    .word .drum1
     
-    .word .drum2
-    .word .drum2
-    .word .drum2
+    .word .drum0
+    .word .drum0
     .word 2<<1
 .drum1:
-    .byte VOICE_KICK ,NOTE_C1
+    .byte VOICE_KICK,NOTE_C1
     .byte REST
     .byte REST
+    .byte REST
+    .byte VOICE_SNARE,NOTE_G3
+    .byte REST
+    .byte VOICE_KICK,NOTE_G3
+    .byte VOICE_KICK,NOTE_G3
+    .byte VOICE_KICK,NOTE_G3
+    .byte REST
+    .byte VOICE_KICK ,NOTE_G3
     .byte REST
     .byte VOICE_SNARE ,NOTE_G3
     .byte REST
     .byte VOICE_KICK ,NOTE_G3
-    .byte VOICE_KICK ,NOTE_G3
-    .byte VOICE_KICK ,NOTE_G3
     .byte REST
-    .byte VOICE_KICK ,NOTE_G3
-    .byte REST
-    .byte VOICE_SNARE ,NOTE_G3
-    .byte REST
-    .byte VOICE_KICK ,NOTE_G3
-    .byte REST
+    .byte END_PATTERN
+.drum2:
     .byte VOICE_KICK ,NOTE_G3
     .byte REST
     .byte REST
@@ -1616,7 +1705,7 @@ industrialSong subroutine
     .byte REST
     .byte REST
     .byte END_PATTERN
-.drum2:
+.drum0:
     .byte VOICE_SNARE ,NOTE_G3
     .byte NOTE_G3
     .byte NOTE_G3
@@ -1639,27 +1728,48 @@ industrialSong subroutine
     .word .bass0
     .word .bass0
     
-    .word .bass1
     .word .bass0
-    .word .bass1
     .word .bass0
-    .word .bass2
     .word .bass0
-    .word .bass2
     .word .bass0
-    
+    .word .bass0
+
     .word .bass0
     .word .bass0
     
     .word .bass1
     .word .bass1
-    .word .bass2
-    .word .bass2
     .word .bass0
-    .word .bass0
+    .word .bass2
     .word .bass2
     
     .word .bass0
+    .word .bass0
+    
+    .word .bass3
+    .word .bass4
+    .word .bass0
+    .word .bass3
+    .word .bass4
+    
+    .word .bass0
+    .word .bass0
+
+    .word .bass0
+    .word .bass0
+    .word .bass0
+    .word .bass0
+    .word .bass0
+
+    .word .bass0
+    .word .bass0
+
+    .word .bass1
+    .word .bass2
+    .word .bass0
+    .word .bass3
+    .word .bass4
+    
     .word .bass0
     .word .bass0
     .word 1<<2
@@ -1682,7 +1792,9 @@ industrialSong subroutine
     .byte REST
     .byte END_PATTERN
 .bass1:
-    .byte VOICE_GUITAR2,NOTE_D1S
+    .byte VOICE_GUITAR2
+    
+    .byte NOTE_D1S
     .byte REST
     .byte NOTE_C1
     .byte NOTE_G1S
@@ -1698,9 +1810,12 @@ industrialSong subroutine
     .byte REST
     .byte REST
     .byte REST
+    
     .byte END_PATTERN
 .bass2:
-    .byte VOICE_GUITAR2,NOTE_C1
+    .byte VOICE_GUITAR2
+    
+    .byte NOTE_C1
     .byte REST
     .byte NOTE_G1S
     .byte NOTE_C1
@@ -1716,6 +1831,49 @@ industrialSong subroutine
     .byte NOTE_D1S
     .byte REST
     .byte REST
+    
+    .byte END_PATTERN
+.bass3:
+    .byte VOICE_GUITAR2
+    
+    .byte NOTE_D1S
+    .byte REST
+    .byte NOTE_D1S
+    .byte REST
+    .byte NOTE_D1S
+    .byte REST
+    .byte REST
+    .byte NOTE_G1S
+    .byte REST
+    .byte NOTE_C1
+    .byte REST
+    .byte NOTE_C1
+    .byte REST
+    .byte NOTE_C1
+    .byte REST
+    .byte REST
+    
+    .byte END_PATTERN
+.bass4:
+    .byte VOICE_GUITAR2
+    
+    .byte NOTE_G1S
+    .byte REST
+    .byte NOTE_C1
+    .byte REST
+    .byte NOTE_D1S
+    .byte REST
+    .byte NOTE_C1
+    .byte REST
+    .byte NOTE_D1S
+    .byte REST
+    .byte NOTE_C1
+    .byte REST
+    .byte NOTE_C1
+    .byte REST
+    .byte NOTE_C1
+    .byte REST
+    
     .byte END_PATTERN
 
 technoSong subroutine
