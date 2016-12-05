@@ -27,9 +27,9 @@ cloudsTiles:
     incbin tileset-clouds.pat
     include palettes.asm
 introScene:
-    incbin intro_scene.bin
+    incbin intro_scene.lvl
 mainMap:
-    incbin main_map.bin
+    incbin main_map.lvl
     ECHO "PRGROM Bank 0 left:",[$C000-.]d
     IF . > $C000
     ECHO "Exceeded PRGROM Bank 0 size!"
@@ -41,37 +41,37 @@ mainMap:
     ORG 16 + 1*$4000
     RORG $8000
 level01:
-    incbin level01.bin
+    incbin level01.lvl
 level02:
-    incbin level02.bin
+    incbin level02.lvl
 level03:
-    incbin level03.bin
+    incbin level03.lvl
 level04:
-    incbin level04.bin
+    incbin level04.lvl
 level05:
-    incbin level05.bin
+    incbin level05.lvl
 level06:
-    incbin level06.bin
+    incbin level06.lvl
 level07:
-    incbin level07.bin
+    incbin level07.lvl
 level08:
-    incbin level08.bin
+    incbin level08.lvl
 level09:
-    incbin level09.bin
+    incbin level09.lvl
 level10:
-    incbin level10.bin
+    incbin level10.lvl
 level11:
-    incbin level11.bin
+    incbin level11.lvl
 level12:
-    incbin level12.bin
+    incbin level12.lvl
 level13:
-    incbin level13.bin
+    incbin level13.lvl
 level14:
-    incbin level14.bin
+    incbin level14.lvl
 level15:
-    incbin level15.bin
+    incbin level15.lvl
 level16:
-    incbin level16.bin
+    incbin level16.lvl
 
     ECHO "PRGROM Bank 1 left:",[$C000-.]d
     IF . > $C000
@@ -85,7 +85,7 @@ level16:
     RORG $8000
     include patterns.asm
 endScene:
-    incbin end_scene.bin
+    incbin end_scene.lvl
     ECHO "PRGROM Bank 2 left:",[$C000-.]d
     IF . > $C000-6
     ECHO "Exceeded PRGROM Bank 2 size!"

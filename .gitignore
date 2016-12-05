@@ -1,5 +1,6 @@
 build/*.bin
 build/*.pat
+build/*.lvl
 build/*.pal
 build/*.txt
 *.lst
