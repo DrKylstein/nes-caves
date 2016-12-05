@@ -9,7 +9,7 @@ bindir		:= ..
 romname		:= $(bindir)/$(name).nes
 
 palettes	:= $(addsuffix .pal,$(basename $(notdir $(wildcard ../gfx/palette-*.png))))
-incbins		:= sprites.pat title-patterns.pat title-names.bin end.pat end.name
+incbins		:= sprites.pat title-patterns.pat title-names.bin end.pat end.name metatiles.bin
 tilesets	:= $(addsuffix .pat,$(basename $(notdir $(wildcard ../gfx/tileset-*.png))))
 levels	:= $(addsuffix .lvl,$(basename $(notdir $(wildcard ../levels/*.tmx))))
 sources		:= $(wildcard ../src/*.*) 
@@ -28,6 +28,9 @@ heavydebug			: $(rom_depenencies)
 
 sprites.pat		:	$(gfxdir)/sprites.png
 					tilestrip 8 16 <$< | planarbitmap 2 --interleave 8 >$@
+
+metatiles.bin	:	$(gfxdir)/metatiles.tmx
+					python3 $(srcdir)/convertmetatiles.py $< -o $@
 
 $(tilesets)		:	%.pat:	$(gfxdir)/%.png
 					tilestrip 8 8 <$< | planarbitmap 2 --interleave 8 >$@
