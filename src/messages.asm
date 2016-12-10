@@ -4,30 +4,23 @@
 
 airMsg: .byte "THERE G0ES THE AIR",$00
 
-
 gotAllMsg: .byte "LAST CRYSTAL  FIND EXIT",$00
 
-        
 perfectHealthMsg: .byte "PERFECT HEALTH K50000",$00
-
 
 switchMsg: .byte "PRESS B T0 FLIP SWITCH",$00
 
+leverMsg: .byte "PRESS B T0 PULL LEVER",$00
 
 gravityMsg: .byte "REVERSE GRAVITY",$00
 
-
 powershotMsg: .byte "P0WER SH0T",$00
-
 
 stopMsg: .byte "ST0PPED ENEMIES",$00
 
-
 strengthMsg: .byte "INVINCIBLE",$00
 
-
 keyMsg: .byte "CAN 0PEN CHESTS N0W",$00
-
 
 poisonMsg: .byte "P0IS0NED",$00
 

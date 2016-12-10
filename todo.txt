@@ -13,7 +13,6 @@
  PRGROM Bank 7 left: 2155
 
 
-fix: when a long message is overwritten by a short one, the last letters remain
 add ending image
 
 elevators and cannons have been seen shifted 8 pixels away from their spot

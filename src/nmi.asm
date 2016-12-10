@@ -417,3 +417,14 @@ nmi_Copy1:
     pla
     sta PPU_ADDR
     rts
+;------------------------------------------------------------------------------
+nmi_Fill24:
+    pla
+    REPEAT 24
+    sta PPU_DATA
+    REPEND
+    pla
+    sta PPU_ADDR
+    pla
+    sta PPU_ADDR
+    rts

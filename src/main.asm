@@ -1178,6 +1178,13 @@ TileInteraction subroutine
     lsr
     lsr
     sta sav+3
+    cmp #TB_LOCK
+    bcs .IsMessageType
+    lda playerFlags
+    and #~PLY_MSGTRIGGER
+    sta playerFlags
+.IsMessageType:
+    lda sav+3
     cmp #TB_MAPDOOR
     bcc .notEntrance
     jmp TC_Entrance
@@ -1528,10 +1535,14 @@ TC_Hidden:
 TC_Hidden_end:
     
 TC_Lock:
-    lda messageTime
+    lda playerFlags
+    and #PLY_MSGTRIGGER
     bne .noLeverMessage
-    MOV16I arg, switchMsg
+    MOV16I arg, leverMsg
     jsr DisplayMessage
+    lda playerFlags
+    ora #PLY_MSGTRIGGER
+    sta playerFlags
 .noLeverMessage:
     lda #JOY_B_MASK
     and pressed
@@ -1569,10 +1580,14 @@ TC_Lock:
 TC_Lock_end:
 
 TC_On:
-    lda messageTime
+    lda playerFlags
+    and #PLY_MSGTRIGGER
     bne .noOnMessage
     MOV16I arg,switchMsg
     jsr DisplayMessage
+    lda playerFlags
+    ora #PLY_MSGTRIGGER
+    sta playerFlags
 .noOnMessage:
     lda #JOY_B_MASK
     and pressed
@@ -1598,10 +1613,14 @@ TC_On:
 TC_On_end:
 
 TC_Off:
-    lda messageTime
+    lda playerFlags
+    and #PLY_MSGTRIGGER
     bne .noOffMessage
     MOV16I arg,switchMsg
     jsr DisplayMessage
+    lda playerFlags
+    ora #PLY_MSGTRIGGER
+    sta playerFlags
 .noOffMessage:
     lda #JOY_B_MASK
     and pressed
@@ -2093,7 +2112,6 @@ UpdateMessage subroutine
     lda messageCursor
     JEQ UpdateMessage_end
     dec messageCursor
-    JMI UpdateMessage_end
     lda #HUD_BLANK
     PHXA
     ENQUEUE_ROUTINE nmi_Copy1
@@ -3316,6 +3334,14 @@ CentToDec subroutine ;input in A, output ones to A, tens to Y
     rts
 ;------------------------------------------------------------------------------
 DisplayMessage subroutine
+    ldx shr_copyIndex
+    lda #HUD_BLANK
+    PHXA
+    ENQUEUE_ROUTINE nmi_Fill24
+    ENQUEUE_PPU_ADDR [VRAM_NAME_UL+$41]
+    stx shr_copyIndex
+    jsr Synchronize
+    
     MOV16 messagePtr,arg
     lda #0
     sta messageCursor
