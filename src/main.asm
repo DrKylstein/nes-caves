@@ -396,17 +396,16 @@ PasswordEntry subroutine
     
 ;rotate bytes
 .rotate:
-    lda savedStats
-    lsr
-    ror savedStats+1
-    ror savedStats+2
-    ror savedStats+3
+    lsr savedStats+5
     ror savedStats+4
-    ror savedStats+5
+    ror savedStats+3
+    ror savedStats+2
+    ror savedStats+1
+    ror savedStats
     bcc .nocarry
-    lda savedStats
+    lda savedStats+5
     ora #$80
-    sta savedStats
+    sta savedStats+5
 .nocarry:
     inx
     beq .rotate ;rotate twice: x = -1, x = 0
@@ -480,7 +479,11 @@ NewGame:
     sta score
     sta score+1
     sta score+2
+    sta mapScore
+    sta mapScore+1
     sta mapScore+2
+    sta cleared
+    sta cleared+1
     lda #INVALID_MAP_STAT
     sta mapPX+1
     sta mapPY+1
@@ -983,17 +986,16 @@ CheckSpecialButtons subroutine
     bpl .copyStats ;x= -1 at end
 
 .rotate:
-    lda password+5
-    asl
-    rol password+4
-    rol password+3
-    rol password+2
+    asl password
     rol password+1
-    rol password
+    rol password+2
+    rol password+3
+    rol password+4
+    rol password+5
     bcc .nocarry
-    lda password+5
+    lda password
     ora #1
-    sta password+5
+    sta password
 .nocarry:
     inx
     beq .rotate ;rotate twice: x = -1, x = 0
