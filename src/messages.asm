@@ -77,14 +77,21 @@ failText:
     .byte "    Incorrect. Try again.","^"
 
 pauseText:
+    .byte "          Paused",$0A
+    .byte "  -----------------------",$0A
+    .byte $0A
+    .byte $0A
+    .byte $0A
+    .byte $0A
+    .byte "          Password:",$0A
     .byte $0A
     .byte $0A
     .byte $0A
     .byte $0A
     .byte $0A
     .byte $0A
-    .byte "           Paused",$0A
-    .byte "   -----------------------",$0A
+    .byte $0A
+    .byte $0A
     .byte "    ",$13,"Exit level   ",$14,"Resume","^"
     
 mapPauseText:

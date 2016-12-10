@@ -2,20 +2,25 @@
  163  bytes left for copy buffer
  32  bytes left for stack
  20  sprites left in upper table
- 117 bytes left in pages $300-$700
+ 107 bytes left in pages $300-$700
  PRGROM Bank 0 left: 587
  PRGROM Bank 1 left: 18
  PRGROM Bank 2 left: 1081
- PRGROM Bank 3 left: 3408
- PRGROM Bank 4 left: 16384
+ PRGROM Bank 3 left: 3525
+ PRGROM Bank 4 left: 11645
  PRGROM Bank 5 left: 16384
  PRGROM Bank 6 left: 16384
- PRGROM Bank 7 left: 2923
+ PRGROM Bank 7 left: 2155
 
-add attenuation command?
 
 fix: when a long message is overwritten by a short one, the last letters remain
+add ending image
+
+elevators and cannons have been seen shifted 8 pixels away from their spot
+
 ball sleep time still too long? randomized?
+fix: narrow switch collision changes level 14 dynamic
+
 powershot pickup sound
 gravity pickup sound
 stop pickup sound
@@ -31,14 +36,13 @@ egg shot sound
 egg crack sound
 enter level sound
 all crystals sound
-elevators and cannons have been seen shifted 8 pixels away from their spot
-fix: narrow switch collision changes level 14 dynamic
-add ending image
-condense faucet into one entity - it doesn't drip if the player is above, 
--which is the most likely case for when it could fall offscreen.
-re-enable cheats for debug builds?
+
 
 long shot:
+condense faucet into one entity - it doesn't drip if the player is above, 
+-which is the most likely case for when it could fall offscreen.
+add attenuation command?
+re-enable cheats for debug builds?
 convert most player variables to entity variables, move player code to player entity?
 delete entity speeds table
 delete entity initial anim table
@@ -49,8 +53,6 @@ shoot/just fired animation
 variable length notes - patch loop point, external decay?
 different note volumes
 double up channels so that long notes can resume after very short ones
-
-for sequel/level pack:
 fix: eyemonster walks partially inside walls, can push left eye into negative x
 
 -----------------------------

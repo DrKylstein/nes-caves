@@ -966,15 +966,12 @@ CheckSpecialButtons subroutine
     PUSH_BANK
     jsr ResetAPU
     jsr OpenTextBox
+    MOV16I arg,mapPauseText
     lda currLevel
     cmp #MAP_LEVEL
     beq .MapLevel
     MOV16I arg,pauseText
-    MOV16I arg+2,[VRAM_NAME_UL + 32*5 + TEXT_MARGIN]
-    jsr Print
-    jmp .show
 .MapLevel:
-    MOV16I arg,mapPauseText
     MOV16I arg+2,[VRAM_NAME_UL + 32*5 + TEXT_MARGIN]
     jsr Print
     
