@@ -16,7 +16,6 @@
 add ending image
 
 elevators and cannons have been seen shifted 8 pixels away from their spot
-
 ball sleep time still too long? randomized?
 fix: narrow switch collision changes level 14 dynamic
 
