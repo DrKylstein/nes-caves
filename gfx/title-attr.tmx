@@ -4,10 +4,10 @@
   <property name="__script__" value="name-attribute"/>
  </properties>
  <tileset firstgid="1" name="colorsets" tilewidth="16" tileheight="16">
-  <image source="../../../../Projects/nes caves/gfx/colorsets.png" width="16" height="64"/>
+  <image source="colorsets.png" width="16" height="64"/>
  </tileset>
  <tileset firstgid="5" name="title-gs" tilewidth="8" tileheight="8">
-  <image source="../../../../Projects/nes caves/gfx/title-gs.png" width="256" height="240"/>
+  <image source="title-gs.png" width="256" height="240"/>
  </tileset>
  <layer name="Tile Layer 1" width="32" height="30">
   <data encoding="base64" compression="zlib">

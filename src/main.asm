@@ -700,6 +700,30 @@ LoadLevel subroutine
     sta entityYHi+PLAYER_INDEX
     jmp .entityLoop
 .notKiwi:
+;get farm player start
+    cmp #$F8
+    bne .notFarmer
+    lda (tmp),y
+    iny
+    sta playerX
+    lda #0
+    sta playerX+1
+    REPEAT 4
+    ASL16 playerX
+    REPEND
+    lda (tmp),y
+    iny
+    sta playerY
+    lda #0
+    sta playerY+1
+    sta playerYFrac
+    REPEAT 4
+    ASL16 playerY
+    REPEND
+    lda #FARMMYLO_ID<<1
+    sta entityYHi+PLAYER_INDEX
+    jmp .entityLoop
+.notFarmer:
 ;get door locations
     cmp #$FA
     bcc .notDoor
@@ -943,6 +967,13 @@ doExit:
     and cleared+1
     cmp #$FF
     bne .notdone
+    lda currLevel
+    cmp #END_LEVEL
+    bne .gotoendscene
+    lda #FARM_LEVEL
+    sta currLevel
+    jmp .continue
+.gotoendscene:
     lda #END_LEVEL
     sta currLevel
     jmp .continue
@@ -1767,6 +1798,9 @@ TC_UpdateTile:
 TileInteraction_end:
 
 UpdateFruit subroutine
+    lda currLevel
+    cmp #INTRO_LEVEL
+    JCS UpdateFruit_end
     INC16 fruitTime
     lda entityXHi+FRUIT_INDEX
     bmi .in

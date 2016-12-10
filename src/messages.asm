@@ -128,7 +128,7 @@ steeringText:
     .byte $0A
     .byte $0A
     .byte $0A
-    .byte "Uh oh... the steering",$0A,"system is failing again!","^@"
+    .byte $22,"Uh oh... the steering",$0A,"system is failing again!",$22,"^@"
     
 whereText:
     .byte $0A
@@ -139,7 +139,7 @@ whereText:
     .byte $0A
     .byte $0A
     .byte $0A
-    .byte "Whoa!",$0A,"Where'd that come from!","^@"
+    .byte $22,"Whoa!",$0A,"Where'd that come from!",$22,"^@"
     
 landText:
     .byte $0A
@@ -148,21 +148,25 @@ landText:
     .byte $0A
     .byte $0A
     .byte $0A
-    .byte "Whew...made it!  Now I",$0A
+    .byte $22,"Whew...made it!  Now I",$0A
     .byte "need to collect enough",$0A
     .byte "crystals to trade at the",$0A
-    .byte "Galactic Trading Post.","^@"
+    .byte "Galactic Trading Post.",$22,"^@"
 
 ;------------------------------------------------------------------------------
 ;ending text boxes
 ;------------------------------------------------------------------------------
 
 nextStopText:
-    .byte "I've collected a fortune",$0A
-    .byte "in precious crystals. This",$0A
-    .byte "should be enough to buy",$0A
-    .byte "everything needed to start",$0A
-    .byte "a twibble farm!",$0A
+    .byte "You collect what you",$0A
+    .byte "consider to be a fortune in",$0A
+    .byte "precious crystals--enough",$0A
+    .byte "to buy you everything",$0A
+    .byte "necessary to start a",$0A
+    .byte "twibble farm.",$0A
     .byte $0A
-    .byte "Next stop, the local",$0A
+    .byte "Your next stop is the local",$0A
     .byte "Galactic Trading Post!","^@"
+    
+farmText:
+    incbin ending.txt

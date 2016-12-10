@@ -45,6 +45,8 @@ levelBanks:
     .byte 0
     .byte 0
     .byte 2
+    .byte -1
+    .byte 2
 
 levelPointers:
     .word level01
@@ -66,6 +68,8 @@ levelPointers:
     .word mainMap
     .word introScene
     .word endScene
+    .word -1
+    .word farmScene
 
 levelTilesets:
     .word caveTiles ;1
@@ -87,6 +91,8 @@ levelTilesets:
     .word mineTiles ;map
     .word introTiles;intro
     .word introTiles;end
+    .word -1
+    .word ghzTiles;farm
 
 levelPalettes:
     .word volcanoPal ;1
@@ -108,7 +114,8 @@ levelPalettes:
     .word mapPal     ;map
     .word introPal   ;intro
     .word introPal   ;end
-    
+    .word -1
+    .word l13Pal ;farm
 levelMusic:
     .word nullSong ;1
     .word industrialSong ;2
@@ -127,6 +134,7 @@ levelMusic:
     .word industrialSong ;15
     .word industrialSong ;16
     .word mineSong ;map
-    .word mellowSong ;intro
+    .word nullSong ;intro
     .word testSong ;end
     .word testSong ;title
+    .word nullSong ;farm scene

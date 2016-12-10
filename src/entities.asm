@@ -50,6 +50,8 @@ SIGN_ID                     ds 1
 WORM_RIGHT_ID               ds 1
 WORM_LEFT_ID                ds 1
 HIDDEN_GEM_ID               ds 1
+TWIBBLE_ID                  ds 1
+FARMMYLO_ID                 ds 1
     SEG ROM_FILE
 
 entityRoutineLo:
@@ -109,6 +111,8 @@ entityRoutineLo:
     .byte <ER_Worm ;right
     .byte <ER_Worm ;left
     .byte <ER_HiddenGem
+    .byte <ER_Twibble
+    .byte <ER_FarmMylo
     
 entityRoutineHi:
     .byte >ER_Player
@@ -167,6 +171,8 @@ entityRoutineHi:
     .byte >ER_Worm ;right
     .byte >ER_Worm ;left
     .byte >ER_HiddenGem
+    .byte >ER_Twibble
+    .byte >ER_FarmMylo
     
 entityFlags:
     .byte ENT_F_SKIPYTEST | ENT_F_SKIPXTEST | 1 ; player
@@ -225,6 +231,8 @@ entityFlags:
     .byte 1 ;worm
     .byte 1 ;worm
     .byte 0 ;hidden gem
+    .byte 1 ; twibble
+    .byte ENT_F_SKIPYTEST | ENT_F_SKIPXTEST | 1 ; farm mylo
     
 entityTiles:
     .byte 0 ; player
@@ -283,6 +291,8 @@ entityTiles:
     .byte [8+32*2]*2 ; worm
     .byte [8+32*2]*2 ; worm
     .byte [11+32*2]*2 ;hidden gem
+    .byte [15+32*3]*2 ; twibble
+    .byte 0 ; farm mylo
     
 entitySpeeds:
     .byte 0 ; player
@@ -341,6 +351,8 @@ entitySpeeds:
     .byte 0 ;worm
     .byte 0 ;worm
     .byte 0 ;hidden gem
+    .byte 0 ;twibble
+    .byte 0 ; farm mylo
     
 entityInitialAnims:
     .byte ANIM_SMALL_NONE ; player
@@ -399,6 +411,8 @@ entityInitialAnims:
     .byte ANIM_SMALL_NONE_BG ; worm
     .byte ANIM_SMALL_NONE_HFLIP_BG ; worm
     .byte ANIM_NULL ; hidden gem
+    .byte ANIM_SMALL_NONE ; twibble
+    .byte ANIM_SMALL_NONE ; farm mylo
     
 EntAwayFromPlayerX subroutine ; distance in arg 0-1, result in carry
     lda entityXLo,x
@@ -1004,6 +1018,9 @@ EntFlash subroutine
     lda #0
     sta entityFrame,x
     rts
+
+ER_Twibble subroutine
+    jmp ER_Return
 
 ER_HiddenGem subroutine
     lda entityAnim,x
@@ -1921,6 +1938,35 @@ ApplyGravity_end:
 .end:
     jmp ER_Return
     
+ER_FarmMylo subroutine
+    lda pressed
+    beq .continue
+    jmp .text
+.continue:
+    lda #PLY_LOCKED
+    sta playerFlags
+    lda entityFrame,x
+    cmp #240
+    bcc .wait
+.text:
+    stx sav
+    jsr OpenTextBox
+    MOV16I arg, farmText
+    jsr PrintPages
+    jsr CloseTextBox
+    ldx sav
+    jmp reset
+.wait:
+    lda #ANIM_SMALL_NONE
+    sta entityAnim,x
+    lda entityFrame,x
+    and #$40
+    bne .noflip
+    lda #ANIM_SMALL_HFLIP_NONE
+    sta entityAnim,x
+.noflip:
+    jmp ER_Return
+    
 introStates:
     .word IntroLog
     .word IntroSputter
@@ -2366,8 +2412,10 @@ EndCount subroutine
 EndScore subroutine
     lda entityFrame,x
     cmp #120
-    JCC ER_Return
-    jmp reset
+    bcc .end
+    inc exitTriggered
+.end:
+    jmp ER_Return
     
     
 ER_Planet subroutine

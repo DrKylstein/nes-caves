@@ -86,6 +86,8 @@ level16:
     include patterns.asm
 endScene:
     incbin end_scene.lvl
+farmScene:
+    incbin farm_scene.lvl
     ECHO "PRGROM Bank 2 left:",[$C000-.]d
     IF . > $C000-6
     ECHO "Exceeded PRGROM Bank 2 size!"

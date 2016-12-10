@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="24" tilewidth="16" tileheight="16" nextobjectid="11">
+ <properties>
+  <property name="__script__" value="nescave"/>
+  <property name="crystals" value="0"/>
+ </properties>
+ <tileset firstgid="1" name="metatiles" tilewidth="16" tileheight="16" tilecount="256">
+  <image source="../gfx/metatiles.png" width="256" height="256"/>
+ </tileset>
+ <tileset firstgid="257" name="entities" tilewidth="16" tileheight="16" tilecount="256">
+  <image source="../gfx/entities.png" width="256" height="256"/>
+ </tileset>
+ <layer name="Names" width="40" height="24">
+  <data encoding="base64" compression="zlib">
+   eJxjZGBgYBzFo3gQ4iQgTh4E7hhsbhnJfqAVjsHBhvFjcMjRGq8e5PjUKB7Fo3gUj+JRPIpH8RDDACqf2iA=
+  </data>
+ </layer>
+ <layer name="Entities" width="40" height="24">
+  <data encoding="base64" compression="zlib">
+   eJztzqERACAMBMGkLPqvChcVgYuCGWbX3auPALhn5Wx7oX/sPBsAgD8U/KEB4w==
+  </data>
+ </layer>
+</map>

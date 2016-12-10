@@ -5,10 +5,10 @@
   <property name="crystals" value="25"/>
  </properties>
  <tileset firstgid="1" name="metatiles" tilewidth="16" tileheight="16">
-  <image source="metatiles.png" width="256" height="256"/>
+  <image source="../gfx/metatiles.png" width="256" height="256"/>
  </tileset>
  <tileset firstgid="257" name="entities" tilewidth="16" tileheight="16">
-  <image source="../../../../Projects/nes caves/gfx/entities.png" width="256" height="256"/>
+  <image source="../gfx/entities.png" width="256" height="256"/>
  </tileset>
  <layer name="Tiles" width="40" height="24">
   <data encoding="base64" compression="zlib">
@@ -21,6 +21,6 @@
   </data>
  </layer>
  <imagelayer name="Image Layer 1" opacity="0.4">
-  <image source="../../../../Projects/nes caves/CAVES/maps/e1l11.gif"/>
+  <image source="../CAVES/maps/e1l11.gif"/>
  </imagelayer>
 </map>
