@@ -1892,7 +1892,7 @@ CheckLeft_end:
 
 CheckRight subroutine
 
-    CMP16I playerX, [MT_MAP_WIDTH*PX_MT_WIDTH - 16]
+    CMP16I playerX, [MT_MAP_WIDTH*PX_MT_WIDTH - 13]
     bcs .hit
 
     ADD16I arg, playerX, PLAYER_HRIGHT
