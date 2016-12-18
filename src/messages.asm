@@ -10,7 +10,7 @@ perfectHealthMsg: .byte "PERFECT HEALTH K50000",$00
 
 switchMsg: .byte "PRESS B T0 FLIP SWITCH",$00
 
-leverMsg: .byte "PRESS B T0 MOVE LEVER",$00
+leverMsg: .byte "PRESS B T0 M0VE LEVER",$00
 
 gravityMsg: .byte "REVERSE GRAVITY",$00
 

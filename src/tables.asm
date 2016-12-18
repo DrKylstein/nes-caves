@@ -117,24 +117,24 @@ levelPalettes:
     .word -1
     .word l13Pal ;farm
 levelMusic:
-    .word nullSong ;1
-    .word industrialSong ;2
-    .word nullSong ;3
-    .word industrialSong ;4
-    .word nullSong ;5 
-    .word industrialSong ;6
-    .word nullSong ;7
-    .word industrialSong ;8
-    .word industrialSong ;9
-    .word nullSong ;10
-    .word industrialSong ;11
-    .word industrialSong ;12
-    .word nullSong ;13
-    .word nullSong ;14
-    .word industrialSong ;15
-    .word industrialSong ;16
-    .word mineSong ;map
-    .word nullSong ;intro
-    .word testSong ;end
-    .word testSong ;title
-    .word nullSong ;farm scene
+    .word song_party ;1
+    .word song_industrial ;2
+    .word song_party ;3
+    .word song_industrial ;4
+    .word song_party ;5 
+    .word song_industrial ;6
+    .word song_party ;7
+    .word song_industrial ;8
+    .word song_industrial ;9
+    .word song_party ;10
+    .word song_industrial ;11
+    .word song_industrial ;12
+    .word song_party ;13
+    .word song_party ;14
+    .word song_industrial ;15
+    .word song_industrial ;16
+    .word song_mine ;map
+    .word song_null ;intro
+    .word song_null ;end
+    .word song_null;song_party ;title
+    .word song_null ;farm scene

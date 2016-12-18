@@ -4,10 +4,10 @@
   <property name="__script__" value="nescave"/>
   <property name="crystals" value="25"/>
  </properties>
- <tileset firstgid="1" name="metatiles" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="metatiles" tilewidth="16" tileheight="16" tilecount="256">
   <image source="../gfx/metatiles.png" width="256" height="256"/>
  </tileset>
- <tileset firstgid="257" name="entities" tilewidth="16" tileheight="16">
+ <tileset firstgid="257" name="entities" tilewidth="16" tileheight="16" tilecount="256">
   <image source="../gfx/entities.png" width="256" height="256"/>
  </tileset>
  <layer name="Tiles" width="40" height="24">
@@ -17,10 +17,10 @@
  </layer>
  <layer name="Entities" width="40" height="24">
   <data encoding="base64" compression="zlib">
-   eJxjYBj8gJURP59eduNiDwbATMA9g8W91HTHYPETrcFI8ecoGHxgpKU9Wvt3pIUnNcBomI2CUYAf6DGi0rjAYMxLQoPQTYMN/AGG0V8g/gfEv7GE138yw1CTgD6JYR43AOq4BgM=
+   eJxjYBj8gJURP38UMDAwEwiTwRJm1HTHYPETrcFI8ecoGHxgpKU9Wvt3pIUnNcBomI2CUYAf6DGi0rjAYMxLQoPQTYMN/AGG0V8g/gfEv7GE138yw1CTgD6JYR43APHEBfE=
   </data>
  </layer>
- <imagelayer name="Image Layer 1" y="8" opacity="0.4">
+ <imagelayer name="Image Layer 1" y="8" visible="0" opacity="0.4">
   <image source="../CAVES/maps/e1l14.gif"/>
  </imagelayer>
 </map>

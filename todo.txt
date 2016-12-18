@@ -14,16 +14,10 @@
 
 2111*D2116#D
 
+
 fix twibble stacking
-add twibble animation
-add scenery to farm?
+separate farm palette?
 add nature song
-
-
-elevators and cannons have been seen shifted 8 pixels away from their spot
-ball sleep time still too long? randomized?
-fix: narrow switch collision changes level 14 dynamic
-
 powershot pickup sound
 gravity pickup sound
 stop pickup sound
@@ -39,7 +33,11 @@ egg shot sound
 egg crack sound
 enter level sound
 all crystals sound
-
+ball sleep time still too long? randomized?
+elevators and cannons have been seen shifted 8 pixels away from their spot
+fix: narrow switch collision changes level 14 dynamic
+add twibble animation
+add scenery to farm?
 
 long shot:
 condense faucet into one entity - it doesn't drip if the player is above, 

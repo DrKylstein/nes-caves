@@ -1483,7 +1483,7 @@ TC_Exit:
     sta mapScore+2
     
     ldy currLevel
-    cpy #16
+    cpy #8
     bcs .upperLevels
     lda bits+1,y
     ora cleared
@@ -1493,6 +1493,7 @@ TC_Exit:
     tya
     sec
     sbc #8
+    tay
     lda bits+1,y
     ora cleared+1
     sta cleared+1
