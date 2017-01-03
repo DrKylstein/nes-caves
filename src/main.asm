@@ -513,25 +513,6 @@ InitSprites subroutine
     REPEND
     cpy #8*OAM_SIZE
     bne .loop
-    lda #PX_VIEWPORT_OFFSET-1
-    sta tmp
-.loop2:
-    lda tmp
-    sta shr_spriteY,y
-    clc
-    adc #16
-    sta tmp
-    lda #248
-    sta shr_spriteX,y
-    lda #60
-    sta shr_spriteIndex,y
-    lda #0
-    sta shr_spriteFlags,y
-    REPEAT OAM_SIZE
-    iny
-    REPEND
-    cpy #21*OAM_SIZE
-    bne .loop2
     jsr Synchronize
 ;------------------------------------------------------------------------------
 ;Start of Level
@@ -2310,7 +2291,7 @@ UpdateCameraX subroutine
     ;no loading attributes if not at attributes boundary
     lda shr_cameraX
     and #15
-    cmp #15
+    cmp #12
     bne .Scroll_Left_end
     
     jsr LoadColorsOnMoveLeft
@@ -2323,7 +2304,7 @@ UpdateCameraX subroutine
     bcc .Scroll_Right_end
     
     ;no scrolling becuse screen is at map edge
-    CMP16I shr_cameraX, [[MT_MAP_WIDTH - MT_VIEWPORT_WIDTH]*PX_MT_WIDTH]
+    CMP16I shr_cameraX, [[MT_MAP_WIDTH - MT_VIEWPORT_WIDTH]*PX_MT_WIDTH - 8]
     bcs .Scroll_Right_end
     
     ;scroll right 1 pixel
@@ -2334,14 +2315,14 @@ UpdateCameraX subroutine
     lda shr_cameraX
     and #7 ; 8-pixel boundaries
     cmp #1
-    bne .Scroll_Right_end
-    
+    bne .NoTilesOnRight
     jsr LoadTilesOnMoveRight
+.NoTilesOnRight:
     
-    ;no loading tiles if not at tile boundary
+    ;no loading attributes if not at attribute boundary
     lda shr_cameraX
     and #15 ; 16-pixel boundaries
-    cmp #1
+    cmp #12
     bne .Scroll_Right_end
 
     jsr LoadColorsOnMoveRight
@@ -2896,7 +2877,7 @@ LoadTilesOnMoveRight subroutine
     clc
     adc #31
     and #31
-    sta arg+2
+    sta shr_tileCol
     
     ;get map index
     ADD16I tmp, tmp, 1
@@ -2932,7 +2913,7 @@ LoadTilesOnMoveLeft subroutine
     clc
     adc #31
     and #31
-    sta arg+2
+    sta shr_tileCol
     
     ;get map index
     ADD16I tmp, tmp, 1
@@ -2963,25 +2944,22 @@ LoadColorsOnMoveRight subroutine
     REPEAT 4
     LSR16 tmp
     REPEND
-    ADD16I tmp, tmp, 15
+    ADD16I tmp, tmp, 16
     
     ;get index to attribute table
     lda tmp
     lsr
     and #7
-    clc
-    adc #7
-    and #7
-    sta arg+2
+    sta shr_tileCol
     
     ;get map index
     MOV16 arg, tmp
-    jsr MultiplyBy24 ;uses only arg 0..1, keeping ret value for later
+    jsr MultiplyBy24
     ADD16I arg, ret, levelMap
     
     lda shr_cameraX
     and #$10
-    bne .unaligned
+    beq .unaligned
     SUB16I arg, arg, [1*MT_MAP_HEIGHT]
     jsr ColorColumn
     inc shr_doAttrCol
@@ -3001,20 +2979,17 @@ LoadColorsOnMoveLeft subroutine
     ;get index to attribute table
     lda tmp
     lsr
-    clc
-    adc #7
     and #7
-    sta arg+2
+    sta shr_tileCol
     
     ;get map index
     MOV16 arg, tmp
-    jsr MultiplyBy24 ;uses only arg 0..1
+    jsr MultiplyBy24
     ADD16I arg, ret, levelMap
     
     lda shr_cameraX
     and #$10
     bne .unaligned
-    ;ADD16I arg, arg, [3*MT_MAP_HEIGHT]
     jsr ColorColumn
     inc shr_doAttrCol
     rts
@@ -3179,9 +3154,6 @@ EvenColumn subroutine
     iny
     cpx #TOP_HEIGHT+BOTTOM_HEIGHT
     bne .first_loop
-        
-    lda arg+2
-    sta shr_tileCol
     rts
 ;------------------------------------------------------------------------------
 ;arg 0..1 -> rom address
@@ -3203,10 +3175,6 @@ OddColumn subroutine
     iny
     cpx #TOP_HEIGHT+BOTTOM_HEIGHT
     bne .second_loop 
-    
-    lda arg+2
-    sta shr_tileCol
-    
     rts
 ;------------------------------------------------------------------------------
 ;for revealing aligned columns - subtract 1 for moving viewport right
@@ -3919,7 +3887,7 @@ InitialDrawLevel subroutine
     clc
     adc sav+2
     and #$1F
-    sta arg+2
+    sta shr_tileCol
     tya
     pha
     jsr EvenColumn
@@ -3941,7 +3909,7 @@ InitialDrawLevel subroutine
     adc #0
     adc sav+2
     and #$1F
-    sta arg+2
+    sta shr_tileCol
     tya
     pha
     jsr OddColumn

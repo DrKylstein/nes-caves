@@ -99,14 +99,11 @@ nmi_AttrCopy subroutine
     JEQ nmi_AttrCopy_end
 .continue:
     lda shr_tileCol
-    lsr
-    lsr
     sta nmi_tmp+2
     EXTEND nmi_tmp+2,nmi_tmp+2
 
 ;top
-    MOV16I nmi_tmp,TOP_ATTR_OFFSET
-    ADD16 nmi_tmp,nmi_tmp,nmi_tmp+2
+    ADD16I nmi_tmp,nmi_tmp+2,TOP_ATTR_OFFSET
 
     bit PPU_STATUS
     lda nmi_tmp+1
@@ -134,8 +131,7 @@ nmi_AttrCopy subroutine
     REPEND
     
 ;bottom    
-    MOV16I nmi_tmp,BOTTOM_ATTR_OFFSET
-    ADD16 nmi_tmp,nmi_tmp,nmi_tmp+2
+    ADD16I nmi_tmp,nmi_tmp+2,BOTTOM_ATTR_OFFSET
     
     lda nmi_tmp+1
     sta PPU_ADDR
