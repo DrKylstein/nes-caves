@@ -4,15 +4,15 @@
   <property name="__script__" value="nescave"/>
   <property name="crystals" value="0"/>
  </properties>
- <tileset firstgid="1" name="metatiles" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="metatiles" tilewidth="16" tileheight="16" tilecount="256">
   <image source="../gfx/metatiles.png" width="256" height="256"/>
  </tileset>
- <tileset firstgid="257" name="entities" tilewidth="16" tileheight="16">
+ <tileset firstgid="257" name="entities" tilewidth="16" tileheight="16" tilecount="256">
   <image source="../gfx/entities.png" width="256" height="256"/>
  </tileset>
  <layer name="Names" width="40" height="24">
   <data encoding="base64" compression="zlib">
-   eJzNVkluxDAMc78684POpwbodk7Xs9P2T1WACCA4oi0n06IHAtlsURQV61xKORvqinkAW9aMYtn/GVCTcSutmen6tzgu91MQew6uMR9+vkXjjCZqzxrwZq2Vpi1dee0e/ZkT+4Jr3PMKc7pmDyC/Kahxtm68bsQLqI/aw2veq3EUV/lX6aG8HvXNFMRR96pvotyUDyMvqVpFeys9Doaj0JR90fIDa5X1QOv9wu1mxTHQCXM5wHcZH+yFx3s0PBFH1KFSHopjS9eeV6PcbtdY74aP9fpULv3l3O4M94aHBkf3VFRz9hlqoP7XztG5Rb739y+GV8MbPMv4S3kyOt+wb1DHU9H+8Rw+DV+Gb8gnww97frRHsu9Q5yw3rGOkGcdg/qPnqXPMcmvVWs0P2XMt24dZ4LnR0yQzI0VnwN65pTcD9J47Jz83sA7XmGsn2ovPX8wj8uLW+WakPmqm+StktMb5IJP3yLd79dtak1bf/we0/pM9/ACZp9De
+   eJzNVltOxDAMDFfdvQF7qf0BvsvzOwVOAIfBlWppNOtJnHZBfIzUV+LxeNz4XEo5G+qKeQBb1oxi2f8RUJNxK62Z6fq3OC73UxB7Dq4xH36+ReOMJmrPGvBmrZWmLV157R79mRP7gmvc8wpzumYPIL8pqHG2brxuxAuoj9rDa96rcRRX+Vfpobwe9c0UxFH3qm+i3JQPIy+pWkV7Kz0OhqPQlH3R8gNrlfVA6/3C7WbFMdAJcznAdxkf7IXHuzc8EEfUoVIeimNL155Xo9xu11ivhrf1+lQu/eXcvgzfhrsGR/dUVHP2GWqg/tfO0blFvvf3T4Znwws8y/hLeTI637BvUMdT0f7xHN4NH4ZPyCfDD3t+tEey71DnLDesY6QZx2D+o+epc8xya9VazQ/Zcy3bh1ngudHTJDMjRWfA3rmlNwP0njsnPzewDteYayfai89fzCPy4tb5ZqQ+aqb5K2S0xvkgk/fIt3v121qTVt//B7T+kz38AHIU0T4=
   </data>
  </layer>
  <layer name="Entities" width="40" height="24">
