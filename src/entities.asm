@@ -457,6 +457,9 @@ EntMoveHorizontally subroutine
     and #1
     beq .noExtra
     lda entityVelocity,x
+    and #1
+    beq .noExtra
+    lda entityVelocity,x
     bpl .positive
     DEC16 tmp
     jmp .noExtra
@@ -544,6 +547,9 @@ EntMoveVertically subroutine
     sta tmp
     EXTEND tmp, tmp
     lda frame
+    and #1
+    beq .noExtra
+    lda entityVelocity,x
     and #1
     beq .noExtra
     lda entityVelocity,x
@@ -3095,7 +3101,7 @@ ER_Spider subroutine
     sta entityXHi+1,x
     lda #ANIM_SYMMETRICAL_NONE
     sta entityAnim+1,x
-    lda #2
+    lda #3
     sta entityVelocity+1,x
     lda #60
     sta entityCount,x
@@ -3529,7 +3535,7 @@ ER_Faucet subroutine
     sta entityYLo+1,x
     lda #ANIM_SPIKE
     sta entityAnim+1,x
-    lda #2
+    lda #3
     sta entityVelocity+1,x
 .return:
     jmp ER_Return
