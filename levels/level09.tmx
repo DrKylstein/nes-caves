@@ -4,15 +4,15 @@
   <property name="__script__" value="nescave"/>
   <property name="crystals" value="25"/>
  </properties>
- <tileset firstgid="1" name="metatiles" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="metatiles" tilewidth="16" tileheight="16" tilecount="256">
   <image source="../gfx/metatiles.png" width="256" height="256"/>
  </tileset>
- <tileset firstgid="257" name="entities" tilewidth="16" tileheight="16">
+ <tileset firstgid="257" name="entities" tilewidth="16" tileheight="16" tilecount="256">
   <image source="../gfx/entities.png" width="256" height="256"/>
  </tileset>
  <layer name="Tiles" width="40" height="24">
   <data encoding="base64" compression="zlib">
-   eJy1lztOxEAMhp1cI3MHuAFUPETPo1wQQpQLx4AbUEVKt5RpuUQE9KuVEMfAkcaK49iJJ2GLT3Hm+cf2zGRyACgjOVIhtbCprhyxqV1lvOdKX96Ov9O8ZP8gGfKCvCJhgZ057Yv4lOWBQdpDrHuLhAV25rSLiCznGsmnpG+DvI9o9c7tsTlaeYAuNwIro3pN65zyufoy6PJV08dzgs9tjcvb/5c+WqOaPqsPJ9Vn1nda5XJ9WN8k9U99j2VzH3uQ8fX43MLjs9QxSxFfj89TY73km8fiq7FFbuLT60vvN2tjpuoroL+vpurT8u8eeYg8ijo656S+j4QYpOibk38p/tuHvi/kM9rfyC+LFd//dqzPdgJLF43BdfBxNX08vjLO9A8TjHZeaDztvOe5mhpfef7y/F2P9Fsr7feRf9b/VWuvRvqtJubz7i9yH5C5k0P//LD0BeivoSl9qXu7preA4fpN9d9cHRr8v7l9P4dh/ln65J48pj0Vfh+pQL+zaHHx+E9yi9zN0HiCnCJn8f0AOYTu/GjLdqIPrVGZs7xO8oQ8z9B3iVwh13G+I+QYuvtbE/3YRHLo9kbyM68rWV2t9GvYmDX075aNaE+xLGF4v2zr/wDeEu3g
+   eJy1lztOxEAMhp2cAilzB7gBVDxEv0C5IIQoF44BN6CKlA7KnCQC+tVKiGPgSGPFcezEk7DFpzjz/GN7ZjI5AJSRHKmQWthUV47Y1K4y3nOlL2/H32lesn+QDHlBXpGwwM6c9mV8yvLAIO0h1r1FwgI7c9pFRJZzjeRT0veOfIxo9c7tsTlaeYAuNwIro3pN65zyufoy6PJV08dzgs9tjcvb/5c+WqOaPqsPJ9Vn1nda5XJ9WN8k9U99j2VzH3uQ8fX43MLjs9QxSxFfj89TY73km8fiq7FFbuLT60vvN2tjpuoroL+vpurT8u8eeYg8ijo656S+g4QYpOibk38p/tuHvi/kM9rfyC+LFd//dqzPdgJLF43BdfBxNX08vjLO9A8TjHZeaDztvOe5mhpfef7y/N2M9Nso7feRf9b/VWuvR/qtJ+bz7i9yH5C5k0P//LD0BeivoSl9qXu7preA4fpN9d9cHRr8v7l9v4Bh/ln65J48pj0Vfh+pQL+zaHHx+E9yi9zN0HiKnCHn8f0QOYLu/GjLdqIPrVGZs7xO8oQ8z9C3Qq6Q6zjfMXIC3f2tiX5sIjl0eyP5mdeVrK5W+jVszBr6d8tGtKdYljC8X7b1fxU67Ts=
   </data>
  </layer>
  <layer name="Entities" width="40" height="24">
