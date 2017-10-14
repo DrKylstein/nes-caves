@@ -4119,7 +4119,14 @@ CloseTextBox subroutine
     lda #0
     sta arg
     jsr QEnableSplitDisplay
+    lda switches
+    and #8
+    bne .light
+    lda #$20
+    sta arg
+.light:
     jsr QLoadDarkenedLevelColors
+    
     jsr Synchronize
     POP_BANK
     rts
