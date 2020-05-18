@@ -4,10 +4,10 @@
   <property name="__script__" value="nescave"/>
   <property name="crystals" value="25"/>
  </properties>
- <tileset firstgid="1" name="metatiles" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="metatiles" tilewidth="16" tileheight="16" tilecount="256">
   <image source="../gfx/metatiles.png" width="256" height="256"/>
  </tileset>
- <tileset firstgid="257" name="entities" tilewidth="16" tileheight="16">
+ <tileset firstgid="257" name="entities" tilewidth="16" tileheight="16" tilecount="256">
   <image source="../gfx/entities.png" width="256" height="256"/>
  </tileset>
  <layer name="Tiles" width="40" height="24">
@@ -17,7 +17,7 @@
  </layer>
  <layer name="Entities" width="40" height="24">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFyICXkTy5UUA50GPET+MDmiMobvClQ0lG7GxsfFoCvhEUH0MJCIzGC8lAZAiE2X86uPE3ATvkqeCGP0MgrIczUCcQ/kzDOH6Mh7HfKAUao2HD8I8KYfB3AMJxOOdZSgEAMdYHNQ==
+   eJxjYBgFyICXkTy5UUA9oMeIm4+LrTmC4gZfOpRkxM7Gxqcl4BtB8TGUgMBovJAMRIZAmP2ngxt/E7BDngpu+DMEwno4A3UC4c80jOPHeBj7jVKgMRo2DP+oEAZ/ByAch3OepRQAACVaBzU=
   </data>
  </layer>
  <imagelayer name="Image Layer 1" opacity="0.4">

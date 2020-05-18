@@ -9,7 +9,7 @@ bindir		:= ..
 romname		:= $(bindir)/$(name).nes
 
 palettes	:= $(addsuffix .pal,$(basename $(notdir $(wildcard ../gfx/palette-*.png))))
-incbins		:= sprites.pat title-patterns.pat title-names.bin title-attr.bin end.pat end.name metatiles.bin
+incbins		:= sprites.pat title-patterns.pat title-names.bin title-attr.bin metatiles.bin palette-title.pal
 tilesets	:= $(addsuffix .pat,$(basename $(notdir $(wildcard ../gfx/tileset-*.png))))
 levels	:= $(addsuffix .lvl,$(basename $(notdir $(wildcard ../levels/*.tmx))))
 sources		:= $(wildcard ../src/*.*) 
@@ -38,21 +38,8 @@ $(tilesets)		:	%.pat:	$(gfxdir)/%.png
 $(levels)		:	%.lvl:	$(lvldir)/%.tmx
 					python3 $(srcdir)/convertlevels.py $< -o $@
 
-title-patterns.pat		:	$(gfxdir)/title-gs.png
-					tilestrip 8 8 <$< | deduplicate --names title-names.txt | planarbitmap 2 --interleave 8 >$@
-					
-title-names.bin		: title-patterns.pat
-					xxd -r -p title-names.txt title-names.bin
-
-title-attr.bin		:	$(gfxdir)/title-attr.tmx
-					python3 $(srcdir)/convertnameattr.py $< -o $@
-
-end.pat		:	$(gfxdir)/end.png
-					tilestrip 8 8 <$< | deduplicate --names end-names.txt | planarbitmap 2 --interleave 8 >$@
-					
-end.name			: end.pat
-					xxd -r -p end-names.txt $@
-
+palette-title.pal title-patterns.pat title-names.bin title-attr.bin		&:	$(gfxdir)/title-auto.png
+					nesimage $< palette-title.pal title-patterns.pat title-names.bin title-attr.bin
 
 $(palettes):	%.pal:	$(gfxdir)/%.png
 	packedpixels <$< >$@
@@ -63,4 +50,4 @@ run				:	$(romname)
 
 .PHONY			:	clean
 clean			:	
-					rm -f $(romname) *.lst *.sym *.bin *.pal *.pat title-names.txt
+					rm -f $(romname) *.lst *.sym *.bin *.pal *.pat *.lvl
